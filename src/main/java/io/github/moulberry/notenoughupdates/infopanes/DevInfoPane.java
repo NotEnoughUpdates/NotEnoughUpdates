@@ -74,7 +74,7 @@ public class DevInfoPane extends TextInfoPane {
 	AtomicBoolean running = new AtomicBoolean(false);
 	ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 
-	String[] bukkitList = new String[]{
+	String[] bukkitList = {
 		"ACACIA_DOOR_ITEM",
 		"ACACIA_FENCE",
 		"ACACIA_FENCE_GATE",

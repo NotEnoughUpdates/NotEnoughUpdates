@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -41,6 +42,7 @@ public class CraftingRecipe implements NeuRecipe {
 	private static final int EXTRA_STRING_Y = 50;
 
 	private final NEUManager manager;
+	@Getter
 	private final Ingredient[] inputs;
 	private final String extraText;
 	private final Ingredient outputIngredient;
@@ -79,10 +81,6 @@ public class CraftingRecipe implements NeuRecipe {
 
 	public Ingredient getOutput() {
 		return outputIngredient;
-	}
-
-	public Ingredient[] getInputs() {
-		return inputs;
 	}
 
 	@Override

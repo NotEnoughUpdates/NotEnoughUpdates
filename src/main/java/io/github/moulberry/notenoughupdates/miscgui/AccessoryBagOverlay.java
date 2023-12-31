@@ -94,7 +94,7 @@ public class AccessoryBagOverlay {
 		}
 	}
 
-	private static final ItemStack[] TAB_STACKS = new ItemStack[]{
+	private static final ItemStack[] TAB_STACKS = {
 		Utils.createItemStack(Items.dye, EnumChatFormatting.DARK_AQUA + "Basic Information",
 			10, EnumChatFormatting.GREEN + "- Talis count by rarity"
 		),
@@ -120,8 +120,7 @@ public class AccessoryBagOverlay {
 	private static int currentTab = TAB_BASIC;
 
 	public static boolean mouseClick() {
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest eventGui) {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (!containerName.trim().startsWith("Accessory Bag")) {
@@ -542,7 +541,7 @@ public class AccessoryBagOverlay {
 				int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
 				if (mouseX > x && mouseX < x + 80 &&
-					mouseY > y + 11 + 121 && mouseY < y + 21 + 121) {
+						mouseY > y + 11 + 121 && mouseY < y + 21 + 121) {
 					List<String> text = new ArrayList<>();
 					StringBuilder line = new StringBuilder();
 					int leftMaxSize = 0;
@@ -730,12 +729,11 @@ public class AccessoryBagOverlay {
 
 	public static void renderOverlay() {
 		inAccessoryBag = false;
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
-			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest eventGui && RenderListener.inventoryLoaded) {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (containerName.trim().startsWith("Accessory Bag") && !containerName.contains("Thaumaturgy") &&
-				!containerName.contains("Upgrades")) {
+					!containerName.contains("Upgrades")) {
 				inAccessoryBag = true;
 				try {
 					int xSize = (int) Utils.getField(GuiContainer.class, eventGui, "xSize", "field_146999_f");
@@ -830,7 +828,7 @@ public class AccessoryBagOverlay {
 					Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
 					Utils.drawTexturedRect(guiLeft + xSize + 3, guiTop, 80, 149, 0, 80 / 256f, 0, 149 / 256f, GL11.GL_NEAREST);
 
-					if (pagesVisited.size() < 1) {
+					if (pagesVisited.isEmpty()) {
 						renderVisitOverlay(guiLeft + xSize + 3, guiTop);
 						return;
 					}
@@ -842,24 +840,12 @@ public class AccessoryBagOverlay {
 					Utils.drawItemStack(TAB_STACKS[currentTab], guiLeft + xSize + 80 + 8, guiTop + 20 * currentTab + 3);
 
 					switch (currentTab) {
-						case TAB_BASIC:
-							renderBasicOverlay(guiLeft + xSize + 3, guiTop);
-							return;
-						case TAB_TOTAL:
-							renderTotalStatsOverlay(guiLeft + xSize + 3, guiTop);
-							return;
-						case TAB_BONUS:
-							renderReforgeStatsOverlay(guiLeft + xSize + 3, guiTop);
-							return;
-						case TAB_DUP:
-							renderDuplicatesOverlay(guiLeft + xSize + 3, guiTop);
-							return;
-						case TAB_MISSING:
-							renderMissingOverlay(guiLeft + xSize + 3, guiTop);
-							return;
-						case TAB_OPTIMIZER:
-							renderOptimizerOverlay(guiLeft + xSize + 3, guiTop);
-							return;
+						case TAB_BASIC -> renderBasicOverlay(guiLeft + xSize + 3, guiTop);
+						case TAB_TOTAL -> renderTotalStatsOverlay(guiLeft + xSize + 3, guiTop);
+						case TAB_BONUS -> renderReforgeStatsOverlay(guiLeft + xSize + 3, guiTop);
+						case TAB_DUP -> renderDuplicatesOverlay(guiLeft + xSize + 3, guiTop);
+						case TAB_MISSING -> renderMissingOverlay(guiLeft + xSize + 3, guiTop);
+						case TAB_OPTIMIZER -> renderOptimizerOverlay(guiLeft + xSize + 3, guiTop);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -868,10 +854,7 @@ public class AccessoryBagOverlay {
 		}
 	}
 
-
-
-
-	private static final HashMap<String, Pattern> STAT_PATTERN_MAP_BONUS = new HashMap<String, Pattern>() {{
+	private static final HashMap<String, Pattern> STAT_PATTERN_MAP_BONUS = new HashMap<>() {{
 		String STAT_PATTERN_BONUS_END = ": (?:\\+|-)[0-9]+(?:\\.[0-9]+)?\\%? \\(((?:\\+|-)[0-9]+)%?";
 		put("health", Pattern.compile("^Health" + STAT_PATTERN_BONUS_END));
 		put("defence", Pattern.compile("^Defense" + STAT_PATTERN_BONUS_END));
@@ -888,7 +871,7 @@ public class AccessoryBagOverlay {
 		put("magic_find", Pattern.compile("^Magic Find" + STAT_PATTERN_BONUS_END));
 	}};
 
-	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {{
+	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<>() {{
 		String STAT_PATTERN_END = ": ((?:\\+|-)([0-9]+(\\.[0-9]+)?))%?";
 		put("health", Pattern.compile("^Health" + STAT_PATTERN_END));
 		put("defence", Pattern.compile("^Defense" + STAT_PATTERN_END));
@@ -954,7 +937,7 @@ public class AccessoryBagOverlay {
 						NBTTagList items = contents_nbt.getTagList("i", 10);
 						HashSet<Integer> cakes = new HashSet<>();
 						for (int j = 0; j < items.tagCount(); j++) {
-							if (items.getCompoundTagAt(j).getKeySet().size() > 0) {
+							if (!items.getCompoundTagAt(j).getKeySet().isEmpty()) {
 								NBTTagCompound nbt = items.getCompoundTagAt(j).getCompoundTag("tag");
 								if (nbt != null && nbt.hasKey("ExtraAttributes", 10)) {
 									NBTTagCompound ea2 = nbt.getCompoundTag("ExtraAttributes");

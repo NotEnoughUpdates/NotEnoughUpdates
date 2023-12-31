@@ -82,18 +82,14 @@ public class ChatListener {
 
 	private IChatComponent processChatComponent(IChatComponent chatComponent) {
 		IChatComponent newComponent;
-		if (chatComponent instanceof ChatComponentText) {
-			ChatComponentText text = (ChatComponentText) chatComponent;
-
+		if (chatComponent instanceof ChatComponentText text) {
 			newComponent = new ChatComponentText(processText(text.getUnformattedTextForChat()));
 			newComponent.setChatStyle(text.getChatStyle().createShallowCopy());
 
 			for (IChatComponent sibling : text.getSiblings()) {
 				newComponent.appendSibling(processChatComponent(sibling));
 			}
-		} else if (chatComponent instanceof ChatComponentTranslation) {
-			ChatComponentTranslation trans = (ChatComponentTranslation) chatComponent;
-
+		} else if (chatComponent instanceof ChatComponentTranslation trans) {
 			Object[] args = trans.getFormatArgs();
 			Object[] newArgs = new Object[args.length];
 			for (int i = 0; i < trans.getFormatArgs().length; i++) {

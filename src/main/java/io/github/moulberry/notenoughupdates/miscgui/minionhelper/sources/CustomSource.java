@@ -19,15 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class CustomSource extends MinionSource {
-
 	private final String sourceName;
-
-	public CustomSource(String sourceName) {
-		this.sourceName = sourceName;
-	}
-
-	public String getSourceName() {
-		return sourceName;
-	}
 }

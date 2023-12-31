@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomS
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -45,6 +46,7 @@ public class MinionHelperRepoLoader {
 	private final MinionHelperManager manager;
 	private boolean dirty = true;
 	private int ticks = 0;
+	@Getter
 	private boolean readyToUse = false;
 	private final MinionHelperRepoMinionLoader minionLoader;
 	boolean errorWhileLoading = false;
@@ -224,9 +226,5 @@ public class MinionHelperRepoLoader {
 	public void setDirty() {
 		dirty = true;
 		readyToUse = false;
-	}
-
-	public boolean isReadyToUse() {
-		return readyToUse;
 	}
 }

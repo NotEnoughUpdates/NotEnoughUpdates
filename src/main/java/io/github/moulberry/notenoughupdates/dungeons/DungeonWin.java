@@ -117,18 +117,12 @@ public class DungeonWin {
 
 		if (deltaTime < 1000) {
 			ScaledResolution sr = Utils.pushGuiScale(2);
-			int cap = 0;
-			switch (TEAM_SCORE.getResourcePath()) {
-				case "dungeon_win/splus.png":
-					cap = 200;
-					break;
-				case "dungeon_win/s.png":
-					cap = 100;
-					break;
-				case "dungeon_win/a.png":
-					cap = 50;
-					break;
-			}
+			int cap = switch (TEAM_SCORE.getResourcePath()) {
+				case "dungeon_win/splus.png" -> 200;
+				case "dungeon_win/s.png" -> 100;
+				case "dungeon_win/a.png" -> 50;
+				default -> 0;
+			};
 			int maxConfetti = Math.min(cap, deltaTime / 5);
 			while (confetti.size() < maxConfetti) {
 				int y;
@@ -191,26 +185,14 @@ public class DungeonWin {
 				if (matcher.find()) {
 					lastDungeonFinish = currentTime;
 					String score = matcher.group(1);
-					switch (score.toUpperCase()) {
-						case "S+":
-							TEAM_SCORE = SPLUS;
-							break;
-						case "S":
-							TEAM_SCORE = S;
-							break;
-						case "A":
-							TEAM_SCORE = A;
-							break;
-						case "B":
-							TEAM_SCORE = B;
-							break;
-						case "C":
-							TEAM_SCORE = C;
-							break;
-						default:
-							TEAM_SCORE = D;
-							break;
-					}
+					TEAM_SCORE = switch (score.toUpperCase()) {
+						case "S+" -> SPLUS;
+						case "S" -> S;
+						case "A" -> A;
+						case "B" -> B;
+						case "C" -> C;
+						default -> D;
+					};
 
 					SES.schedule(() -> NotEnoughUpdates.INSTANCE.sendChatMessage("/showextrastats"), 100L, TimeUnit.MILLISECONDS);
 					seenDungeonWinOverlayThisRun = false;
@@ -227,7 +209,7 @@ public class DungeonWin {
 					displayWin();
 					seenDungeonWinOverlayThisRun = true;
 				} else {
-					if (unformatted.trim().length() > 0 && !seenDungeonWinOverlayThisRun) {
+					if (!unformatted.trim().isEmpty() && !seenDungeonWinOverlayThisRun) {
 						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode Catacombs") ||
 							unformatted.contains("Team Score") || unformatted.contains("Defeated") || unformatted.contains(
 							"Total Damage")

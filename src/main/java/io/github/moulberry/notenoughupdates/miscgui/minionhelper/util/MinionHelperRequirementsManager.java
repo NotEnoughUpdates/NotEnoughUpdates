@@ -74,10 +74,9 @@ public class MinionHelperRequirementsManager {
 		ApiData apiData = manager.getApi().getApiData();
 		if (apiData == null) return false;
 
-		if (requirement instanceof CollectionRequirement) {
+		if (requirement instanceof CollectionRequirement collectionRequirement) {
 			if (apiData.isCollectionApiDisabled()) return true;
 
-			CollectionRequirement collectionRequirement = (CollectionRequirement) requirement;
 			String collection = collectionRequirement.getCollection();
 			String internalName = manager.formatInternalName(collection);
 
@@ -89,8 +88,7 @@ public class MinionHelperRequirementsManager {
 				return has >= need;
 			}
 
-		} else if (requirement instanceof SlayerRequirement) {
-			SlayerRequirement slayerRequirement = (SlayerRequirement) requirement;
+		} else if (requirement instanceof SlayerRequirement slayerRequirement) {
 			String slayer = slayerRequirement.getSlayer();
 			//Because the neu-repo uses 'eman' and the hypixel api is using 'enderman'
 			if (slayer.equals("eman")) {
@@ -102,8 +100,7 @@ public class MinionHelperRequirementsManager {
 				return slayerTiers.get(slayer) >= need;
 			}
 
-		} else if (requirement instanceof ReputationRequirement) {
-			ReputationRequirement reputationRequirement = (ReputationRequirement) requirement;
+		} else if (requirement instanceof ReputationRequirement reputationRequirement) {
 			int need = reputationRequirement.getReputation();
 			String reputationType = reputationRequirement.getReputationType();
 			if (reputationType.equals("BARBARIAN")) {

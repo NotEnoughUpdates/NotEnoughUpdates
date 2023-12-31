@@ -439,9 +439,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			new int[]{190, 77},
 			onPage,
 			pages,
-			pageChange -> {
-				onPage = pageChange;
-			}
+			pageChange -> onPage = pageChange
 		);
 
 		if ((mouseX >= guiLeft + 222 - 1 && mouseX <= guiLeft + 222 + 20) &&

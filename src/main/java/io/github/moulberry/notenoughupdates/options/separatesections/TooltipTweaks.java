@@ -45,17 +45,17 @@ public class TooltipTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Price Info (Auc)",
-		desc = "\u00a7rSelect what price information you would like to see on auctionable item tooltips\n" +
-			"\u00a7eDrag text to rearrange"
+		desc = "§rSelect what price information you would like to see on auctionable item tooltips\n" +
+			"§eDrag text to rearrange"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7eLowest BIN",
-			"\u00a7eAH Price",
-			"\u00a7eAH Sales",
-			"\u00a7eRaw Craft Cost",
-			"\u00a7eAVG Lowest BIN",
-			"\u00a7eDungeon Costs"
+			"§eLowest BIN",
+			"§eAH Price",
+			"§eAH Sales",
+			"§eRaw Craft Cost",
+			"§eAVG Lowest BIN",
+			"§eDungeon Costs"
 		}
 	)
 	@ConfigAccordionId(id = 0)
@@ -64,22 +64,22 @@ public class TooltipTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Price Info (Baz)",
-		desc = "\u00a7rSelect what price information you would like to see on bazaar item tooltips\n" +
-			"\u00a7eDrag text to rearrange"
+		desc = "§rSelect what price information you would like to see on bazaar item tooltips\n" +
+			"§eDrag text to rearrange"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7eBuy",
-			"\u00a7eSell",
-			"\u00a7eBuy (Insta)",
-			"\u00a7eSell (Insta)",
-			"\u00a7eRaw Craft Cost",
-			"\u00a7eInsta-Buys (Hourly)",
-			"\u00a7eInsta-Sells (Hourly)",
-			"\u00a7eInsta-Buys (Daily)",
-			"\u00a7eInsta-Sells (Daily)",
-			"\u00a7eInsta-Buys (Weekly)",
-			"\u00a7eInsta-Sells (Weekly)"}
+			"§eBuy",
+			"§eSell",
+			"§eBuy (Insta)",
+			"§eSell (Insta)",
+			"§eRaw Craft Cost",
+			"§eInsta-Buys (Hourly)",
+			"§eInsta-Sells (Hourly)",
+			"§eInsta-Buys (Daily)",
+			"§eInsta-Sells (Daily)",
+			"§eInsta-Buys (Weekly)",
+			"§eInsta-Sells (Weekly)"}
 	)
 	@ConfigAccordionId(id = 0)
 	public List<Integer> priceInfoBaz = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));

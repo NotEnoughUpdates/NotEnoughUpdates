@@ -199,57 +199,23 @@ public class StorageOverlay extends GuiElement {
 		int rgb = -1;
 		EnumChatFormatting formatting = EnumChatFormatting.WHITE;
 		switch (paneType) {
-			case 0:
-				formatting = EnumChatFormatting.WHITE;
-				break;
-			case 1:
-				formatting = EnumChatFormatting.GOLD;
-				break;
-			case 2:
-				formatting = EnumChatFormatting.LIGHT_PURPLE;
-				break;
-			case 3:
-				formatting = EnumChatFormatting.BLUE;
-				break;
-			case 4:
-				formatting = EnumChatFormatting.YELLOW;
-				break;
-			case 5:
-				formatting = EnumChatFormatting.GREEN;
-				break;
-			case 6:
-				rgb = 0xfff03c96;
-				break;
-			case 7:
-				formatting = EnumChatFormatting.DARK_GRAY;
-				break;
-			case 8:
-				formatting = EnumChatFormatting.GRAY;
-				break;
-			case 9:
-				formatting = EnumChatFormatting.DARK_AQUA;
-				break;
-			case 10:
-				formatting = EnumChatFormatting.DARK_PURPLE;
-				break;
-			case 11:
-				formatting = EnumChatFormatting.DARK_BLUE;
-				break;
-			case 12:
-				rgb = 0xffA0522D;
-				break;
-			case 13:
-				formatting = EnumChatFormatting.DARK_GREEN;
-				break;
-			case 14:
-				formatting = EnumChatFormatting.DARK_RED;
-				break;
-			case 15:
-				rgb = 0x00000000;
-				break;
-			case 16:
-				rgb = SpecialColour.specialToChromaRGB(CHROMA_STR);
-				break;
+			case 0 -> formatting = EnumChatFormatting.WHITE;
+			case 1 -> formatting = EnumChatFormatting.GOLD;
+			case 2 -> formatting = EnumChatFormatting.LIGHT_PURPLE;
+			case 3 -> formatting = EnumChatFormatting.BLUE;
+			case 4 -> formatting = EnumChatFormatting.YELLOW;
+			case 5 -> formatting = EnumChatFormatting.GREEN;
+			case 6 -> rgb = 0xfff03c96;
+			case 7 -> formatting = EnumChatFormatting.DARK_GRAY;
+			case 8 -> formatting = EnumChatFormatting.GRAY;
+			case 9 -> formatting = EnumChatFormatting.DARK_AQUA;
+			case 10 -> formatting = EnumChatFormatting.DARK_PURPLE;
+			case 11 -> formatting = EnumChatFormatting.DARK_BLUE;
+			case 12 -> rgb = 0xffA0522D;
+			case 13 -> formatting = EnumChatFormatting.DARK_GREEN;
+			case 14 -> formatting = EnumChatFormatting.DARK_RED;
+			case 15 -> rgb = 0x00000000;
+			case 16 -> rgb = SpecialColour.specialToChromaRGB(CHROMA_STR);
 		}
 		if (rgb != -1) return rgb;
 		return 0xff000000 | Minecraft.getMinecraft().fontRendererObj.getColorCode(formatting.toString().charAt(1));
@@ -346,9 +312,8 @@ public class StorageOverlay extends GuiElement {
 
 	@Override
 	public void render() {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest guiChest)) return;
 
-		GuiChest guiChest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 		ContainerChest containerChest = (ContainerChest) guiChest.inventorySlots;
 
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
@@ -811,7 +776,7 @@ public class StorageOverlay extends GuiElement {
 
 				if (mouseX >= guiLeft + storageX && mouseX <= guiLeft + storageX + titleLen + 15 &&
 					mouseY >= guiTop + storageY - 14 && mouseY <= guiTop + storageY + 1) {
-					pageTitle += " \u270E";
+					pageTitle += " ✎";
 				}
 				fontRendererObj.drawString(pageTitle, storageX, storageY - 11, textColour);
 			}
@@ -1198,7 +1163,8 @@ public class StorageOverlay extends GuiElement {
 		if (fastRender) {
 			fontRendererObj.drawString(
 				"Fast render and antialiasing do not work with Storage overlay.",
-				sizeX / 2 - fontRendererObj.getStringWidth("Fast render and antialiasing do not work with Storage overlay.") / 2,
+				sizeX / 2 -
+					fontRendererObj.getStringWidth("Fast render and antialiasing do not work with Storage overlay.") / 2,
 				-10,
 				0xFFFF0000
 			);
@@ -1405,33 +1371,18 @@ public class StorageOverlay extends GuiElement {
 			float minU = (i * 16) / 256f;
 			float maxU = (i * 16 + 16) / 256f;
 
-			int vIndex = 0;
-
-			switch (i) {
-				case 2:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.displayStyle;
-					break;
-				case 3:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.backpackPreview ? 1 : 0;
-					break;
-				case 4:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.enderchestPreview ? 1 : 0;
-					break;
-				case 5:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.masonryMode ? 1 : 0;
-					break;
-				case 6:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes == 2
-						? 0
-						: NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes + 1;
-					break;
-				case 7:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus ? 1 : 0;
-					break;
-				case 8:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint ? 1 : 0;
-					break;
-			}
+			int vIndex = switch (i) {
+				case 2 -> NotEnoughUpdates.INSTANCE.config.storageGUI.displayStyle;
+				case 3 -> NotEnoughUpdates.INSTANCE.config.storageGUI.backpackPreview ? 1 : 0;
+				case 4 -> NotEnoughUpdates.INSTANCE.config.storageGUI.enderchestPreview ? 1 : 0;
+				case 5 -> NotEnoughUpdates.INSTANCE.config.storageGUI.masonryMode ? 1 : 0;
+				case 6 -> NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes == 2
+					? 0
+					: NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes + 1;
+				case 7 -> NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus ? 1 : 0;
+				case 8 -> NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint ? 1 : 0;
+				default -> 0;
+			};
 
 			Utils.drawTexturedRect(
 				buttonX,
@@ -1448,15 +1399,13 @@ public class StorageOverlay extends GuiElement {
 			if (mouseX >= guiLeft + buttonX && mouseX < guiLeft + buttonX + 18 &&
 				mouseY >= guiTop + buttonY && mouseY < guiTop + buttonY + 18) {
 				switch (i) {
-					case 0:
-						tooltipToDisplay = createTooltip(
-							"Enable GUI",
-							0,
-							"On",
-							"Off"
-						);
-						break;
-					case 1:
+					case 0 -> tooltipToDisplay = createTooltip(
+						"Enable GUI",
+						0,
+						"On",
+						"Off"
+					);
+					case 1 -> {
 						int tooltipStorageHeight = desiredHeightSwitch != -1 ? desiredHeightSwitch :
 							NotEnoughUpdates.INSTANCE.config.storageGUI.storageHeight;
 						tooltipToDisplay = createTooltip(
@@ -1472,42 +1421,34 @@ public class StorageOverlay extends GuiElement {
 							tooltipToDisplay.add("");
 							tooltipToDisplay.add(EnumChatFormatting.YELLOW + "* Move mouse to apply changes *");
 						}
-						break;
-					case 2:
-						tooltipToDisplay = createTooltip(
-							"Overlay Style",
-							NotEnoughUpdates.INSTANCE.config.storageGUI.displayStyle,
-							"Transparent",
-							"Minecraft",
-							"Dark",
-							"Custom"
-						);
-						break;
-					case 3:
-						tooltipToDisplay = createTooltip(
-							"Backpack Preview",
-							NotEnoughUpdates.INSTANCE.config.storageGUI.backpackPreview ? 0 : 1,
-							"On",
-							"Off"
-						);
-						break;
-					case 4:
-						tooltipToDisplay = createTooltip(
-							"Enderchest Preview",
-							NotEnoughUpdates.INSTANCE.config.storageGUI.enderchestPreview ? 0 : 1,
-							"On",
-							"Off"
-						);
-						break;
-					case 5:
-						tooltipToDisplay = createTooltip(
-							"Compact Vertically",
-							NotEnoughUpdates.INSTANCE.config.storageGUI.masonryMode ? 0 : 1,
-							"On",
-							"Off"
-						);
-						break;
-					case 6:
+					}
+					case 2 -> tooltipToDisplay = createTooltip(
+						"Overlay Style",
+						NotEnoughUpdates.INSTANCE.config.storageGUI.displayStyle,
+						"Transparent",
+						"Minecraft",
+						"Dark",
+						"Custom"
+					);
+					case 3 -> tooltipToDisplay = createTooltip(
+						"Backpack Preview",
+						NotEnoughUpdates.INSTANCE.config.storageGUI.backpackPreview ? 0 : 1,
+						"On",
+						"Off"
+					);
+					case 4 -> tooltipToDisplay = createTooltip(
+						"Enderchest Preview",
+						NotEnoughUpdates.INSTANCE.config.storageGUI.enderchestPreview ? 0 : 1,
+						"On",
+						"Off"
+					);
+					case 5 -> tooltipToDisplay = createTooltip(
+						"Compact Vertically",
+						NotEnoughUpdates.INSTANCE.config.storageGUI.masonryMode ? 0 : 1,
+						"On",
+						"Off"
+					);
+					case 6 -> {
 						tooltipToDisplay = createTooltip(
 							"Fancy Glass Panes",
 							NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes,
@@ -1515,34 +1456,28 @@ public class StorageOverlay extends GuiElement {
 							"Locked",
 							"Off"
 						);
-						tooltipToDisplay.add(1, "\u00a7eReplace the glass pane textures");
-						tooltipToDisplay.add(2, "\u00a7ein your storage containers with");
-						tooltipToDisplay.add(3, "\u00a7ea fancy connected texture");
-						break;
-					case 7:
-						tooltipToDisplay = createTooltip(
-							"Search Bar Autofocus",
-							NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus ? 0 : 1,
-							"On",
-							"Off"
-						);
-						break;
-					case 8:
-						tooltipToDisplay = createTooltip(
-							"Show Enchant Glint",
-							NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint ? 0 : 1,
-							"On",
-							"Off"
-						);
-						break;
-					case 9:
-						tooltipToDisplay = createTooltip(
-							"Disable optifine CIT",
-							!NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT ? 0 : 1,
-							"CIT Enabled",
-							"CIT Disabled"
-						);
-						break;
+						tooltipToDisplay.add(1, "§eReplace the glass pane textures");
+						tooltipToDisplay.add(2, "§ein your storage containers with");
+						tooltipToDisplay.add(3, "§ea fancy connected texture");
+					}
+					case 7 -> tooltipToDisplay = createTooltip(
+						"Search Bar Autofocus",
+						NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus ? 0 : 1,
+						"On",
+						"Off"
+					);
+					case 8 -> tooltipToDisplay = createTooltip(
+						"Show Enchant Glint",
+						NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint ? 0 : 1,
+						"On",
+						"Off"
+					);
+					case 9 -> tooltipToDisplay = createTooltip(
+						"Disable optifine CIT",
+						!NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT ? 0 : 1,
+						"CIT Enabled",
+						"CIT Disabled"
+					);
 				}
 			}
 		}
@@ -1621,7 +1556,7 @@ public class StorageOverlay extends GuiElement {
 	}
 
 	private List<String> createTooltip(String title, int selectedOption, String... options) {
-		String selPrefix = EnumChatFormatting.DARK_AQUA + " \u25b6 ";
+		String selPrefix = EnumChatFormatting.DARK_AQUA + " ▶ ";
 		String unselPrefix = EnumChatFormatting.GRAY.toString();
 
 		for (int i = 0; i < options.length; i++) {
@@ -1840,15 +1775,11 @@ public class StorageOverlay extends GuiElement {
 			float minU = (i * 16) / 256f;
 			float maxU = (i * 16 + 16) / 256f;
 
-			int vIndex = 0;
-
-			switch (i) {
-				case 2:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.displayStyle;
-					break;
-				/*case 3:
-					vIndex = */
-			}
+			int vIndex = switch (i) {
+				case 2 -> NotEnoughUpdates.INSTANCE.config.storageGUI.displayStyle;
+				/*case 3 -> ;*/
+				default -> 0;
+			};
 
 			Utils.drawTexturedRect(
 				buttonX,
@@ -1887,8 +1818,10 @@ public class StorageOverlay extends GuiElement {
 							"You just disabled the custom storage gui, did you mean to do that? If not click this message to turn it back on.");
 					storageMessage.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND, "/neuenablestorage"));
 					storageMessage.setChatStyle(storageMessage.getChatStyle().setChatHoverEvent(
-						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-							new ChatComponentText(EnumChatFormatting.YELLOW + "Click to enable the custom storage gui."))));
+						new HoverEvent(
+							HoverEvent.Action.SHOW_TEXT,
+							new ChatComponentText(EnumChatFormatting.YELLOW + "Click to enable the custom storage gui.")
+						)));
 					ChatComponentText storageChatMessage = new ChatComponentText("");
 					storageChatMessage.appendSibling(storageMessage);
 					Minecraft.getMinecraft().thePlayer.addChatMessage(storageChatMessage);
@@ -2111,8 +2044,7 @@ public class StorageOverlay extends GuiElement {
 		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-		GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer container)) return true;
 
 		if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 			clearSearch();
@@ -2126,15 +2058,17 @@ public class StorageOverlay extends GuiElement {
 		}
 
 		if (!searchBar.getFocus() && !renameStorageField.getFocus() &&
-				(Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode() ||
+			(Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode() ||
 				Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode())) {
 			for (Slot slot : container.inventorySlots.inventorySlots) {
 				if (slot != null && ((AccessorGuiContainer) container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
-					String internalName = manager.createItemResolutionQuery().withItemStack(slot.getStack()).resolveInternalName();
+					String internalName =
+						manager.createItemResolutionQuery().withItemStack(slot.getStack()).resolveInternalName();
 					if (internalName == null) continue;
 					JsonObject item = manager.getItemInformation().get(internalName);
 					if (Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode()) manager.showRecipe(item);
-					if (Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode()) manager.displayGuiItemUsages(internalName);
+					if (Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode()) manager.displayGuiItemUsages(
+						internalName);
 				}
 			}
 		}
@@ -2250,14 +2184,14 @@ public class StorageOverlay extends GuiElement {
 			NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3) {
 			this.fastRender = true;
 			NotificationHandler.displayNotification(Lists.newArrayList(
-				"\u00a74Warning",
-				"\u00a77Due to the way fast render and antialiasing work, they're not compatible with NEU.",
-				"\u00a77Please disable fast render and antialiasing in your options under",
-				"\u00a77ESC > Options > Video Settings > Performance > \u00A7cFast Render",
-				"\u00a77ESC > Options > Video Settings > Quality > \u00A7cAntialiasing",
-				"\u00a77This can't be fixed.",
-				"\u00a77",
-				"\u00a77Press X on your keyboard to close this notification"
+				"§4Warning",
+				"§7Due to the way fast render and antialiasing work, they're not compatible with NEU.",
+				"§7Please disable fast render and antialiasing in your options under",
+				"§7ESC > Options > Video Settings > Performance > §cFast Render",
+				"§7ESC > Options > Video Settings > Quality > §cAntialiasing",
+				"§7This can't be fixed.",
+				"§7",
+				"§7Press X on your keyboard to close this notification"
 			), true, true);
 			return;
 		}

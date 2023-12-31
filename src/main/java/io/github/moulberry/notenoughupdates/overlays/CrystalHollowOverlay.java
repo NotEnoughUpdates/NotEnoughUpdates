@@ -119,8 +119,7 @@ public class CrystalHollowOverlay extends TextOverlay {
 
 	@Override
 	public void updateFrequent() {
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
@@ -172,88 +171,84 @@ public class CrystalHollowOverlay extends TextOverlay {
 
 		for (int i : NotEnoughUpdates.INSTANCE.config.mining.crystalHollowText) {
 			switch (i) {
-				case 0:
+				case 0 -> {
 					if (crystalCheck()) {
 						for (String part : hidden.crystals.keySet()) {
 							switch (hidden.crystals.get(part)) {
-								case 2:
+								case 2 -> {
 									if (!NotEnoughUpdates.INSTANCE.config.mining.crystalHollowHideDone)
 										overlayStrings.add(
 											EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] +
-												part + ": " +
-												EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPlacedColor] +
-												"Placed");
-									break;
-								case 1:
-									overlayStrings.add(
-										EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] + part +
-											": " +
-											EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowCollectedColor] +
-											"Collected");
-									break;
-								case 0:
-									overlayStrings.add(
-										EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] + part +
-											": " +
-											EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowMissingColor] +
-											"Missing");
-									break;
+											part + ": " +
+											EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPlacedColor] +
+											"Placed");
+								}
+								case 1 -> overlayStrings.add(
+									EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] + part +
+									": " +
+									EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowCollectedColor] +
+									"Collected");
+								case 0 -> overlayStrings.add(
+									EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] + part +
+									": " +
+									EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowMissingColor] +
+									"Missing");
 							}
 						}
 					}
-					break;
-				case 1:
+				}
+				case 1 -> {
 					if (crystalCheck()) {
 						int count = getCountCrystal(hidden.crystals);
 						float percent = (float) count / hidden.crystals.size() * 100;
 						overlayStrings.add(
 							EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] +
-								"Crystals: " + getColor(percent)
-								+ count + "/" + hidden.crystals.size());
+							"Crystals: " + getColor(percent)
+							+ count + "/" + hidden.crystals.size());
 					}
-					break;
-				case 2:
+				}
+				case 2 -> {
 					if (crystalCheck()) {
 						int count = getCountCrystal(hidden.crystals);
 						float percent = (float) count / hidden.crystals.size() * 100;
 						overlayStrings.add(
 							EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] +
-								"Crystals: " + getColor(percent) +
-								StringUtils.formatToTenths(percent) + "%");
+							"Crystals: " + getColor(percent) +
+							StringUtils.formatToTenths(percent) + "%");
 					}
-					break;
-				case 3:
+				}
+				case 3 -> {
 					if (automatonCheck())
 						renderParts(hidden.automatonParts, inventoryData, storageData);
-					break;
-				case 4:
+				}
+				case 4 -> {
 					if (automatonCheck())
 						renderPartsNumbers(hidden.automatonParts, inventoryData, storageData);
-					break;
-				case 5:
+				}
+				case 5 -> {
 					if (automatonCheck())
 						renderCount("Automaton parts", hidden.automatonParts, inventoryData, storageData);
-					break;
-				case 6:
+				}
+				case 6 -> {
 					if (automatonCheck())
 						renderPercent("Automaton parts", hidden.automatonParts, inventoryData, storageData);
-					break;
-				case 7:
+				}
+				case 7 -> {
 					if (divanCheck())
 						renderParts(hidden.divanMinesParts, inventoryData, storageData);
-					break;
-				case 8:
+				}
+				case 8 -> {
 					if (divanCheck())
 						renderPartsNumbers(hidden.divanMinesParts, inventoryData, storageData);
-					break;
-				case 9:
+				}
+				case 9 -> {
 					if (divanCheck())
 						renderCount("Mines of Divan parts", hidden.divanMinesParts, inventoryData, storageData);
-					break;
-				case 10:
+				}
+				case 10 -> {
 					if (divanCheck())
 						renderPercent("Mines of Divan parts", hidden.divanMinesParts, inventoryData, storageData);
-					break;
+				}
 			}
 		}
 	}
@@ -503,7 +498,7 @@ public class CrystalHollowOverlay extends TextOverlay {
 	private static Map<String, ItemStack> crystallHollowsIcons;
 
 	private static void setupCrystallHollowsIcons() {
-		crystallHollowsIcons = new HashMap<String, ItemStack>() {
+		crystallHollowsIcons = new HashMap<>() {
 			{
 				addItem("Scavenged Lapis Sword", "DWARVEN_LAPIS_SWORD");
 				addItem("Scavenged Golden Hammer", "DWARVEN_GOLD_HAMMER");

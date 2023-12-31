@@ -19,22 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.events;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
+@Getter
+@AllArgsConstructor
 public class GuiInventoryBackgroundDrawnEvent extends NEUEvent {
 	private final GuiContainer container;
 	private final float partialTicks;
-
-	public GuiInventoryBackgroundDrawnEvent(GuiContainer container, float partialTicks) {
-		this.container = container;
-		this.partialTicks = partialTicks;
-	}
-
-	public GuiContainer getContainer() {
-		return container;
-	}
-
-	public float getPartialTicks() {
-		return partialTicks;
-	}
 }

@@ -187,50 +187,46 @@ public class StorageManager {
 	}
 
 	private static JsonElement loadJson(NBTBase tag) {
-		if (tag instanceof NBTTagCompound) {
-			NBTTagCompound compoundTag = (NBTTagCompound) tag;
+		if (tag instanceof NBTTagCompound compoundTag) {
 			JsonObject jsonObject = new JsonObject();
 			for (String key : compoundTag.getKeySet()) {
 				jsonObject.add(key, loadJson(compoundTag.getTag(key)));
 			}
 			return jsonObject;
-		} else if (tag instanceof NBTTagList) {
-			NBTTagList listTag = (NBTTagList) tag;
+		} else if (tag instanceof NBTTagList listTag) {
 			JsonArray jsonArray = new JsonArray();
 			for (int i = 0; i < listTag.tagCount(); i++) {
 				jsonArray.add(loadJson(listTag.get(i)));
 			}
 			return jsonArray;
-		} else if (tag instanceof NBTTagIntArray) {
-			NBTTagIntArray listTag = (NBTTagIntArray) tag;
+		} else if (tag instanceof NBTTagIntArray listTag) {
 			int[] arr = listTag.getIntArray();
 			JsonArray jsonArray = new JsonArray();
 			for (int j : arr) {
 				jsonArray.add(new JsonPrimitive(j));
 			}
 			return jsonArray;
-		} else if (tag instanceof NBTTagByteArray) {
-			NBTTagByteArray listTag = (NBTTagByteArray) tag;
+		} else if (tag instanceof NBTTagByteArray listTag) {
 			byte[] arr = listTag.getByteArray();
 			JsonArray jsonArray = new JsonArray();
 			for (byte b : arr) {
 				jsonArray.add(new JsonPrimitive(b));
 			}
 			return jsonArray;
-		} else if (tag instanceof NBTTagShort) {
-			return new JsonPrimitive(((NBTTagShort) tag).getShort());
-		} else if (tag instanceof NBTTagInt) {
-			return new JsonPrimitive(((NBTTagInt) tag).getInt());
-		} else if (tag instanceof NBTTagLong) {
-			return new JsonPrimitive(((NBTTagLong) tag).getLong());
-		} else if (tag instanceof NBTTagFloat) {
-			return new JsonPrimitive(((NBTTagFloat) tag).getFloat());
-		} else if (tag instanceof NBTTagDouble) {
-			return new JsonPrimitive(((NBTTagDouble) tag).getDouble());
-		} else if (tag instanceof NBTTagByte) {
-			return new JsonPrimitive(((NBTTagByte) tag).getByte());
-		} else if (tag instanceof NBTTagString) {
-			return new JsonPrimitive(((NBTTagString) tag).getString());
+		} else if (tag instanceof NBTTagShort shortTag) {
+			return new JsonPrimitive(shortTag.getShort());
+		} else if (tag instanceof NBTTagInt intTag) {
+			return new JsonPrimitive(intTag.getInt());
+		} else if (tag instanceof NBTTagLong longTag) {
+			return new JsonPrimitive(longTag.getLong());
+		} else if (tag instanceof NBTTagFloat floatTag) {
+			return new JsonPrimitive(floatTag.getFloat());
+		} else if (tag instanceof NBTTagDouble doubleTag) {
+			return new JsonPrimitive(doubleTag.getDouble());
+		} else if (tag instanceof NBTTagByte byteTag) {
+			return new JsonPrimitive(byteTag.getByte());
+		} else if (tag instanceof NBTTagString stringTag) {
+			return new JsonPrimitive(stringTag.getString());
 		} else {
 			return new JsonPrimitive("Broken_Json_Deserialize_Tag");
 		}
@@ -258,11 +254,11 @@ public class StorageManager {
 	public static final ItemStack LOCKED_ENDERCHEST_STACK =
 		Utils.createItemStack(
 			Item.getItemFromBlock(Blocks.stained_glass_pane),
-			"\u00a7cLocked Page",
+			"§cLocked Page",
 			14,
-			"\u00a77Unlock more Ender Chest",
-			"\u00a77pages in the community",
-			"\u00a77shop!"
+			"§7Unlock more Ender Chest",
+			"§7pages in the community",
+			"§7shop!"
 		);
 
 	public static class StorageConfig {
@@ -307,13 +303,13 @@ public class StorageManager {
 
 		ItemStack stack = Utils.createItemStack(
 			Item.getItemFromBlock(Blocks.stained_glass_pane),
-			"\u00a7eEmpty Backpack Slot " + (storageId + 1),
+			"§eEmpty Backpack Slot " + (storageId + 1),
 			12,
 			storageId + 1,
 			"",
-			"\u00a7eLeft-click a backpack",
-			"\u00a7eitem on this slot to place",
-			"\u00a7eit!"
+			"§eLeft-click a backpack",
+			"§eitem on this slot to place",
+			"§eit!"
 		);
 
 		missingBackpackStacks[storageId] = stack;
@@ -402,12 +398,10 @@ public class StorageManager {
 	}
 
 	public int getCurrentWindowId() {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest chest)) {
 			currentStoragePage = -1;
 			return -1;
 		}
-
-		GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 
 		return chest.inventorySlots.windowId;
 	}

@@ -57,7 +57,7 @@ public class MixinItemStack {
 
 			if (data != null && data.customName != null) {
 				String customName = data.customName;
-				if (customName != null && !customName.equals("")) {
+				if (customName != null && !customName.isEmpty()) {
 					customName = Utils.chromaStringByColourCode(customName);
 
 					if (data.customNamePrefix != null) {

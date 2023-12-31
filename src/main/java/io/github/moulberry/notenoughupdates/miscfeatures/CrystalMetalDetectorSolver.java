@@ -70,7 +70,7 @@ public class CrystalMetalDetectorSolver {
 	private static final String LAPIS_STRING = "lapis";
 	private static final String EMERALD_STRING = "emerald";
 	private static final String GOLD_STRING = "gold";
-	private static final HashMap<String, Vec3i> keeperOffsets = new HashMap<String, Vec3i>() {{
+	private static final HashMap<String, Vec3i> keeperOffsets = new HashMap<>() {{
 		put(DIAMOND_STRING, new Vec3i(33, 0, 3));
 		put(LAPIS_STRING, new Vec3i(-33, 0, -3));
 		put(EMERALD_STRING, new Vec3i(-3, 0, 33));
@@ -202,7 +202,7 @@ public class CrystalMetalDetectorSolver {
 			prevPlayerPos.distanceTo(playerPos) <= 0.1 &&
 			!evaluatedPlayerPositions.containsKey(playerPos)) {
 			evaluatedPlayerPositions.put(playerPos, distToTreasure);
-			if (possibleBlocks.size() == 0) {
+			if (possibleBlocks.isEmpty()) {
 				for (int zOffset = (int) Math.floor(-distToTreasure); zOffset <= Math.ceil(distToTreasure); zOffset++) {
 					for (int y = 65; y <= 75; y++) {
 						double calculatedDist = 0;
@@ -262,7 +262,7 @@ public class CrystalMetalDetectorSolver {
 	}
 
 	private static String getFriendlyBlockPositions(Collection<BlockPos> positions) {
-		if (!NEUDebugLogger.isFlagEnabled(NEUDebugFlag.METAL) || positions.size() == 0) {
+		if (!NEUDebugLogger.isFlagEnabled(NEUDebugFlag.METAL) || positions.isEmpty()) {
 			return "";
 		}
 
@@ -284,7 +284,7 @@ public class CrystalMetalDetectorSolver {
 	}
 
 	private static String getFriendlyEvaluatedPositions() {
-		if (!NEUDebugLogger.isFlagEnabled(NEUDebugFlag.METAL) || evaluatedPlayerPositions.size() == 0) {
+		if (!NEUDebugLogger.isFlagEnabled(NEUDebugFlag.METAL) || evaluatedPlayerPositions.isEmpty()) {
 			return "";
 		}
 
@@ -364,7 +364,7 @@ public class CrystalMetalDetectorSolver {
 			return entity.getCustomNameTag().contains(KEEPER_OF_STRING);
 		});
 
-		if (keeperEntities.size() == 0) {
+		if (keeperEntities.isEmpty()) {
 			if (!visitKeeperMessagePrinted) {
 				Utils.addChatMessage(EnumChatFormatting.YELLOW +
 					"[NEU] Approach a Keeper while holding the metal detector to enable faster treasure hunting.");
@@ -398,7 +398,7 @@ public class CrystalMetalDetectorSolver {
 	private static void updateSolutionState() {
 		previousState = currentState;
 
-		if (possibleBlocks.size() == 0) {
+		if (possibleBlocks.isEmpty()) {
 			currentState = SolutionState.FAILED;
 			return;
 		}
@@ -418,7 +418,7 @@ public class CrystalMetalDetectorSolver {
 			possibleBlocks.stream()
 										.filter(block -> knownChestOffsets.contains(block.subtract(minesCenter).toLong()))
 										.collect(Collectors.toCollection(HashSet::new));
-		if (temp.size() == 0) {
+		if (temp.isEmpty()) {
 			currentState = SolutionState.MULTIPLE;
 			return;
 		}
@@ -530,7 +530,7 @@ public class CrystalMetalDetectorSolver {
 				.filter(block -> !knownChestOffsets.contains(block.subtract(minesCenter).toLong()))
 				.map(block -> block.subtract(minesCenter))
 				.collect(Collectors.toCollection(HashSet::new));
-			if (locationsNotOnKnownList.size() > 0) {
+			if (!locationsNotOnKnownList.isEmpty()) {
 				for (BlockPos blockPos : locationsNotOnKnownList) {
 					diagsMessage.append(String.format(
 						"%dL,\t\t// x=%d, y=%d, z=%d",

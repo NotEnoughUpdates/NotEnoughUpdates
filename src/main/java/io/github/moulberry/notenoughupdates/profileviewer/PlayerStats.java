@@ -60,7 +60,7 @@ public class PlayerStats {
 	public static final String MINING_FORTUNE = "mining_fortune";
 	public static final String MINING_SPEED = "mining_speed";
 
-	public static final String[] defaultStatNames = new String[] {
+	public static final String[] defaultStatNames = {
 		"health",
 		"defence",
 		"strength",
@@ -77,7 +77,7 @@ public class PlayerStats {
 		"mining_fortune",
 		"mining_speed",
 	};
-	public static final String[] defaultStatNamesPretty = new String[] {
+	public static final String[] defaultStatNamesPretty = {
 		EnumChatFormatting.RED + "\u2764 Health",
 		EnumChatFormatting.GREEN + "\u2748 Defence",
 		EnumChatFormatting.RED + "\u2741 Strength",
@@ -94,21 +94,19 @@ public class PlayerStats {
 		EnumChatFormatting.GOLD + "\u2618 Mining Fortune",
 		EnumChatFormatting.GOLD + "\u2E15 Mining Speed",
 	};
-	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {
-		{
-			put(HEALTH, Pattern.compile("^Health: ((?:\\+|-)[0-9]+)"));
-			put(DEFENCE, Pattern.compile("^Defense: ((?:\\+|-)[0-9]+)"));
-			put(STRENGTH, Pattern.compile("^Strength: ((?:\\+|-)[0-9]+)"));
-			put(SPEED, Pattern.compile("^Speed: ((?:\\+|-)[0-9]+)"));
-			put(CRIT_CHANCE, Pattern.compile("^Crit Chance: ((?:\\+|-)[0-9]+)"));
-			put(CRIT_DAMAGE, Pattern.compile("^Crit Damage: ((?:\\+|-)[0-9]+)"));
-			put(BONUS_ATTACK_SPEED, Pattern.compile("^Bonus Attack Speed: ((?:\\+|-)[0-9]+)"));
-			put(INTELLIGENCE, Pattern.compile("^Intelligence: ((?:\\+|-)[0-9]+)"));
-			put(SEA_CREATURE_CHANCE, Pattern.compile("^Sea Creature Chance: ((?:\\+|-)[0-9]+)"));
-			put("ferocity", Pattern.compile("^Ferocity: ((?:\\+|-)[0-9]+)"));
-			put("ability_damage", Pattern.compile("^Ability Damage: ((?:\\+|-)[0-9]+)"));
-		}
-	};
+	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<>() {{
+		put(HEALTH, Pattern.compile("^Health: ((?:\\+|-)[0-9]+)"));
+		put(DEFENCE, Pattern.compile("^Defense: ((?:\\+|-)[0-9]+)"));
+		put(STRENGTH, Pattern.compile("^Strength: ((?:\\+|-)[0-9]+)"));
+		put(SPEED, Pattern.compile("^Speed: ((?:\\+|-)[0-9]+)"));
+		put(CRIT_CHANCE, Pattern.compile("^Crit Chance: ((?:\\+|-)[0-9]+)"));
+		put(CRIT_DAMAGE, Pattern.compile("^Crit Damage: ((?:\\+|-)[0-9]+)"));
+		put(BONUS_ATTACK_SPEED, Pattern.compile("^Bonus Attack Speed: ((?:\\+|-)[0-9]+)"));
+		put(INTELLIGENCE, Pattern.compile("^Intelligence: ((?:\\+|-)[0-9]+)"));
+		put(SEA_CREATURE_CHANCE, Pattern.compile("^Sea Creature Chance: ((?:\\+|-)[0-9]+)"));
+		put("ferocity", Pattern.compile("^Ferocity: ((?:\\+|-)[0-9]+)"));
+		put("ability_damage", Pattern.compile("^Ability Damage: ((?:\\+|-)[0-9]+)"));
+	}};
 
 	public static Stats getBaseStats() {
 		JsonObject misc = Constants.MISC;
@@ -210,7 +208,10 @@ public class PlayerStats {
 	}
 
 	private static float harpBonus(JsonObject profile) {
-		String talk_to_melody = Utils.getElementAsString(Utils.getElement(profile, "objectives.talk_to_melody.status"), "INCOMPLETE");
+		String talk_to_melody = Utils.getElementAsString(
+			Utils.getElement(profile, "objectives.talk_to_melody.status"),
+			"INCOMPLETE"
+		);
 		if (talk_to_melody.equalsIgnoreCase("COMPLETE")) {
 			return 26;
 		} else {
@@ -220,21 +221,30 @@ public class PlayerStats {
 
 	private static float hotmFortune(JsonObject profile, Map<String, ProfileViewer.Level> skyblockInfo) {
 		int miningLevelFortune = (int) (4 * (float) Math.floor(skyblockInfo.get("mining").level));
-		int miningFortuneStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune"), 0)) * 5);
-		int miningFortune2Stat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune_2"), 0)) * 5);
+		int miningFortuneStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune"), 0)) *
+														 5);
+		int miningFortune2Stat = ((Utils.getElementAsInt(
+			Utils.getElement(profile, "mining_core.nodes.mining_fortune_2"),
+			0
+		)) * 5);
 		return miningFortuneStat + miningFortune2Stat + miningLevelFortune;
 	}
 
 	private static float hotmSpeed(JsonObject profile) {
-		int miningSpeedStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed"), 0)) * 20);
-		int miningSpeed2Stat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed_2"), 0)) * 40);
+		int miningSpeedStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed"), 0)) *
+													 20);
+		int miningSpeed2Stat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed_2"), 0)) *
+														40);
 		return miningSpeedStat + miningSpeed2Stat;
 	}
 
 	public static Stats getPassiveBonuses(Map<String, ProfileViewer.Level> skyblockInfo, JsonObject profile) {
 		Stats passiveBonuses = new Stats();
 
-		Stats fairyBonus = getFairyBonus((int) Utils.getElementAsFloat(Utils.getElement(profile, "fairy_soul.fairy_exchanges"), 0));
+		Stats fairyBonus = getFairyBonus((int) Utils.getElementAsFloat(Utils.getElement(
+			profile,
+			"fairy_soul.fairy_exchanges"
+		), 0));
 		Stats skillBonus = getSkillBonus(skyblockInfo);
 		Stats petBonus = getTamingBonus(profile);
 
@@ -385,7 +395,7 @@ public class PlayerStats {
 				NBTTagList items = contents_nbt.getTagList("i", 10);
 				HashSet<Integer> cakes = new HashSet<>();
 				for (int j = 0; j < items.tagCount(); j++) {
-					if (items.getCompoundTagAt(j).getKeySet().size() > 0) {
+					if (!items.getCompoundTagAt(j).getKeySet().isEmpty()) {
 						NBTTagCompound nbt = items.getCompoundTagAt(j).getCompoundTag("tag");
 						if (nbt != null && nbt.hasKey("ExtraAttributes", 10)) {
 							NBTTagCompound ea = nbt.getCompoundTag("ExtraAttributes");
@@ -534,7 +544,8 @@ public class PlayerStats {
 							String key = entryBoost.getKey().toLowerCase();
 							try {
 								stats.addStat(key, entryBoost.getValue());
-							} catch (Exception ignored) {}
+							} catch (Exception ignored) {
+							}
 						}
 					}
 					if (petStatBootsMult != null) {
@@ -542,7 +553,8 @@ public class PlayerStats {
 							String key = entryBoost.getKey().toLowerCase();
 							try {
 								stats.scale(key, entryBoost.getValue());
-							} catch (Exception ignored) {}
+							} catch (Exception ignored) {
+							}
 						}
 					}
 				}

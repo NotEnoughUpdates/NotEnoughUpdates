@@ -20,28 +20,14 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources;
 
 import com.google.common.collect.ArrayListMultimap;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public class NpcSource extends MinionSource {
 	private final String npcName;
+	private final int coins;
 	//	name -> amount
 	private final ArrayListMultimap<String, Integer> items;
-	private final int coins;
-
-	public NpcSource(String npcName, int coins, ArrayListMultimap<String, Integer> items) {
-		this.npcName = npcName;
-		this.coins = coins;
-		this.items = items;
-	}
-
-	public String getNpcName() {
-		return npcName;
-	}
-
-	public ArrayListMultimap<String, Integer> getItems() {
-		return items;
-	}
-
-	public int getCoins() {
-		return coins;
-	}
 }

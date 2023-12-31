@@ -20,12 +20,19 @@
 package io.github.moulberry.notenoughupdates.core.config;
 
 import com.google.gson.annotations.Expose;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class PositionNew {
+	@AllArgsConstructor
 	public enum Anchor {
 		MIN(0, 0, 0),
 		MID(0.5f, -0.5f, 0),
@@ -33,15 +40,9 @@ public class PositionNew {
 		GUI_MIN(0.5f, -1f, -0.5f),
 		GUI_MAX(0.5f, 0, 0.5f);
 
-		float screenMult;
-		float elementMult;
-		float guiMult;
-
-		Anchor(float screenMult, float elementMult, float guiMult) {
-			this.screenMult = screenMult;
-			this.elementMult = elementMult;
-			this.guiMult = guiMult;
-		}
+		final float screenMult;
+		final float elementMult;
+		final float guiMult;
 	}
 
 	@Expose
@@ -49,45 +50,27 @@ public class PositionNew {
 	@Expose
 	private int y = 0;
 	@Expose
+	@Getter
 	private float scaleX = 1;
 	@Expose
+	@Getter
 	private float scaleY = 1;
 
 	@Expose
+	@Getter
 	private Anchor anchorX = Anchor.MIN;
 	@Expose
+	@Getter
 	private Anchor anchorY = Anchor.MIN;
 
 	@Expose
+	@Getter
 	private boolean pinned = false;
 	@Expose
 	private boolean allowPinToggle = true;
 	@Expose
 	private boolean allowResize = true;
 
-	public PositionNew(
-		int x,
-		int y,
-		int scaleX,
-		int scaleY,
-		Anchor anchorX,
-		Anchor anchorY,
-		boolean pinned,
-		boolean allowPinToggle,
-		boolean allowResize
-	) {
-		this.x = x;
-		this.y = y;
-		this.scaleX = scaleX;
-		this.scaleY = scaleY;
-		this.anchorX = anchorX;
-		this.anchorY = anchorY;
-		this.pinned = pinned;
-		this.allowPinToggle = allowPinToggle;
-		this.allowResize = allowResize;
-	}
-
-	protected PositionNew() {}
 
 	public int moveX(ScaledResolution scaledResolution, int deltaX, int sizeX) {
 		int originalX = resolveX(scaledResolution, sizeX);
@@ -183,29 +166,9 @@ public class PositionNew {
 		}
 	}
 
-	public float getScaleX() {
-		return scaleX;
-	}
-
-	public float getScaleY() {
-		return scaleY;
-	}
-
 	public void setPinned(boolean pinned) {
 		if (allowPinToggle) {
 			this.pinned = pinned;
 		}
-	}
-
-	public boolean isPinned() {
-		return pinned;
-	}
-
-	public Anchor getAnchorX() {
-		return anchorX;
-	}
-
-	public Anchor getAnchorY() {
-		return anchorY;
 	}
 }

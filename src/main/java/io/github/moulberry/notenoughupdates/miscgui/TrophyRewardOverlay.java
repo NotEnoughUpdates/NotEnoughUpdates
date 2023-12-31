@@ -149,7 +149,7 @@ public class TrophyRewardOverlay {
 			return;
 		}
 
-		String[] tiers = new String[]{"_BRONZE", "_SILVER", "_GOLD", "_DIAMOND"};
+		String[] tiers = {"_BRONZE", "_SILVER", "_GOLD", "_DIAMOND"};
 
 		for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 			String name = entry.getKey();
@@ -301,8 +301,7 @@ public class TrophyRewardOverlay {
 		if (minecraft == null || minecraft.thePlayer == null) return false;
 
 		Container inventoryContainer = minecraft.thePlayer.openContainer;
-		if (!(inventoryContainer instanceof ContainerChest)) return false;
-		ContainerChest containerChest = (ContainerChest) inventoryContainer;
+		if (!(inventoryContainer instanceof ContainerChest containerChest)) return false;
 		return containerChest.getLowerChestInventory().getDisplayName()
 												 .getUnformattedText().equalsIgnoreCase("Trophy Fishing");
 	}

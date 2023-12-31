@@ -77,14 +77,13 @@ public class MinionHelperRepoMinionLoader {
 
 				try {
 					switch (name) {
-						case "reputation_req": {
+						case "reputation_req" -> {
 							String[] split = value.split(":");
 							String reputationType = split[0];
 							int reputation = Integer.parseInt(split[1]);
 							minion.getRequirements().add(new ReputationRequirement(reputationType, reputation));
-							break;
 						}
-						case "crafttext": {
+						case "crafttext" -> {
 							if (minion.getTier() != 1) break;
 							if (value.isEmpty()) break;
 
@@ -93,14 +92,12 @@ public class MinionHelperRepoMinionLoader {
 							String rawTier = rawCollection.substring(cleanCollection.length() + 1);
 							int tier = Utils.parseRomanNumeral(rawTier);
 							minion.getRequirements().add(new CollectionRequirement(cleanCollection, tier));
-							break;
 						}
-						case "slayer_req": {
+						case "slayer_req" -> {
 							String[] split = value.split("_");
 							String slayerType = split[0].toLowerCase();
 							int tier = Integer.parseInt(split[1]);
 							minion.getRequirements().add(new SlayerRequirement(slayerType, tier));
-							break;
 						}
 					}
 				} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {

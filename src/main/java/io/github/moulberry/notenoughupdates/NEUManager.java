@@ -42,6 +42,7 @@ import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.AllArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
@@ -123,7 +124,7 @@ public class NEUManager {
 	public final KeyBinding keybindToggleDisplay = new KeyBinding("Toggle NEU overlay", 0, "NotEnoughUpdates");
 	public final KeyBinding keybindClosePanes = new KeyBinding("Close NEU panes", 0, "NotEnoughUpdates");
 	public final KeyBinding keybindItemSelect = new KeyBinding("Select Item", -98 /*middle*/, "NotEnoughUpdates");
-	public final KeyBinding[] keybinds = new KeyBinding[]{
+	public final KeyBinding[] keybinds = {
 		keybindGive, keybindFavourite, keybindViewUsages, keybindViewRecipe, keybindPreviousRecipe,
 		keybindNextRecipe, keybindToggleDisplay, keybindClosePanes, keybindItemSelect
 	};
@@ -422,16 +423,11 @@ public class NEUManager {
 		return getUsagesFor(internalname).stream().filter(NeuRecipe::isAvailable).collect(Collectors.toList());
 	}
 
+	@AllArgsConstructor
 	private static class DebugMatch {
 		int index;
 		String match;
-
-		DebugMatch(int index, String match) {
-				this.index = index;
-				this.match = match;
-		}
 	}
-
 
 	private String searchDebug(String[] searchArray, ArrayList<DebugMatch> debugMatches) {
 		//splitToSearch, debugMatches and query
@@ -508,10 +504,10 @@ public class NEUManager {
 			for (int k = 0; k < splitToSearch.length; k++) {
 				if (queryIndex - 1 != -1 && (queryArray.length - queryIndex) > (splitToSearch.length - k)) continue;
 				if (splitToSearch[k].startsWith(currentSearch)) {
-					if (((lastStringMatch != -1 ? lastStringMatch : k-1) == k-1)) {
+					if (((lastStringMatch != -1 ? lastStringMatch : k - 1) == k - 1)) {
 						debugMatches.add(new DebugMatch(k, currentSearch));
 						lastStringMatch = k;
-						if (queryIndex+1 != queryArray.length) {
+						if (queryIndex + 1 != queryArray.length) {
 							queryIndex++;
 							currentSearch = queryArray[queryIndex];
 						} else {
@@ -575,12 +571,11 @@ public class NEUManager {
 				result = result || multiSearchString(stack.getDisplayName(), sb.toString());
 			}
 
-
 			result = result || multiSearchString(stack.getDisplayName(), query);
 
 			String lore = "";
-			if (stack.getItem() instanceof ItemArmor && ((ItemArmor)stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER) {
-				lore = String.format("#%06x ",((ItemArmor)stack.getItem()).getColor(stack));
+			if (stack.getItem() instanceof ItemArmor itemArmor && itemArmor .getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER) {
+				lore = String.format("#%06x ", itemArmor .getColor(stack));
 			}
 			NBTTagCompound tag = stack.getTagCompound();
 			if (tag != null) {
@@ -698,10 +693,7 @@ public class NEUManager {
 		if (!negate) {
 			return results;
 		} else {
-			Set<String> negatedResults = new HashSet<>();
-			for (String internalname : itemMap.keySet()) {
-				negatedResults.add(internalname);
-			}
+			Set<String> negatedResults = new HashSet<>(itemMap.keySet());
 			negatedResults.removeAll(results);
 			return negatedResults;
 		}
@@ -804,7 +796,7 @@ public class NEUManager {
 	}
 
 	public JsonObject getJsonFromNBTEntry(NBTTagCompound tag) {
-		if (tag.getKeySet().size() == 0) return null;
+		if (tag.getKeySet().isEmpty()) return null;
 
 		int id = tag.getShort("id");
 		int damage = tag.getShort("Damage");
@@ -891,14 +883,9 @@ public class NEUManager {
 		if (!item.has("clickcommand")) return;
 		String clickcommand = item.get("clickcommand").getAsString();
 		switch (clickcommand.intern()) {
-			case "viewrecipe":
-				displayGuiItemRecipe(internalName);
-				break;
-			case "viewpotion":
-				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
-				break;
-			default:
-				displayGuiItemRecipe(internalName);
+			case "viewrecipe" -> displayGuiItemRecipe(internalName);
+			case "viewpotion" -> neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
+			default -> displayGuiItemRecipe(internalName);
 		}
 
 	}
@@ -1389,8 +1376,7 @@ public class NEUManager {
 								statsLevelingType = Integer.parseInt(stringArray[2]);
 								switch (statsLevelingType) {
 									//Case for maybe a pet that might exist
-									case 0:
-									case 1:
+									case 0, 1 -> {
 										if (level < minStatsLevel) {
 											statsLevel = 1;
 										} else if (level < maxStatsLevel) {
@@ -1398,8 +1384,7 @@ public class NEUManager {
 										} else {
 											statsLevel = maxStatsLevel - minStatsLevel + 1;
 										}
-										break;
-
+									}
 								}
 							}
 						}
@@ -1449,23 +1434,14 @@ public class NEUManager {
 				if (petInfo.has("heldItem")) {
 					String heldItem = petInfo.get("heldItem").getAsString();
 					if (heldItem.equals("PET_ITEM_TIER_BOOST")) {
-						switch (tier) {
-							case "COMMON":
-								tier = "UNCOMMON";
-								break;
-							case "UNCOMMON":
-								tier = "RARE";
-								break;
-							case "RARE":
-								tier = "EPIC";
-								break;
-							case "EPIC":
-								tier = "LEGENDARY";
-								break;
-							case "LEGENDARY":
-								tier = "MYTHIC";
-								break;
-						}
+						tier = switch (tier) {
+							case "COMMON" -> "UNCOMMON";
+							case "UNCOMMON" -> "RARE";
+							case "RARE" -> "EPIC";
+							case "EPIC" -> "LEGENDARY";
+							case "LEGENDARY" -> "MYTHIC";
+							default -> tier;
+						};
 					}
 				}
 			}

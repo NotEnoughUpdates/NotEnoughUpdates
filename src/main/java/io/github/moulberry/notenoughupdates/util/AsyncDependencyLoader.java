@@ -31,21 +31,21 @@ public interface AsyncDependencyLoader<T> {
 
 	Optional<T> peekValue();
 
-	public static <R, T> AsyncDependencyLoader<T> withObjectIdentity(
+	static <R, T> AsyncDependencyLoader<T> withObjectIdentity(
 		Supplier<R> supplier,
 		Function<R, CompletableFuture<T>> generator
 	) {
 		return new AsyncDependencyLoaderImpl<>(supplier, generator, (a, b) -> a != b);
 	}
 
-	public static <R, T> AsyncDependencyLoader<T> withEqualsInvocation(
+	static <R, T> AsyncDependencyLoader<T> withEqualsInvocation(
 		Supplier<R> supplier,
 		Function<R, CompletableFuture<T>> generator
 	) {
 		return new AsyncDependencyLoaderImpl<>(supplier, generator, (a, b) -> !Objects.equal(a, b));
 	}
 
-	public static <R, T> AsyncDependencyLoader<T> withEqualityFunction(
+	static <R, T> AsyncDependencyLoader<T> withEqualityFunction(
 		Supplier<R> supplier,
 		Function<R, CompletableFuture<T>> generator,
 		BiFunction<R, R, Boolean> isEqual

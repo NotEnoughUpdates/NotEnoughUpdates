@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.AsyncDependencyLoader;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.GuiScreen;
@@ -71,7 +72,7 @@ public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation pv_dropdown = new ResourceLocation("notenoughupdates:pv_dropdown.png");
 	public static final ResourceLocation pv_bg = new ResourceLocation("notenoughupdates:pv_bg.png");
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
-	private static final Map<String, ResourceLocation> gamemodeToIcon = new HashMap<String, ResourceLocation>() {{
+	private static final Map<String, ResourceLocation> gamemodeToIcon = new HashMap<>() {{
 		put("ironman", new ResourceLocation("notenoughupdates:pv_ironman.png"));
 		put("bingo", new ResourceLocation("notenoughupdates:pv_bingo.png"));
 		put("island", new ResourceLocation("notenoughupdates:pv_stranded.png")); // Stranded
@@ -80,79 +81,45 @@ public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation resource_packs =
 		new ResourceLocation("minecraft:textures/gui/resource_packs.png");
 	public static final ResourceLocation icons = new ResourceLocation("textures/gui/icons.png");
-	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS =
-		new HashMap<String, HashMap<String, Float>>() {
-			{
-				put(
-					"PET_ITEM_BIG_TEETH_COMMON",
-					new HashMap<String, Float>() {
-						{
-							put("CRIT_CHANCE", 5f);
-						}
-					}
-				);
-				put(
-					"PET_ITEM_HARDENED_SCALES_UNCOMMON",
-					new HashMap<String, Float>() {
-						{
-							put("DEFENCE", 25f);
-						}
-					}
-				);
-				put(
-					"PET_ITEM_LUCKY_CLOVER",
-					new HashMap<String, Float>() {
-						{
-							put("MAGIC_FIND", 7f);
-						}
-					}
-				);
-				put(
-					"PET_ITEM_SHARPENED_CLAWS_UNCOMMON",
-					new HashMap<String, Float>() {
-						{
-							put("CRIT_DAMAGE", 15f);
-						}
-					}
-				);
-			}
-		};
-	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT =
-		new HashMap<String, HashMap<String, Float>>() {
-			{
-				put(
-					"PET_ITEM_IRON_CLAWS_COMMON",
-					new HashMap<String, Float>() {
-						{
-							put("CRIT_DAMAGE", 1.4f);
-							put("CRIT_CHANCE", 1.4f);
-						}
-					}
-				);
-				put(
-					"PET_ITEM_TEXTBOOK",
-					new HashMap<String, Float>() {
-						{
-							put("INTELLIGENCE", 2f);
-						}
-					}
-				);
-			}
-		};
-	public static final HashMap<String, String> RARITY_TO_NUM = new HashMap<String, String>() {
-		{
-			put("COMMON", "0");
-			put("UNCOMMON", "1");
-			put("RARE", "2");
-			put("EPIC", "3");
-			put("LEGENDARY", "4");
-			put("MYTHIC", "5");
-		}
-	};
+	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS = new HashMap<>() {{
+		put("PET_ITEM_BIG_TEETH_COMMON", new HashMap<>() {{
+			put("CRIT_CHANCE", 5f);
+		}});
+		put("PET_ITEM_HARDENED_SCALES_UNCOMMON", new HashMap<>() {{
+			put("DEFENCE", 25f);
+		}});
+		put("PET_ITEM_LUCKY_CLOVER", new HashMap<>() {{
+			put("MAGIC_FIND", 7f);
+		}});
+		put("PET_ITEM_SHARPENED_CLAWS_UNCOMMON", new HashMap<>() {{
+			put("CRIT_DAMAGE", 15f);
+		}});
+	}};
+	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT = new HashMap<>() {{
+		put("PET_ITEM_IRON_CLAWS_COMMON", new HashMap<>() {{
+			put("CRIT_DAMAGE", 1.4f);
+			put("CRIT_CHANCE", 1.4f);
+		}});
+		put("PET_ITEM_TEXTBOOK", new HashMap<>() {{
+			put("INTELLIGENCE", 2f);
+		}});
+	}};
+	public static final HashMap<String, String> RARITY_TO_NUM = new HashMap<>() {{
+		put("COMMON", "0");
+		put("UNCOMMON", "1");
+		put("RARE", "2");
+		put("EPIC", "3");
+		put("LEGENDARY", "4");
+		put("MYTHIC", "5");
+	}};
 	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
+	@Getter
 	private static int guiLeft;
+	@Getter
 	private static int guiTop;
+	@Getter
 	private static SkyblockProfiles profile;
+	@Getter
 	private static String profileName = null;
 	public static AsyncDependencyLoader<Optional<PronounDB.PronounChoice>> pronouns =
 		AsyncDependencyLoader.withEqualsInvocation(
@@ -215,22 +182,6 @@ public class GuiProfileViewer extends GuiScreen {
 		pages.put(ProfileViewerPage.CRIMSON_ISLE, new CrimsonIslePage(this));
 		pages.put(ProfileViewerPage.MUSEUM, new MuseumPage(this));
 		pages.put(ProfileViewerPage.RIFT, new RiftPage(this));
-	}
-
-	public static int getGuiLeft() {
-		return guiLeft;
-	}
-
-	public static int getGuiTop() {
-		return guiTop;
-	}
-
-	public static SkyblockProfiles getProfile() {
-		return profile;
-	}
-
-	public static String getProfileName() {
-		return profileName;
 	}
 
 	public static @Nullable SkyblockProfiles.SkyblockProfile getSelectedProfile() {
@@ -418,7 +369,7 @@ public class GuiProfileViewer extends GuiScreen {
 			pages.get(page).drawPage(mouseX, mouseY, partialTicks);
 		} else {
 			switch (page) {
-				case LOADING:
+				case LOADING -> {
 					String str = EnumChatFormatting.YELLOW + "Loading player profiles.";
 					long currentTimeMod = System.currentTimeMillis() % 1000;
 					if (currentTimeMod > 333) {
@@ -428,13 +379,11 @@ public class GuiProfileViewer extends GuiScreen {
 							str += "..";
 						}
 					}
-
 					Utils.drawStringCentered(str, guiLeft + sizeX / 2f, guiTop + 101, true, 0);
 
 					//This is just here to inform the player what to do
 					//like telling them to go find a psychotherapist
 					long timeDiff = System.currentTimeMillis() - startTime;
-
 					if (timeDiff > 20000) {
 						Utils.drawStringCentered(
 							EnumChatFormatting.YELLOW + "Its taking a while...",
@@ -513,20 +462,15 @@ public class GuiProfileViewer extends GuiScreen {
 							}
 						}
 					}
-
-					break;
-				case INVALID_NAME:
-					Utils.drawStringCentered(
-						EnumChatFormatting.RED + "Invalid name or API is down!",
-						guiLeft + sizeX / 2f, guiTop + 101, true, 0
-					);
-					break;
-				case NO_SKYBLOCK:
-					Utils.drawStringCentered(
-						EnumChatFormatting.RED + "No SkyBlock data found!",
-						guiLeft + sizeX / 2f, guiTop + 101, true, 0
-					);
-					break;
+				}
+				case INVALID_NAME -> Utils.drawStringCentered(
+					EnumChatFormatting.RED + "Invalid name or API is down!",
+					guiLeft + sizeX / 2f, guiTop + 101, true, 0
+				);
+				case NO_SKYBLOCK -> Utils.drawStringCentered(
+					EnumChatFormatting.RED + "No SkyBlock data found!",
+					guiLeft + sizeX / 2f, guiTop + 101, true, 0
+				);
 			}
 		}
 
@@ -689,7 +633,7 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		if (selected) {
-			uMin = 196 /256f;
+			uMin = 196 / 256f;
 			uMax = 226 / 256f;
 
 			renderBlurredBackground(width, height, x - 2, y + 2, 30 - 2, 28 - 4);

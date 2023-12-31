@@ -42,19 +42,16 @@ typealias DefaultSource = ICommandSender
 
 
 private fun normalizeGeneric(argument: Type): Class<*> {
-    return if (argument is Class<*>) {
-        argument
-    } else if (argument is TypeVariable<*>) {
-        normalizeGeneric(argument.bounds[0])
-    } else if (argument is ParameterizedType) {
-        normalizeGeneric(argument.rawType)
-    } else {
-        Any::class.java
+    return when (argument) {
+        is Class<*> -> argument
+        is TypeVariable<*> -> normalizeGeneric(argument.bounds[0])
+        is ParameterizedType -> normalizeGeneric(argument.rawType)
+        else -> Any::class.java
     }
 }
 
 data class TypeSafeArg<T : Any>(val name: String, val argument: ArgumentType<T>) {
-    val argClass by lazy {
+    private val argClass by lazy {
         argument.javaClass
             .iterate<Class<in ArgumentType<T>>> {
                 it.superclass

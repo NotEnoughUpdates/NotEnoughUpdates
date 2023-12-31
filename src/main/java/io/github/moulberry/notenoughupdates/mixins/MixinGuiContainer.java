@@ -86,13 +86,12 @@ public abstract class MixinGuiContainer extends GuiScreen {
 
 		GuiContainer $this = (GuiContainer) (Object) this;
 
-		if (!hasProfileViewerStack && $this instanceof GuiChest && slot.getSlotIndex() > 9 &&
+		if (!hasProfileViewerStack && $this instanceof GuiChest eventGui && slot.getSlotIndex() > 9 &&
 			(slot.getSlotIndex() % 9 == 6 || slot.getSlotIndex() % 9 == 7) &&
 			BetterContainers.isBlankStack(-1, slot.getStack())) {
 			BetterContainers.profileViewerStackIndex = -1;
 			hasProfileViewerStack = true;
 
-			GuiChest eventGui = (GuiChest) $this;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (containerName.contains(" Profile") && cc.inventorySlots.size() >= 54) {

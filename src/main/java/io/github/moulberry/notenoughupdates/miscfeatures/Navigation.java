@@ -35,6 +35,8 @@ import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.brigadier.DslKt;
 import kotlin.Unit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.BlockPos;
@@ -63,12 +65,10 @@ public class Navigation {
 
 	private List<Teleporter> teleporters = new ArrayList<>();
 	private Map<String, String> areaNames = new HashMap<>();
+	@Getter
 	private Map<String, WarpPoint> warps = new HashMap<>();
+	@Getter
 	private Map<String, JsonObject> waypoints = new HashMap<>();
-
-	public Map<String, JsonObject> getWaypoints() {
-		return waypoints;
-	}
 
 	public static class WarpPoint {
 		public final BlockPos blockPos;
@@ -81,17 +81,10 @@ public class Navigation {
 		}
 	}
 
+	@AllArgsConstructor
 	public static class Teleporter {
 		public final double x, y, z;
 		public final String from, to;
-
-		public Teleporter(double x, double y, double z, String from, String to) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-			this.from = from;
-			this.to = to;
-		}
 	}
 
 	private final NotEnoughUpdates neu;
@@ -102,9 +95,13 @@ public class Navigation {
 
 	/* JsonObject (x,y,z,island,displayname) */
 	private JsonObject currentlyTrackedWaypoint = null;
+	@Getter
 	private BlockPos position = null;
+	@Getter
 	private String island = null;
+	@Getter
 	private String displayName = null;
+	@Getter
 	private String internalname = null;
 	private String warpAgainTo = null;
 	private Instant lastWarpAttemptedTime = null;
@@ -204,10 +201,6 @@ public class Navigation {
 				Minecraft.getMinecraft().displayGuiScreen(new GuiNavigation());
 			}
 		}
-	}
-
-	public Map<String, WarpPoint> getWarps() {
-		return warps;
 	}
 
 	@SubscribeEvent
@@ -311,22 +304,6 @@ public class Navigation {
 
 	public JsonObject getTrackedWaypoint() {
 		return currentlyTrackedWaypoint;
-	}
-
-	public String getIsland() {
-		return island;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public BlockPos getPosition() {
-		return position;
-	}
-
-	public String getInternalname() {
-		return internalname;
 	}
 
 	private void updateData() {

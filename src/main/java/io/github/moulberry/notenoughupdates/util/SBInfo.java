@@ -30,6 +30,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Locati
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -92,6 +94,7 @@ public class SBInfo {
 
 	public Date currentTimeDate = null;
 
+	@Getter
 	private JsonObject mayorJson = new JsonObject();
 
 	/**
@@ -110,16 +113,12 @@ public class SBInfo {
 	public boolean isInDungeon = false;
 	public boolean hasNewTab = false;
 
+	@AllArgsConstructor
 	public enum Gamemode {
 		NORMAL("", ""), IRONMAN("Ironman", "♲"), STRANDED("Stranded", "☀");
 
 		private final String name;
 		private final String emoji;
-
-		Gamemode(String name, String emoji) {
-			this.name = name;
-			this.emoji = emoji;
-		}
 
 		public static Gamemode find(String type) {
 			for (Gamemode gamemode : values()) {
@@ -140,8 +139,7 @@ public class SBInfo {
 	public void onGuiOpen(GuiOpenEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 
-		if (event.gui instanceof GuiChest) {
-			GuiChest chest = (GuiChest) event.gui;
+		if (event.gui instanceof GuiChest chest) {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 
 			currentlyOpenChestName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
@@ -227,9 +225,7 @@ public class SBInfo {
 				}.getType()
 			);
 			areGamemodesLoaded = true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JsonSyntaxException e) {
+		} catch (IOException | JsonSyntaxException e) {
 			e.printStackTrace();
 		}
 	}
@@ -470,10 +466,6 @@ public class SBInfo {
 			.newAnonymousHypixelApiRequest("resources/skyblock/election")
 			.requestJson()
 			.thenAccept(newJson -> mayorJson = newJson);
-	}
-
-	public JsonObject getMayorJson() {
-		return mayorJson;
 	}
 
 	public void setCurrentProfile(String newProfile) {

@@ -57,7 +57,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 	private static final ResourceLocation pv_dung = new ResourceLocation("notenoughupdates:pv_dung.png");
 	private static final ItemStack DEADBUSH = new ItemStack(Item.getItemFromBlock(Blocks.deadbush));
 	private static final ItemStack[] BOSS_HEADS = new ItemStack[7];
-	private static final Map<String, ItemStack> classToIcon = new HashMap<String, ItemStack>() {{
+	private static final Map<String, ItemStack> classToIcon = new HashMap<>() {{
 		put("healer", new ItemStack(Items.potionitem, 1, 16389));
 		put("mage", new ItemStack(Items.blaze_rod));
 		put("berserk", new ItemStack(Items.iron_sword));
@@ -74,7 +74,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		"fa06cb0c471c1c9bc169af270cd466ea701946776056e472ecdaeb49f0f4a4dc",
 		"a435164c05cea299a3f016bbbed05706ebb720dac912ce4351c2296626aecd9a",
 	};
-	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<>() {
 		{
 			put(
 				"catacombs",

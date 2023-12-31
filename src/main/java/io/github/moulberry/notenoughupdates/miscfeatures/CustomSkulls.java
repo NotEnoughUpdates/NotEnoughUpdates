@@ -123,7 +123,6 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 							"custom_skull_textures/" + obj.get("model").getAsString() + ".json"
 						);
 
-
 						if ((skull = cache.get(loc.toString())) == null) {
 							skull = new CustomSkull();
 							skull.model = ModelBlock.deserialize(new InputStreamReader(Minecraft
@@ -155,7 +154,8 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 					}
 				}
 			}
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 	}
 
 	@Override
@@ -178,7 +178,8 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 			);
 
 			Minecraft.getMinecraft().getTextureManager().loadTexture(atlas, textureMap);
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 	}
 
 	private void loadSprites(Collection<CustomSkull> models) {
@@ -355,27 +356,23 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 
 			final float rot;
 			switch (placedDirection) {
-				case NORTH: {
+				case NORTH -> {
 					GlStateManager.translate(xOffset + 0.5f, yOffset + 0.25f, zOffset + 0.74f);
 					rot = 0f;
-					break;
 				}
-				case SOUTH: {
+				case SOUTH -> {
 					GlStateManager.translate(xOffset + 0.5f, yOffset + 0.25f, zOffset + 0.26f);
 					rot = 180.0f;
-					break;
 				}
-				case WEST: {
+				case WEST -> {
 					GlStateManager.translate(xOffset + 0.74f, yOffset + 0.25f, zOffset + 0.5f);
 					rot = 270.0f;
-					break;
 				}
-				case EAST: {
+				case EAST -> {
 					GlStateManager.translate(xOffset + 0.26f, yOffset + 0.25f, zOffset + 0.5f);
 					rot = 90.0f;
-					break;
 				}
-				default: {
+				default -> {
 					GlStateManager.translate(xOffset + 0.5f, yOffset, zOffset + 0.5f);
 					rot = rotationDeg;
 				}
@@ -388,7 +385,8 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 
 			GlStateManager.translate(0, 0.25f, 0);
 
-			if (placedDirection == EnumFacing.UP && xOffset == -0.5 && yOffset == 0 && zOffset == -0.5 && rotationDeg == 180) {
+			if (placedDirection == EnumFacing.UP && xOffset == -0.5 && yOffset == 0 && zOffset == -0.5 &&
+					rotationDeg == 180) {
 				skull.model.getAllTransforms().applyTransform(ItemCameraTransforms.TransformType.HEAD);
 			} else {
 				skull.model.getAllTransforms().applyTransform(mostRecentTransformType);

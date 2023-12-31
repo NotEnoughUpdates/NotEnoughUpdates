@@ -46,7 +46,7 @@ public class MiningPage extends GuiProfileViewerPage {
 
 	private static final ResourceLocation miningPageTexture = new ResourceLocation("notenoughupdates:pv_mining.png");
 	private static final ItemStack hotmSkillIcon = new ItemStack(Items.iron_pickaxe);
-	private static final Map<String, EnumChatFormatting> crystalToColor = new HashMap<String, EnumChatFormatting>() {{
+	private static final Map<String, EnumChatFormatting> crystalToColor = new HashMap<>() {{
 		put("jade", EnumChatFormatting.GREEN);
 		put("amethyst", EnumChatFormatting.DARK_PURPLE);
 		put("amber", EnumChatFormatting.GOLD);
@@ -541,119 +541,109 @@ public class MiningPage extends GuiProfileViewerPage {
 			(int) (guiTop + yStartTop + 42),
 			mouseX,
 			mouseY,
-			() -> {
-				switch (potm) {
-					case 0:
-						return Lists.newArrayList(
-							EnumChatFormatting.RED + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
-							"",
-							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "50,000 Mithril Powder"
-						);
-					case 1:
-						return Lists.newArrayList(
-							EnumChatFormatting.YELLOW + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
-							"",
-							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain",
-							"",
-							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "50,000 Mithril Powder"
-						);
-					case 2:
-						return Lists.newArrayList(
-							EnumChatFormatting.YELLOW + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
-							"",
-							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain",
-							"§7§8+§a1 Forge Slot",
-							"",
-							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "75,000 Mithril Powder"
-						);
-					case 3:
-						return Lists.newArrayList(
-							EnumChatFormatting.YELLOW + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
-							"",
-							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain",
-							"§7§8+§a1 Forge Slot",
-							"§7§8+§a1 Commission Slot",
-							"",
-							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "100,000 Mithril Powder"
-						);
-					case 4:
-						return Lists.newArrayList(
-							EnumChatFormatting.YELLOW + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
-							"",
-							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain",
-							"§7§8+§a1 Forge Slot",
-							"§7§8+§a1 Commission Slot",
-							"§7§8+§21 Mithril Powder §7when",
-							"§7mining §fMithril",
-							"",
-							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "125,000 Mithril Powder"
-						);
-					case 5:
-						return Lists.newArrayList(
-							EnumChatFormatting.GREEN + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
-							"",
-							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain",
-							"§7§8+§a1 Forge Slot",
-							"§7§8+§a1 Commission Slot",
-							"§7§8+§21 Mithril Powder §7when",
-							"§7mining §fMithril",
-							"§7§8+§51 Token of the Mountain",
-							"",
-							"§7Cost",
-							"§d500,000 Gemstone Powder"
-						);
-					case 6:
-						return Lists.newArrayList(
-							EnumChatFormatting.GREEN + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
-							"",
-							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain",
-							"§7§8+§a1 Forge Slot",
-							"§7§8+§a1 Commission Slot",
-							"§7§8+§21 Mithril Powder §7when",
-							"§7mining §fMithril",
-							"§7§8+§51 Token of the Mountain",
-							"§7§8+§d2 Gemstone Powder §7when",
-							"§7mining §dGemstones",
-							"",
-							"§7Cost",
-							"§d750,000 Gemstone Powder"
-						);
-					case 7:
-						return Lists.newArrayList(
-							EnumChatFormatting.GREEN + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
-							"",
-							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain",
-							"§7§8+§a1 Forge Slot",
-							"§7§8+§a1 Commission Slot",
-							"§7§8+§21 Mithril Powder §7when",
-							"§7mining §fMithril",
-							"§7§8+§51 Token of the Mountain",
-							"§7§8+§d2 Gemstone Powder §7when",
-							"§7mining §dGemstones",
-							"§7§8+§51 Token of the Mountain"
-						);
-				}
-				return Lists.newArrayList(
+			() -> switch (potm) {
+				case 0 -> Lists.newArrayList(
+					EnumChatFormatting.RED + "Peak of the Mountain",
+					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
+					"",
+					EnumChatFormatting.GRAY + "Cost",
+					EnumChatFormatting.DARK_GREEN + "50,000 Mithril Powder"
+				);
+				case 1 -> Lists.newArrayList(
+					EnumChatFormatting.YELLOW + "Peak of the Mountain",
+					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
+					"",
+					"§7§8+§c1 Pickaxe Ability Level",
+					"§7§8+§51 Token of the Mountain",
+					"",
+					EnumChatFormatting.GRAY + "Cost",
+					EnumChatFormatting.DARK_GREEN + "50,000 Mithril Powder"
+				);
+				case 2 -> Lists.newArrayList(
+					EnumChatFormatting.YELLOW + "Peak of the Mountain",
+					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
+					"",
+					"§7§8+§c1 Pickaxe Ability Level",
+					"§7§8+§51 Token of the Mountain",
+					"§7§8+§a1 Forge Slot",
+					"",
+					EnumChatFormatting.GRAY + "Cost",
+					EnumChatFormatting.DARK_GREEN + "75,000 Mithril Powder"
+				);
+				case 3 -> Lists.newArrayList(
+					EnumChatFormatting.YELLOW + "Peak of the Mountain",
+					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
+					"",
+					"§7§8+§c1 Pickaxe Ability Level",
+					"§7§8+§51 Token of the Mountain",
+					"§7§8+§a1 Forge Slot",
+					"§7§8+§a1 Commission Slot",
+					"",
+					EnumChatFormatting.GRAY + "Cost",
+					EnumChatFormatting.DARK_GREEN + "100,000 Mithril Powder"
+				);
+				case 4 -> Lists.newArrayList(
+					EnumChatFormatting.YELLOW + "Peak of the Mountain",
+					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
+					"",
+					"§7§8+§c1 Pickaxe Ability Level",
+					"§7§8+§51 Token of the Mountain",
+					"§7§8+§a1 Forge Slot",
+					"§7§8+§a1 Commission Slot",
+					"§7§8+§21 Mithril Powder §7when",
+					"§7mining §fMithril",
+					"",
+					EnumChatFormatting.GRAY + "Cost",
+					EnumChatFormatting.DARK_GREEN + "125,000 Mithril Powder"
+				);
+				case 5 -> Lists.newArrayList(
+					EnumChatFormatting.GREEN + "Peak of the Mountain",
+					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
+					"",
+					"§7§8+§c1 Pickaxe Ability Level",
+					"§7§8+§51 Token of the Mountain",
+					"§7§8+§a1 Forge Slot",
+					"§7§8+§a1 Commission Slot",
+					"§7§8+§21 Mithril Powder §7when",
+					"§7mining §fMithril",
+					"§7§8+§51 Token of the Mountain",
+					"",
+					"§7Cost",
+					"§d500,000 Gemstone Powder"
+				);
+				case 6 -> Lists.newArrayList(
+					EnumChatFormatting.GREEN + "Peak of the Mountain",
+					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
+					"",
+					"§7§8+§c1 Pickaxe Ability Level",
+					"§7§8+§51 Token of the Mountain",
+					"§7§8+§a1 Forge Slot",
+					"§7§8+§a1 Commission Slot",
+					"§7§8+§21 Mithril Powder §7when",
+					"§7mining §fMithril",
+					"§7§8+§51 Token of the Mountain",
+					"§7§8+§d2 Gemstone Powder §7when",
+					"§7mining §dGemstones",
+					"",
+					"§7Cost",
+					"§d750,000 Gemstone Powder"
+				);
+				case 7 -> Lists.newArrayList(
+					EnumChatFormatting.GREEN + "Peak of the Mountain",
+					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
+					"",
+					"§7§8+§c1 Pickaxe Ability Level",
+					"§7§8+§51 Token of the Mountain",
+					"§7§8+§a1 Forge Slot",
+					"§7§8+§a1 Commission Slot",
+					"§7§8+§21 Mithril Powder §7when",
+					"§7mining §fMithril",
+					"§7§8+§51 Token of the Mountain",
+					"§7§8+§d2 Gemstone Powder §7when",
+					"§7mining §dGemstones",
+					"§7§8+§51 Token of the Mountain"
+				);
+				default -> Lists.newArrayList(
 					EnumChatFormatting.GREEN + "Peak of the Mountain",
 					EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/???",
 					EnumChatFormatting.RED + "It looks like your NEU doesn't understand your peak of the mountain perks.",

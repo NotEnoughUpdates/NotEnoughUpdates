@@ -86,7 +86,7 @@ public class GuiItemCustomize extends GuiScreen {
 			if (data.customName != null) {
 				textFieldRename.setText(data.customName);
 			}
-			if (data.customItem != null && data.customItem.length() > 0) {
+			if (data.customItem != null && !data.customItem.isEmpty()) {
 				textFieldCustomItem.setText(data.customItem);
 			} else {
 				textFieldCustomItem.setText(stack.getItem().getRegistryName().replace("minecraft:", ""));

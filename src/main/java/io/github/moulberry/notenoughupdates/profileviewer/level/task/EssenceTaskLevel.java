@@ -127,7 +127,7 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 		);
 	}
 
-	class EssenceShop {
+	static class EssenceShop {
 		String name;
 		double max;
 		double current;

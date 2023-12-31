@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionS
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.util.MinionHelperPriceCalculation;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.util.MinionHelperRequirementsManager;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -46,17 +47,26 @@ import java.util.Map;
 public class MinionHelperManager {
 	private static MinionHelperManager instance = null;
 	private final Map<String, Minion> minions = new HashMap<>();
+	@Getter
 	private int needForNextSlot = -1;
+	@Getter
 	private int localPelts = -1;
 
+	@Getter
 	private final MinionHelperPriceCalculation priceCalculation = new MinionHelperPriceCalculation(this);
+	@Getter
 	private final MinionHelperRequirementsManager requirementsManager = new MinionHelperRequirementsManager(this);
+	@Getter
 	private final MinionHelperApiLoader api = new MinionHelperApiLoader(this);
 	private final MinionHelperRepoLoader repo = new MinionHelperRepoLoader(this);
+	@Getter
 	private final MinionHelperOverlay overlay = new MinionHelperOverlay(this);
 	private final MinionHelperInventoryLoader inventoryLoader = new MinionHelperInventoryLoader(this);
+	@Getter
 	private String debugPlayerUuid;
+	@Getter
 	private String debugProfileName;
+	@Getter
 	private int debugNeedForNextSlot = -1;
 
 	public static MinionHelperManager getInstance() {
@@ -83,8 +93,7 @@ public class MinionHelperManager {
 		if (minecraft == null || minecraft.thePlayer == null) return false;
 
 		Container inventoryContainer = minecraft.thePlayer.openContainer;
-		if (!(inventoryContainer instanceof ContainerChest)) return false;
-		ContainerChest containerChest = (ContainerChest) inventoryContainer;
+		if (!(inventoryContainer instanceof ContainerChest containerChest)) return false;
 		String name = containerChest.getLowerChestInventory().getDisplayName().getUnformattedText();
 		return name.equalsIgnoreCase("Crafted Minions");
 	}
@@ -269,22 +278,6 @@ public class MinionHelperManager {
 		onProfileSwitch();
 	}
 
-	public MinionHelperPriceCalculation getPriceCalculation() {
-		return priceCalculation;
-	}
-
-	public MinionHelperRequirementsManager getRequirementsManager() {
-		return requirementsManager;
-	}
-
-	public MinionHelperApiLoader getApi() {
-		return api;
-	}
-
-	public MinionHelperOverlay getOverlay() {
-		return overlay;
-	}
-
 	public Map<String, Minion> getAllMinions() {
 		return minions;
 	}
@@ -292,10 +285,6 @@ public class MinionHelperManager {
 	public void setNeedForNextSlot(int needForNextSlot) {
 		this.needForNextSlot = needForNextSlot;
 		overlay.resetCache();
-	}
-
-	public int getNeedForNextSlot() {
-		return needForNextSlot;
 	}
 
 	public void setCustomSource(Minion minion, CustomSource customSource) {
@@ -306,10 +295,6 @@ public class MinionHelperManager {
 		minion.setCustomSource(customSource);
 	}
 
-	public int getLocalPelts() {
-		return localPelts;
-	}
-
 	public void setLocalPelts(int pelts) {
 		localPelts = pelts;
 		if (localPelts != -1) {
@@ -318,17 +303,5 @@ public class MinionHelperManager {
 				apiData.setPeltCount(localPelts);
 			}
 		}
-	}
-
-	public String getDebugPlayerUuid() {
-		return debugPlayerUuid;
-	}
-
-	public String getDebugProfileName() {
-		return debugProfileName;
-	}
-
-	public int getDebugNeedForNextSlot() {
-		return debugNeedForNextSlot;
 	}
 }

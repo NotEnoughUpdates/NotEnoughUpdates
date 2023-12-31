@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -60,9 +61,12 @@ public class ForgeRecipe implements NeuRecipe {
 	}
 
 	private final NEUManager manager;
+	@Getter
 	private final List<Ingredient> inputs;
+	@Getter
 	private final Ingredient output;
 	private final int hotmLevel;
+	@Getter
 	private final int timeInSeconds; // TODO: quick forge
 	private List<RecipeSlot> slots;
 
@@ -78,18 +82,6 @@ public class ForgeRecipe implements NeuRecipe {
 		this.output = output;
 		this.hotmLevel = hotmLevel;
 		this.timeInSeconds = durationInSeconds;
-	}
-
-	public List<Ingredient> getInputs() {
-		return inputs;
-	}
-
-	public Ingredient getOutput() {
-		return output;
-	}
-
-	public int getTimeInSeconds() {
-		return timeInSeconds;
 	}
 
 	@Override

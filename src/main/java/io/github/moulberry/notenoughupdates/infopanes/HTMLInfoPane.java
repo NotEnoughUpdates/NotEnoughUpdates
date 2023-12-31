@@ -273,7 +273,7 @@ public class HTMLInfoPane extends TextInfoPane {
 		}
 
 		Runtime runtime = Runtime.getRuntime();
-		String[] chmodCommand = new String[]{
+		String[] chmodCommand = {
 			"chmod", "-R", "777", new File(
 			manager.configLocation,
 			"wkhtmltox-" + osId
@@ -371,7 +371,7 @@ public class HTMLInfoPane extends TextInfoPane {
 				text = EnumChatFormatting.GRAY + "Rendering webpage (" + name + EnumChatFormatting.RESET +
 					EnumChatFormatting.GRAY + "), please wait...";
 
-				String[] wkCommand = new String[]{
+				String[] wkCommand = {
 					wkHtmlToImage.getAbsolutePath(),
 					"--width",
 					"" + IMAGE_WIDTH * ZOOM_FACTOR,
@@ -384,15 +384,17 @@ public class HTMLInfoPane extends TextInfoPane {
 					output.getAbsolutePath()
 				};
 				Process p = runtime.exec(wkCommand);
-                /*Process p = runtime.exec(spaceEscape(wkHtmlToImage.getAbsolutePath()) + " --width "+
-                        IMAGE_WIDTH*ZOOM_FACTOR+" --transparent --zoom "+ZOOM_FACTOR + " " + spaceEscape(input.getAbsolutePath()) +
-                        " " + spaceEscape(output.getAbsolutePath()));*/
-                /*Process p = runtime.exec("\""+wkHtmlToImage.getAbsolutePath() + "\" --width "+
-                        IMAGE_WIDTH*ZOOM_FACTOR+" --transparent --zoom "+ZOOM_FACTOR+" \"" + input.getAbsolutePath() +
-                        "\" \"" + output.getAbsolutePath() + "\"");*/
-                /*Process p2 = runtime.exec("\""+wkHtmlToImage.getAbsolutePath() + "\" --width "+
-                        (IMAGE_WIDTH+EXT_WIDTH)*ZOOM_FACTOR+" --transparent --zoom "+ZOOM_FACTOR+" \"" + input.getAbsolutePath() +
-                        "\" \"" + outputExt.getAbsolutePath() + "\"");*/
+				/*Process p = runtime.exec(spaceEscape(wkHtmlToImage.getAbsolutePath()) + " --width " +
+					IMAGE_WIDTH * ZOOM_FACTOR + " --transparent --zoom " + ZOOM_FACTOR + " " +
+					spaceEscape(input.getAbsolutePath()) +
+					" " + spaceEscape(output.getAbsolutePath()));*/
+				/*Process p = runtime.exec("\"" + wkHtmlToImage.getAbsolutePath() + "\" --width " +
+					IMAGE_WIDTH * ZOOM_FACTOR + " --transparent --zoom " + ZOOM_FACTOR + " \"" + input.getAbsolutePath() +
+					"\" \"" + output.getAbsolutePath() + "\"");*/
+				/*Process p2 = runtime.exec("\"" + wkHtmlToImage.getAbsolutePath() + "\" --width " +
+					(IMAGE_WIDTH + EXT_WIDTH) * ZOOM_FACTOR + " --transparent --zoom " + ZOOM_FACTOR + " \"" +
+					input.getAbsolutePath() +
+					"\" \"" + outputExt.getAbsolutePath() + "\"");*/
 				rendererES.submit(() -> {
 					try {
 						if (p.waitFor(15, TimeUnit.SECONDS)) {
@@ -401,33 +403,33 @@ public class HTMLInfoPane extends TextInfoPane {
 
 							try {
 								imageTemp = ImageIO.read(output);
-                                /*BufferedImage imageReg = ImageIO.read(output);
-                                BufferedImage imageExt = ImageIO.read(outputExt);
-                                ArrayList<Integer[]> pixels = new ArrayList<>();
+								/*BufferedImage imageReg = ImageIO.read(output);
+								BufferedImage imageExt = ImageIO.read(outputExt);
+								ArrayList<Integer[]> pixels = new ArrayList<>();
 
-                                int skip = IMAGE_WIDTH/EXT_WIDTH+1;
+								int skip = IMAGE_WIDTH / EXT_WIDTH + 1;
 
-                                for(int y=0; y<imageReg.getHeight(); y++) {
-                                    pixels.add(new Integer[IMAGE_WIDTH*ZOOM_FACTOR]);
-                                    if(new Color(imageReg.getRGB(IMAGE_WIDTH*ZOOM_FACTOR-1, y), true).getAlpha() == 0) {
-                                        for(int x=0; x<IMAGE_WIDTH*ZOOM_FACTOR; x++) {
-                                            pixels.get(y)[x] = imageReg.getRGB(x, y);
-                                        }
-                                    } else {
-                                        for(int x=0; x<(IMAGE_WIDTH+EXT_WIDTH)*ZOOM_FACTOR; x++) {
-                                            int x2 = x*IMAGE_WIDTH/(IMAGE_WIDTH+EXT_WIDTH);
-                                            int y2 = y*(IMAGE_WIDTH+EXT_WIDTH)/IMAGE_WIDTH;
-                                            pixels.get(y)[x2] = imageExt.getRGB(x, y2);
-                                        }
-                                    }
-                                }
-                                imageTemp = new BufferedImage(IMAGE_WIDTH*ZOOM_FACTOR, pixels.size(), imageReg.getType());
-                                for(int y=0; y<pixels.size(); y++) {
-                                    for(int x=0; x<IMAGE_WIDTH*ZOOM_FACTOR; x++) {
-                                        int col = pixels.get(y)[x];
-                                        imageTemp.setRGB(x, y, col);
-                                    }
-                                }*/
+								for (int y = 0; y < imageReg.getHeight(); y++) {
+									pixels.add(new Integer[IMAGE_WIDTH * ZOOM_FACTOR]);
+									if (new Color(imageReg.getRGB(IMAGE_WIDTH * ZOOM_FACTOR - 1, y), true).getAlpha() == 0) {
+										for (int x = 0; x < IMAGE_WIDTH * ZOOM_FACTOR; x++) {
+											pixels.get(y)[x] = imageReg.getRGB(x, y);
+										}
+									} else {
+										for (int x = 0; x < (IMAGE_WIDTH + EXT_WIDTH) * ZOOM_FACTOR; x++) {
+											int x2 = x * IMAGE_WIDTH / (IMAGE_WIDTH + EXT_WIDTH);
+											int y2 = y * (IMAGE_WIDTH + EXT_WIDTH) / IMAGE_WIDTH;
+											pixels.get(y)[x2] = imageExt.getRGB(x, y2);
+										}
+									}
+								}
+								imageTemp = new BufferedImage(IMAGE_WIDTH * ZOOM_FACTOR, pixels.size(), imageReg.getType());
+								for (int y = 0; y < pixels.size(); y++) {
+									for (int x = 0; x < IMAGE_WIDTH * ZOOM_FACTOR; x++) {
+										int col = pixels.get(y)[x];
+										imageTemp.setRGB(x, y, col);
+									}
+								}*/
 								text = EnumChatFormatting.RED + "Creating dynamic texture.";
 							} catch (IOException e) {
 								e.printStackTrace();

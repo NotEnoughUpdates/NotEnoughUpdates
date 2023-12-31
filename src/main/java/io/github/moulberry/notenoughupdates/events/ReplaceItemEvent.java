@@ -19,13 +19,17 @@
 
 package io.github.moulberry.notenoughupdates.events;
 
+import lombok.Getter;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 public class ReplaceItemEvent extends NEUEvent {
 
+	@Getter
 	final ItemStack original;
+	@Getter
 	final IInventory inventory;
+	@Getter
 	final int slotNumber;
 	ItemStack replaceWith;
 
@@ -34,18 +38,6 @@ public class ReplaceItemEvent extends NEUEvent {
 		this.inventory = inventory;
 		this.slotNumber = slotNumber;
 		this.replaceWith = original;
-	}
-
-	public ItemStack getOriginal() {
-		return original;
-	}
-
-	public IInventory getInventory() {
-		return inventory;
-	}
-
-	public int getSlotNumber() {
-		return slotNumber;
 	}
 
 	public ItemStack getReplacement() {

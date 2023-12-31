@@ -56,9 +56,7 @@ public class MiningStuff {
 	}
 
 	public static void processBlockChangePacket(S23PacketBlockChange packetIn) {
-		if (!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert) {
-			return;
-		}
+		if (!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert) return;
 
 		IBlockState state = packetIn.getBlockState();
 		if (SBInfo.getInstance().getLocation() != null &&

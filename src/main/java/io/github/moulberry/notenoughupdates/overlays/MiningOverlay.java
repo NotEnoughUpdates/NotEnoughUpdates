@@ -74,8 +74,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 	@Override
 	public void updateFrequent() {
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
@@ -114,22 +113,22 @@ public class MiningOverlay extends TextTabOverlay {
 
 						long duration = 0;
 
-						if (matcher.group("Completed") != null && !matcher.group("Completed").equals("")) {
+						if (matcher.group("Completed") != null && !matcher.group("Completed").isEmpty()) {
 							ForgeItem newForgeItem = new ForgeItem(Utils.cleanColour(stack.getDisplayName()), 0, i, false);
 							replaceForgeOrAdd(newForgeItem, hidden.forgeItems, true);
 						} else {
 
 							try {
-								if (matcher.group("days") != null && !matcher.group("days").equals("")) {
+								if (matcher.group("days") != null && !matcher.group("days").isEmpty()) {
 									duration = duration + (long) Integer.parseInt(matcher.group("days")) * 24 * 60 * 60 * 1000;
 								}
-								if (matcher.group("hours") != null && !matcher.group("hours").equals("")) {
+								if (matcher.group("hours") != null && !matcher.group("hours").isEmpty()) {
 									duration = duration + (long) Integer.parseInt(matcher.group("hours")) * 60 * 60 * 1000;
 								}
-								if (matcher.group("minutes") != null && !matcher.group("minutes").equals("")) {
+								if (matcher.group("minutes") != null && !matcher.group("minutes").isEmpty()) {
 									duration = duration + (long) Integer.parseInt(matcher.group("minutes")) * 60 * 1000;
 								}
-								if (matcher.group("seconds") != null && !matcher.group("seconds").equals("")) {
+								if (matcher.group("seconds") != null && !matcher.group("seconds").isEmpty()) {
 									duration = duration + (long) Integer.parseInt(matcher.group("seconds")) * 1000;
 								}
 							} catch (Exception ignored) {
@@ -309,22 +308,22 @@ public class MiningOverlay extends TextTabOverlay {
 
 								String itemName = matcher.group(1);
 
-								if (matcher.group("Ready") != null && !matcher.group("Ready").equals("")) {
+								if (matcher.group("Ready") != null && !matcher.group("Ready").isEmpty()) {
 									ForgeItem item = new ForgeItem(Utils.cleanColour(itemName), 0, forgeInt, true);
 									replaceForgeOrAdd(item, profileConfig.forgeItems, true);
 								} else {
 									long duration = 0;
 									try {
-										if (matcher.group("days") != null && !matcher.group("days").equals("")) {
+										if (matcher.group("days") != null && !matcher.group("days").isEmpty()) {
 											duration = duration + (long) Integer.parseInt(matcher.group("days")) * 24 * 60 * 60 * 1000;
 										}
-										if (matcher.group("hours") != null && !matcher.group("hours").equals("")) {
+										if (matcher.group("hours") != null && !matcher.group("hours").isEmpty()) {
 											duration = duration + (long) Integer.parseInt(matcher.group("hours")) * 60 * 60 * 1000;
 										}
-										if (matcher.group("minutes") != null && !matcher.group("minutes").equals("")) {
+										if (matcher.group("minutes") != null && !matcher.group("minutes").isEmpty()) {
 											duration = duration + (long) Integer.parseInt(matcher.group("minutes")) * 60 * 1000;
 										}
-										if (matcher.group("seconds") != null && !matcher.group("seconds").equals("")) {
+										if (matcher.group("seconds") != null && !matcher.group("seconds").isEmpty()) {
 											duration = duration + (long) Integer.parseInt(matcher.group("seconds")) * 1000;
 										}
 									} catch (Exception ignored) {
@@ -424,30 +423,18 @@ public class MiningOverlay extends TextTabOverlay {
 			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2) {
 				switch (index) {
-					case 0:
-						overlayStrings.addAll(commissionsStrings);
-						break;
-					case 1:
-						overlayStrings.add(mithrilPowder);
-						break;
-					case 2:
-						overlayStrings.add(gemstonePowder);
-						break;
-					case 3:
+					case 0 -> overlayStrings.addAll(commissionsStrings);
+					case 1 -> overlayStrings.add(mithrilPowder);
+					case 2 -> overlayStrings.add(gemstonePowder);
+					case 3 -> {
 						if (profileConfig != null) {
 							overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
 						}
-						break;
-					case 4:
-						overlayStrings.add(pickaxeCooldown);
-						break;
-					case 5:
-						overlayStrings.add(
-							DARK_AQUA + "Star Cult: " + GREEN + StarCultCalculator.getNextStarCult());
-						break;
-					case 6:
-							overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
-						break;
+					}
+					case 4 -> overlayStrings.add(pickaxeCooldown);
+					case 5 -> overlayStrings.add(
+						DARK_AQUA + "Star Cult: " + GREEN + StarCultCalculator.getNextStarCult());
+					case 6 -> overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
 				}
 			}
 		} else {
@@ -798,13 +785,13 @@ public class MiningOverlay extends TextTabOverlay {
 		super.renderLine(line, position, dummy);
 	}
 
-	private static final HashMap<String, ItemStack> miningOverlayRoughGems = new HashMap<String, ItemStack>() {};
-	private static final HashMap<String, ItemStack> miningOverlayPerfectGems = new HashMap<String, ItemStack>() {};
+	private static final HashMap<String, ItemStack> miningOverlayRoughGems = new HashMap<>() {};
+	private static final HashMap<String, ItemStack> miningOverlayPerfectGems = new HashMap<>() {};
 
 	private static HashMap<String, ItemStack> miningOverlayCommissionItems;
 
 	private static void setupMiningOverlayCommissionItems() {
-		miningOverlayCommissionItems = new HashMap<String, ItemStack>() {
+		miningOverlayCommissionItems = new HashMap<>() {
 			{
 				addItem("Mithril Powder", "INK_SACK-10");
 				addItem("Gemstone Powder", "INK_SACK-9");

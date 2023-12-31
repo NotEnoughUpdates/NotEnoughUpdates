@@ -67,7 +67,7 @@ class DevTestCommand {
             "eaa5623c-8413-46b7-a74b-2d74a42b2841",  // calmwolfs
             "e2c6f077-d45c-43ac-8322-857c7f8df3b9"   // vixid
         )
-        val SPECIAL_KICK = "SPECIAL_KICK"
+        const val SPECIAL_KICK = "SPECIAL_KICK"
 
         val DEV_FAIL_STRINGS = arrayOf(
             "No.",
@@ -83,14 +83,14 @@ class DevTestCommand {
             "No.",
             "I said no.",
             "Dammit. I thought that would work. Uhh...",
-            "\u00a7dFrom \u00a7c[ADMIN] Minikloon\u00a77: If you use that command again, I'll have to ban you",
+            "§dFrom §c[ADMIN] Minikloon§7: If you use that command again, I'll have to ban you",
             SPECIAL_KICK,
             "Ok, this is actually the last message, use the command again and you'll crash I promise"
         )
 
         fun isDeveloper(commandSender: ICommandSender): Boolean {
             return DEV_TESTERS.contains((commandSender as? EntityPlayer)?.uniqueID?.toString())
-                    || Launch.blackboard.get("fml.deobfuscatedEnvironment") as Boolean
+                    || Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
 
         }
     }
@@ -134,8 +134,8 @@ class DevTestCommand {
                 val player = Minecraft.getMinecraft().thePlayer
                 reply("Is in Garden: ${SBInfo.getInstance().getLocation() == "garden"}")
                 val pp = player.position
-                reply("Plot X: ${floor((pp.getX() + 48) / 96F)}")
-                reply("Plot Z: ${floor((pp.getZ() + 48) / 96F)}")
+                reply("Plot X: ${floor((pp.x + 48) / 96F)}")
+                reply("Plot Z: ${floor((pp.z + 48) / 96F)}")
             }.withHelp("Show diagnostics information about the garden")
             thenLiteralExecute("profileinfo") {
                 val currentProfile = SBInfo.getInstance().currentProfile
@@ -251,7 +251,7 @@ class DevTestCommand {
                 }.withHelp("Minion related commands. Not yet integrated in brigadier")
             }
             thenLiteralExecute("copytablist") {
-                val tabList = TabListUtils.getTabList().joinToString("\n", postfix = "\n")
+                val tabList = TabListUtils.tabList.joinToString("\n", postfix = "\n")
                 MiscUtils.copyToClipboard(tabList)
                 reply("Copied tablist to clipboard!")
             }.withHelp("Copy the tab list")
@@ -288,13 +288,17 @@ class DevTestCommand {
                 }
                 val text = DEV_FAIL_STRINGS[devFailIndex++]
                 if (text == SPECIAL_KICK) {
-                    val component = ChatComponentText("\u00a7cYou are permanently banned from this server!")
-                    component.appendText("\n")
-                    component.appendText("\n\u00a77Reason: \u00a7rI told you not to run the command - Moulberry")
-                    component.appendText("\n\u00a77Find out more: \u00a7b\u00a7nhttps://www.hypixel.net/appeal")
-                    component.appendText("\n")
-                    component.appendText("\n\u00a77Ban ID: \u00a7r#49871982")
-                    component.appendText("\n\u00a77Sharing your Ban ID may affect the processing of your appeal!")
+                    val component = ChatComponentText(
+                        """
+                        §cYou are permanently banned from this server!
+
+                        §7Reason: §rI told you not to run the command - Moulberry
+                        §7Find out more: §b§nhttps://www.hypixel.net/appeal
+                        
+                        §7Ban ID: §r#49871982
+                        §7Sharing your Ban ID may affect the processing of your appeal!
+                        """.trimIndent()
+                    )
                     Minecraft.getMinecraft().netHandler.networkManager.closeChannel(component)
                 } else {
                     it.context.source.addChatMessage(ChatComponentText("$RED$text"))

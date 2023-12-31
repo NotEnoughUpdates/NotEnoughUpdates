@@ -19,17 +19,15 @@
 
 package io.github.moulberry.notenoughupdates.events;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 
 @Cancelable
+@Getter
+@AllArgsConstructor
 public class SpawnParticleEvent extends NEUEvent {
-
-	// I LOVE code duplication!
-	// I LOVE repeating field names five times to declare a data class!
-	// I LOVE that yummy high fructose corn syrup!
-	// I LOVE the United Nations!
-
 	EnumParticleTypes particleTypes;
 	boolean isLongDistance;
 	double xCoord;
@@ -39,59 +37,4 @@ public class SpawnParticleEvent extends NEUEvent {
 	double yOffset;
 	double zOffset;
 	int[] params;
-
-	public SpawnParticleEvent(
-		EnumParticleTypes particleTypes,
-		boolean isLongDistance,
-		double xCoord, double yCoord, double zCoord,
-		double xOffset, double yOffset, double zOffset,
-		int[] params
-	) {
-		this.particleTypes = particleTypes;
-		this.isLongDistance = isLongDistance;
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
-		this.xOffset = xOffset;
-		this.yOffset = yOffset;
-		this.zOffset = zOffset;
-		this.params = params;
-	}
-
-	public EnumParticleTypes getParticleTypes() {
-		return particleTypes;
-	}
-
-	public boolean isLongDistance() {
-		return isLongDistance;
-	}
-
-	public double getXCoord() {
-		return xCoord;
-	}
-
-	public double getYCoord() {
-		return yCoord;
-	}
-
-	public double getZCoord() {
-		return zCoord;
-	}
-
-	public double getXOffset() {
-		return xOffset;
-	}
-
-	public double getYOffset() {
-		return yOffset;
-	}
-
-	public double getZOffset() {
-		return zOffset;
-	}
-
-	public int[] getParams() {
-		return params;
-	}
-
 }

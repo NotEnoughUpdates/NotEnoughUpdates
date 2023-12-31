@@ -63,8 +63,7 @@ class WardrobeMouseButtons {
         if (!Utils.getOpenChestName().contains("Wardrobe")) return
         val chestName = Utils.getOpenChestName()
         val chestNameRegex = "Wardrobe (\\((?<current>[0-9]+)\\/(?<total>[0-9]+)\\))".toRegex()
-        val chestNameMatch = chestNameRegex.matchEntire(chestName)
-        if (chestNameMatch == null) return
+        val chestNameMatch = chestNameRegex.matchEntire(chestName) ?: return
         val totalPages = chestNameMatch.groups["total"]!!.value.toInt()
         val currentPage = chestNameMatch.groups["current"]!!.value.toInt()
         val guiChes = event.gui as GuiChest
@@ -78,7 +77,7 @@ class WardrobeMouseButtons {
         } else if (KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageUnequip)) {
             var notEquipped = 0
             for (j in 36..44) {
-                val stackItem = container.getSlot(j).getStack() ?: return
+                val stackItem = container.getSlot(j).stack ?: return
                 if (stackItem.getDisplayName().contains("Equipped")) {
                     slotNum = j
                 }
@@ -97,7 +96,7 @@ class WardrobeMouseButtons {
             }
         }
 
-        val thatItemStack = container.getSlot(slotNum).getStack() ?: return
+        val thatItemStack = container.getSlot(slotNum).stack ?: return
         if (thatItemStack.getDisplayName().isEmpty()) return
         if (slotNum < 36 || ((slotNum > 45) && (slotNum != 53))) return
         Utils.sendLeftMouseClick(gui.inventorySlots.windowId, slotNum)

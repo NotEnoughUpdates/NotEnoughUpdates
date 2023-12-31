@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
+import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -105,12 +106,17 @@ public class ApiUtil {
 	public static class Request {
 
 		private final List<NameValuePair> queryArguments = new ArrayList<>();
+		@Getter
 		private String baseUrl = null;
 		private boolean shouldGunzip = false;
 		private Duration maxCacheAge = Duration.ofSeconds(500);
 		private String method = "GET";
 		private String postData = null;
 		private final Map<String, String> headers = new HashMap<>();
+		/**
+		 *  Note: This map may be empty on cache hits.
+		 */
+		@Getter
 		private Map<String, List<String>> responseHeaders = new HashMap<>();
 		private String postContentType = null;
 
@@ -174,21 +180,10 @@ public class ApiUtil {
 			return fut;
 		}
 
-		public String getBaseUrl() {
-			return baseUrl;
-		}
-
 		private ApiCache.CacheKey getCacheKey() {
 			if (!"GET".equals(method)) return null;
 			queryArguments.sort(nameValuePairComparator);
 			return new ApiCache.CacheKey(baseUrl, queryArguments, shouldGunzip);
-		}
-
-		/**
-		 * Note: This map may be empty on cache hits.
-		 */
-		public Map<String, List<String>> getResponseHeaders() {
-			return responseHeaders;
 		}
 
 		private CompletableFuture<String> requestString0() {
@@ -199,16 +194,16 @@ public class ApiUtil {
 				try {
 					try {
 						conn = url.openConnection();
-						if (conn instanceof HttpsURLConnection && ctx != null) {
-							patchHttpsRequest((HttpsURLConnection) conn);
+						if (conn instanceof HttpsURLConnection httpsConn && ctx != null) {
+							patchHttpsRequest(httpsConn);
 						}
-						if (conn instanceof HttpURLConnection) {
-							((HttpURLConnection) conn).setRequestMethod(method);
+						if (conn instanceof HttpURLConnection httpConn) {
+							httpConn.setRequestMethod(method);
 						}
 						conn.setConnectTimeout(10000);
 						conn.setReadTimeout(10000);
 						conn.setRequestProperty("User-Agent", getUserAgent());
-						for (Map.Entry<String, String> header : headers.entrySet()) {
+						for (var header : headers.entrySet()) {
 							conn.setRequestProperty(header.getKey(), header.getValue());
 						}
 						if (this.postContentType != null) {
@@ -227,8 +222,7 @@ public class ApiUtil {
 							}
 						}
 
-						if (conn instanceof HttpURLConnection) {
-							HttpURLConnection httpConn = (HttpURLConnection) conn;
+						if (conn instanceof HttpURLConnection httpConn) {
 							httpStatusCode = httpConn.getResponseCode();
 							if (httpStatusCode >= 400) {
 								inputStream = httpConn.getErrorStream();

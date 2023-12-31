@@ -24,7 +24,7 @@ import java.time.Instant;
 // cryptic helped me a "little" with the calculation
 public class StarCultCalculator {
 
-	public static final String[] SEASONS = new String[]{
+	public static final String[] SEASONS = {
 		"Early Spring",
 		"Spring",
 		"Late Spring",

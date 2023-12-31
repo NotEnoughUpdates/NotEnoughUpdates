@@ -51,7 +51,6 @@ import org.lwjgl.input.Keyboard;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -325,7 +324,7 @@ public class ItemTooltipListener {
 					if (lineHasEnch) {
 						gotToEnchants = true;
 					} else {
-						if (gotToEnchants && !passedEnchants && Utils.cleanColour(line).trim().length() == 0) {
+						if (gotToEnchants && !passedEnchants && Utils.cleanColour(line).trim().isEmpty()) {
 							if (enchantsConst != null && allItemEnchs != null) {
 								List<String> missing = new ArrayList<>();
 								for (JsonElement enchIdElement : allItemEnchs) {
@@ -423,10 +422,8 @@ public class ItemTooltipListener {
 								worth = bazaarPrice;
 							} else {
 								switch (NotEnoughUpdates.INSTANCE.config.dungeons.profitType) {
-									case 1:
-										worth = neu.manager.auctionManager.getItemAvgBin(internal);
-										break;
-									case 2:
+									case 1 -> worth = neu.manager.auctionManager.getItemAvgBin(internal);
+									case 2 -> {
 										JsonObject auctionInfo = neu.manager.auctionManager.getItemAuctionInfo(internal);
 										if (auctionInfo != null) {
 											if (auctionInfo.has("clean_price")) {
@@ -436,9 +433,8 @@ public class ItemTooltipListener {
 													(long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
 											}
 										}
-										break;
-									default:
-										worth = neu.manager.auctionManager.getLowestBin(internal);
+									}
+									default -> worth = neu.manager.auctionManager.getLowestBin(internal);
 								}
 								if (worth <= 0) {
 									worth = neu.manager.auctionManager.getLowestBin(internal);
@@ -622,7 +618,7 @@ public class ItemTooltipListener {
 		}
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && NotEnoughUpdates.INSTANCE.config.hidden.dev &&
-			event.toolTip.size() > 0 && event.toolTip.get(event.toolTip.size() - 1).startsWith(
+			!event.toolTip.isEmpty() && event.toolTip.get(event.toolTip.size() - 1).startsWith(
 			EnumChatFormatting.DARK_GRAY + "NBT: ")) {
 			event.toolTip.remove(event.toolTip.size() - 1);
 

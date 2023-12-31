@@ -24,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import lombok.Getter;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -49,6 +50,7 @@ public class XPInformation {
 		public boolean fromApi = false;
 	}
 
+	@Getter
 	private final HashMap<String, SkillInfo> skillInfoMap = new HashMap<>();
 	public HashMap<String, Float> updateWithPercentage = new HashMap<>();
 
@@ -61,10 +63,6 @@ public class XPInformation {
 		Pattern.compile("\\+(\\d+(?:,\\d+)*(?:\\.\\d+)?) (.+) \\((\\d+(?:,\\d+)*(?:\\.\\d+)?)/(\\d+(?:k|m|b))\\)");
 	private static final Pattern SKILL_PATTERN_PERCENTAGE =
 		Pattern.compile("\\+(\\d+(?:,\\d+)*(?:\\.\\d+)?) (.+) \\((\\d\\d?(?:\\.\\d\\d?)?)%\\)");
-
-	public HashMap<String, SkillInfo> getSkillInfoMap() {
-		return skillInfoMap;
-	}
 
 	public SkillInfo getSkillInfo(String skillName) {
 		return skillInfoMap.get(skillName.toLowerCase());
@@ -97,24 +95,7 @@ public class XPInformation {
 					float currentXp = Float.parseFloat(currentXpS);
 					float maxXp = Float.parseFloat(maxXpS);
 
-					SkillInfo skillInfo = new SkillInfo();
-					skillInfo.currentXp = currentXp;
-					skillInfo.currentXpMax = maxXp;
-					skillInfo.totalXp = currentXp;
-
-					JsonArray levelingArray = leveling.getAsJsonArray("leveling_xp");
-					for (int i = 0; i < levelingArray.size(); i++) {
-						float cap = levelingArray.get(i).getAsFloat();
-						if (maxXp > 0 && maxXp <= cap) {
-							break;
-						}
-
-						skillInfo.totalXp += cap;
-						skillInfo.level++;
-					}
-
-					skillInfoMap.put(skillS.toLowerCase(), skillInfo);
-					return;
+					makeSkillInfoMap(leveling, skillS, currentXp, maxXp);
 				} else {
 					matcher = SKILL_PATTERN_PERCENTAGE.matcher(component);
 					if (matcher.matches()) {
@@ -146,29 +127,33 @@ public class XPInformation {
 							float currentXp = Float.parseFloat(currentXpS);
 							float maxXp = Float.parseFloat(maxXpS) * maxMult;
 
-							SkillInfo skillInfo = new SkillInfo();
-							skillInfo.currentXp = currentXp;
-							skillInfo.currentXpMax = maxXp;
-							skillInfo.totalXp = currentXp;
-
-							JsonArray levelingArray = leveling.getAsJsonArray("leveling_xp");
-							for (int i = 0; i < levelingArray.size(); i++) {
-								float cap = levelingArray.get(i).getAsFloat();
-								if (maxXp > 0 && maxXp <= cap) {
-									break;
-								}
-
-								skillInfo.totalXp += cap;
-								skillInfo.level++;
-							}
-
-							skillInfoMap.put(skillS.toLowerCase(), skillInfo);
+							makeSkillInfoMap(leveling, skillS, currentXp, maxXp);
 							return;
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private void makeSkillInfoMap(JsonObject leveling, String skillS, float currentXp, float maxXp) {
+		SkillInfo skillInfo = new SkillInfo();
+		skillInfo.currentXp = currentXp;
+		skillInfo.currentXpMax = maxXp;
+		skillInfo.totalXp = currentXp;
+
+		JsonArray levelingArray = leveling.getAsJsonArray("leveling_xp");
+		for (int i = 0; i < levelingArray.size(); i++) {
+			float cap = levelingArray.get(i).getAsFloat();
+			if (maxXp > 0 && maxXp <= cap) {
+				break;
+			}
+
+			skillInfo.totalXp += cap;
+			skillInfo.level++;
+		}
+
+		skillInfoMap.put(skillS.toLowerCase(), skillInfo);
 	}
 
 	public void updateLevel(String skill, int level) {

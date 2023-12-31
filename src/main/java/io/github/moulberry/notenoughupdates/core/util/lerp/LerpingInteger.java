@@ -19,7 +19,10 @@
 
 package io.github.moulberry.notenoughupdates.core.util.lerp;
 
+import lombok.Getter;
+
 public class LerpingInteger {
+	@Getter
 	private int timeSpent;
 	private long lastMillis;
 	private int timeToReachTarget;
@@ -61,10 +64,6 @@ public class LerpingInteger {
 		} else {
 			this.lastMillis = System.currentTimeMillis();
 		}
-	}
-
-	public int getTimeSpent() {
-		return timeSpent;
 	}
 
 	public void resetTimer() {

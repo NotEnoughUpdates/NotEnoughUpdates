@@ -34,8 +34,9 @@ plugins {
 	kotlin("jvm") version "1.8.21"
 	id("io.gitlab.arturbosch.detekt") version "1.23.0"
 	id("com.google.devtools.ksp") version "1.8.21-1.0.11"
+	// kotlin("plugin.lombok") version "1.9.22"
+	// id("io.freefair.lombok") version "8.1.0"
 }
-
 
 apply<NEUBuildFlags>()
 
@@ -69,7 +70,6 @@ loom {
 		defaultRefmapName.set("mixins.notenoughupdates.refmap.json")
 	}
 }
-
 
 // Dependencies:
 repositories {
@@ -122,7 +122,8 @@ dependencies {
 		minecraft("com.mojang:minecraft:1.8.9")
 		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
 		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
-
+		annotationProcessor("com.github.bsideup.jabel:jabel-javac-plugin:0.4.2")
+		compileOnly("com.github.bsideup.jabel:jabel-javac-plugin:0.4.2")
 
 		if (project.findProperty("neu.buildflags.oneconfig") == "true") {
 				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
@@ -144,6 +145,8 @@ dependencies {
 		compileOnly(ksp(project(":annotations"))!!)
 		compileOnly("org.projectlombok:lombok:1.18.24")
 		annotationProcessor("org.projectlombok:lombok:1.18.24")
+		// compileOnly(kotlin("plugin.lombok"))
+		// annotationProcessor("org.jetbrains.kotlin.plugin.lombok:1.9.22")
 		"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
 
 		shadowImplementation("com.mojang:brigadier:1.0.18")
@@ -165,8 +168,6 @@ dependencies {
 		devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
 }
 
-
-
 java {
 		withSourcesJar()
 		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
@@ -177,13 +178,19 @@ java {
 tasks.withType(JavaCompile::class) {
 		options.encoding = "UTF-8"
 		options.isFork = true
+		options.release.set(8)
+		sourceCompatibility = "16" // for the IDE support
+
+		javaCompiler.set(javaToolchains.compilerFor {
+			languageVersion.set(JavaLanguageVersion.of(16))
+		})
 }
+
 tasks.named("compileOneconfigJava", JavaCompile::class) {
 		doFirst {
 				println("oneconfig args: ${this@named.options.compilerArgs}")
 		}
 }
-
 
 tasks.named<Test>("test") {
 		useJUnitPlatform()

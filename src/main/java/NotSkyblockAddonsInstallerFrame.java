@@ -544,47 +544,28 @@ public class NotSkyblockAddonsInstallerFrame extends JFrame implements ActionLis
 	}
 
 	public File getFile(String userHome, String minecraftPath) {
-		File workingDirectory;
-		switch (getOperatingSystem()) {
-			case LINUX:
-			case SOLARIS: {
-				workingDirectory = new File(userHome, '.' + minecraftPath + '/');
-				break;
-			}
-			case WINDOWS: {
+		return switch (getOperatingSystem()) {
+			case LINUX, SOLARIS -> new File(userHome, '.' + minecraftPath + '/');
+			case WINDOWS -> {
 				String applicationData = System.getenv("APPDATA");
-				if (applicationData != null) {
-					workingDirectory = new File(applicationData, "." + minecraftPath + '/');
-					break;
-				}
-				workingDirectory = new File(userHome, '.' + minecraftPath + '/');
-				break;
+				yield applicationData != null
+					? new File(applicationData, "." + minecraftPath + '/')
+					: new File(userHome, '.' + minecraftPath + '/');
 			}
-			case MACOS: {
-				workingDirectory = new File(userHome, "Library/Application Support/" + minecraftPath);
-				break;
-			}
-			default: {
-				workingDirectory = new File(userHome, minecraftPath + '/');
-				break;
-			}
-		}
-		return workingDirectory;
+			case MACOS -> new File(userHome, "Library/Application Support/" + minecraftPath);
+			default -> new File(userHome, minecraftPath + '/');
+		};
 	}
 
 	public OperatingSystem getOperatingSystem() {
 		String osName = System.getProperty("os.name").toLowerCase(Locale.US);
 		if (osName.contains("win")) {
 			return OperatingSystem.WINDOWS;
-
 		} else if (osName.contains("mac")) {
 			return OperatingSystem.MACOS;
-
 		} else if (osName.contains("solaris") || osName.contains("sunos")) {
-
 			return OperatingSystem.SOLARIS;
 		} else if (osName.contains("linux") || osName.contains("unix")) {
-
 			return OperatingSystem.LINUX;
 		}
 		return OperatingSystem.UNKNOWN;

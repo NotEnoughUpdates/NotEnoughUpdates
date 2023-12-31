@@ -393,7 +393,7 @@ public class AuctionSearchOverlay {
 				tabCompleted = false;
 				tabCompletionIndex = -1;
 				return true;
-			} else if (id.equals("")) {
+			} else if (id.isEmpty()) {
 				tabCompletionIndex = 0;
 				return true;
 			} else {
@@ -409,7 +409,7 @@ public class AuctionSearchOverlay {
 				tabCompleted = false;
 				tabCompletionIndex = -1;
 				return true;
-			} else if (id.equals("")) {
+			} else if (id.isEmpty()) {
 				if (autocompletedItems.size() > 4) tabCompletionIndex = 4;
 				else tabCompletionIndex = autocompletedItems.size() - 1;
 				tabCompletionIndex = autocompletedItems.size() - 1;
@@ -626,21 +626,11 @@ public class AuctionSearchOverlay {
 										searchStringExtra += "\u272A";
 									}
 									switch (selectedStars) {
-										case 6:
-											searchStringExtra += "\u278A";
-											break;
-										case 7:
-											searchStringExtra += "\u278B";
-											break;
-										case 8:
-											searchStringExtra += "\u278C";
-											break;
-										case 9:
-											searchStringExtra += "\u278D";
-											break;
-										case 10:
-											searchStringExtra += "\u278E";
-											break;
+										case 6 -> searchStringExtra += "\u278A";
+										case 7 -> searchStringExtra += "\u278B";
+										case 8 -> searchStringExtra += "\u278C";
+										case 9 -> searchStringExtra += "\u278D";
+										case 10 -> searchStringExtra += "\u278E";
 									}
 									if (selectedStars < 6 && !atLeast) {
 										searchStringExtra += " ";

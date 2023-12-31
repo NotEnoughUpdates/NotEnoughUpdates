@@ -47,24 +47,24 @@ public class ProfileViewer {
 	@Expose
 	@ConfigOption(
 		name = "Page layout",
-		desc = "\u00a7rSelect the order of the pages at the top of the Profile Viewer\n" +
-			"\u00a7eDrag text to rearrange"
+		desc = "§rSelect the order of the pages at the top of the Profile Viewer\n" +
+			"§eDrag text to rearrange"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7eBasic Info",
-			"\u00a7eDungeons",
-			"\u00a7eExtra Info",
-			"\u00a7eInventories",
-			"\u00a7eCollections",
-			"\u00a7ePets",
-			"\u00a7eMining",
-			"\u00a7eBingo",
-			"\u00a7eTrophy Fish",
-			"\u00a7eBestiary",
-			"\u00a7eCrimson Isle",
-			"\u00a7eMuseum",
-			"\u00a7eRift"
+			"§eBasic Info",
+			"§eDungeons",
+			"§eExtra Info",
+			"§eInventories",
+			"§eCollections",
+			"§ePets",
+			"§eMining",
+			"§eBingo",
+			"§eTrophy Fish",
+			"§eBestiary",
+			"§eCrimson Isle",
+			"§eMuseum",
+			"§eRift"
 		},
 		allowDeleting = false
 	)

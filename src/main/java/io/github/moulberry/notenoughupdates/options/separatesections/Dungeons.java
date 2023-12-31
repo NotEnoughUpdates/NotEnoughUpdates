@@ -82,10 +82,11 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Profit Display Location",
-		desc = "Set where the profit information is displayed\n" +
-			"Overlay = Overlay on right side of inventory\n" +
-			"GUI Title = Text displayed next to the inventory title\n" +
-			"Lore = Inside the \"Open Reward Chest\" item"
+		desc = """
+			Set where the profit information is displayed
+			Overlay = Overlay on right side of inventory
+			GUI Title = Text displayed next to the inventory title
+			Lore = Inside the "Open Reward Chest" item"""
 	)
 	@ConfigEditorDropdown(
 		values = {"Overlay", "GUI Title", "Lore", "Off"}
@@ -158,9 +159,10 @@ public class Dungeons {
 	public boolean dungeonBlocksAccordion = false;
 
 	@ConfigOption(
-		name = "\u00A7cWarning",
-		desc = "You need Fast Render and Antialiasing off for these settings to work\n" +
-			"You can find these in your video settings"
+		name = "§cWarning",
+		desc = """
+			You need Fast Render and Antialiasing off for these settings to work
+			You can find these in your video settings"""
 	)
 	@ConfigEditorInfoText()
 	@ConfigAccordionId(id = 2)
@@ -187,9 +189,10 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Slow Update",
-		desc = "Updates the colour every second instead of every tick.\n" +
-			"\u00A7cWARNING: This will cause all texture animations (eg. flowing water) to update slowly.\n" +
-			"This should only be used on low-end machines"
+		desc = """
+			Updates the colour every second instead of every tick.
+			§cWARNING: This will cause all texture animations (eg. flowing water) to update slowly.
+			This should only be used on low-end machines"""
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)

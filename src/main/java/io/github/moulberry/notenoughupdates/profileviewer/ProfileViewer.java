@@ -42,7 +42,7 @@ public class ProfileViewer {
 
 	@Getter
 	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap =
-		new LinkedHashMap<String, ItemStack>() {
+		new LinkedHashMap<>() {
 			{
 				put("taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
 				put("mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
@@ -98,7 +98,7 @@ public class ProfileViewer {
 	);
 	@Getter
 	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap =
-		new LinkedHashMap<ItemStack, List<String>>() {
+		new LinkedHashMap<>() {
 			{
 				put(
 					CAT_FARMING,
@@ -187,7 +187,8 @@ public class ProfileViewer {
 						"MAGMA_FISH"
 					)
 				);
-				put(CAT_RIFT,
+				put(
+					CAT_RIFT,
 					Utils.createList(
 						"AGARICUS_CAP",
 						"CADUCOUS_STEM",
@@ -201,7 +202,7 @@ public class ProfileViewer {
 		};
 	@Getter
 	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap =
-		new LinkedHashMap<ItemStack, List<String>>() {
+		new LinkedHashMap<>() {
 			{
 				put(
 					CAT_FARMING,
@@ -279,7 +280,7 @@ public class ProfileViewer {
 		};
 	@Getter
 	private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap =
-		new LinkedHashMap<String, ItemStack>() {
+		new LinkedHashMap<>() {
 			{
 				/* FARMING COLLECTIONS */
 				put("WHEAT", Utils.createItemStack(Items.wheat, EnumChatFormatting.YELLOW + "Wheat"));
@@ -436,23 +437,40 @@ public class ProfileViewer {
 					)
 				);
 				/* RIFT COLLECTIONS */
-				put("AGARICUS_CAP",
+				put(
+					"AGARICUS_CAP",
 					Utils.createSkull(
 						EnumChatFormatting.DARK_PURPLE + "Agaricus Cap",
 						"43e884b2-633e-3c87-b601-62d18c11683f",
 						"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNlMGEyMzBhY2Q2NDM2YWJjODZmMTNiZTcyZTliYTk0NTM3ZWU1NGYwMzI1YmI4NjI1NzdhMWUwNjJmMzcifX19"
-					));
+					)
+				);
 				put("CADUCOUS_STEM", Utils.createItemStack(Item.getItemFromBlock(Blocks.double_plant),
-					EnumChatFormatting.DARK_PURPLE + "Caducous Stem", 4));
-				put("HALF_EATEN_CARROT", Utils.createItemStack(Items.carrot, EnumChatFormatting.DARK_PURPLE + "Half-Eaten Carrot"));
-				put("HEMOVIBE", Utils.createItemStack(Item.getItemFromBlock(Blocks.redstone_ore), EnumChatFormatting.DARK_PURPLE + "Hemovibe"));
-				put("METAL_HEART",
+					EnumChatFormatting.DARK_PURPLE + "Caducous Stem", 4
+				));
+				put(
+					"HALF_EATEN_CARROT",
+					Utils.createItemStack(Items.carrot, EnumChatFormatting.DARK_PURPLE + "Half-Eaten Carrot")
+				);
+				put(
+					"HEMOVIBE",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.redstone_ore), EnumChatFormatting.DARK_PURPLE + "Hemovibe")
+				);
+				put(
+					"METAL_HEART",
 					Utils.createSkull(
 						EnumChatFormatting.DARK_PURPLE + "Living Metal Heart",
 						"c678b8cc-c130-31d1-baf3-14660f8ef742",
 						"ewogICJ0aW1lc3RhbXAiIDogMTY3NjQ3NjQ1NjcyNywKICAicHJvZmlsZUlkIiA6ICI5MGQ1NDY0OGEzNWE0YmExYTI2Yjg1YTg4NTU4OGJlOSIsCiAgInByb2ZpbGVOYW1lIiA6ICJFdW4wbWlhIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2YwMjc4ZWU1M2E1M2I3NzMzYzdiODQ1MmZjZjc5NGRmYmZiYzNiMDMyZTc1MGE2OTkzNTczYjViZDAyOTkxMzUiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ"
-					));
-				put("WILTED_BERBERIS", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.DARK_PURPLE + "Wilted Berberis"));
+					)
+				);
+				put(
+					"WILTED_BERBERIS",
+					Utils.createItemStack(
+						Item.getItemFromBlock(Blocks.deadbush),
+						EnumChatFormatting.DARK_PURPLE + "Wilted Berberis"
+					)
+				);
 			}
 		};
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);

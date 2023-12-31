@@ -20,6 +20,8 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.updater;
 
 import io.github.moulberry.notenoughupdates.util.NetUtils;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import org.apache.commons.io.IOUtils;
 
@@ -38,26 +40,17 @@ abstract class UpdateLoader {
 		NOTHING, DOWNLOAD_STARTED, DOWNLOAD_FINISHED, INSTALLED, FAILED
 	}
 
+	@Getter
 	URL url;
 	AutoUpdater updater;
 
+	@Setter
+	@Getter
 	State state = State.NOTHING;
 
 	UpdateLoader(AutoUpdater updater, URL url) {
 		this.url = url;
 		this.updater = updater;
-	}
-
-	public State getState() {
-		return state;
-	}
-
-	public void setState(State state) {
-		this.state = state;
-	}
-
-	public URL getUrl() {
-		return url;
 	}
 
 	public void scheduleDownload() {

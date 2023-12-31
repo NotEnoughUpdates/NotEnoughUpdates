@@ -151,7 +151,7 @@ public class RecipeGenerator {
 		if (!menu.getDisplayName().getUnformattedText().contains("➜")) return;
 		ItemStack backArrow = menu.getStackInSlot(48);
 		if (backArrow == null || backArrow.getItem() != Items.arrow) return;
-		if (!getLore(backArrow).stream().anyMatch(it -> it.startsWith("§7To Bestiary ➜"))) return;
+		if (getLore(backArrow).stream().noneMatch(it -> it.startsWith("§7To Bestiary ➜"))) return;
 		List<NeuRecipe> recipes = new ArrayList<>();
 		String internalMobName =
 			menu.getDisplayName().getUnformattedText().split("➜")[1].toUpperCase(Locale.ROOT).trim() + "_MONSTER";
@@ -300,7 +300,7 @@ public class RecipeGenerator {
 		);
 	}
 
-	private static final Map<Character, Integer> durationSuffixLengthMap = new HashMap<Character, Integer>() {{
+	private static final Map<Character, Integer> durationSuffixLengthMap = new HashMap<>() {{
 		put('d', 60 * 60 * 24);
 		put('h', 60 * 60);
 		put('m', 60);

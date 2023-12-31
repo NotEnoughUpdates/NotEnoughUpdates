@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
@@ -78,7 +79,7 @@ public class EssenceUpgrades implements NeuRecipe {
 		add(new RenderLocation(150, 40));
 	}};
 
-	private static final List<RenderLocation> slotLocations = new ArrayList<RenderLocation>() {{
+	private static final List<RenderLocation> slotLocations = new ArrayList<>() {{
 		add(new RenderLocation(20, 60));
 		add(new RenderLocation(45, 60));
 		add(new RenderLocation(70, 60));
@@ -187,7 +188,6 @@ public class EssenceUpgrades implements NeuRecipe {
 		return new EssenceUpgrades(output, upgradeMap, catacombsItemRequirements);
 	}
 
-
 	/**
 	 * Builds a list containing all the RecipeSlots that should be rendered right now:
 	 * <ul>
@@ -293,7 +293,7 @@ public class EssenceUpgrades implements NeuRecipe {
 				if (itemStack != null) {
 					RenderLocation renderLocation = slotLocations.get(i++);
 					if (renderLocation != null) {
-						slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY()+1, itemStack));
+						slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY() + 1, itemStack));
 					}
 				}
 			}
@@ -305,8 +305,8 @@ public class EssenceUpgrades implements NeuRecipe {
 	/**
 	 * Draws an empty slot texture at the specified location
 	 *
-	 * @param x     x location
-	 * @param y     y location
+	 * @param x x location
+	 * @param y y location
 	 */
 	private void drawSlot(int x, int y) {
 		GlStateManager.color(1, 1, 1, 1);
@@ -513,33 +513,21 @@ public class EssenceUpgrades implements NeuRecipe {
 	 * Simple dataclass holding an x and y value to be used when describing the location of something to be rendered
 	 */
 	@Getter
+	@AllArgsConstructor
 	private static class RenderLocation {
 		private final int x;
 		private final int y;
-
-		public RenderLocation(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-
 	}
 
 	/**
 	 * Dataclass holding information about the items and essence required to upgrade an item to a specific tier
 	 */
 	@Getter
+	@AllArgsConstructor
 	public static class TierUpgrade {
 		private final int tier;
 		private final String essenceType;
 		private final int essenceRequired;
 		private Map<String, Integer> itemsRequired;
-
-		public TierUpgrade(int tier, String essenceType, int essenceRequired, Map<String, Integer> itemsRequired) {
-			this.tier = tier;
-			this.essenceType = essenceType;
-			this.essenceRequired = essenceRequired;
-			this.itemsRequired = itemsRequired;
-		}
-
 	}
 }

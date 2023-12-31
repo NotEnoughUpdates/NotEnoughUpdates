@@ -59,7 +59,7 @@ public class NotificationHandler {
 	public static void renderNotification() {
 		long timeRemaining = 15000 - (System.currentTimeMillis() - notificationDisplayMillis);
 		boolean display = timeRemaining > 0 || notificationDisplayMillis == -420;
-		if (display && notificationLines != null && notificationLines.size() > 0) {
+		if (display && notificationLines != null && !notificationLines.isEmpty()) {
 			int width = 0;
 			int height = notificationLines.size() * 10 + 10;
 
@@ -108,8 +108,7 @@ public class NotificationHandler {
 
 	public static boolean shouldRenderOverlay(Gui gui) {
 		boolean validGui = gui instanceof GuiContainer || gui instanceof GuiItemRecipe;
-		if (gui instanceof GuiChest) {
-			GuiChest eventGui = (GuiChest) gui;
+		if (gui instanceof GuiChest eventGui) {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (containerName.trim().equals("Fast Travel")) {

@@ -42,29 +42,18 @@ public class AllowEmptyHTMLTag extends HTMLTag {
 
 		if (NEW_LINES) {
 			switch (name) {
-				case "div":
-				case "p":
-				case "li":
-				case "td":
-					buf.append('\n');
-					break;
-				case "table":
-				case "ul":
-				case "ol":
-				case "th":
-				case "tr":
+				case "div", "p", "li", "td" -> buf.append('\n');
+				case "table", "ul", "ol", "th", "tr" -> {
 					buf.append('\n');
 					newLinesAfterTag = true;
 					newLinesAfterChildren = true;
-					break;
-				case "pre":
+				}
+				case "pre" -> {
 					buf.append('\n');
 					newLinesAfterTag = false;
 					newLinesAfterChildren = true;
-					break;
-				case "blockquote":
-					newLinesAfterChildren = true;
-					break;
+				}
+				case "blockquote" -> newLinesAfterChildren = true;
 			}
 		}
 		buf.append('<');
@@ -74,7 +63,7 @@ public class AllowEmptyHTMLTag extends HTMLTag {
 
 		appendAttributes(buf, tagAtttributes);
 
-		if (children.size() == 0) {
+		if (children.isEmpty()) {
 			buf.append(" />");
 		} else {
 			buf.append('>');

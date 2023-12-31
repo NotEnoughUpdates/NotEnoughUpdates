@@ -565,12 +565,11 @@ public class GuiCustomEnchant extends Gui {
 	}
 
 	public void render(float partialTicks) {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return;
 
 		long currentTime = System.currentTimeMillis();
 		int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
 
-		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
 		leftScroll.tick();
@@ -649,27 +648,28 @@ public class GuiCustomEnchant extends Gui {
 			mouseY >= guiTop + 146 && mouseY < guiTop + 146 + 36) {
 			int index = (mouseX - (guiLeft + 295)) / 18 + (mouseY - (guiTop + 147)) / 18 * 2;
 			switch (index) {
-				case 0:
+				case 0 -> {
 					Gui.drawRect(guiLeft + 295, guiTop + 147, guiLeft + 295 + 16, guiTop + 147 + 16, 0x80ffffff);
 					tooltipToDisplay = createTooltip("Enable GUI", 0, "On", "Off");
-					break;
-                /*case 1:
-                    Gui.drawRect(guiLeft + 295 + 18, guiTop + 147, guiLeft + 295 + 16 + 18, guiTop + 147 + 16, 0x80ffffff);
-                    tooltipToDisplay = createTooltip("Incompatible Enchants",
-                            NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants,
-                            "Highlight", "Hide");
-                    tooltipToDisplay.add(1, EnumChatFormatting.GRAY + "How to display enchants that are");
-                    tooltipToDisplay.add(2, EnumChatFormatting.GRAY + "incompatible with your current item,");
-                    tooltipToDisplay.add(3, EnumChatFormatting.GRAY + "eg. Smite on a sword with Sharpness");
-                    break;*/
-				case 2:
+				}
+				/*case 1 -> {
+					Gui.drawRect(guiLeft + 295 + 18, guiTop + 147, guiLeft + 295 + 16 + 18, guiTop + 147 + 16, 0x80ffffff);
+					tooltipToDisplay = createTooltip("Incompatible Enchants",
+						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants,
+						"Highlight", "Hide"
+					);
+					tooltipToDisplay.add(1, EnumChatFormatting.GRAY + "How to display enchants that are");
+					tooltipToDisplay.add(2, EnumChatFormatting.GRAY + "incompatible with your current item,");
+					tooltipToDisplay.add(3, EnumChatFormatting.GRAY + "eg. Smite on a sword with Sharpness");
+				}*/
+				case 2 -> {
 					Gui.drawRect(guiLeft + 295, guiTop + 147 + 18, guiLeft + 295 + 16, guiTop + 147 + 16 + 18, 0x80ffffff);
 					tooltipToDisplay = createTooltip("Sort enchants...",
 						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting,
 						"By Cost", "Alphabetically"
 					);
-					break;
-				case 3:
+				}
+				case 3 -> {
 					Gui.drawRect(
 						guiLeft + 295 + 18,
 						guiTop + 147 + 18,
@@ -681,7 +681,7 @@ public class GuiCustomEnchant extends Gui {
 						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering,
 						"Ascending", "Descending"
 					);
-					break;
+				}
 			}
 		}
 
@@ -1293,8 +1293,7 @@ public class GuiCustomEnchant extends Gui {
 				if (click >= 0) {
 					if (currentState == EnchantState.ADDING_ENCHANT) {
 						if (Mouse.getEventButtonState()) {
-							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-							GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 							EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 							short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -1305,8 +1304,7 @@ public class GuiCustomEnchant extends Gui {
 							cancelButtonAnimTime = System.currentTimeMillis();
 						}
 					} else {
-						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-						GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -1345,8 +1343,7 @@ public class GuiCustomEnchant extends Gui {
 
 				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
 					mouseY > top + 18 && mouseY <= top + 18 + 14) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -1360,8 +1357,7 @@ public class GuiCustomEnchant extends Gui {
 						mouseY > top && mouseY <= top + 16) ||
 					(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
 						mouseY > top + 18 && mouseY <= top + 18 + 14)) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -1452,39 +1448,33 @@ public class GuiCustomEnchant extends Gui {
 		//Config options
 		if (Mouse.getEventButtonState()) {
 			if (mouseX >= guiLeft + 294 && mouseX < guiLeft + 294 + 36 &&
-				mouseY >= guiTop + 146 && mouseY < guiTop + 146 + 36) {
+					mouseY >= guiTop + 146 && mouseY < guiTop + 146 + 36) {
 				int index = (mouseX - (guiLeft + 295)) / 18 + (mouseY - (guiTop + 147)) / 18 * 2;
 
 				int direction = Mouse.getEventButton() == 0 ? 1 : -1;
 
 				switch (index) {
-					case 0: {
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI = false;
-						break;
-					}
-                   /*case 1: {
-                        int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants;
-                        val += direction;
-                        if (val < 0) val = 1;
-                        if (val > 1) val = 0;
-                        NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants = val;
-                        break;
-                    }*/
-					case 2: {
+					case 0 -> NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI = false;
+					/*case 1 -> {
+						int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants;
+						val += direction;
+						if (val < 0) val = 1;
+						if (val > 1) val = 0;
+						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants = val;
+					}*/
+					case 2 -> {
 						int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting;
 						val += direction;
 						if (val < 0) val = 1;
 						if (val > 1) val = 0;
 						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting = val;
-						break;
 					}
-					case 3: {
+					case 3 -> {
 						int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering;
 						val += direction;
 						if (val < 0) val = 1;
 						if (val > 1) val = 0;
 						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering = val;
-						break;
 					}
 				}
 			}
@@ -1533,8 +1523,7 @@ public class GuiCustomEnchant extends Gui {
 							mouseY > top && mouseY <= top + 16) {
 							Enchantment ench = applicable.get(index);
 
-							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-							GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 							if (currentState == EnchantState.HAS_ITEM) {
 								EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
@@ -1573,8 +1562,7 @@ public class GuiCustomEnchant extends Gui {
 							mouseY > top && mouseY <= top + 16) {
 							Enchantment ench = removable.get(index);
 
-							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-							GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 							if (currentState == EnchantState.HAS_ITEM) {
 								EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
@@ -1630,8 +1618,7 @@ public class GuiCustomEnchant extends Gui {
 				(mouseY > guiTop + 133 + 54 + 4 && mouseY < guiTop + 133 + 54 + 4 + 18)) {
 				if (currentState == EnchantState.ADDING_ENCHANT) {
 					if (Mouse.getEventButtonState()) {
-						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-						GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -1651,8 +1638,7 @@ public class GuiCustomEnchant extends Gui {
 			mouseY >= guiTop + 57 && mouseY < guiTop + 57 + 18) {
 			if (currentState == EnchantState.ADDING_ENCHANT) {
 				if (Mouse.getEventButtonState()) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);

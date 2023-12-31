@@ -53,20 +53,18 @@ public class MuseumPage extends GuiProfileViewerPage {
 	private static final ResourceLocation pv_inventories =
 		new ResourceLocation("notenoughupdates:pv_inventories.png");
 	private static final ResourceLocation pv_museum = new ResourceLocation("notenoughupdates:pv_museum.png");
-	private static final LinkedHashMap<String, ItemStack> museumCategories = new LinkedHashMap<String, ItemStack>() {
-		{
-			put("weapons", Utils.createItemStack(Items.diamond_sword, EnumChatFormatting.GOLD + "Weapons"));
-			put("armor", Utils.createItemStack(Items.diamond_chestplate, EnumChatFormatting.GOLD + "Armor Sets"));
-			put(
-				"rarities", Utils.createSkull(
-					EnumChatFormatting.GOLD + "Rarities",
-					"b569ed03-94ae-3da9-a01d-9726633d5b8b",
-					"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZhZGRiZDVkZWRhZDQwOTk5NDczYmU0YTdmNDhmNjIzNmE3OWEwZGNlOTcxYjVkYmQ3MzcyMDE0YWUzOTRkIn19fQ"
-				)
-			);
-			put("special", Utils.createItemStack(Items.cake, EnumChatFormatting.GOLD + "Special Items"));
-		}
-	};
+	private static final LinkedHashMap<String, ItemStack> museumCategories = new LinkedHashMap<>() {{
+		put("weapons", Utils.createItemStack(Items.diamond_sword, EnumChatFormatting.GOLD + "Weapons"));
+		put("armor", Utils.createItemStack(Items.diamond_chestplate, EnumChatFormatting.GOLD + "Armor Sets"));
+		put(
+			"rarities", Utils.createSkull(
+				EnumChatFormatting.GOLD + "Rarities",
+				"b569ed03-94ae-3da9-a01d-9726633d5b8b",
+				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZhZGRiZDVkZWRhZDQwOTk5NDczYmU0YTdmNDhmNjIzNmE3OWEwZGNlOTcxYjVkYmQ3MzcyMDE0YWUzOTRkIn19fQ"
+			)
+		);
+		put("special", Utils.createItemStack(Items.cake, EnumChatFormatting.GOLD + "Special Items"));
+	}};
 	private static final ResourceLocation CHEST_GUI_TEXTURE =
 		new ResourceLocation("textures/gui/container/generic_54.png");
 	private static String selectedMuseumCategory = "weapons";
@@ -116,7 +114,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 			return;
 		}
 
-		getInstance().museumTextField.render(guiLeft + 251-searchBarSizeX/2, guiTop + getInstance().sizeY - 26 - 20);
+		getInstance().museumTextField.render(guiLeft + 251 - searchBarSizeX / 2, guiTop + getInstance().sizeY - 26 - 20);
 
 		int xIndex = 0;
 		for (Map.Entry<String, ItemStack> entry : museumCategories.entrySet()) {
@@ -279,27 +277,24 @@ public class MuseumPage extends GuiProfileViewerPage {
 		JsonArray categoryItems = new JsonArray();
 		Map<String, JsonArray> categoryDonated = new HashMap<>();
 		switch (selectedMuseumCategory) {
-			case "weapons":
+			case "weapons" -> {
 				categoryItems = museum.get("weapons").getAsJsonArray();
 				categoryDonated = museumData.getWeaponItems();
-				break;
-			case "armor":
+			}
+			case "armor" -> {
 				categoryItems = museum.get("armor").getAsJsonArray();
 				categoryDonated = museumData.getArmorItems();
-				break;
-			case "rarities":
+			}
+			case "rarities" -> {
 				categoryItems = museum.get("rarities").getAsJsonArray();
 				categoryDonated = museumData.getRaritiesItems();
-				break;
-			case "special":
+			}
+			case "special" -> {
 				pages = (int) Math.ceil(donated / 28.0);
 				if (pages == 0) pages = 1;
-
 				List<JsonArray> specialItems = museumData.getSpecialItems();
-
 				int startIndex = (onPage - 1) * 28;
 				int endIndex = Math.min(startIndex + 28, specialItems.size());
-
 				int row = 0;
 				int slot = 0;
 				for (int i = startIndex; i < endIndex; i++) {
@@ -328,8 +323,9 @@ public class MuseumPage extends GuiProfileViewerPage {
 					Utils.drawItemStack(stack, x, y);
 					highlightMatchingItem(stack, x, y);
 				}
-				break;
-			default:
+			}
+			default -> {
+			}
 		}
 
 		if (categoryItems != null) {
@@ -563,7 +559,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 
 		getInstance().museumTextField.setSize(searchBarSizeX, searchBarSizeY);
-		if (mouseX > guiLeft + 251 - searchBarSizeX/2 && mouseX < guiLeft + 251 + searchBarSizeX/2) {
+		if (mouseX > guiLeft + 251 - searchBarSizeX / 2 && mouseX < guiLeft + 251 + searchBarSizeX / 2) {
 			if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
 				getInstance().museumTextField.mouseClicked(mouseX, mouseY, mouseButton);
 				getInstance().playerNameTextField.otherComponentClick();

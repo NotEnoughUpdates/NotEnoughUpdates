@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CapeNode {
-	private static final NEUCape.Direction[] cardinals = new NEUCape.Direction[]{
+	private static final NEUCape.Direction[] cardinals = {
 		NEUCape.Direction.UP,
 		NEUCape.Direction.RIGHT,
 		NEUCape.Direction.DOWN,
@@ -279,7 +279,7 @@ public class CapeNode {
 		if (sideNormal != null) return sideNormal;
 
 		sideNormal = new Vector3f();
-		NEUCape.Direction[] cardinals = new NEUCape.Direction[]{
+		NEUCape.Direction[] cardinals = {
 			NEUCape.Direction.UP,
 			NEUCape.Direction.RIGHT,
 			NEUCape.Direction.DOWN,

@@ -79,7 +79,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	// This is different to the one above as these refer to the names of the tiers in the API
 	public static final String[] KUUDRA_TIERS = {"none", "hot", "burning", "fiery", "infernal"};
 
-	public static final LinkedHashMap<String, String> apiDojoTestNames = new LinkedHashMap<String, String>() {{
+	public static final LinkedHashMap<String, String> apiDojoTestNames = new LinkedHashMap<>() {{
 		put("mob_kb", EnumChatFormatting.GOLD + "Test of Force");
 		put("wall_jump", EnumChatFormatting.LIGHT_PURPLE + "Test of Stamina");
 		put("archer", EnumChatFormatting.YELLOW + "Test of Mastery");
@@ -89,7 +89,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		put("fireball", EnumChatFormatting.GOLD + "Test of Tenacity");
 	}};
 
-	public static final LinkedHashMap<Integer, String> dojoPointsToRank = new LinkedHashMap<Integer, String>() {{
+	public static final LinkedHashMap<Integer, String> dojoPointsToRank = new LinkedHashMap<>() {{
 		put(0, EnumChatFormatting.GRAY + "None");
 		put(1000, EnumChatFormatting.YELLOW + "Yellow");
 		put(2000, EnumChatFormatting.GREEN + "Green");
@@ -98,13 +98,13 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		put(7000, EnumChatFormatting.DARK_GRAY + "Black");
 	}};
 
-	private static final HashMap<String, String> factions = new HashMap<String, String>() {{
+	private static final HashMap<String, String> factions = new HashMap<>() {{
 		put("mages", EnumChatFormatting.DARK_PURPLE + "Mages");
 		put("barbarians", EnumChatFormatting.RED + "Barbarians");
 		put("N/A", EnumChatFormatting.GRAY + "N/A");
 	}};
 
-	private static final LinkedHashMap<Integer, String> factionThresholds = new LinkedHashMap<Integer, String>() {{
+	private static final LinkedHashMap<Integer, String> factionThresholds = new LinkedHashMap<>() {{
 		put(-3000, "Hostile");
 		put(-1000, "Unfriendly");
 		put(0, "Neutral");

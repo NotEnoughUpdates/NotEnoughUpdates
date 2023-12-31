@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public abstract class TextOverlay {
+	@Getter
 	private final Position position;
 	protected Supplier<TextOverlayStyle> styleSupplier;
 	public int overlayWidth = -1;
@@ -133,10 +135,6 @@ public abstract class TextOverlay {
 		int y = position.getAbsY(scaledResolution, overlayHeight);
 		GlStateManager.popMatrix();
 		return new Vector2f(x, y);
-	}
-
-	public Position getPosition() {
-		return position;
 	}
 
 	protected void renderLine(String line, Vector2f position, boolean dummy) {

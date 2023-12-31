@@ -52,7 +52,7 @@ import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewe
 
 public class TrophyFishPage extends GuiProfileViewerPage {
 
-	private static final Map<String, EnumChatFormatting> internalTrophyFish = new HashMap<String, EnumChatFormatting>() {
+	private static final Map<String, EnumChatFormatting> internalTrophyFish = new HashMap<>() {
 		{
 			put("gusher", EnumChatFormatting.WHITE);
 			put("flyfish", EnumChatFormatting.GREEN);
@@ -74,7 +74,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			put("steaming_hot_flounder", EnumChatFormatting.WHITE);
 		}
 	};
-	private static final LinkedHashMap<ItemStack, Pair<String, Integer>> armorHelmets = new LinkedHashMap<ItemStack, Pair<String, Integer>>() {
+	private static final LinkedHashMap<ItemStack, Pair<String, Integer>> armorHelmets = new LinkedHashMap<>() {
 		{
 			put(
 				NotEnoughUpdates.INSTANCE.manager.jsonToStack(
@@ -102,7 +102,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			);
 		}
 	};
-	private static final Map<Integer, Pair<Integer, Integer>> slotLocations = new HashMap<Integer, Pair<Integer, Integer>>() {
+	private static final Map<Integer, Pair<Integer, Integer>> slotLocations = new HashMap<>() {
 		{
 			put(0, Pair.of(277, 46));
 			put(1, Pair.of(253, 58));
@@ -305,7 +305,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 	}
 
 	private int[] getTrophiesPerTier(JsonObject trophyFish) {
-		int[] trophiesPerTier = new int[]{0, 0, 0, 0};
+		int[] trophiesPerTier = {0, 0, 0, 0};
 		for (String fishType : internalTrophyFish.keySet()) {
 			int highestTier = 0;
 			if (trophyFish.has((fishType + "_bronze"))) highestTier = 1;

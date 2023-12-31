@@ -63,7 +63,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	private static final ResourceLocation CHEST_GUI_TEXTURE =
 		new ResourceLocation("textures/gui/container/generic_54.png");
 	private static final Pattern FISHING_SPEED_PATTERN = Pattern.compile("^Fishing Speed: \\+(\\d+)");
-	private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<String, ItemStack>() {
+	private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<>() {
 		{
 			put(
 				"inv_contents",
@@ -111,52 +111,42 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	private int greenCandyCount = -1;
 	private int purpleCandyCount = -1;
 
-	public static final HashMap<String, String> apiStatNames = new HashMap<String, String>() {{
-			put("health","§c❤ Health");
-			put("defense","§a❈ Defense");
-			put("walk_speed","§f✦ Speed");
-			put("strength","§c❁ Strength");
-			put("critical_damage","§9☠ Crit Damage");
-			put("critical_chance","§9☣ Crit Chance");
-			put("attack_speed","§e⚔ Bonus Attack Speed");
-			put("intelligence","§b✎ Intelligence");
+	public static final HashMap<String, String> apiStatNames = new HashMap<>() {{
+		put("health", "§c❤ Health");
+		put("defense", "§a❈ Defense");
+		put("walk_speed", "§f✦ Speed");
+		put("strength", "§c❁ Strength");
+		put("critical_damage", "§9☠ Crit Damage");
+		put("critical_chance", "§9☣ Crit Chance");
+		put("attack_speed", "§e⚔ Bonus Attack Speed");
+		put("intelligence", "§b✎ Intelligence");
 	}};
-	public static final HashMap<String, Float> tuningCoefficients = new HashMap<String, Float>() {{
-		put("health",5f);
-		put("defense",1f);
-		put("walk_speed",1.5f);
-		put("strength",1f);
-		put("critical_damage",1f);
-		put("critical_chance",0.2f);
-		put("attack_speed",0.3f);
-		put("intelligence",2f);
+	public static final HashMap<String, Float> tuningCoefficients = new HashMap<>() {{
+		put("health", 5f);
+		put("defense", 1f);
+		put("walk_speed", 1.5f);
+		put("strength", 1f);
+		put("critical_damage", 1f);
+		put("critical_chance", 0.2f);
+		put("attack_speed", 0.3f);
+		put("intelligence", 2f);
 	}};
 
 	private boolean onSacksPage;
 	private final SacksPage sacksPage;
 
-	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
-		{
-			put(
-				"inventories",
-				Utils.editItemStackInfo(
-					new ItemStack(Items.painting),
-					EnumChatFormatting.GRAY + "Inventories",
-					true
-				)
-			);
-			put(
-				"sacks",
-				Utils.editItemStackInfo(
-					NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("LARGE_ENCHANTED_MINING_SACK")
-					),
-					EnumChatFormatting.GRAY + "Sacks",
-					true
-				)
-			);
-		}
-	};
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<>() {{
+		put(
+			"inventories",
+			Utils.editItemStackInfo(new ItemStack(Items.painting), EnumChatFormatting.GRAY + "Inventories", true)
+		);
+		put(
+			"sacks",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("LARGE_ENCHANTED_MINING_SACK")), EnumChatFormatting.GRAY + "Sacks", true)
+		);
+	}};
 
 	public InventoriesPage(GuiProfileViewer instance) {
 		super(instance);
@@ -231,11 +221,11 @@ public class InventoriesPage extends GuiProfileViewerPage {
 							);
 
 						LinkedHashMap<String, Integer> tuningInfo = getSelectedProfile().getTuningInfo();
-						if(tuningInfo != null && tuningInfo.size() > 0) {
+						if (tuningInfo != null && !tuningInfo.isEmpty()) {
 							getInstance().tooltipToDisplay.add("");
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "Tuning:");
 							tuningInfo.forEach((statName, statPoints) -> {
-								if(statPoints != 0) {
+								if (statPoints != 0) {
 									getInstance().tooltipToDisplay.add(
 										"  " + apiStatNames.get(statName) + ": +" +
 											new DecimalFormat("#.#").format(statPoints * tuningCoefficients.getOrDefault(statName, 1.0f)) +
@@ -560,15 +550,10 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
-			case 1:
-				onSacksPage = false;
-				break;
-			case 2:
-				onSacksPage = true;
-				break;
-
-			default:
-				break;
+			case 1 -> onSacksPage = false;
+			case 2 -> onSacksPage = true;
+			default -> {
+			}
 		}
 
 		return sacksPage.mouseClick(mouseX, mouseY, mouseButton);
@@ -599,7 +584,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				i++;
 			}
 
-		 	SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+			SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
 			if (selectedProfile == null) {
 				return;
 			}
@@ -631,41 +616,18 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	@Override
 	public void keyTyped(char typedChar, int keyCode) throws IOException {
 		switch (keyCode) {
-			case Keyboard.KEY_1:
-			case Keyboard.KEY_NUMPAD1:
-				selectedInventory = "inv_contents";
-				break;
-			case Keyboard.KEY_2:
-			case Keyboard.KEY_NUMPAD2:
-				selectedInventory = "ender_chest_contents";
-				break;
-			case Keyboard.KEY_3:
-			case Keyboard.KEY_NUMPAD3:
-				selectedInventory = "backpack_contents";
-				break;
-			case Keyboard.KEY_4:
-			case Keyboard.KEY_NUMPAD4:
-				selectedInventory = "personal_vault_contents";
-				break;
-			case Keyboard.KEY_5:
-			case Keyboard.KEY_NUMPAD5:
-				selectedInventory = "talisman_bag";
-				break;
-			case Keyboard.KEY_6:
-			case Keyboard.KEY_NUMPAD6:
-				selectedInventory = "wardrobe_contents";
-				break;
-			case Keyboard.KEY_7:
-			case Keyboard.KEY_NUMPAD7:
-				selectedInventory = "fishing_bag";
-				break;
-			case Keyboard.KEY_8:
-			case Keyboard.KEY_NUMPAD8:
-				selectedInventory = "potion_bag";
-				break;
-			default:
+			case Keyboard.KEY_1, Keyboard.KEY_NUMPAD1 -> selectedInventory = "inv_contents";
+			case Keyboard.KEY_2, Keyboard.KEY_NUMPAD2 -> selectedInventory = "ender_chest_contents";
+			case Keyboard.KEY_3, Keyboard.KEY_NUMPAD3 -> selectedInventory = "backpack_contents";
+			case Keyboard.KEY_4, Keyboard.KEY_NUMPAD4 -> selectedInventory = "personal_vault_contents";
+			case Keyboard.KEY_5, Keyboard.KEY_NUMPAD5 -> selectedInventory = "talisman_bag";
+			case Keyboard.KEY_6, Keyboard.KEY_NUMPAD6 -> selectedInventory = "wardrobe_contents";
+			case Keyboard.KEY_7, Keyboard.KEY_NUMPAD7 -> selectedInventory = "fishing_bag";
+			case Keyboard.KEY_8, Keyboard.KEY_NUMPAD8 -> selectedInventory = "potion_bag";
+			default -> {
 				getInstance().inventoryTextField.keyTyped(typedChar, keyCode);
 				return;
+			}
 		}
 		Utils.playPressSound();
 		getInstance().inventoryTextField.keyTyped(typedChar, keyCode);
@@ -874,26 +836,18 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	}
 
 	private boolean useActualMax(String invName) {
-		switch (invName) {
-			case "talisman_bag":
-			case "fishing_bag":
-			case "potion_bag":
-			case "personal_vault_contents":
-				return true;
-		}
-		return false;
+		return switch (invName) {
+			case "talisman_bag", "fishing_bag", "potion_bag", "personal_vault_contents" -> true;
+			default -> false;
+		};
 	}
 
 	private int getRowsForInventory(String invName) {
-		switch (invName) {
-			case "wardrobe_contents":
-				return 4;
-			case "backpack_contents":
-			case "ender_chest_contents":
-				return 5;
-			default:
-				return 6;
-		}
+		return switch (invName) {
+			case "wardrobe_contents" -> 4;
+			case "backpack_contents", "ender_chest_contents" -> 5;
+			default -> 6;
+		};
 	}
 
 	private void drawSideButtons() {

@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.cosmetics;
 
+import lombok.AllArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -47,18 +48,13 @@ public class ShaderManager implements IResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(IResourceManager iResourceManager) {
-		shaderMap.values().forEach(it -> {
-			GL20.glDeleteProgram(it.program);
-		});
+		shaderMap.values().forEach(it -> GL20.glDeleteProgram(it.program));
 		shaderMap.clear();
 	}
 
+	@AllArgsConstructor
 	public static class Shader {
 		public final int program;
-
-		public Shader(int program) {
-			this.program = program;
-		}
 	}
 
 	public int getShader(String name) {

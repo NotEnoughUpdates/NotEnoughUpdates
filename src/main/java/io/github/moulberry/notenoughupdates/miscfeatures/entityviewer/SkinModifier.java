@@ -30,8 +30,7 @@ import java.util.Map;
 public class SkinModifier extends EntityViewerModifier {
 	@Override
 	public EntityLivingBase applyModifier(EntityLivingBase base, JsonObject info) {
-		if (base instanceof GUIClientPlayer) {
-			GUIClientPlayer player = (GUIClientPlayer) base;
+		if (base instanceof GUIClientPlayer player) {
 			if (info.has("cape")) {
 				player.overrideCape = new ResourceLocation(info.get("cape").getAsString());
 			}

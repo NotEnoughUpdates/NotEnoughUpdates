@@ -156,7 +156,7 @@ public class PowerStoneStatsDisplay {
 			if (!foundMagicalPower) continue;
 
 			String cleanLine = StringUtils.cleanColour(line);
-			if (cleanLine.equals("")) {
+			if (cleanLine.isEmpty()) {
 				break;
 			}
 

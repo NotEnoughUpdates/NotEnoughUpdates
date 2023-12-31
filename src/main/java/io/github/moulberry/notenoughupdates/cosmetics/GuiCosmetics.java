@@ -124,9 +124,7 @@ public class GuiCosmetics extends GuiScreen {
 
 		GlStateManager.color(1, 1, 1, 1);
 		switch (currentPage) {
-			case CAPES:
-				drawCapesPage(mouseX, mouseY, partialTicks);
-				break;
+			case CAPES -> drawCapesPage(mouseX, mouseY, partialTicks);
 		}
 		int helpX = guiLeft + sizeX - 20;
 		if (mouseX >= helpX && mouseX <= helpX + 20 && mouseY >= guiTop - 20 && mouseY <= guiTop) {

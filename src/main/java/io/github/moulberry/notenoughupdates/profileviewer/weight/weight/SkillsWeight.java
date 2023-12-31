@@ -20,6 +20,8 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.Map;
 
@@ -28,15 +30,12 @@ public abstract class SkillsWeight {
 	public static final long SKILLS_LEVEL_50 = 55172425;
 	public static final long SKILLS_LEVEL_60 = 111672425;
 	protected final Map<String, ProfileViewer.Level> player;
+	@Getter
 	protected final WeightStruct weightStruct;
 
 	public SkillsWeight(Map<String, ProfileViewer.Level> player) {
 		this.player = player;
 		this.weightStruct = new WeightStruct();
-	}
-
-	public WeightStruct getWeightStruct() {
-		return weightStruct;
 	}
 
 	public abstract void getSkillsWeight(String skillName);

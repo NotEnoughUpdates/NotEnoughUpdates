@@ -35,20 +35,14 @@ public class EquipmentModifier extends EntityViewerModifier {
 		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 		String[] split = item.split("#");
 		if (split.length == 2) {
-			switch (split[0].intern()) {
-				case "SKULL":
-					return Utils.createSkull("Placeholder Skull", "00000000-0000-0000-0000-000000000000", split[1]);
-				case "LEATHER_LEGGINGS":
-					return coloredLeatherArmor(Items.leather_leggings, split[1]);
-				case "LEATHER_HELMET":
-					return coloredLeatherArmor(Items.leather_helmet, split[1]);
-				case "LEATHER_CHESTPLATE":
-					return coloredLeatherArmor(Items.leather_chestplate, split[1]);
-				case "LEATHER_BOOTS":
-					return coloredLeatherArmor(Items.leather_boots, split[1]);
-				default:
-					throw new RuntimeException("Unknown leather piece: " + item);
-			}
+			return switch (split[0].intern()) {
+				case "SKULL" -> Utils.createSkull("Placeholder Skull", "00000000-0000-0000-0000-000000000000", split[1]);
+				case "LEATHER_LEGGINGS" -> coloredLeatherArmor(Items.leather_leggings, split[1]);
+				case "LEATHER_HELMET" -> coloredLeatherArmor(Items.leather_helmet, split[1]);
+				case "LEATHER_CHESTPLATE" -> coloredLeatherArmor(Items.leather_chestplate, split[1]);
+				case "LEATHER_BOOTS" -> coloredLeatherArmor(Items.leather_boots, split[1]);
+				default -> throw new RuntimeException("Unknown leather piece: " + item);
+			};
 		}
 		return manager.createItem(item);
 	}

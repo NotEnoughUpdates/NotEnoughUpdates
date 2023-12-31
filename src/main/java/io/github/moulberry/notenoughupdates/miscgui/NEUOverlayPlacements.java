@@ -92,49 +92,35 @@ public class NEUOverlayPlacements extends GuiScreen {
 			);
 
 			switch (anchorPoint.anchorPoint) {
-				case TOPLEFT:
-				case TOPRIGHT:
-				case BOTLEFT:
-				case BOTRIGHT:
-					drawRect(
-						(int) (position.x + element.getWidth() * anchorPoint.anchorPoint.x * 0.9f),
-						(int) (position.y + element.getHeight() * anchorPoint.anchorPoint.y * 0.9f),
-						(int) (position.x + element.getWidth() * anchorPoint.anchorPoint.x * 0.9f + element.getWidth() * 0.1f),
-						(int) (position.y + element.getHeight() * anchorPoint.anchorPoint.y * 0.9f + element.getHeight() * 0.1f),
-						new Color(200, 200, 200, 100).getRGB()
-					);
-					break;
-				case TOPMID:
-					drawRect((int) position.x, (int) position.y,
-						(int) position.x + element.getWidth(), (int) (position.y + element.getHeight() * 0.1f),
-						new Color(200, 200, 200, 100).getRGB()
-					);
-					break;
-				case MIDLEFT:
-					drawRect((int) position.x, (int) position.y,
-						(int) (position.x + element.getWidth() * 0.1f), (int) position.y + element.getHeight(),
-						new Color(200, 200, 200, 100).getRGB()
-					);
-					break;
-				case MIDRIGHT:
-					drawRect((int) (position.x + element.getWidth() * 0.9f), (int) position.y,
-						(int) position.x + element.getWidth(), (int) position.y + element.getHeight(),
-						new Color(200, 200, 200, 100).getRGB()
-					);
-					break;
-				case BOTMID:
-					drawRect((int) position.x, (int) (position.y + element.getHeight() * 0.9f),
-						(int) position.x + element.getWidth(), (int) position.y + element.getHeight(),
-						new Color(200, 200, 200, 100).getRGB()
-					);
-					break;
-				case MIDMID:
-					drawRect((int) (position.x + element.getWidth() * 0.45f), (int) (position.y + element.getHeight() * 0.45f),
-						(int) (position.x + element.getWidth() * 0.55f), (int) (position.y + element.getHeight() * 0.55f),
-						new Color(200, 200, 200, 100).getRGB()
-					);
-					break;
-
+				case TOPLEFT, TOPRIGHT, BOTLEFT, BOTRIGHT -> drawRect(
+					(int) (position.x + element.getWidth() * anchorPoint.anchorPoint.x * 0.9f),
+					(int) (position.y + element.getHeight() * anchorPoint.anchorPoint.y * 0.9f),
+					(int) (position.x + element.getWidth() * anchorPoint.anchorPoint.x * 0.9f + element.getWidth() * 0.1f),
+					(int) (position.y + element.getHeight() * anchorPoint.anchorPoint.y * 0.9f + element.getHeight() * 0.1f),
+					new Color(200, 200, 200, 100).getRGB()
+				);
+				case TOPMID -> drawRect((int) position.x, (int) position.y,
+					(int) position.x + element.getWidth(), (int) (position.y + element.getHeight() * 0.1f),
+					new Color(200, 200, 200, 100).getRGB()
+				);
+				case MIDLEFT -> drawRect((int) position.x, (int) position.y,
+					(int) (position.x + element.getWidth() * 0.1f), (int) position.y + element.getHeight(),
+					new Color(200, 200, 200, 100).getRGB()
+				);
+				case MIDRIGHT -> drawRect((int) (position.x + element.getWidth() * 0.9f), (int) position.y,
+					(int) position.x + element.getWidth(), (int) position.y + element.getHeight(),
+					new Color(200, 200, 200, 100).getRGB()
+				);
+				case BOTMID -> drawRect((int) position.x, (int) (position.y + element.getHeight() * 0.9f),
+					(int) position.x + element.getWidth(), (int) position.y + element.getHeight(),
+					new Color(200, 200, 200, 100).getRGB()
+				);
+				case MIDMID -> drawRect((int) (position.x + element.getWidth() * 0.45f),
+					(int) (position.y + element.getHeight() * 0.45f),
+					(int) (position.x + element.getWidth() * 0.55f),
+					(int) (position.y + element.getHeight() * 0.55f),
+					new Color(200, 200, 200, 100).getRGB()
+				);
 			}
 
 			if (anchorPoint.inventoryRelative) {

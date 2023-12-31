@@ -211,9 +211,7 @@ public class APIManager {
 		manager.apiUtils
 			.newMoulberryRequest("auction_averages_lbin/1day.json.gz")
 			.gunzip().requestJson()
-			.thenAcceptAsync((jsonObject) -> {
-				auctionPricesAvgLowestBinJson = jsonObject;
-			});
+			.thenAcceptAsync((jsonObject) -> auctionPricesAvgLowestBinJson = jsonObject);
 	}
 
 	public Set<String> getItemAuctionInfoKeySet() {

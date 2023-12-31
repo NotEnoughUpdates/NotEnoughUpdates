@@ -19,21 +19,16 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.List;
 
+@AllArgsConstructor
 public class OverviewText extends OverviewLine {
-
-	private final Runnable clickRunnable;
+	@Getter
 	private final List<String> lines;
-
-	public OverviewText(List<String> line, Runnable clickRunnable) {
-		this.lines = line;
-		this.clickRunnable = clickRunnable;
-	}
-
-	public List<String> getLines() {
-		return lines;
-	}
+	private final Runnable clickRunnable;
 
 	@Override
 	public void onClick() {

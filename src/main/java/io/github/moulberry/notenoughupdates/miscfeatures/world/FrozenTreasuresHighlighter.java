@@ -43,7 +43,7 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 
 	private static final FrozenTreasuresHighlighter INSTANCE = new FrozenTreasuresHighlighter();
 
-	private static final List<String> rideablePetTextureUrls = new ArrayList<String>() {{
+	private static final List<String> rideablePetTextureUrls = new ArrayList<>() {{
 		// Armadillo
 		add("http://textures.minecraft.net/texture/c1eb6df4736ae24dd12a3d00f91e6e3aa7ade6bbefb0978afef2f0f92461018f");
 		// Rock

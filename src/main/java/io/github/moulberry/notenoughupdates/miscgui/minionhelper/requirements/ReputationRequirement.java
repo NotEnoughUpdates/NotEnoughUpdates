@@ -21,10 +21,13 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 
 public class ReputationRequirement extends MinionRequirement {
 
+	@Getter
 	private final String reputationType;
+	@Getter
 	private final int reputation;
 	private final String description;
 
@@ -34,14 +37,6 @@ public class ReputationRequirement extends MinionRequirement {
 
 		String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
 		description = Utils.formatNumberWithDots(reputation) + " §7" + reputationName + " Reputation";
-	}
-
-	public int getReputation() {
-		return reputation;
-	}
-
-	public String getReputationType() {
-		return reputationType;
 	}
 
 	@Override

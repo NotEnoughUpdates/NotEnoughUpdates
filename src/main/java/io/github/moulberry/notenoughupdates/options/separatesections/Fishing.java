@@ -142,9 +142,10 @@ public class Fishing {
 	@Expose
 	@ConfigOption(
 		name = "Particle Type",
-		desc = "Change the type of the particle that is spawned\n" +
-			"Particle types with (RGB) support custom colours\n" +
-			"Set to 'NONE' to disable particles"
+		desc = """
+			Change the type of the particle that is spawned
+			Particle types with (RGB) support custom colours
+			Set to 'NONE' to disable particles"""
 	)
 	@ConfigEditorDropdown(
 		values = {"Default", "None", "Spark (RGB)", "Swirl (RGB)", "Dust (RGB)", "Flame", "Crit", "Magic Crit"}
@@ -155,8 +156,9 @@ public class Fishing {
 	@Expose
 	@ConfigOption(
 		name = "Custom Colour",
-		desc = "Set a custom colour for the particle\n" +
-			"Only works for particle types with (RGB)"
+		desc = """
+			Set a custom colour for the particle
+			Only works for particle types with (RGB)"""
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
@@ -173,9 +175,10 @@ public class Fishing {
 	@Expose
 	@ConfigOption(
 		name = "Particle Type",
-		desc = "Change the type of the particle that is spawned\n" +
-			"Particle types with (RGB) support custom colours\n" +
-			"Set to 'NONE' to disable particles"
+		desc = """
+			Change the type of the particle that is spawned
+			Particle types with (RGB) support custom colours
+			Set to 'NONE' to disable particles"""
 	)
 	@ConfigEditorDropdown(
 		values = {"Default", "None", "Spark (RGB)", "Swirl (RGB)", "Dust (RGB)", "Flame", "Crit", "Magic Crit"}

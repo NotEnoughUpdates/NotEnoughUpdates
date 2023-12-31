@@ -142,7 +142,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				Utils.drawTexturedRect(guiLeft + x, guiTop + y, 48, 16, GL11.GL_NEAREST);
 			}
 
-			if (text.length() > 0) {
+			if (!text.isEmpty()) {
 				Utils.drawStringCenteredScaledMaxWidth(
 					text,
 					guiLeft + x + 24,
@@ -297,52 +297,48 @@ public class GuiDungeonMapEditor extends GuiScreen {
 					String mapCredit = null;
 					int id = button.id;
 					switch (id) {
-						case 6:
-							mapDesc = "No Border";
-							break;
-						case 7:
-							mapDesc = "Used by custom Resource Packs";
-							break;
-						case 8:
+						case 6 -> mapDesc = "No Border";
+						case 7 -> mapDesc = "Used by custom Resource Packs";
+						case 8 -> {
 							mapDesc = "Simple gray border";
 							mapCredit = "Lucy";
-							break;
-						case 9:
+						}
+						case 9 -> {
 							mapDesc = "Viney wood border";
 							mapCredit = "iDevil4Hell";
-							break;
-						case 10:
+						}
+						case 10 -> {
 							mapDesc = "Steampunk-inspired square border";
 							mapCredit = "ThatGravyBoat";
-							break;
-						case 11:
+						}
+						case 11 -> {
 							mapDesc = "Steampunk-inspired circular border";
 							mapCredit = "ThatGravyBoat";
-							break;
-						case 12:
+						}
+						case 12 -> {
 							mapDesc = "Light fade border";
 							mapCredit = "Qwiken";
-							break;
-						case 13:
+						}
+						case 13 -> {
 							mapDesc = "Simple gray border with red ribbons";
 							mapCredit = "Sai";
-							break;
-						case 14:
+						}
+						case 14 -> {
 							mapDesc = "Paper border";
 							mapCredit = "KingJames02st";
-							break;
-						case 15:
+						}
+						case 15 -> {
 							mapDesc = "Nether-inspired border";
 							mapCredit = "DTRW191";
-							break;
-						case 16:
+						}
+						case 16 -> {
 							mapDesc = "Golden ornate border";
 							mapCredit = "iDevil4Hell";
-							break;
-						case 17:
+						}
+						case 17 -> {
 							mapDesc = "Stone dragon border";
 							mapCredit = "ImperiaL";
-							break;
+						}
 					}
 
 					ArrayList<String> tooltip = new ArrayList<>();
@@ -652,57 +648,29 @@ public class GuiDungeonMapEditor extends GuiScreen {
 	private void buttonClicked(int mouseX, int mouseY, int id) {
 		DungeonMapConfig options = NotEnoughUpdates.INSTANCE.config.dungeonMap;
 		switch (id) {
-			case 0:
-				options.dmBorderSize = 0;
-				break;
-			case 1:
-				options.dmBorderSize = 1;
-				break;
-			case 2:
-				options.dmBorderSize = 2;
-				break;
-			case 30:
-				options.dmBorderSize = 3;
-				break;
-			case 3:
-				options.dmRoomSize = 0;
-				break;
-			case 4:
-				options.dmRoomSize = 1;
-				break;
-			case 5:
-				options.dmRoomSize = 2;
-				break;
-			case 29:
-				options.dmRoomSize = 3;
-				break;
-			case 18:
-				options.dmEnable = !options.dmEnable;
-				break;
-			case 19:
-				options.dmCenterPlayer = !options.dmCenterPlayer;
-				break;
-			case 20:
-				options.dmRotatePlayer = !options.dmRotatePlayer;
-				break;
-			case 21:
+			case 0 -> options.dmBorderSize = 0;
+			case 1 -> options.dmBorderSize = 1;
+			case 2 -> options.dmBorderSize = 2;
+			case 30 -> options.dmBorderSize = 3;
+			case 3 -> options.dmRoomSize = 0;
+			case 4 -> options.dmRoomSize = 1;
+			case 5 -> options.dmRoomSize = 2;
+			case 29 -> options.dmRoomSize = 3;
+			case 18 -> options.dmEnable = !options.dmEnable;
+			case 19 -> options.dmCenterPlayer = !options.dmCenterPlayer;
+			case 20 -> options.dmRotatePlayer = !options.dmRotatePlayer;
+			case 21 -> {
 				options.dmPlayerHeads++;
 				if (options.dmPlayerHeads > 2) options.dmPlayerHeads = 0;
-				break;
-			case 22:
-				options.dmOrientCheck = !options.dmOrientCheck;
-				break;
-			case 23:
-				options.dmCenterCheck = !options.dmCenterCheck;
-				break;
-			case 24:
-				options.dmPlayerInterp = !options.dmPlayerInterp;
-				break;
-			case 25:
+			}
+			case 22 -> options.dmOrientCheck = !options.dmOrientCheck;
+			case 23 -> options.dmCenterCheck = !options.dmCenterCheck;
+			case 24 -> options.dmPlayerInterp = !options.dmPlayerInterp;
+			case 25 -> {
 				options.dmCompat++;
 				if (options.dmCompat > 2) options.dmCompat = 0;
-				break;
-			case 26: {
+			}
+			case 26 -> {
 				ScaledResolution realRes = new ScaledResolution(Minecraft.getMinecraft());
 				mouseX = Mouse.getEventX() * realRes.getScaledWidth() / this.mc.displayWidth;
 				mouseY = realRes.getScaledHeight() - Mouse.getEventY() * realRes.getScaledHeight() / this.mc.displayHeight - 1;
@@ -710,8 +678,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 					(col) -> options.dmBackgroundColour = col, () -> activeColourEditor = null
 				);
 			}
-			break;
-			case 27: {
+			case 27 -> {
 				ScaledResolution realRes = new ScaledResolution(Minecraft.getMinecraft());
 				mouseX = Mouse.getEventX() * realRes.getScaledWidth() / this.mc.displayWidth;
 				mouseY = realRes.getScaledHeight() - Mouse.getEventY() * realRes.getScaledHeight() / this.mc.displayHeight - 1;
@@ -719,15 +686,12 @@ public class GuiDungeonMapEditor extends GuiScreen {
 					(col) -> options.dmBorderColour = col, () -> activeColourEditor = null
 				);
 			}
-			break;
-			case 28:
-				options.dmChromaBorder = !options.dmChromaBorder;
-				break;
-			default:
+			case 28 -> options.dmChromaBorder = !options.dmChromaBorder;
+			default -> {
 				if (id >= 6 && id <= 17) {
 					options.dmBorderStyle = id - 6;
-					break;
 				}
+			}
 		}
 	}
 

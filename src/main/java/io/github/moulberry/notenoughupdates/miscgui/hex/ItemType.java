@@ -19,6 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.hex;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 enum ItemType {
 	HOT_POTATO,
 	FUMING_POTATO,
@@ -82,14 +89,4 @@ enum ItemType {
 	UNKNOWN;
 
 	private int starLevel = -1;
-
-	ItemType() {}
-
-	ItemType(int starLevel) {
-		this.starLevel = starLevel;
-	}
-
-	public int getStarLevel() {
-		return starLevel;
-	}
 }

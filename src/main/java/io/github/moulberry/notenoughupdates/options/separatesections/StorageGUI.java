@@ -151,7 +151,10 @@ public class StorageGUI {
 	@Expose
 	@ConfigOption(
 		name = "Custom Text Colour",
-		desc = "Use a custom default text colour.\nOverrides the colour set by the overlay style.\nCan be overridden by using colour codes in the page title."
+		desc = """
+			Use a custom default text colour.
+			Overrides the colour set by the overlay style.
+			Can be overridden by using colour codes in the page title."""
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)

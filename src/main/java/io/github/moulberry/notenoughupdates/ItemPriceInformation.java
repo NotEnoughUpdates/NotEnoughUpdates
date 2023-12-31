@@ -140,7 +140,7 @@ public class ItemPriceInformation {
 			//values = {"", "Buy", "Sell", "Buy (Insta)", "Sell (Insta)", "Raw Craft Cost", "Instabuys (Hourly)", "Instasells (Hourly)", "Instabuys (Daily)", "Instasells (Daily)", "Instabuys (Weekly)", "Instasells (Weekly)"}
 			for (int lineId : lines) {
 				switch (lineId) {
-					case 0:
+					case 0 -> {
 						if (bazaarInfo.has("avg_buy")) {
 							if (!added) {
 								tooltip.add("");
@@ -151,8 +151,8 @@ public class ItemPriceInformation {
 							double bazaarBuyPrice = bazaarInfo.get("avg_buy").getAsFloat() * stackMultiplier;
 							tooltip.add(formatPrice("Bazaar Buy: ", bazaarBuyPrice));
 						}
-						break;
-					case 1:
+					}
+					case 1 -> {
 						if (bazaarInfo.has("avg_sell")) {
 							if (!added) {
 								tooltip.add("");
@@ -163,8 +163,8 @@ public class ItemPriceInformation {
 							double bazaarSellPrice = bazaarInfo.get("avg_sell").getAsDouble() * stackMultiplier;
 							tooltip.add(formatPrice("Bazaar Sell: ", bazaarSellPrice));
 						}
-						break;
-					case 2:
+					}
+					case 2 -> {
 						if (bazaarInfo.has("curr_buy")) {
 							if (!added) {
 								tooltip.add("");
@@ -175,8 +175,8 @@ public class ItemPriceInformation {
 							double bazaarInstantBuyPrice = bazaarInfo.get("curr_buy").getAsFloat() * stackMultiplier;
 							tooltip.add(formatPrice("Bazaar Insta-Buy: ", bazaarInstantBuyPrice));
 						}
-						break;
-					case 3:
+					}
+					case 3 -> {
 						if (bazaarInfo.has("curr_sell")) {
 							if (!added) {
 								tooltip.add("");
@@ -187,8 +187,8 @@ public class ItemPriceInformation {
 							double bazaarInstantSellPrice = bazaarInfo.get("curr_sell").getAsFloat() * stackMultiplier;
 							tooltip.add(formatPrice("Bazaar Insta-Sell: ", bazaarInstantSellPrice));
 						}
-						break;
-					case 4:
+					}
+					case 4 -> {
 						if (craftCost != null && craftCost.fromRecipe) {
 							if (craftCost.craftCost == 0) {
 								continue;
@@ -201,95 +201,94 @@ public class ItemPriceInformation {
 							if (shiftPressed) cost = cost * shiftStackMultiplier;
 							tooltip.add(formatPrice("Raw Craft Cost: ", cost));
 						}
-						break;
-					case 5:
+					}
+					case 5 -> {
 						if (bazaarInfo.has("instabuys_hourly")) {
 							if (!added) {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Buys (Hourly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instabuys_hourly").getAsFloat()));
 						}
-						break;
-					case 6:
+					}
+					case 6 -> {
 						if (bazaarInfo.has("instasells_hourly")) {
 							if (!added) {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Sells (Hourly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instasells_hourly").getAsFloat()));
 						}
-						break;
-					case 7:
+					}
+					case 7 -> {
 						if (bazaarInfo.has("instabuys_daily")) {
 							if (!added) {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Buys (Daily): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instabuys_daily").getAsFloat()));
 						}
-						break;
-					case 8:
+					}
+					case 8 -> {
 						if (bazaarInfo.has("instasells_daily")) {
 							if (!added) {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Sells (Daily): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instasells_daily").getAsFloat()));
 						}
-						break;
-					case 9:
+					}
+					case 9 -> {
 						if (bazaarInfo.has("instabuys_weekly")) {
 							if (!added) {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Buys (Weekly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instabuys_weekly").getAsFloat()));
 						}
-						break;
-					case 10:
+					}
+					case 10 -> {
 						if (bazaarInfo.has("instasells_weekly")) {
 							if (!added) {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Sells (Weekly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instasells_weekly").getAsFloat()));
 						}
-						break;
+					}
 				}
 			}
 
 		} else if (auctionItem && !auctionInfoErrored) {
 			List<Integer> lines = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.priceInfoAuc;
 
-
 			for (int lineId : lines) {
 				switch (lineId) {
-					case 0:
+					case 0 -> {
 						if (lowestBin > 0) {
 							if (!added) {
 								tooltip.add("");
@@ -297,8 +296,8 @@ public class ItemPriceInformation {
 							}
 							tooltip.add(formatPrice("Lowest BIN: ", lowestBin));
 						}
-						break;
-					case 1:
+					}
+					case 1 -> {
 						if (auctionInfo != null) {
 							if (!added) {
 								tooltip.add("");
@@ -312,10 +311,9 @@ public class ItemPriceInformation {
 								double auctionPrice = auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsFloat();
 								tooltip.add(formatPrice("AH Price: ", auctionPrice));
 							}
-
 						}
-						break;
-					case 2:
+					}
+					case 2 -> {
 						if (auctionInfo != null) {
 							if (!added) {
 								tooltip.add("");
@@ -337,8 +335,8 @@ public class ItemPriceInformation {
 											" sales/day"));
 							}
 						}
-						break;
-					case 3:
+					}
+					case 3 -> {
 						if (craftCost != null && craftCost.fromRecipe) {
 							if (craftCost.craftCost == 0) {
 								continue;
@@ -349,8 +347,8 @@ public class ItemPriceInformation {
 							}
 							tooltip.add(formatPrice("Raw Craft Cost: ", craftCost.craftCost));
 						}
-						break;
-					case 4:
+					}
+					case 4 -> {
 						if (lowestBinAvg > 0) {
 							if (!added) {
 								tooltip.add("");
@@ -358,8 +356,8 @@ public class ItemPriceInformation {
 							}
 							tooltip.add(formatPrice("AVG Lowest BIN: ", lowestBinAvg));
 						}
-						break;
-					case 5:
+					}
+					case 5 -> {
 						if (Constants.ESSENCECOSTS == null) break;
 						JsonObject essenceCosts = Constants.ESSENCECOSTS;
 						if (!essenceCosts.has(internalname)) {
@@ -373,9 +371,7 @@ public class ItemPriceInformation {
 							requiresItems = true;
 							itemsObject = itemCosts.get("items").getAsJsonObject();
 						}
-
 						int dungeonItemLevel = Utils.getNumberOfStars(stack);
-
 						if (dungeonItemLevel == -1) {
 							int dungeonizeCost = 0;
 							if (itemCosts.has("dungeonize")) {
@@ -436,7 +432,7 @@ public class ItemPriceInformation {
 								}
 							}
 						}
-						break;
+					}
 				}
 			}
 
@@ -484,5 +480,4 @@ public class ItemPriceInformation {
 			: price > 5 && Integer.MAX_VALUE > price ? format.format((int) price) : format.format(price));
 		return "§e§l" + label + "§6§l" + number + " coins";
 	}
-
 }

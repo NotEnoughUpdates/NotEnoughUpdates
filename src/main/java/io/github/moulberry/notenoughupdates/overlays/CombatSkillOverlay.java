@@ -141,36 +141,16 @@ public class CombatSkillOverlay
 		}
 
 		switch (championTier) {
-			case 1:
-				championTierAmount = "50,000";
-				break;
-			case 2:
-				championTierAmount = "100,000";
-				break;
-			case 3:
-				championTierAmount = "250,000";
-				break;
-			case 4:
-				championTierAmount = "500,000";
-				break;
-			case 5:
-				championTierAmount = "1,000,000";
-				break;
-			case 6:
-				championTierAmount = "1,500,000";
-				break;
-			case 7:
-				championTierAmount = "2,000,000";
-				break;
-			case 8:
-				championTierAmount = "2,500,000";
-				break;
-			case 9:
-				championTierAmount = "3,000,000";
-				break;
-			case 10:
-				championTierAmount = "Maxed";
-				break;
+			case 1 -> championTierAmount = "50,000";
+			case 2 -> championTierAmount = "100,000";
+			case 3 -> championTierAmount = "250,000";
+			case 4 -> championTierAmount = "500,000";
+			case 5 -> championTierAmount = "1,000,000";
+			case 6 -> championTierAmount = "1,500,000";
+			case 7 -> championTierAmount = "2,000,000";
+			case 8 -> championTierAmount = "2,500,000";
+			case 9 -> championTierAmount = "3,000,000";
+			case 10 -> championTierAmount = "Maxed";
 		}
 
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);

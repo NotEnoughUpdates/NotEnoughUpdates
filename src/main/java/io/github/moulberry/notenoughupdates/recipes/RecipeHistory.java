@@ -35,7 +35,7 @@ public class RecipeHistory {
 			history.remove(0);
 			historyIndex--;
 		} else {
-			if (history.size() == 0) {
+			if (history.isEmpty()) {
 				history.add(recipe);
 			} else {
 				if (historyIndex < history.size() - 1) {
@@ -48,7 +48,7 @@ public class RecipeHistory {
 	}
 
 	public static GuiScreen getPrevious() {
-		if (history.size() > 0) {
+		if (!history.isEmpty()) {
 			if (historyIndex - 1 < 0) {
 				return null;
 			}

@@ -75,8 +75,8 @@ public class ItemRarityHalo {
 			projectionMatrix = Utils.createProjectionMatrix(size, size);
 		}
 
-		itemFramebuffer1 = checkFramebufferSizes(itemFramebuffer1, size, size);
-		itemFramebuffer2 = checkFramebufferSizes(itemFramebuffer2, size, size);
+		itemFramebuffer1 = Utils.checkFramebufferSizes(itemFramebuffer1, size, size);
+		itemFramebuffer2 = Utils.checkFramebufferSizes(itemFramebuffer2, size, size);
 
 		try {
 			if (colourShader == null) {
@@ -254,18 +254,6 @@ public class ItemRarityHalo {
 				currentViewport.get()
 			);
 		}
-	}
-
-	private static Framebuffer checkFramebufferSizes(Framebuffer framebuffer, int width, int height) {
-		if (framebuffer == null || framebuffer.framebufferWidth != width || framebuffer.framebufferHeight != height) {
-			if (framebuffer == null) {
-				framebuffer = new Framebuffer(width, height, true);
-			} else {
-				framebuffer.createBindFramebuffer(width, height);
-			}
-			framebuffer.setFramebufferFilter(GL11.GL_NEAREST);
-		}
-		return framebuffer;
 	}
 
 	public static void resetItemHaloCache() {

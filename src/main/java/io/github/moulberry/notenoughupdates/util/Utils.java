@@ -47,6 +47,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.init.Items;
@@ -105,7 +106,7 @@ public class Utils {
 	//Labymod compatibility
 	private static final FloatBuffer projectionMatrixOld = BufferUtils.createFloatBuffer(16);
 	private static final FloatBuffer modelviewMatrixOld = BufferUtils.createFloatBuffer(16);
-	private static final EnumChatFormatting[] rainbow = new EnumChatFormatting[]{
+	private static final EnumChatFormatting[] rainbow = {
 		EnumChatFormatting.RED,
 		EnumChatFormatting.GOLD,
 		EnumChatFormatting.YELLOW,
@@ -115,11 +116,11 @@ public class Utils {
 		EnumChatFormatting.DARK_PURPLE
 	};
 	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
-	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
+	private static final char[] c = {'k', 'm', 'b', 't'};
 	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
 	public static boolean hasEffectOverride = false;
 	public static boolean disableCustomDungColours = false;
-	public static String[] rarityArr = new String[]{
+	public static String[] rarityArr = {
 		"COMMON",
 		"UNCOMMON",
 		"RARE",
@@ -131,7 +132,7 @@ public class Utils {
 		"SUPREME",
 		"^^ THAT ONE IS DIVINE ^^"
 	};
-	public static String[] rarityArrC = new String[]{
+	public static String[] rarityArrC = {
 		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
 		EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
 		EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
@@ -142,7 +143,7 @@ public class Utils {
 		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "VERY SPECIAL",
 		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
 	};
-	public static final HashMap<String, String> rarityArrMap = new HashMap<String, String>() {{
+	public static final HashMap<String, String> rarityArrMap = new HashMap<>() {{
 		put("COMMON", rarityArrC[0]);
 		put("UNCOMMON", rarityArrC[1]);
 		put("RARE", rarityArrC[2]);
@@ -766,31 +767,16 @@ public class Utils {
 		for (int i = input.length() - 1; i >= 0; i--) {
 			int val;
 			char ch = input.charAt(i);
-			switch (ch) {
-				case 'I':
-					val = 1;
-					break;
-				case 'V':
-					val = 5;
-					break;
-				case 'X':
-					val = 10;
-					break;
-				case 'L':
-					val = 50;
-					break;
-				case 'C':
-					val = 100;
-					break;
-				case 'D':
-					val = 500;
-					break;
-				case 'M':
-					val = 1000;
-					break;
-				default:
-					throw new IllegalArgumentException("Invalid Roman Numeral Character: " + ch);
-			}
+			val = switch (ch) {
+				case 'I' -> 1;
+				case 'V' -> 5;
+				case 'X' -> 10;
+				case 'L' -> 50;
+				case 'C' -> 100;
+				case 'D' -> 500;
+				case 'M' -> 1000;
+				default -> throw new IllegalArgumentException("Invalid Roman Numeral Character: " + ch);
+			};
 			if (val < prevVal) val = -val;
 			total += val;
 			prevVal = val;
@@ -1646,7 +1632,7 @@ public class Utils {
 	public static char getPrimaryColourCode(String displayName) {
 		int lastColourCode = -99;
 		int currentColour = 0;
-		int[] mostCommon = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		int[] mostCommon = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		for (int i = 0; i < displayName.length(); i++) {
 			char c = displayName.charAt(i);
 			if (c == '\u00A7') {
@@ -2372,5 +2358,17 @@ public class Utils {
 			renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		}
 		return renderText;
+	}
+
+	public static Framebuffer checkFramebufferSizes(Framebuffer framebuffer, int width, int height) {
+		if (framebuffer == null || framebuffer.framebufferWidth != width || framebuffer.framebufferHeight != height) {
+			if (framebuffer == null) {
+				framebuffer = new Framebuffer(width, height, true);
+			} else {
+				framebuffer.createBindFramebuffer(width, height);
+			}
+			framebuffer.setFramebufferFilter(GL11.GL_NEAREST);
+		}
+		return framebuffer;
 	}
 }

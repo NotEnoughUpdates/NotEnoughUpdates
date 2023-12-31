@@ -24,7 +24,6 @@ import com.google.gson.JsonParseException;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
-import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -105,28 +104,15 @@ public class ItemResolutionQuery {
 		if (resolvedName == null) {
 			resolvedName = resolveContextualName();
 		} else {
-			switch (resolvedName.intern()) {
-				case "PET":
-					resolvedName = resolvePetName();
-					break;
-				case "RUNE":
-				case "UNIQUE_RUNE":
-					resolvedName = resolveRuneName();
-					break;
-				case "ENCHANTED_BOOK":
-					resolvedName = resolveEnchantedBookNameFromNBT();
-					break;
-				case "PARTY_HAT_CRAB":
-				case "PARTY_HAT_CRAB_ANIMATED":
-					resolvedName = resolveCrabHatName();
-					break;
-				case "ABICASE":
-					resolvedName = resolvePhoneCase();
-					break;
-				case "PARTY_HAT_SLOTH":
-					resolvedName = resolveSlothHatName();
-					break;
-			}
+			resolvedName = switch (resolvedName.intern()) {
+				case "PET" -> resolvePetName();
+				case "RUNE", "UNIQUE_RUNE" -> resolveRuneName();
+				case "ENCHANTED_BOOK" -> resolveEnchantedBookNameFromNBT();
+				case "PARTY_HAT_CRAB", "PARTY_HAT_CRAB_ANIMATED" -> resolveCrabHatName();
+				case "ABICASE" -> resolvePhoneCase();
+				case "PARTY_HAT_SLOTH" -> resolveSlothHatName();
+				default -> resolvedName;
+			};
 		}
 
 		return resolvedName;
@@ -170,10 +156,9 @@ public class ItemResolutionQuery {
 	}
 
 	private String resolveContextualName() {
-		if (!(guiContext instanceof GuiChest)) {
+		if (!(guiContext instanceof GuiChest chest)) {
 			return null;
 		}
-		GuiChest chest = (GuiChest) guiContext;
 		ContainerChest inventorySlots = (ContainerChest) chest.inventorySlots;
 		String guiName = inventorySlots.getLowerChestInventory().getDisplayName().getUnformattedText();
 		boolean isOnBazaar = isBazaar(inventorySlots.getLowerChestInventory());
@@ -222,7 +207,7 @@ public class ItemResolutionQuery {
 		int bestMatchLength = -1;
 		for (String internalName : candidateInternalNames) {
 			var cleanItemDisplayName = StringUtils.cleanColour(manager.getDisplayName(internalName));
-			if (cleanItemDisplayName.length() == 0) continue;
+			if (cleanItemDisplayName.isEmpty()) continue;
 			if (mayBeMangled
 				? !cleanDisplayName.contains(cleanItemDisplayName)
 				: !cleanItemDisplayName.equals(cleanDisplayName)) {

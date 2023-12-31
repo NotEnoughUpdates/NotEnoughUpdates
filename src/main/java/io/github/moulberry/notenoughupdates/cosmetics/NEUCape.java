@@ -108,36 +108,25 @@ public class NEUCape {
 				this.capeName = "fade";
 				this.shaderName = "fade_cape";
 			}
-
 		}
+
 		if (defaultBehaviour) {
 			this.capeName = capeName;
 
-			if (capeName.equalsIgnoreCase("fade")) {
-				shaderName = "fade_cape";
-			} else if (capeName.equalsIgnoreCase("space")) {
-				shaderName = "space_cape";
-			} else if (capeName.equalsIgnoreCase("mcworld")) {
-				shaderName = "mcworld_cape";
-			} else if (capeName.equalsIgnoreCase("lava") || capeName.equalsIgnoreCase("skyclient")) {
-				shaderName = "lava_cape";
-			} else if (capeName.equalsIgnoreCase("lightning")) {
-				shaderName = "lightning_cape";
-			} else if (capeName.equalsIgnoreCase("thebakery")) {
-				shaderName = "biscuit_cape";
-			} else if (capeName.equalsIgnoreCase("negative")) {
-				shaderName = "negative";
-			} else if (capeName.equalsIgnoreCase("void")) {
-				shaderName = "void";
-			} else if (capeName.equalsIgnoreCase("tunnel")) {
-				shaderName = "tunnel";
-			} else if (capeName.equalsIgnoreCase("planets")) {
-				shaderName = "planets";
-			} else if (capeName.equalsIgnoreCase("screensaver")) {
-				shaderName = "screensaver";
-			} else {
-				shaderName = "shiny_cape";
-			}
+			shaderName = switch (capeName.toLowerCase()) {
+				case "fade" -> "fade_cape";
+				case "space" -> "space_cape";
+				case "mcworld" -> "mcworld_cape";
+				case "lava", "skyclient" -> "lava_cape";
+				case "lightning" -> "lightning_cape";
+				case "thebakery" -> "biscuit_cape";
+				case "negative" -> "negative";
+				case "void" -> "void";
+				case "tunnel" -> "tunnel";
+				case "planets" -> "planets";
+				case "screensaver" -> "screensaver";
+				default -> "shiny_cape";
+			};
 		}
 
 		ResourceLocation staticCapeTex = new ResourceLocation("notenoughupdates:capes/" + capeName + ".png");
@@ -266,8 +255,8 @@ public class NEUCape {
 		DOWNLEFT(-1, -1),
 		DOWNRIGHT(1, -1);
 
-		int xOff;
-		int yOff;
+		final int xOff;
+		final int yOff;
 
 		Direction(int xOff, int yOff) {
 			this.xOff = xOff;
@@ -315,8 +304,7 @@ public class NEUCape {
 		}
 
 		public boolean equals(Object obj) {
-			if (obj instanceof Offset) {
-				Offset other = (Offset) obj;
+			if (obj instanceof Offset other) {
 				return other.direction == direction && other.steps == steps;
 			}
 			return false;
@@ -465,9 +453,7 @@ public class NEUCape {
 	private double getPlayerRenderAngle(EntityPlayer player, float partialRenderTick) {
 		double angle = interpolateRotation(player.prevRenderYawOffset, player.renderYawOffset, partialRenderTick);
 
-		if (player.isRiding() && player.ridingEntity instanceof EntityLivingBase && player.ridingEntity.shouldRiderSit()) {
-
-			EntityLivingBase entitylivingbase = (EntityLivingBase) player.ridingEntity;
+		if (player.isRiding() && player.ridingEntity instanceof EntityLivingBase entitylivingbase && player.ridingEntity.shouldRiderSit()) {
 			double head = interpolateRotation(player.prevRotationYawHead, player.rotationYawHead, partialRenderTick);
 			angle = interpolateRotation(
 				entitylivingbase.prevRenderYawOffset,
@@ -583,42 +569,46 @@ public class NEUCape {
 	private void updateCape(EntityPlayer player) {
 		Vector3f capeTranslation = updateFixedCapeNodes(player);
 
-		if (shaderName.equals("space_cape")) {
-			long currentTime = System.currentTimeMillis();
-			if (currentTime - startTime > eventMillis - startTime + eventLength) {
-				eventMillis = currentTime;
-				eventLength = random.nextFloat() * 2000 + 4000;
-				eventRandom = random.nextFloat();
+		switch (shaderName.intern()) {
+			case "space_cape" -> {
+				long currentTime = System.currentTimeMillis();
+				if (currentTime - startTime > eventMillis - startTime + eventLength) {
+					eventMillis = currentTime;
+					eventLength = random.nextFloat() * 2000 + 4000;
+					eventRandom = random.nextFloat();
+				}
 			}
-		} else if (shaderName.equals("biscuit_cape") || shaderName.equals("shiny_cape")) {
-			long currentTime = System.currentTimeMillis();
-			if (currentTime - startTime > eventMillis - startTime + eventLength) {
-				eventMillis = currentTime;
-				eventLength = random.nextFloat() * 3000 + 3000;
+			case "biscuit_cape", "shiny_cape" -> {
+				long currentTime = System.currentTimeMillis();
+				if (currentTime - startTime > eventMillis - startTime + eventLength) {
+					eventMillis = currentTime;
+					eventLength = random.nextFloat() * 3000 + 3000;
+				}
 			}
-		} else if (shaderName.equals("screensaver")) {
-			dvdPositionX += dvdVelocityX;
-			dvdPositionY += dvdVelocityY;
-			float diskSizeX = 162 / 2F, diskSizeY = 78 / 2F;
-			// Left line
-			if (deltaYComparedToLine(0, 404, 47, 0) < 0) {
-				dvdVelocityX = 10;
-				dvdPositionX = projectOntoLine(404, 0, 0, 47, dvdPositionY);
-			}
-			// Bottom line
-			if (deltaYComparedToLine(0, 404 - diskSizeY, 292, 404 - diskSizeY) > 0) {
-				dvdVelocityY = -10;
-				dvdPositionY = 404 - diskSizeY;
-			}
-			// Top line
-			if (deltaYComparedToLine(47, 0, 246, 0) < 0) {
-				dvdVelocityY = 10;
-				dvdPositionY = 0;
-			}
-			// Right line
-			if (deltaYComparedToLine(246 - diskSizeX, 0, 293 - diskSizeX, 404) < 0) {
-				dvdVelocityX = -10;
-				dvdPositionX = projectOntoLine(0, 246 - diskSizeX, 404, 293 - diskSizeX, dvdPositionY);
+			case "screensaver" -> {
+				dvdPositionX += dvdVelocityX;
+				dvdPositionY += dvdVelocityY;
+				float diskSizeX = 162 / 2F, diskSizeY = 78 / 2F;
+				// Left line
+				if (deltaYComparedToLine(0, 404, 47, 0) < 0) {
+					dvdVelocityX = 10;
+					dvdPositionX = projectOntoLine(404, 0, 0, 47, dvdPositionY);
+				}
+				// Bottom line
+				if (deltaYComparedToLine(0, 404 - diskSizeY, 292, 404 - diskSizeY) > 0) {
+					dvdVelocityY = -10;
+					dvdPositionY = 404 - diskSizeY;
+				}
+				// Top line
+				if (deltaYComparedToLine(47, 0, 246, 0) < 0) {
+					dvdVelocityY = 10;
+					dvdPositionY = 0;
+				}
+				// Right line
+				if (deltaYComparedToLine(246 - diskSizeX, 0, 293 - diskSizeX, 404) < 0) {
+					dvdVelocityX = -10;
+					dvdPositionX = projectOntoLine(0, 246 - diskSizeX, 404, 293 - diskSizeX, dvdPositionY);
+				}
 			}
 		}
 
@@ -1108,38 +1098,33 @@ public class NEUCape {
 			for (int planetId : orbitals.descendingMap().values()) {
 				GlStateManager.pushMatrix();
 				switch (planetId) {
-					case 0: {
+					case 0 -> {
 						GlStateManager.translate(point.x, point.y, point.z);
 						GlStateManager.scale(0.2f, 0.2f, 0.2f);
-						break;
 					}
-					case 1: {
+					case 1 -> {
 						Vector3f sunVec = new Vector3f((float) earthX, (float) earthY, (float) earthZ);
 						ShaderManager.getInstance().loadData(shaderId, "sunVec", sunVec);
 						GlStateManager.translate(point.x + earthX, point.y + earthY, point.z + earthZ);
 						GlStateManager.scale(0.1f, 0.1f, 0.1f);
-						break;
 					}
-					case 2: {
+					case 2 -> {
 						Vector3f sunVec = new Vector3f((float) mercuryX, 0, (float) mercuryZ);
 						ShaderManager.getInstance().loadData(shaderId, "sunVec", sunVec);
 						GlStateManager.translate(point.x + mercuryX, point.y, point.z + mercuryZ);
 						GlStateManager.scale(0.05f, 0.05f, 0.05f);
-						break;
 					}
-					case 3: {
+					case 3 -> {
 						Vector3f sunVec = new Vector3f((float) jupiterX, (float) jupiterY, (float) jupiterZ);
 						ShaderManager.getInstance().loadData(shaderId, "sunVec", sunVec);
 						GlStateManager.translate(point.x + jupiterX, point.y + jupiterY, point.z + jupiterZ);
 						GlStateManager.scale(0.3f, 0.3f, 0.3f);
-						break;
 					}
-					case 4: {
+					case 4 -> {
 						Vector3f sunVec = new Vector3f((float) neptuneX, (float) neptuneY, (float) neptuneZ);
 						ShaderManager.getInstance().loadData(shaderId, "sunVec", sunVec);
 						GlStateManager.translate(point.x + neptuneX, point.y + neptuneY, point.z + neptuneZ);
 						GlStateManager.scale(0.15f, 0.15f, 0.15f);
-						break;
 					}
 				}
 				ShaderManager.getInstance().loadData(shaderId, "planetType", planetId);

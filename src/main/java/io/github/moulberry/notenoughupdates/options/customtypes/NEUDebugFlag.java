@@ -19,14 +19,14 @@
 
 package io.github.moulberry.notenoughupdates.options.customtypes;
 
-import io.github.moulberry.notenoughupdates.util.MinecraftExecutor;
 import io.github.moulberry.notenoughupdates.util.NEUDebugLogger;
-import net.minecraft.client.Minecraft;
+import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 public enum NEUDebugFlag {
 	// NOTE: Removing enum values causes gson to remove all debugFlags on load if any removed value is present
 	METAL("Metal Detector Solver"),
@@ -43,12 +43,8 @@ public enum NEUDebugFlag {
 		this.description = description;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
 	public void log(String message) {
-			NEUDebugLogger.log(this, message);
+		NEUDebugLogger.log(this, message);
 	}
 
 	public boolean isSet() {

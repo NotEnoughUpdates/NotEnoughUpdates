@@ -57,6 +57,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.brigadier.BrigadierRoot;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
 import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -141,7 +142,7 @@ public class NotEnoughUpdates {
 			"SKIBLOCK"
 		); // april fools language
 	public static NotEnoughUpdates INSTANCE = null;
-	public static HashMap<String, String> petRarityToColourMap = new HashMap<String, String>() {{
+	public static HashMap<String, String> petRarityToColourMap = new HashMap<>() {{
 		put("UNKNOWN", EnumChatFormatting.RED.toString());
 		put("COMMON", EnumChatFormatting.WHITE.toString());
 		put("UNCOMMON", EnumChatFormatting.GREEN.toString());
@@ -162,10 +163,12 @@ public class NotEnoughUpdates {
 	public boolean packDevEnabled = false;
 	public Color[][] colourMap = null;
 	public AutoUpdater autoUpdater = new AutoUpdater(this);
+	@Getter
 	private File configFile;
 	private long lastChatMessage = 0;
 	private long secondLastChatMessage = 0;
 	private String currChatMessage = null;
+	@Getter
 	private File neuDir;
 	private boolean hasSkyblockScoreboard;
 
@@ -176,16 +179,8 @@ public class NotEnoughUpdates {
 			.add(new NEURepoResourcePack(null, "neurepo"));
 	}
 
-	public File getConfigFile() {
-		return this.configFile;
-	}
-
 	public void newConfigFile() {
 		this.configFile = new File(NotEnoughUpdates.INSTANCE.getNeuDir(), "configNew.json");
-	}
-
-	public File getNeuDir() {
-		return this.neuDir;
 	}
 
 	/**
@@ -273,8 +268,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(MuseumItemHighlighter.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(MuseumCheapestItemOverlay.INSTANCE);
 
-		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
-			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
+		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager manager) {
 			manager.registerReloadListener(CustomSkulls.getInstance());
 			manager.registerReloadListener(NPCRetexturing.getInstance());
 			manager.registerReloadListener(ShaderManager.getInstance());
@@ -352,7 +346,7 @@ public class NotEnoughUpdates {
 		String other_link = update.get("other_link").getAsString();
 
 		ChatComponentText other = null;
-		if (other_text.length() > 0) {
+		if (!other_text.isEmpty()) {
 			other = new ChatComponentText(
 				EnumChatFormatting.GRAY + "[" + EnumChatFormatting.BLUE + other_text + EnumChatFormatting.GRAY + "]");
 			other.setChatStyle(Utils.createClickStyle(ClickEvent.Action.OPEN_URL, other_link));

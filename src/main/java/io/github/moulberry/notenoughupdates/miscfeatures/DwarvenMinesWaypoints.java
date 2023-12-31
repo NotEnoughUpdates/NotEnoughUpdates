@@ -50,7 +50,7 @@ import java.util.regex.Pattern;
 @NEUAutoSubscribe
 public class DwarvenMinesWaypoints {
 
-	private final HashMap<String, Vector3f> waypointsMap = new HashMap<String, Vector3f>() {{
+	private final HashMap<String, Vector3f> waypointsMap = new HashMap<>() {{
 		put("Dwarven Village", new Vector3f(-37, 199, -122));
 		put("Miner's Guild", new Vector3f(-74, 220, -122));
 		put("Fetchur", new Vector3f(85, 223, -120));
@@ -75,7 +75,7 @@ public class DwarvenMinesWaypoints {
 		put("The Mist", new Vector3f(0, 75, 82));
 	}};
 
-	private static final HashSet<String> emissaryNames = new HashSet<String>() {{
+	private static final HashSet<String> emissaryNames = new HashSet<>() {{
 		add(EnumChatFormatting.GOLD + "Emissary Ceanna" + EnumChatFormatting.RESET);
 		add(EnumChatFormatting.GOLD + "Emissary Carlton" + EnumChatFormatting.RESET);
 		add(EnumChatFormatting.GOLD + "Emissary Wilson" + EnumChatFormatting.RESET);
@@ -94,9 +94,9 @@ public class DwarvenMinesWaypoints {
 		FRAISER("Emissary Frasier", 3, new Vector3f(-132, 174, -50)),
 		ELIZA("Emissary Eliza", 3, new Vector3f(-37, 200, -131));
 
-		String name;
-		int minMilestone;
-		Vector3f loc;
+		final String name;
+		final int minMilestone;
+		final Vector3f loc;
 
 		Emissary(String name, int minMilestone, Vector3f loc) {
 			this.name = name;
@@ -140,8 +140,7 @@ public class DwarvenMinesWaypoints {
 		NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (hidden == null) return;
 
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 
@@ -155,21 +154,11 @@ public class DwarvenMinesWaypoints {
 						for (String line : lore) {
 							String clean = Utils.cleanColour(line);
 							switch (clean) {
-								case "Tier I Rewards:":
-									hidden.commissionMilestone = 0;
-									break;
-								case "Tier II Rewards:":
-									hidden.commissionMilestone = 1;
-									break;
-								case "Tier III Rewards:":
-									hidden.commissionMilestone = 2;
-									break;
-								case "Tier IV Rewards:":
-									hidden.commissionMilestone = 3;
-									break;
-								case "Tier V Rewards:":
-									hidden.commissionMilestone = 4;
-									break;
+								case "Tier I Rewards:" -> hidden.commissionMilestone = 0;
+								case "Tier II Rewards:" -> hidden.commissionMilestone = 1;
+								case "Tier III Rewards:" -> hidden.commissionMilestone = 2;
+								case "Tier IV Rewards:" -> hidden.commissionMilestone = 3;
+								case "Tier V Rewards:" -> hidden.commissionMilestone = 4;
 							}
 						}
 						return;

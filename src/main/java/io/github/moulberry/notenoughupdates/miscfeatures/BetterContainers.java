@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -62,6 +63,7 @@ public class BetterContainers {
 	private static final ResourceLocation rl = new ResourceLocation("notenoughupdates:dynamic_chest_inventory.png");
 	private static boolean loaded = false;
 	private static DynamicTexture texture = null;
+	@Getter
 	private static int textColour = 4210752;
 
 	private static int lastClickedSlot = 0;
@@ -162,10 +164,6 @@ public class BetterContainers {
 		return stack != null && stack.getItem() != Item.getItemFromBlock(Blocks.stained_glass_pane)
 			&& NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack) == null && !isToggleOn(stack) && !isToggleOff(
 			stack);
-	}
-
-	public static int getTextColour() {
-		return textColour;
 	}
 
 	public static boolean isToggleOn(ItemStack stack) {

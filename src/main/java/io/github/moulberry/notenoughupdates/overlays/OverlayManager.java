@@ -45,26 +45,26 @@ public class OverlayManager {
 
 	static {
 		List<String> todoDummy = Lists.newArrayList(
-			"\u00a73Cakes: \u00a7eInactive!",
-			"\u00a73Cookie Buff: \u00a7eInactive!",
-			"\u00a73Godpot: \u00a7eInactive!",
-			"\u00a73Puzzler: \u00a7eReady!",
-			"\u00a73Fetchur: \u00a7eReady!",
-			"\u00a73Commissions: \u00a7eReady!",
-			"\u00a73Experiments: \u00a7eReady!",
-			"\u00a73Mithril Powder: \u00a7eReady",
-			"\u00a73Gemstone Powder: \u00a7eReady",
-			"\u00a73Cakes: \u00a7e1d21h",
-			"\u00a73Cookie Buff: \u00a7e2d23h",
-			"\u00a73Godpot: \u00a7e19h",
-			"\u00a73Puzzler: \u00a7e13h",
-			"\u00a73Fetchur: \u00a7e3h38m",
-			"\u00a73Commissions: \u00a7e3h38m",
-			"\u00a73Experiments: \u00a7e3h38m",
-			"\u00a73Mithril Powder: \u00a7e3h38m",
-			"\u00a73Gemstone Powder: \u00a7e3h38m",
-			"\u00a73Crimson Isle Quests: \u00a7e3h38m",
-			"\u00a73NPC Buy Daily Limit: \u00a7e3h38m"
+			"§3Cakes: §eInactive!",
+			"§3Cookie Buff: §eInactive!",
+			"§3Godpot: §eInactive!",
+			"§3Puzzler: §eReady!",
+			"§3Fetchur: §eReady!",
+			"§3Commissions: §eReady!",
+			"§3Experiments: §eReady!",
+			"§3Mithril Powder: §eReady",
+			"§3Gemstone Powder: §eReady",
+			"§3Cakes: §e1d21h",
+			"§3Cookie Buff: §e2d23h",
+			"§3Godpot: §e19h",
+			"§3Puzzler: §e13h",
+			"§3Fetchur: §e3h38m",
+			"§3Commissions: §e3h38m",
+			"§3Experiments: §e3h38m",
+			"§3Mithril Powder: §e3h38m",
+			"§3Gemstone Powder: §e3h38m",
+			"§3Crimson Isle Quests: §e3h38m",
+			"§3NPC Buy Daily Limit: §e3h38m"
 		);
 		textOverlays.add(
 			timersOverlay = new TimersOverlay(NotEnoughUpdates.INSTANCE.config.miscOverlays.todoPosition, () -> {
@@ -82,10 +82,12 @@ public class OverlayManager {
 			}));
 
 		List<String> miningDummy = Lists.newArrayList(
-			"\u00a73Goblin Slayer: \u00a7626.5%\n\u00a73Lucky Raffle: \u00a7c0.0%",
-			"\u00a73Mithril Powder: \u00a726,243",
-			"\u00a73Forge 1) \u00a79Diamonite\u00a77: \u00a7aReady!",
-			"\u00a73Forge 2) \u00a77EMPTY\n\u00a73Forge 3) \u00a77EMPTY\n\u00a73Forge 4) \u00a77EMPTY"
+			"§3Goblin Slayer: §626.5%\n§3Lucky Raffle: §c0.0%",
+			"§3Mithril Powder: §26,243",
+			"§3Forge 1) §9Diamonite§7: §aReady!",
+			"§3Forge 2) §7EMPTY",
+			"§3Forge 3) §7EMPTY",
+			"§3Forge 4) §7EMPTY"
 		);
 		miningOverlay = new MiningOverlay(NotEnoughUpdates.INSTANCE.config.mining.overlayPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -102,13 +104,13 @@ public class OverlayManager {
 		});
 
 		List<String> powderGrindingDummy = Lists.newArrayList(
-			"\u00a73Chests Found: \u00a7a13",
-			"\u00a73Opened Chests: \u00a7a11",
-			"\u00a73Unopened Chests: \u00a7c2",
-			"\u00a73Mithril Powder Found: \u00a726,243",
-			"\u00a73Average Mithril Powder/Chest: \u00a72568",
-			"\u00a73Gemstone Powder Found: \u00a7d6,243",
-			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+			"§3Chests Found: §a13",
+			"§3Opened Chests: §a11",
+			"§3Unopened Chests: §c2",
+			"§3Mithril Powder Found: §26,243",
+			"§3Average Mithril Powder/Chest: §2568",
+			"§3Gemstone Powder Found: §d6,243",
+			"§3Average Gemstone Powder/Chest: §d568"
 		);
 		powderGrindingOverlay =
 			new PowderGrindingOverlay(NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerPosition, () -> {
@@ -126,13 +128,13 @@ public class OverlayManager {
 			});
 
 		List<String> farmingDummy = Lists.newArrayList(
-			"\u00a7bCounter: \u00a7e37,547,860",
-			"\u00a7bCrops/m: \u00a7e38.29",
-			"\u00a7bFarming: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
-			"\u00a7bCurrent XP: \u00a7e6,734",
-			"\u00a7bRemaining XP: \u00a7e3,265",
-			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bYaw: \u00a7e68.25\u00a7l\u00b0"
+			"§bCounter: §e37,547,860",
+			"§bCrops/m: §e38.29",
+			"§bFarming: §e12§7 [§e|||||||||||||||||§8||||||||§7] §e67%",
+			"§bCurrent XP: §e6,734",
+			"§bRemaining XP: §e3,265",
+			"§bXP/h: §e238,129",
+			"§bYaw: §e68.25§l°"
 		);
 		farmingOverlay = new FarmingSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -148,13 +150,13 @@ public class OverlayManager {
 			return TextOverlayStyle.BACKGROUND;
 		});
 		List<String> miningSkillDummy = Lists.newArrayList(
-			"\u00a7bCompact: \u00a7e547,860",
-			"\u00a7bBlocks/m: \u00a7e38.29",
-			"\u00a7bMining: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
-			"\u00a7bCurrent XP: \u00a7e6,734",
-			"\u00a7bRemaining XP: \u00a7e3,265",
-			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bYaw: \u00a7e68.25\u00a7l\u00b0"
+			"§bCompact: §e547,860",
+			"§bBlocks/m: §e38.29",
+			"§bMining: §e12§7 [§e|||||||||||||||||§8||||||||§7] §e67%",
+			"§bCurrent XP: §e6,734",
+			"§bRemaining XP: §e3,265",
+			"§bXP/h: §e238,129",
+			"§bYaw: §e68.25§l°"
 		);
 		miningSkillOverlay = new MiningSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.miningPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -170,13 +172,13 @@ public class OverlayManager {
 			return TextOverlayStyle.BACKGROUND;
 		});
 		List<String> fishingDummy = Lists.newArrayList(
-			"\u00a7bCatches: \u00a7e37,547,860",
-			//"\u00a7bCatches/m: \u00a7e38.29",
-			"\u00a7bFish: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
-			"\u00a7bCurrent XP: \u00a7e6,734",
-			"\u00a7bRemaining XP: \u00a7e3,265",
-			"\u00a7bXP/h: \u00a7e238,129"
-			//"\u00a7bYaw: \u00a7e68.25\u00a7l\u00b0"
+			"§bCatches: §e37,547,860",
+			//"§bCatches/m: §e38.29",
+			"§bFish: §e12§7 [§e|||||||||||||||||§8||||||||§7] §e67%",
+			"§bCurrent XP: §e6,734",
+			"§bRemaining XP: §e3,265",
+			"§bXP/h: §e238,129"
+			//"§bYaw: §e68.25§l°"
 		);
 		fishingSkillOverlay =
 			new FishingSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.fishingPosition, () -> {
@@ -193,12 +195,12 @@ public class OverlayManager {
 				return TextOverlayStyle.BACKGROUND;
 			});
 		List<String> combatSkillDummy = Lists.newArrayList(
-			"\u00a7bKills: \u00a7e547,860",
-			"\u00a7bCombat: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
-			"\u00a7bCurrent XP: \u00a7e6,734",
-			"\u00a7bRemaining XP: \u00a7e3,265",
-			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bETA: \u00a7e13h12m"
+			"§bKills: §e547,860",
+			"§bCombat: §e12§7 [§e|||||||||||||||||§8||||||||§7] §e67%",
+			"§bCurrent XP: §e6,734",
+			"§bRemaining XP: §e3,265",
+			"§bXP/h: §e238,129",
+			"§bETA: §e13h12m"
 		);
 		combatSkillOverlay = new CombatSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.combatPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -214,14 +216,14 @@ public class OverlayManager {
 			return TextOverlayStyle.BACKGROUND;
 		});
 		List<String> petInfoDummy = Lists.newArrayList(
-			"\u00a7a[Lvl 37] \u00a7fRock",
-			"\u00a7b2,312.9/2,700\u00a7e (85.7%)",
-			"\u00a7b2.3k/2.7k\u00a7e (85.7%)",
-			"\u00a7bXP/h: \u00a7e27,209",
-			"\u00a7bTotal XP: \u00a7e30,597.9",
-			"\u00a7bHeld Item: \u00a7fMining Exp Boost",
-			"\u00a7bUntil L38: \u00a7e5m13s",
-			"\u00a7bUntil L100: \u00a7e2d13h"
+			"§a[Lvl 37] §fRock",
+			"§b2,312.9/2,700§e (85.7%)",
+			"§b2.3k/2.7k§e (85.7%)",
+			"§bXP/h: §e27,209",
+			"§bTotal XP: §e30,597.9",
+			"§bHeld Item: §fMining Exp Boost",
+			"§bUntil L38: §e5m13s",
+			"§bUntil L100: §e2d13h"
 		);
 		petInfoOverlay = new PetInfoOverlay(NotEnoughUpdates.INSTANCE.config.petOverlay.petInfoPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -238,8 +240,8 @@ public class OverlayManager {
 		});
 
 		List<String> bonemerangDummy = Lists.newArrayList(
-			"\u00a7cBonemerang will break!",
-			"\u00a77Targets: \u00a76\u00a7l10"
+			"§cBonemerang will break!",
+			"§7Targets: §6§l10"
 		);
 		bonemerangOverlay = new BonemerangOverlay(
 			NotEnoughUpdates.INSTANCE.config.itemOverlays.bonemerangPosition,
@@ -253,37 +255,45 @@ public class OverlayManager {
 			}
 		);
 		List<String> crystalHollowOverlayDummy = Lists.newArrayList(
-			"\u00a73Amber Crystal: \u00a7aPlaced\n" +
-				"\u00a73Sapphire Crystal: \u00a7eCollected\n" +
-				"\u00a73Jade Crystal: \u00a7eMissing\n" +
-				"\u00a73Amethyst Crystal: \u00a7cMissing\n" +
-				"\u00a73Topaz Crystal: \u00a7cMissing\n",
-			"\u00a73Crystals: \u00a7a4/5",
-			"\u00a73Crystals: \u00a7a80%",
-			"\u00a73Electron Transmitter: \u00a7aDone\n" +
-				"\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
-				"\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
-				"\u00a73Synthetic Heart: \u00a7cMissing\n" +
-				"\u00a73Control Switch: \u00a7cMissing\n" +
-				"\u00a73FTX 3070: \u00a7cMissing",
-			"\u00a73Electron Transmitter: \u00a7a3\n" +
-				"\u00a73Robotron Reflector: \u00a7e2\n" +
-				"\u00a73Superlite Motor: \u00a7e1\n" +
-				"\u00a73Synthetic Heart: \u00a7c0\n" +
-				"\u00a73Control Switch: \u00a7c0\n" +
-				"\u00a73FTX 3070: \u00a7c0",
-			"\u00a73Automaton parts: \u00a7a5/6",
-			"\u00a73Automaton parts: \u00a7a83%",
-			"\u00a73Scavenged Lapis Sword: \u00a7aDone\n" +
-				"\u00a73Scavenged Golden Hammer: \u00a7eIn Storage\n" +
-				"\u00a73Scavenged Diamond Axe: \u00a7eIn Inventory\n" +
-				"\u00a73Scavenged Emerald Hammer: \u00a7cMissing\n",
-			"\u00a73Scavenged Lapis Sword: \u00a7a3\n" +
-				"\u00a73Scavenged Golden Hammer: \u00a7e2\n" +
-				"\u00a73Scavenged Diamond Axe: \u00a7e1\n" +
-				"\u00a73Scavenged Emerald Hammer: \u00a7c0\n",
-			"\u00a73Mines of Divan parts: \u00a7a3/4",
-			"\u00a73Mines of Divan parts: \u00a7a75%"
+			"""
+				§3Amber Crystal: §aPlaced
+				§3Sapphire Crystal: §eCollected
+				§3Jade Crystal: §eMissing
+				§3Amethyst Crystal: §cMissing
+				§3Topaz Crystal: §cMissing
+				""",
+			"§3Crystals: §a4/5",
+			"§3Crystals: §a80%",
+			"""
+				§3Electron Transmitter: §aDone
+				§3Robotron Reflector: §eIn Storage
+				§3Superlite Motor: §eIn Inventory
+				§3Synthetic Heart: §cMissing
+				§3Control Switch: §cMissing
+				§3FTX 3070: §cMissing""",
+			"""
+				§3Electron Transmitter: §a3
+				§3Robotron Reflector: §e2
+				§3Superlite Motor: §e1
+				§3Synthetic Heart: §c0
+				§3Control Switch: §c0
+				§3FTX 3070: §c0""",
+			"§3Automaton parts: §a5/6",
+			"§3Automaton parts: §a83%",
+			"""
+				§3Scavenged Lapis Sword: §aDone
+				§3Scavenged Golden Hammer: §eIn Storage
+				§3Scavenged Diamond Axe: §eIn Inventory
+				§3Scavenged Emerald Hammer: §cMissing
+				""",
+			"""
+				§3Scavenged Lapis Sword: §a3
+				§3Scavenged Golden Hammer: §e2
+				§3Scavenged Diamond Axe: §e1
+				§3Scavenged Emerald Hammer: §c0
+				""",
+			"§3Mines of Divan parts: §a3/4",
+			"§3Mines of Divan parts: §a75%"
 		);
 		crystalHollowOverlay =
 			new CrystalHollowOverlay(NotEnoughUpdates.INSTANCE.config.mining.crystalHollowOverlayPosition, () -> {
@@ -300,13 +310,13 @@ public class OverlayManager {
 				return TextOverlayStyle.BACKGROUND;
 			});
 		List<String> slayerDummy = Lists.newArrayList(
-			"\u00a7eSlayer: \u00a74Sven",
-			"\u00a7eRNG Meter: \u00a75100%",
-			"\u00a7eLvl: \u00a7d7",
-			"\u00a7eKill time: \u00a7c1:30",
-			"\u00a7eXP: \u00a7d75,450/100,000",
-			"\u00a7eBosses till next Lvl: \u00a7d17",
-			"\u00a7eAverage kill time: \u00a7c3:20"
+			"§eSlayer: §4Sven",
+			"§eRNG Meter: §5100%",
+			"§eLvl: §d7",
+			"§eKill time: §c1:30",
+			"§eXP: §d75,450/100,000",
+			"§eBosses till next Lvl: §d17",
+			"§eAverage kill time: §c3:20"
 		);
 		slayerOverlay = new SlayerOverlay(NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -323,7 +333,7 @@ public class OverlayManager {
 		});
 
 		List<String> fuelDummy = Lists.newArrayList(
-			"\u00a73This is a fuel bar"
+			"§3This is a fuel bar"
 		);
 		fuelBar = new FuelBarDummy(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -343,5 +353,4 @@ public class OverlayManager {
 		textOverlays.add(slayerOverlay);
 		textOverlays.add(fuelBar);
 	}
-
 }

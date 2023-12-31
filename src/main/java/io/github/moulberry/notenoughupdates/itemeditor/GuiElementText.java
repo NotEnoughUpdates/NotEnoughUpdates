@@ -19,10 +19,14 @@
 
 package io.github.moulberry.notenoughupdates.itemeditor;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
 public class GuiElementText extends GuiElement {
+	@Setter
+	@Getter
 	protected String text;
 	private final int colour;
 
@@ -40,14 +44,6 @@ public class GuiElementText extends GuiElement {
 	public int getWidth() {
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 		return fr.getStringWidth(text);
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
 	}
 
 	@Override

@@ -342,7 +342,7 @@ public class BazaarSearchOverlay {
 				tabCompleted = false;
 				tabCompletionIndex = -1;
 				return true;
-			} else if (id.equals("")) {
+			} else if (id.isEmpty()) {
 				tabCompletionIndex = 0;
 				return true;
 			} else {
@@ -358,7 +358,7 @@ public class BazaarSearchOverlay {
 				tabCompleted = false;
 				tabCompletionIndex = -1;
 				return true;
-			} else if (id.equals("")) {
+			} else if (id.isEmpty()) {
 				if (autocompletedItems.size() > 4) tabCompletionIndex = 4;
 				else tabCompletionIndex = autocompletedItems.size() - 1;
 				tabCompletionIndex = autocompletedItems.size() - 1;

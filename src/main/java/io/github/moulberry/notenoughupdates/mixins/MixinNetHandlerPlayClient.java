@@ -147,7 +147,7 @@ public class MixinNetHandlerPlayClient {
 
 	@Inject(method = "handlePlayerListHeaderFooter", at = @At("HEAD"))
 	public void handlePlayerListHeaderFooter(S47PacketPlayerListHeaderFooter packetIn, CallbackInfo ci) {
-		SBInfo.getInstance().header = packetIn.getHeader().getFormattedText().length() == 0 ? null : packetIn.getHeader();
-		SBInfo.getInstance().footer = packetIn.getFooter().getFormattedText().length() == 0 ? null : packetIn.getFooter();
+		SBInfo.getInstance().header = packetIn.getHeader().getFormattedText().isEmpty() ? null : packetIn.getHeader();
+		SBInfo.getInstance().footer = packetIn.getFooter().getFormattedText().isEmpty() ? null : packetIn.getFooter();
 	}
 }

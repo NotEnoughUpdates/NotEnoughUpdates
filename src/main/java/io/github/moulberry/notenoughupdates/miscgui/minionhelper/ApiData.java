@@ -19,9 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class ApiData {
 
 	private final Map<String, Integer> highestCollectionTier;
@@ -30,6 +34,7 @@ public class ApiData {
 	private final int barbariansReputation;
 	private final boolean collectionApiDisabled;
 	private final List<String> craftedMinions;
+	@Setter
 	private int peltCount;
 
 	public ApiData(
@@ -50,35 +55,4 @@ public class ApiData {
 		this.peltCount = peltCount;
 	}
 
-	public Map<String, Integer> getHighestCollectionTier() {
-		return highestCollectionTier;
-	}
-
-	public Map<String, Integer> getSlayerTiers() {
-		return slayerTiers;
-	}
-
-	public int getMagesReputation() {
-		return magesReputation;
-	}
-
-	public int getBarbariansReputation() {
-		return barbariansReputation;
-	}
-
-	public boolean isCollectionApiDisabled() {
-		return collectionApiDisabled;
-	}
-
-	public List<String> getCraftedMinions() {
-		return craftedMinions;
-	}
-
-	public int getPeltCount() {
-		return peltCount;
-	}
-
-	public void setPeltCount(int peltCount) {
-		this.peltCount = peltCount;
-	}
 }

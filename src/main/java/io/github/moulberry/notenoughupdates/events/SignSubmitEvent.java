@@ -19,22 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.events;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 
+@Getter
+@AllArgsConstructor
 public class SignSubmitEvent extends NEUEvent {
 	public final GuiEditSign sign;
 	public final String[] lines;
-
-	public SignSubmitEvent(GuiEditSign sign, String[] hehe) {
-		this.sign = sign;
-		this.lines = hehe;
-	}
-
-	public GuiEditSign getSign() {
-		return sign;
-	}
-
-	public String[] getLines() {
-		return lines;
-	}
 }

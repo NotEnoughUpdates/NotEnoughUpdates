@@ -63,7 +63,7 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 		UNKNOWN,
 		DOUBLE_POWDER,
 		BETTER_TOGETHER,
-		GONE_WITH_THE_WIND;
+		GONE_WITH_THE_WIND
 	}
 
 	private float interp(float now, float last) {
@@ -97,17 +97,10 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 			Matcher matcher = EVENT_PATTERN.matcher(BossStatus.bossName == null ? "" : Utils.cleanColour(BossStatus.bossName));
 			if (matcher.matches()) {
 				switch (matcher.group(1)) {
-					case "2X POWDER":
-						miningEvent = MiningEvent.DOUBLE_POWDER;
-						break;
-					case "BETTER TOGETHER":
-						miningEvent = MiningEvent.BETTER_TOGETHER;
-						break;
-					case "GONE WITH THE WIND":
-						miningEvent = MiningEvent.GONE_WITH_THE_WIND;
-						break;
-					default:
-						miningEvent = MiningEvent.UNKNOWN;
+					case "2X POWDER" -> miningEvent = MiningEvent.DOUBLE_POWDER;
+					case "BETTER TOGETHER" -> miningEvent = MiningEvent.BETTER_TOGETHER;
+					case "GONE WITH THE WIND" -> miningEvent = MiningEvent.GONE_WITH_THE_WIND;
+					default -> miningEvent = MiningEvent.UNKNOWN;
 				}
 			}
 		} else overlayStrings = null;
@@ -126,36 +119,22 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
 				NumberFormat format = NumberFormat.getIntegerInstance();
 				switch (index) {
-					case 0:
-						overlayStrings.add("\u00a73Chests Found: \u00a7a" + format.format(this.chestCount));
-						break;
-					case 1:
-						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + format.format(this.openedChestCount));
-						break;
-					case 2:
-						overlayStrings.add(
-							"\u00a73Unopened Chests: \u00a7c" + format.format(this.chestCount - this.openedChestCount));
-						break;
-					case 3:
-						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" +
-							format.format(interp(this.mithrilPowderFound, lastMithrilPowderFound)));
-						break;
-					case 4:
-						overlayStrings.add("\u00a73Average Mithril Powder/Chest: \u00a72" + format.format(interp(
-							(this.openedChestCount > 0 ?
-								1f * this.mithrilPowderFound / this.openedChestCount :
-								0), lastMithrilPowderAverage)));
-						break;
-					case 5:
-						overlayStrings.add("\u00a73Gemstone Powder Found: \u00a7d" +
-							format.format(interp(this.gemstonePowderFound, lastGemstonePowderFound)));
-						break;
-					case 6:
-						overlayStrings.add("\u00a73Average Gemstone Powder/Chest: \u00a7d" + format.format(interp(
-							(this.openedChestCount > 0 ?
-								1f * this.gemstonePowderFound / this.openedChestCount :
-								0), lastGemstonePowderAverage)));
-						break;
+					case 0 -> overlayStrings.add("§3Chests Found: §a" + format.format(this.chestCount));
+					case 1 -> overlayStrings.add("§3Opened Chests: §a" + format.format(this.openedChestCount));
+					case 2 -> overlayStrings.add(
+						"§3Unopened Chests: §c" + format.format(this.chestCount - this.openedChestCount));
+					case 3 -> overlayStrings.add("§3Mithril Powder Found: §2" +
+																			 format.format(interp(this.mithrilPowderFound, lastMithrilPowderFound)));
+					case 4 -> overlayStrings.add("§3Average Mithril Powder/Chest: §2" + format.format(interp(
+						(this.openedChestCount > 0 ?
+							1f * this.mithrilPowderFound / this.openedChestCount :
+							0), lastMithrilPowderAverage)));
+					case 5 -> overlayStrings.add("§3Gemstone Powder Found: §d" +
+																			 format.format(interp(this.gemstonePowderFound, lastGemstonePowderFound)));
+					case 6 -> overlayStrings.add("§3Average Gemstone Powder/Chest: §d" + format.format(interp(
+						(this.openedChestCount > 0 ?
+							1f * this.gemstonePowderFound / this.openedChestCount :
+							0), lastGemstonePowderAverage)));
 				}
 			}
 		}

@@ -109,12 +109,9 @@ public class MinionHelperPriceCalculation {
 			}
 		}
 
-		if (source instanceof CraftingSource) {
-			CraftingSource craftingSource = (CraftingSource) source;
+		if (source instanceof CraftingSource craftingSource) {
 			return getCosts(minion, upgradeOnly, craftingSource.getItems());
-
-		} else if (source instanceof NpcSource) {
-			NpcSource npcSource = (NpcSource) source;
+		} else if (source instanceof NpcSource npcSource) {
 			double upgradeCost = getCosts(minion, upgradeOnly, npcSource.getItems());
 			long coins = npcSource.getCoins();
 			upgradeCost += coins;

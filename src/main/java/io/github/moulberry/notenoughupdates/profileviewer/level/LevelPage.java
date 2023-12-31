@@ -36,6 +36,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.level.task.SlayingTask
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.StoryTaskLevel;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
@@ -51,6 +52,7 @@ public class LevelPage extends GuiProfileViewerPage {
 
 	private static final ResourceLocation pv_levels = new ResourceLocation("notenoughupdates:pv_levels.png");
 	private final BasicPage basicPage;
+	@Getter
 	private final JsonObject constant;
 	private final List<GuiTaskLevel> tasks = new ArrayList<>();
 
@@ -195,9 +197,5 @@ public class LevelPage extends GuiProfileViewerPage {
 			return EnumChatFormatting.GOLD + name + ": " + EnumChatFormatting.YELLOW
 				+ percentage + "%" + " §8(" + xpGottenFormatted + "/" + xpGainfulFormatted + " XP)";
 		}
-	}
-
-	public JsonObject getConstant() {
-		return constant;
 	}
 }

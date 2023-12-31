@@ -49,10 +49,9 @@ public class SignCalculator {
 
 	@SubscribeEvent
 	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
-		if (!(event.gui instanceof GuiEditSign))
+		if (!(event.gui instanceof GuiEditSign guiEditSign))
 			return;
 		if (!isEnabled()) return;
-		GuiEditSign guiEditSign = (GuiEditSign) event.gui;
 		TileEntitySign tileSign = ((AccessorGuiEditSign) guiEditSign).getTileSign();
 		if (!tileSign.signText[1].getUnformattedText().equals("^^^^^^^^^^^^^^^") &&
 			!tileSign.signText[1].getUnformattedText().equals("^^^^^^")) return;

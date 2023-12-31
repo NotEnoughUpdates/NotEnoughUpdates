@@ -105,7 +105,10 @@ public class ApiData {
 	@ConfigAccordionId(id = 0)
 	@ConfigOption(
 		name = "Edit Mode",
-		desc = "Enables you to edit items in the item list.\n§4Recommended for repository maintainers only.\n§4§lRemember: §rTurn off auto update as well"
+		desc = """
+			Enables you to edit items in the item list.
+			§4Recommended for repository maintainers only.
+			§4§lRemember: §rTurn off auto update as well"""
 	)
 	@ConfigEditorBoolean
 	public boolean repositoryEditing = false;

@@ -45,19 +45,19 @@ public class PetOverlay {
 	@Expose
 	@ConfigOption(
 		name = "Pet Overlay Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
-			"\u00a7rEquip a pet to show the overlay"
+		desc = "§eDrag text to change the appearance of the overlay\n" +
+			"§rEquip a pet to show the overlay"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7a[Lvl 37] \u00a7fRock",
-			"\u00a7b2,312.9/2,700\u00a7e (85.7%)",
-			"\u00a7b2.3k/2.7k\u00a7e (85.7%)",
-			"\u00a7bXP/h: \u00a7e27,209",
-			"\u00a7bTotal XP: \u00a7e30,597.9",
-			"\u00a7bHeld Item: \u00a7fMining Exp Boost",
-			"\u00a7bUntil L38: \u00a7e5m13s",
-			"\u00a7bUntil L100: \u00a7e2d13h"
+			"§a[Lvl 37] §fRock",
+			"§b2,312.9/2,700§e (85.7%)",
+			"§b2.3k/2.7k§e (85.7%)",
+			"§bXP/h: §e27,209",
+			"§bTotal XP: §e30,597.9",
+			"§bHeld Item: §fMining Exp Boost",
+			"§bUntil L38: §e5m13s",
+			"§bUntil L100: §e2d13h"
 		}
 	)
 	public List<Integer> petOverlayText = new ArrayList<>(Arrays.asList(0, 2, 3, 6, 4));
@@ -92,7 +92,7 @@ public class PetOverlay {
 	@ConfigOption(
 		name = "Pet Inventory Display",
 		desc = "Shows an overlay in your inventory showing your current pet\n" +
-			"\u00A7cRequires Hide Potion Effects to be enabled"
+			"§cRequires Hide Potion Effects to be enabled"
 	)
 	@ConfigEditorBoolean
 	public boolean petInvDisplay = false;

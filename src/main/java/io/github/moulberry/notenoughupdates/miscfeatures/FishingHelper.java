@@ -286,8 +286,8 @@ public class FishingHelper {
 				Set<WakeChain> toRemoveChain = new HashSet<>();
 				for (Map.Entry<WakeChain, List<Integer>> entry : chains.entrySet()) {
 					if (currentTime - entry.getKey().lastUpdate > 200 ||
-						entry.getValue().isEmpty() ||
-						Collections.disjoint(entry.getValue(), hookEntities.keySet())) {
+							entry.getValue().isEmpty() ||
+							Collections.disjoint(entry.getValue(), hookEntities.keySet())) {
 						toRemoveChain.add(entry.getKey());
 					}
 				}
@@ -347,8 +347,8 @@ public class FishingHelper {
 			for (int i = -2; i < 2; i++) {
 				IBlockState state = hook.worldObj.getBlockState(new BlockPos(particleX, particleY + i, particleZ));
 				if (state != null && (state.getBlock() == Blocks.flowing_lava
-					|| state.getBlock() == Blocks.flowing_water
-					|| state.getBlock() == Blocks.lava))
+															|| state.getBlock() == Blocks.flowing_water
+															|| state.getBlock() == Blocks.lava))
 					tolerance = 2.0F;
 			}
 		}
@@ -401,9 +401,9 @@ public class FishingHelper {
 		double zOffset = event.getZOffset();
 
 		if (!NotEnoughUpdates.INSTANCE.config.fishing.hideOtherPlayerAll &&
-			!NotEnoughUpdates.INSTANCE.config.fishing.enableCustomParticles &&
-			!NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarning &&
-			!NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarningR) {
+				!NotEnoughUpdates.INSTANCE.config.fishing.enableCustomParticles &&
+				!NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarning &&
+				!NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarningR) {
 			return;
 		}
 		if (hookEntities.isEmpty()) {
@@ -664,31 +664,31 @@ public class FishingHelper {
 						double yVel = 0;
 
 						switch (particleTypeI) {
-							case 2:
+							case 2 -> {
 								particleType = EnumParticleTypes.FIREWORKS_SPARK;
 								customColour = true;
 								yVel = 0.05;
-								break;
-							case 3:
+							}
+							case 3 -> {
 								particleType = EnumParticleTypes.SPELL_MOB;
 								customColour = true;
-								break;
-							case 4:
+							}
+							case 4 -> {
 								particleType = EnumParticleTypes.REDSTONE;
 								customColour = true;
-								break;
-							case 5:
+							}
+							case 5 -> {
 								particleType = EnumParticleTypes.FLAME;
 								yVel = 0.015;
-								break;
-							case 6:
+							}
+							case 6 -> {
 								particleType = EnumParticleTypes.CRIT;
 								yVel = 0.05;
-								break;
-							case 7:
+							}
+							case 7 -> {
 								particleType = EnumParticleTypes.CRIT_MAGIC;
 								yVel = 0.05;
-								break;
+							}
 						}
 
 						if (customColour && (((argb >> 24) & 0xFF) < 10)) {

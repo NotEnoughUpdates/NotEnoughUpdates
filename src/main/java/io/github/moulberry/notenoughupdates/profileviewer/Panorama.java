@@ -131,21 +131,11 @@ public class Panorama {
 				GlStateManager.pushMatrix();
 
 				switch (k) {
-					case 1:
-						GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
-						break;
-					case 2:
-						GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-						break;
-					case 3:
-						GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-						break;
-					case 4:
-						GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-						break;
-					case 5:
-						GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
-						break;
+					case 1 -> GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+					case 2 -> GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+					case 3 -> GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+					case 4 -> GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+					case 5 -> GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
 				}
 
 				Minecraft.getMinecraft().getTextureManager().bindTexture(panoramas[k]);

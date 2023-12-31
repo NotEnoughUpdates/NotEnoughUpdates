@@ -83,7 +83,7 @@ import java.util.stream.StreamSupport;
 public class EntityViewer extends GuiScreen {
 
 	public static Map<String, Supplier<? extends EntityLivingBase>> validEntities =
-		new HashMap<String, Supplier<? extends EntityLivingBase>>() {{
+		new HashMap<>() {{
 			put("Zombie", () -> new EntityZombie(null));
 			put("Chicken", () -> new EntityChicken(null));
 			put("Slime", () -> new EntitySlime(null));
@@ -125,7 +125,7 @@ public class EntityViewer extends GuiScreen {
 			put("Giant", () -> new EntityGiantZombie(null));
 		}};
 
-	public static Map<String, EntityViewerModifier> validModifiers = new HashMap<String, EntityViewerModifier>() {{
+	public static Map<String, EntityViewerModifier> validModifiers = new HashMap<>() {{
 		put("playerdata", new SkinModifier());
 		put("equipment", new EquipmentModifier());
 		put("riding", new RidingModifier());

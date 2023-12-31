@@ -48,139 +48,53 @@ public class HexItem {
 		this.itemId = itemId.replace("'S", "");
 		this.displayLore = displayLore;
 		switch (itemId) {
-			default:
-				this.itemType = ItemType.UNKNOWN;
-				break;
-			case "HOT_POTATO_BOOK":
-				this.itemType = ItemType.HOT_POTATO;
-				break;
-			case "FUMING_POTATO_BOOK":
-				this.itemType = ItemType.FUMING_POTATO;
-				break;
-			case "BOOK_OF_STATS":
-				this.itemType = ItemType.BOOK_OF_STATS;
-				break;
-			case "THE_ART_OF_WAR":
-				this.itemType = ItemType.ART_OF_WAR;
-				break;
-			case "FARMING_FOR_DUMMIES":
-				this.itemType = ItemType.FARMING_DUMMY;
-				break;
-			case "THE_ART_OF_PEACE":
-				this.itemType = ItemType.ART_OF_PEACE;
-				break;
-			case "RECOMBOBULATOR_3000":
-				this.itemType = ItemType.RECOMB;
-				break;
-			case "SILEX":
+			default -> this.itemType = ItemType.UNKNOWN;
+			case "HOT_POTATO_BOOK" -> this.itemType = ItemType.HOT_POTATO;
+			case "FUMING_POTATO_BOOK" -> this.itemType = ItemType.FUMING_POTATO;
+			case "BOOK_OF_STATS" -> this.itemType = ItemType.BOOK_OF_STATS;
+			case "THE_ART_OF_WAR" -> this.itemType = ItemType.ART_OF_WAR;
+			case "FARMING_FOR_DUMMIES" -> this.itemType = ItemType.FARMING_DUMMY;
+			case "THE_ART_OF_PEACE" -> this.itemType = ItemType.ART_OF_PEACE;
+			case "RECOMBOBULATOR_3000" -> this.itemType = ItemType.RECOMB;
+			case "SILEX" -> {
 				this.itemId = "SIL_EX";
 				this.itemType = ItemType.SILEX;
-				break;
-			case "RUBY_POWER_SCROLL":
-				this.itemType = ItemType.RUBY_SCROLL;
-				break;
-			case "SAPPHIRE_POWER_SCROLL":
-				this.itemType = ItemType.SAPPHIRE_SCROLL;
-				break;
-			case "JASPER_POWER_SCROLL":
-				this.itemType = ItemType.JASPER_SCROLL;
-				break;
-			case "AMETHYST_POWER_SCROLL":
-				this.itemType = ItemType.AMETHYST_SCROLL;
-				break;
-			case "AMBER_POWER_SCROLL":
-				this.itemType = ItemType.AMBER_SCROLL;
-				break;
-			case "OPAL_POWER_SCROLL":
-				this.itemType = ItemType.OPAL_SCROLL;
-				break;
-			case "FIRST_MASTER_STAR":
-				this.itemType = ItemType.FIRST_MASTER_STAR;
-				break;
-			case "SECOND_MASTER_STAR":
-				this.itemType = ItemType.SECOND_MASTER_STAR;
-				break;
-			case "THIRD_MASTER_STAR":
-				this.itemType = ItemType.THIRD_MASTER_STAR;
-				break;
-			case "FOURTH_MASTER_STAR":
-				this.itemType = ItemType.FOURTH_MASTER_STAR;
-				break;
-			case "FIFTH_MASTER_STAR":
-				this.itemType = ItemType.FIFTH_MASTER_STAR;
-				break;
-			case "WOOD_SINGULARITY":
-				this.itemType = ItemType.WOOD_SINGULARITY;
-				break;
-			case "IMPLOSION":
-				this.itemType = ItemType.IMPLOSION_SCROLL;
-				break;
-			case "WITHER_SHIELD":
-				this.itemType = ItemType.WITHER_SHIELD_SCROLL;
-				break;
-			case "SHADOW_WARP":
-				this.itemType = ItemType.SHADOW_WARP_SCROLL;
-				break;
-			case "TRANSMISSION_TUNER":
-				this.itemType = ItemType.TUNER;
-				break;
-			case "RANDOM_REFORGE":
-				this.itemType = ItemType.RANDOM_REFORGE;
-				break;
-			case "MANA_DISINTEGRATOR":
-				this.itemType = ItemType.MANA_DISINTEGRATOR;
-				break;
-			case "TOTAL_UPGRADES":
-				this.itemType = ItemType.TOTAL_UPGRADES;
-				break;
-			case "CONVERT_TO_DUNGEON":
-				this.itemType = ItemType.CONVERT_TO_DUNGEON;
-				break;
-			case "EXPERIENCE_BOTTLE":
-				this.itemType = ItemType.EXPERIENCE_BOTTLE;
-				break;
-			case "GRAND_EXPERIENCE_BOTTLE":
-				this.itemType = ItemType.GRAND_EXPERIENCE_BOTTLE;
-				break;
-			case "TITANIC_EXPERIENCE_BOTTLE":
-				this.itemType = ItemType.TITANIC_EXPERIENCE_BOTTLE;
-				break;
-			case "COLOSSAL_EXPERIENCE_BOTTLE":
-				this.itemType = ItemType.COLOSSAL_EXPERIENCE_BOTTLE;
-				break;
-			case "FEROCITY_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_FEROCITY;
-				break;
-			case "SEA_CREATURE_CHANCE_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_SCC;
-				break;
-			case "ATTACK_SPEED_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_ATTACK_SPEED;
-				break;
-			case "SPEED_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_SPEED;
-				break;
-			case "INTELLIGENCE_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_INTELLIGENCE;
-				break;
-			case "CRITICAL_DAMAGE_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_CRIT_DAMAGE;
-				break;
-			case "STRENGTH_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_STRENGTH;
-				break;
-			case "DEFENSE_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_DEFENSE;
-				break;
-			case "HEALTH_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_HEALTH;
-				break;
-			case "MAGIC_FIND_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_MAGIC_FIND;
-				break;
-			case "CRITICAL_CHANCE_ENRICHMENT":
-				this.itemType = ItemType.ENRICHMENT_CRIT_CHANCE;
-				break;
+			}
+			case "RUBY_POWER_SCROLL" -> this.itemType = ItemType.RUBY_SCROLL;
+			case "SAPPHIRE_POWER_SCROLL" -> this.itemType = ItemType.SAPPHIRE_SCROLL;
+			case "JASPER_POWER_SCROLL" -> this.itemType = ItemType.JASPER_SCROLL;
+			case "AMETHYST_POWER_SCROLL" -> this.itemType = ItemType.AMETHYST_SCROLL;
+			case "AMBER_POWER_SCROLL" -> this.itemType = ItemType.AMBER_SCROLL;
+			case "OPAL_POWER_SCROLL" -> this.itemType = ItemType.OPAL_SCROLL;
+			case "FIRST_MASTER_STAR" -> this.itemType = ItemType.FIRST_MASTER_STAR;
+			case "SECOND_MASTER_STAR" -> this.itemType = ItemType.SECOND_MASTER_STAR;
+			case "THIRD_MASTER_STAR" -> this.itemType = ItemType.THIRD_MASTER_STAR;
+			case "FOURTH_MASTER_STAR" -> this.itemType = ItemType.FOURTH_MASTER_STAR;
+			case "FIFTH_MASTER_STAR" -> this.itemType = ItemType.FIFTH_MASTER_STAR;
+			case "WOOD_SINGULARITY" -> this.itemType = ItemType.WOOD_SINGULARITY;
+			case "IMPLOSION" -> this.itemType = ItemType.IMPLOSION_SCROLL;
+			case "WITHER_SHIELD" -> this.itemType = ItemType.WITHER_SHIELD_SCROLL;
+			case "SHADOW_WARP" -> this.itemType = ItemType.SHADOW_WARP_SCROLL;
+			case "TRANSMISSION_TUNER" -> this.itemType = ItemType.TUNER;
+			case "RANDOM_REFORGE" -> this.itemType = ItemType.RANDOM_REFORGE;
+			case "MANA_DISINTEGRATOR" -> this.itemType = ItemType.MANA_DISINTEGRATOR;
+			case "TOTAL_UPGRADES" -> this.itemType = ItemType.TOTAL_UPGRADES;
+			case "CONVERT_TO_DUNGEON" -> this.itemType = ItemType.CONVERT_TO_DUNGEON;
+			case "EXPERIENCE_BOTTLE" -> this.itemType = ItemType.EXPERIENCE_BOTTLE;
+			case "GRAND_EXPERIENCE_BOTTLE" -> this.itemType = ItemType.GRAND_EXPERIENCE_BOTTLE;
+			case "TITANIC_EXPERIENCE_BOTTLE" -> this.itemType = ItemType.TITANIC_EXPERIENCE_BOTTLE;
+			case "COLOSSAL_EXPERIENCE_BOTTLE" -> this.itemType = ItemType.COLOSSAL_EXPERIENCE_BOTTLE;
+			case "FEROCITY_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_FEROCITY;
+			case "SEA_CREATURE_CHANCE_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_SCC;
+			case "ATTACK_SPEED_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_ATTACK_SPEED;
+			case "SPEED_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_SPEED;
+			case "INTELLIGENCE_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_INTELLIGENCE;
+			case "CRITICAL_DAMAGE_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_CRIT_DAMAGE;
+			case "STRENGTH_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_STRENGTH;
+			case "DEFENSE_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_DEFENSE;
+			case "HEALTH_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_HEALTH;
+			case "MAGIC_FIND_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_MAGIC_FIND;
+			case "CRITICAL_CHANCE_ENRICHMENT" -> this.itemType = ItemType.ENRICHMENT_CRIT_CHANCE;
 		}
 		if (this.itemType == ItemType.UNKNOWN) {
 			for (String string : displayLore) {

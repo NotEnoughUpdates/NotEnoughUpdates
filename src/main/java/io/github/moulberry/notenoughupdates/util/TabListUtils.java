@@ -23,6 +23,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.TabListChangeEvent;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -60,6 +61,7 @@ public class TabListUtils {
 		}
 	}
 
+	@Getter
 	public static List<String> tabList = new ArrayList<>();
 	public static List<String> tabListLastTick = new ArrayList<>();
 
@@ -70,10 +72,6 @@ public class TabListUtils {
 		tabListLastTick = tabList;
 		tabList = getTabList0();
 		new TabListChangeEvent(tabList, tabListLastTick).post();
-	}
-
-	public static List<String> getTabList() {
-		return tabList;
 	}
 
 	private List<String> getTabList0() {

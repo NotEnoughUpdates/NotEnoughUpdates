@@ -45,7 +45,7 @@ import io.github.moulberry.notenoughupdates.util.LerpingFloat;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import lombok.var;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -123,7 +123,7 @@ public class NEUOverlay extends Gui {
 	private final String mobRegex = ".*?((_MONSTER)|(_NPC)|(_ANIMAL)|(_MINIBOSS)|(_BOSS)|(_SC))$";
 	private final String petRegex = ".*?;[0-5]$";
 
-	private final ResourceLocation[] sortIcons = new ResourceLocation[]{
+	private final ResourceLocation[] sortIcons = {
 		GuiTextures.sort_all,
 		GuiTextures.sort_mob,
 		GuiTextures.sort_pet,
@@ -131,7 +131,7 @@ public class NEUOverlay extends Gui {
 		GuiTextures.sort_armor,
 		GuiTextures.sort_accessory
 	};
-	private final ResourceLocation[] sortIconsActive = new ResourceLocation[]{
+	private final ResourceLocation[] sortIconsActive = {
 		GuiTextures.sort_all_active,
 		GuiTextures.sort_mob_active,
 		GuiTextures.sort_pet_active,
@@ -140,10 +140,10 @@ public class NEUOverlay extends Gui {
 		GuiTextures.sort_accessory_active
 	};
 
-	private final ResourceLocation[] orderIcons = new ResourceLocation[]{
+	private final ResourceLocation[] orderIcons = {
 		GuiTextures.order_alphabetical, GuiTextures.order_rarity, GuiTextures.order_value
 	};
-	private final ResourceLocation[] orderIconsActive = new ResourceLocation[]{
+	private final ResourceLocation[] orderIconsActive = {
 		GuiTextures.order_alphabetical_active, GuiTextures.order_rarity_active, GuiTextures.order_value_active
 	};
 
@@ -160,6 +160,7 @@ public class NEUOverlay extends Gui {
 	private Color bg = new Color(90, 90, 140, 50);
 	private Color fg = new Color(100, 100, 100, 255);
 
+	@Getter
 	private InfoPane activeInfoPane = null;
 
 	private TreeSet<JsonObject> searchedItems = null;
@@ -195,6 +196,7 @@ public class NEUOverlay extends Gui {
 	private boolean redrawItems = false;
 
 	public static boolean searchBarHasFocus = false;
+	@Getter
 	private static final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
 
 	private static final int COMPARE_MODE_ALPHABETICAL = 0;
@@ -260,13 +262,13 @@ public class NEUOverlay extends Gui {
 							lastSearchMode = System.currentTimeMillis();
 							if (searchMode && NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus) {
 								NotificationHandler.displayNotification(Lists.newArrayList(
-									"\u00a7eSearch Highlight",
-									"\u00a77In this mode NEU will gray out non matching items in",
-									"\u00a77your inventory or chests.",
-									"\u00a77This allows you easily find items as the item will stand out.",
-									"\u00a77To toggle this please double click on the search bar in your inventory.",
-									"\u00a77",
-									"\u00a77Press X on your keyboard to close this notification"
+									"§eSearch Highlight",
+									"§7In this mode NEU will gray out non matching items in",
+									"§7your inventory or chests.",
+									"§7This allows you easily find items as the item will stand out.",
+									"§7To toggle this please double click on the search bar in your inventory.",
+									"§7",
+									"§7Press X on your keyboard to close this notification"
 								), true, true);
 								NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = false;
 
@@ -682,16 +684,16 @@ public class NEUOverlay extends Gui {
 		Set<MBGuiElement> set = new LinkedHashSet<>(guiGroup.getChildrenMap().keySet());
 		for (MBGuiElement element : set) {
 			switch (index) {
-				case 0:
+				case 0 -> {
 					if (searchBarAnchor == null) continue;
 					guiGroup.getChildrenMap().get(element).anchorPoint = searchBarAnchor.anchorPoint;
 					guiGroup.getChildrenMap().get(element).offset = searchBarAnchor.offset;
-					break;
-				case 1:
+				}
+				case 1 -> {
 					if (quickCommandAnchor == null) continue;
 					guiGroup.getChildrenMap().get(element).anchorPoint = quickCommandAnchor.anchorPoint;
 					guiGroup.getChildrenMap().get(element).offset = quickCommandAnchor.offset;
-					break;
+				}
 			}
 			index++;
 		}
@@ -965,10 +967,6 @@ public class NEUOverlay extends Gui {
 		return paddingUnscaled;
 	}
 
-	public static GuiTextField getTextField() {
-		return textField;
-	}
-
 	/**
 	 * Returns searchBarXSize, scaled by 0.8 if gui scale == AUTO.
 	 */
@@ -990,10 +988,6 @@ public class NEUOverlay extends Gui {
 		}
 		infoPaneOffsetFactor.resetTimer();
 		this.activeInfoPane = pane;
-	}
-
-	public InfoPane getActiveInfoPane() {
-		return activeInfoPane;
 	}
 
 	/**
@@ -1106,9 +1100,9 @@ public class NEUOverlay extends Gui {
 
 				AtomicReference<String> internalname = new AtomicReference<>(null);
 				AtomicReference<ItemStack> itemstack = new AtomicReference<>(null);
-				if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer &&
-					Utils.getSlotUnderMouse((GuiContainer) Minecraft.getMinecraft().currentScreen) != null) {
-					Slot slot = Utils.getSlotUnderMouse((GuiContainer) Minecraft.getMinecraft().currentScreen);
+				if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer currentScreen &&
+					Utils.getSlotUnderMouse(currentScreen) != null) {
+					Slot slot = Utils.getSlotUnderMouse(currentScreen);
 					ItemStack hover = slot.getStack();
 					if (hover != null) {
 						internalname.set(manager.getInternalNameForItem(hover));
@@ -1312,7 +1306,7 @@ public class NEUOverlay extends Gui {
 
 			mult = getCompareAscending().get(COMPARE_MODE_ALPHABETICAL) ? 1 : -1;
 			if (start1.equals(start2)) {
-				String[] order = new String[]{"HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"};
+				String[] order = {"HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"};
 				int type1 = checkItemType(o1.get("lore").getAsJsonArray(), order);
 				int type2 = checkItemType(o2.get("lore").getAsJsonArray(), order);
 
@@ -1464,41 +1458,16 @@ public class NEUOverlay extends Gui {
 				}
 			}
 			switch (textField.getText().toLowerCase().trim()) {
-				case "nullzee":
-					searchedItems.add(CustomItems.NULLZEE);
-					break;
-				case "rune":
-					searchedItems.add(CustomItems.RUNE);
-					break;
-				case "2b2t":
-					searchedItems.add(CustomItems.TWOBEETWOTEE);
-					break;
-				case "ducttape":
-				case "ducttapedigger":
-					searchedItems.add(CustomItems.DUCTTAPE);
-					break;
-				case "thirtyvirus":
-					searchedItems.add(manager.getItemInformation().get("SPIKED_BAIT"));
-					break;
-				case "leocthl":
-					searchedItems.add(CustomItems.LEOCTHL);
-					break;
-				case "spinaxx":
-					searchedItems.add(CustomItems.SPINAXX);
-					break;
-				case "credits":
-				case "credit":
-				case "who made this mod":
-					searchedItems.add(CustomItems.CREDITS);
-					break;
-				case "ironmoon":
-				case "ironm00n":
-					searchedItems.add(CustomItems.IRONM00N);
-					break;
-				case "nopo":
-				case "nopothegamer":
-					searchedItems.add(CustomItems.NOPO);
-					break;
+				case "nullzee" -> searchedItems.add(CustomItems.NULLZEE);
+				case "rune" -> searchedItems.add(CustomItems.RUNE);
+				case "2b2t" -> searchedItems.add(CustomItems.TWOBEETWOTEE);
+				case "ducttape", "ducttapedigger" -> searchedItems.add(CustomItems.DUCTTAPE);
+				case "thirtyvirus" -> searchedItems.add(manager.getItemInformation().get("SPIKED_BAIT"));
+				case "leocthl" -> searchedItems.add(CustomItems.LEOCTHL);
+				case "spinaxx" -> searchedItems.add(CustomItems.SPINAXX);
+				case "credits", "credit", "who made this mod" -> searchedItems.add(CustomItems.CREDITS);
+				case "ironmoon", "ironm00n" -> searchedItems.add(CustomItems.IRONM00N);
+				case "nopo", "nopothegamer" -> searchedItems.add(CustomItems.NOPO);
 			}
 
 			this.searchedItems = searchedItems;
@@ -1522,7 +1491,7 @@ public class NEUOverlay extends Gui {
 			return new ArrayList<>();
 		}
 
-		if (searchedItems.size() > 0 && searchedItemsArr.size() == 0) {
+		if (!searchedItems.isEmpty() && searchedItemsArr.isEmpty()) {
 			synchronized (searchedItemsArr) {
 				searchedItemsArr.addAll(searchedItems);
 			}
@@ -1642,7 +1611,7 @@ public class NEUOverlay extends Gui {
 	}
 
 	public int getMaxPages() {
-		if (getSearchedItems().size() == 0) return 1;
+		if (getSearchedItems().isEmpty()) return 1;
 		return (int) Math.ceil(getSearchedItems().size() / (float) getSlotsYSize() / getSlotsXSize());
 	}
 

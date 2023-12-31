@@ -46,9 +46,8 @@ public class KatSitterOverlay {
 
 	@SubscribeEvent
 	public void onGuiDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
-		if (!(event.gui instanceof GuiChest)) return;
+		if (!(event.gui instanceof GuiChest gui)) return;
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.showKatSitting) return;
-		GuiChest gui = (GuiChest) event.gui;
 		ContainerChest container = (ContainerChest) gui.inventorySlots;
 		if (!"Pet Sitter".equals(container.getLowerChestInventory().getDisplayName().getUnformattedText())) return;
 		Slot slot = container.getSlot(13);

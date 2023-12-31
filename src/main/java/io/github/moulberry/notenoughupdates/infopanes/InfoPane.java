@@ -23,20 +23,17 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
+import lombok.AllArgsConstructor;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
+@AllArgsConstructor
 public abstract class InfoPane extends Gui {
 	final NEUOverlay overlay;
 	final NEUManager manager;
-
-	public InfoPane(NEUOverlay overlay, NEUManager manager) {
-		this.overlay = overlay;
-		this.manager = manager;
-	}
 
 	public void reset() {}
 
@@ -75,18 +72,14 @@ public abstract class InfoPane extends Gui {
 		NEUOverlay overlay, NEUManager manager, String infoType,
 		String name, String internalName, String infoText
 	) {
-		switch (infoType.intern()) {
-			case "WIKI_URL":
-				return HTMLInfoPane.createFromWikiUrl(overlay, manager, name, infoText);
-			case "WIKI":
-				return CompletableFuture.completedFuture(
-					HTMLInfoPane.createFromWikiText(overlay, manager, name, internalName, infoText, false));
-			case "HTML":
-				return CompletableFuture.completedFuture(
-					new HTMLInfoPane(overlay, manager, name, internalName, infoText, false));
-			default:
-				return CompletableFuture.completedFuture(
-					new TextInfoPane(overlay, manager, name, infoText));
-		}
+		return switch (infoType.intern()) {
+			case "WIKI_URL" -> HTMLInfoPane.createFromWikiUrl(overlay, manager, name, infoText);
+			case "WIKI" -> CompletableFuture.completedFuture(
+				HTMLInfoPane.createFromWikiText(overlay, manager, name, internalName, infoText, false));
+			case "HTML" -> CompletableFuture.completedFuture(
+				new HTMLInfoPane(overlay, manager, name, internalName, infoText, false));
+			default -> CompletableFuture.completedFuture(
+				new TextInfoPane(overlay, manager, name, infoText));
+		};
 	}
 }

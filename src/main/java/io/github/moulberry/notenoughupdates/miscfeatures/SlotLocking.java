@@ -31,6 +31,8 @@ import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSound;
@@ -98,13 +100,9 @@ public class SlotLocking {
 	private boolean lockKeyHeld = false;
 	private Slot pairingSlot = null;
 
+	@Getter
+	@Setter
 	private Slot realSlot = null;
-
-	public void setRealSlot(Slot slot) {
-		realSlot = slot;
-	}
-
-	public Slot getRealSlot() {return realSlot;}
 
 	public void loadConfig(File file) {
 		config = ConfigUtil.loadConfig(SlotLockingConfig.class, file, GSON);
@@ -193,13 +191,12 @@ public class SlotLocking {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void keyboardInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ||
-			!NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking) {
+				!NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking) {
 			return;
 		}
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer container)) {
 			return;
 		}
-		GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
 
 		int key = NotEnoughUpdates.INSTANCE.config.slotLocking.slotLockKey;
 		if (!lockKeyHeld && KeybindHelper.isKeyPressed(key) && !Keyboard.isRepeatEvent()) {
@@ -274,13 +271,8 @@ public class SlotLocking {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void mouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ||
-			!NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking) {
-			return;
-		}
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
-			return;
-		}
-		GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+			!NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer container)) return;
 
 		if (NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotBinding && lockKeyHeld && pairingSlot != null) {
 			final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
@@ -518,10 +510,9 @@ public class SlotLocking {
 				GlStateManager.translate(0, 0, -400);
 			} else if (NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotBinding && slot.canBeHovered() &&
 				locked.boundTo >= 0 && locked.boundTo <= 39) {
-				if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
+				if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer container)) {
 					return;
 				}
-				GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
 
 				final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 				final int scaledWidth = scaledresolution.getScaledWidth();
@@ -645,11 +636,10 @@ public class SlotLocking {
 					GlStateManager.translate(0, 0, -200);
 				}
 			} else if (NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotBinding && slot.getSlotIndex() < 8 &&
-				pairingSlot != null && lockKeyHeld) {
-				if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
+								 pairingSlot != null && lockKeyHeld) {
+				if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer container)) {
 					return;
 				}
-				GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
 
 				final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 				final int scaledWidth = scaledresolution.getScaledWidth();
@@ -678,16 +668,12 @@ public class SlotLocking {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ||
 			!NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking)
 			return null;
-		if (slot == null) {
-			return null;
-		}
+		if (slot == null) return null;
 		if (slot.inventory != Minecraft.getMinecraft().thePlayer.inventory) {
 			return null;
 		}
 		int index = slot.getSlotIndex();
-		if (index < 0 || index > 39) {
-			return null;
-		}
+		if (index < 0 || index > 39) return null;
 		return getLockedSlotIndex(index);
 	}
 
@@ -714,7 +700,7 @@ public class SlotLocking {
 		LockedSlot locked = getLockedSlotIndex(index);
 
 		return locked != null &&
-			(locked.locked || (NotEnoughUpdates.INSTANCE.config.slotLocking.bindingAlsoLocks && locked.boundTo != -1));
+					 (locked.locked || (NotEnoughUpdates.INSTANCE.config.slotLocking.bindingAlsoLocks && locked.boundTo != -1));
 	}
 
 	boolean setTopHalfBarrier = false;
@@ -737,10 +723,9 @@ public class SlotLocking {
 	}
 
 	boolean isArmourSlot(int eventSlotNumber, int pairingSlotNumber) {
-		if (eventSlotNumber == 39 && pairingSlotNumber == 5) return true;
-		if (eventSlotNumber == 38 && pairingSlotNumber == 6) return true;
-		if (eventSlotNumber == 37 && pairingSlotNumber == 7) return true;
-		if (eventSlotNumber == 36 && pairingSlotNumber == 8) return true;
-		return false;
+		return (eventSlotNumber == 39 && pairingSlotNumber == 5)
+					 || (eventSlotNumber == 38 && pairingSlotNumber == 6)
+					 || (eventSlotNumber == 37 && pairingSlotNumber == 7)
+					 || (eventSlotNumber == 36 && pairingSlotNumber == 8);
 	}
 }

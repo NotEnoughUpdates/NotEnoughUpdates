@@ -20,6 +20,8 @@
 package io.github.moulberry.notenoughupdates.core.config;
 
 import com.google.gson.annotations.Expose;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.gui.ScaledResolution;
 
 public class Position {
@@ -27,10 +29,14 @@ public class Position {
 	private int x;
 	@Expose
 	private int y;
+	@Getter
 	@Expose
 	private boolean centerX;
+	@Getter
 	@Expose
 	private boolean centerY;
+	@Setter
+	@Getter
 	private boolean clicked = false;
 
 	private static final int EDGE_OFFSET = 0;
@@ -57,27 +63,12 @@ public class Position {
 		return new Position(x, y, centerX, centerY);
 	}
 
-	public boolean isCenterX() {
-		return centerX;
-	}
-
-	public boolean isCenterY() {
-		return centerY;
-	}
-
 	public int getRawX() {
 		return x;
 	}
 
 	public int getRawY() {
 		return y;
-	}
-
-	public void setClicked(boolean state) {
-		this.clicked = state;
-	}
-	public boolean getClicked() {
-		return clicked;
 	}
 
 	public int getAbsX(ScaledResolution scaledResolution, int objWidth) {

@@ -281,13 +281,13 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Bonemerang Overlay Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
-			"\u00a7rHold a Bonemerang to display the overlay"
+		desc = "§eDrag text to change the appearance of the overlay\n" +
+			"§rHold a Bonemerang to display the overlay"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7cBonemerang will break!",
-			"\u00a77Targets: \u00a76\u00a7l10"
+			"§cBonemerang will break!",
+			"§7Targets: §6§l10"
 		}
 	)
 	@ConfigAccordionId(id = 5)
@@ -414,7 +414,10 @@ public class ItemOverlays {
 	@ConfigAccordionId(id = 8)
 	@ConfigOption(
 		name = "Shield Speed",
-		desc = "How fast they circle the player\n0 = Not moving\nNegative = Spinning opposite direction"
+		desc = """
+			How fast they circle the player
+			0 = Not moving
+			Negative = Spinning opposite direction"""
 	)
 	@ConfigEditorSlider(
 		minValue = -20f,
@@ -456,8 +459,11 @@ public class ItemOverlays {
 	@Expose
 	@ConfigAccordionId(id = 8)
 	@ConfigOption(
-		name = "\u00A7aInspiration:",
-		desc = "\u00A76u/Sori0612 \u00A77on \u00A7cReddit\n\n\u00A78https://tinyurl.com/creeperveil"
+		name = "§aInspiration:",
+		desc = """
+			§6u/Sori0612 §7on §cReddit
+
+			§8https://tinyurl.com/creeperveil"""
 	)
 	@ConfigEditorInfoText()
 	public boolean customWitherCloakCredit = false;

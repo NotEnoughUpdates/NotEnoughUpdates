@@ -19,23 +19,15 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class CollectionRequirement extends MinionRequirement {
 
 	private final String collection;
 	private final int level;
-
-	public CollectionRequirement(String collection, int level) {
-		this.collection = collection;
-		this.level = level;
-	}
-
-	public int getLevel() {
-		return level;
-	}
-
-	public String getCollection() {
-		return collection;
-	}
 
 	@Override
 	public String printDescription(String color) {

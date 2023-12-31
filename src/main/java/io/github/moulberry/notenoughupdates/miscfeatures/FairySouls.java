@@ -32,7 +32,7 @@ import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import lombok.var;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
@@ -63,7 +63,9 @@ public class FairySouls {
 	private static FairySouls instance = null;
 	private static final String unknownProfile = "unknown";
 
+	@Getter
 	private boolean trackSouls;
+	@Getter
 	private boolean showSouls;
 	private HashMap<String, HashMap<String, Set<Integer>>> allProfilesFoundSouls = new HashMap<>();
 	private List<BlockPos> allSoulsInCurrentLocation;
@@ -78,14 +80,6 @@ public class FairySouls {
 			instance = new FairySouls();
 		}
 		return instance;
-	}
-
-	public boolean isTrackSouls() {
-		return trackSouls;
-	}
-
-	public boolean isShowSouls() {
-		return showSouls;
 	}
 
 	@SubscribeEvent
@@ -307,9 +301,7 @@ public class FairySouls {
 			}
 		}
 
-		if (locationSouls.size() == 0) {
-			return null;
-		}
+		if (locationSouls.isEmpty()) return null;
 
 		return locationSouls;
 	}

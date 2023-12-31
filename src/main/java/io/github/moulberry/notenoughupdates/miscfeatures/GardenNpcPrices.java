@@ -44,16 +44,19 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 @NEUAutoSubscribe
 public class GardenNpcPrices {
 	private final Pattern itemRegex = Pattern.compile("§5§o §.([a-zA-Z \\-]+)(?:§8x(\\d+))?");
 	private final Gson gson = new GsonBuilder().create();
-	@Data @NoArgsConstructor public class SkyMartItem {
+
+	@Data
+	@NoArgsConstructor
+	public static class SkyMartItem {
 		String currency;
 		double price;
 		String display;
 	}
+
 	//§5§o §aEnchanted Cactus Green §8x421
 	//§5§o §aEnchanted Hay Bale §8x62
 	//§5§o §9Enchanted Cookie §8x4
@@ -64,6 +67,7 @@ public class GardenNpcPrices {
 	//§5§o §8+§cNaN Copper
 	private Map<List<String>, List<String>> prices = new HashMap<>();
 	private Map<String, SkyMartItem> skymart = null;
+
 	@SubscribeEvent
 	public void onRepoReload(RepositoryReloadEvent reload) {
 		skymart = gson.fromJson(
@@ -75,7 +79,8 @@ public class GardenNpcPrices {
 	@SubscribeEvent
 	public void onGardenNpcPrices(ItemTooltipEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.gardenNpcPrice) return;
-		if (event.toolTip.size() <= 2 || event.itemStack.getItem() != Item.getItemFromBlock(Blocks.stained_hardened_clay)) return;
+		if (event.toolTip.size() <= 2 || event.itemStack.getItem() != Item.getItemFromBlock(Blocks.stained_hardened_clay))
+			return;
 
 		List<String> tooltipCopy = new ArrayList<>(event.toolTip);
 		if (prices.get(tooltipCopy) == null) {
@@ -85,20 +90,26 @@ public class GardenNpcPrices {
 				if (matcher.matches()) {
 					int amount = 1;
 					if (matcher.group(2) != null) amount = Integer.parseInt(matcher.group(2));
-					double cost = calculateCost(ItemResolutionQuery.findInternalNameByDisplayName(matcher.group(1).trim(), false), amount);
-					event.toolTip.set(i, event.toolTip.get(i) + " §7(§6" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + "§7 coins)");
-				}
-
-				else if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.copperCoins) {
+					double cost = calculateCost(
+						ItemResolutionQuery.findInternalNameByDisplayName(matcher.group(1).trim(), false),
+						amount
+					);
+					event.toolTip.set(
+						i,
+						event.toolTip.get(i) + " §7(§6" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + "§7 coins)"
+					);
+				} else if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.copperCoins) {
 					Matcher copperMatcher = copperRegex.matcher(event.toolTip.get(i));
 					if (copperMatcher.matches()) {
 						int amount = Integer.parseInt(copperMatcher.group(1));
 						net.minecraft.util.Tuple<String, Double> copperMax = calculateCopper(amount);
-						event.toolTip.set(i, event.toolTip.get(i) + " §7(§6" + Utils.shortNumberFormat((Double) copperMax.getSecond(), 0) + "§7 selling "+copperMax.getFirst()+"§7)");
+						event.toolTip.set(
+							i,
+							event.toolTip.get(i) + " §7(§6" + Utils.shortNumberFormat((Double) copperMax.getSecond(), 0) +
+							"§7 selling " + copperMax.getFirst() + "§7)"
+						);
 					}
-				}
-
-				else {
+				} else {
 					prices.put(tooltipCopy, event.toolTip);
 				}
 			}
@@ -109,20 +120,24 @@ public class GardenNpcPrices {
 	}
 
 	public net.minecraft.util.Tuple<String, Double> calculateCopper(int amount) {
-		if (skymart == null) {return new net.minecraft.util.Tuple<String, Double>("NEU REPO error", 0d);};
+		if (skymart == null) {
+			return new net.minecraft.util.Tuple<>("NEU REPO error", 0d);
+		}
 		Map<String, Double> prices = new HashMap<>();
 		for (Map.Entry<String, SkyMartItem> entry : skymart.entrySet()) {
 			String internalName = entry.getKey();
 			SkyMartItem item = entry.getValue();
 			if (!Objects.equals(item.currency, "copper")) continue;
-			boolean isBazaar = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName)!=null;
-			if (!isBazaar&&(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.ignoreAllAHItems||item.price<=NotEnoughUpdates.INSTANCE.config.tooltipTweaks.AHPriceIgnoreThreshold)) continue;
-			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName, false) /item.price*amount;
+			boolean isBazaar = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName) != null;
+			if (!isBazaar && (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.ignoreAllAHItems ||
+												item.price <= NotEnoughUpdates.INSTANCE.config.tooltipTweaks.AHPriceIgnoreThreshold)) continue;
+			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName, false) / item.price *
+										 amount;
 			prices.put(item.display, price);
 		}
-		if (prices.isEmpty()) return new net.minecraft.util.Tuple<String, Double>("NEU REPO error", 0d);
+		if (prices.isEmpty()) return new net.minecraft.util.Tuple<>("NEU REPO error", 0d);
 		Map.Entry<String, Double> maxPrice = Collections.max(prices.entrySet(), Map.Entry.comparingByValue());
-		return new net.minecraft.util.Tuple<String, Double>(maxPrice.getKey(), maxPrice.getValue());
+		return new net.minecraft.util.Tuple<>(maxPrice.getKey(), maxPrice.getValue());
 	}
 
 	public double calculateCost(String internalName, int amount) {

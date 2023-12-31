@@ -81,8 +81,7 @@ public class CraftingOverlay {
 
 	private void runIfCraftingOverlayIsPresent(Gui gui, BiConsumer<GuiChest, ContainerChest> block) {
 		if (currentRecipe == null) return;
-		if (!(gui instanceof GuiChest)) return;
-		GuiChest guiChest = (GuiChest) gui;
+		if (!(gui instanceof GuiChest guiChest)) return;
 		ContainerChest chest = (ContainerChest) guiChest.inventorySlots;
 		IInventory chestInventory = chest.getLowerChestInventory();
 		if (!"Craft Item".equals(chestInventory.getDisplayName().getUnformattedText())) return;

@@ -50,7 +50,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 	private static final int COLLS_YCOUNT = 4;
 	private static final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
 	private static final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
-	private static final String[] romans = new String[] {
+	private static final String[] romans = {
 		"I",
 		"II",
 		"III",

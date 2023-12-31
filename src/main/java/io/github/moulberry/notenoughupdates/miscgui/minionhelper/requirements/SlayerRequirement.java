@@ -20,24 +20,15 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public class SlayerRequirement extends MinionRequirement {
 
 	private final String slayer;
 	private final int level;
-
-	public SlayerRequirement(String slayer, int level) {
-		this.slayer = slayer;
-		this.level = level;
-	}
-
-	public int getLevel() {
-		return level;
-	}
-
-	public String getSlayer() {
-		return slayer;
-	}
 
 	@Override
 	public String printDescription(String color) {

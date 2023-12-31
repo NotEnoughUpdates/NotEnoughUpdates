@@ -187,9 +187,7 @@ class Vec3ComparableTest {
 		Vec3Comparable vec3c = new Vec3Comparable(1.0, 2.0, 3.0);
 
 		// Act & Assert
-		Assertions.assertThrows(NullPointerException.class, () -> {
-			vec3c.compareTo(null);
-		});
+		Assertions.assertThrows(NullPointerException.class, () -> vec3c.compareTo(null));
 	}
 
 	@Test

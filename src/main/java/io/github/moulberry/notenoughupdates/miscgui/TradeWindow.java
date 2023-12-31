@@ -154,20 +154,11 @@ public class TradeWindow {
 						sb.append(c);
 					} else {
 						switch (c) {
-							case 'K':
-							case 'k':
-								mult = 1000;
-								break;
-							case 'M':
-							case 'm':
-								mult = 1000000;
-								break;
-							case 'B':
-							case 'b':
-								mult = 1000000000;
-								break;
-							default:
-								break;
+							case 'K', 'k' -> mult = 1000;
+							case 'M', 'm' -> mult = 1000000;
+							case 'B', 'b' -> mult = 1000000000;
+							default -> {
+							}
 						}
 						break;
 					}
@@ -220,7 +211,7 @@ public class TradeWindow {
 							NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
 							NBTTagList items = contents_nbt.getTagList("i", 10);
 							for (int k = 0; k < items.tagCount(); k++) {
-								if (items.getCompoundTagAt(k).getKeySet().size() > 0) {
+								if (!items.getCompoundTagAt(k).getKeySet().isEmpty()) {
 									NBTTagCompound nbt = items.getCompoundTagAt(k).getCompoundTag("tag");
 
 									int id2 = items.getCompoundTagAt(k).getShort("id");
@@ -285,7 +276,7 @@ public class TradeWindow {
 					NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
 					NBTTagList items = contents_nbt.getTagList("i", 10);
 					for (int k = 0; k < items.tagCount(); k++) {
-						if (items.getCompoundTagAt(k).getKeySet().size() > 0) {
+						if (!items.getCompoundTagAt(k).getKeySet().isEmpty()) {
 							NBTTagCompound nbt = items.getCompoundTagAt(k).getCompoundTag("tag");
 							String internalname2 = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
 																																			.withItemNBT(nbt)
@@ -307,9 +298,8 @@ public class TradeWindow {
 	}
 
 	public static void render(int mouseX, int mouseY) {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return;
 
-		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
@@ -348,20 +338,10 @@ public class TradeWindow {
 							sb.append(c);
 						} else {
 							switch (c) {
-								case 'K':
-								case 'k':
-									mult = 1000;
-									break;
-								case 'M':
-								case 'm':
-									mult = 1000000;
-									break;
-								case 'B':
-								case 'b':
-									mult = 1000000000;
-									break;
-								default:
-									break;
+								case 'K', 'k' -> mult = 1000;
+								case 'M', 'm' -> mult = 1000000;
+								case 'B', 'b' -> mult = 1000000000;
+								default -> {}
 							}
 							break;
 						}
@@ -439,20 +419,11 @@ public class TradeWindow {
 							sb.append(c);
 						} else {
 							switch (c) {
-								case 'K':
-								case 'k':
-									mult = 1000;
-									break;
-								case 'M':
-								case 'm':
-									mult = 1000000;
-									break;
-								case 'B':
-								case 'b':
-									mult = 1000000000;
-									break;
-								default:
-									break;
+								case 'K', 'k' -> mult = 1000;
+								case 'M', 'm' -> mult = 1000000;
+								case 'B', 'b' -> mult = 1000000000;
+								default -> {
+								}
 							}
 							break;
 						}
@@ -959,19 +930,19 @@ public class TradeWindow {
 
 		if (mouseX >= guiLeft + xSize + 3 && mouseX <= guiLeft + xSize + 3 + 17) {
 			if (mouseY >= guiTop + ySize - 19 && mouseY <= guiTop + ySize - 19 + 17) {
-				tooltipToDisplay = new ArrayList<String>() {{
+				tooltipToDisplay = new ArrayList<>() {{
 					add(EnumChatFormatting.GOLD + "Enable Custom Trade Menu");
 					add(EnumChatFormatting.GRAY + "Use this menu instead of the default trade window");
 				}};
 				tooltipLen = 200;
 			} else if (mouseY >= guiTop + ySize - 38 && mouseY <= guiTop + ySize - 38 + 17) {
-				tooltipToDisplay = new ArrayList<String>() {{
+				tooltipToDisplay = new ArrayList<>() {{
 					add(EnumChatFormatting.GOLD + "Price Information");
 					add(EnumChatFormatting.GRAY + "Show the price of items on both sides");
 				}};
 				tooltipLen = 200;
 			} else if (mouseY >= guiTop + ySize - 57 && mouseY <= guiTop + ySize - 57 + 17) {
-				tooltipToDisplay = new ArrayList<String>() {{
+				tooltipToDisplay = new ArrayList<>() {{
 					add(EnumChatFormatting.GOLD + "Trade Prices Style");
 					add(EnumChatFormatting.GRAY + "Changes the style of the top item prices");
 				}};
@@ -999,7 +970,7 @@ public class TradeWindow {
 	}
 
 	public static void handleMouseInput() {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return;
 
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
@@ -1007,8 +978,6 @@ public class TradeWindow {
 
 		int mouseX = Mouse.getEventX() * width / Minecraft.getMinecraft().displayWidth;
 		int mouseY = height - Mouse.getEventY() * height / Minecraft.getMinecraft().displayHeight - 1;
-
-		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 
 		if (Mouse.getEventButtonState() && Mouse.isButtonDown(0)) {
 			int index = 0;

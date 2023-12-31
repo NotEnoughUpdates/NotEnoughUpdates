@@ -24,23 +24,40 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderab
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Minion extends OverviewLine {
+	@Getter
 	private final String internalName;
+	@Getter
 	private final int tier;
+	@Getter
+	@Setter
 	private String displayName;
+	@Setter
+	@Getter
 	private MinionSource minionSource;
+	@Setter
+	@Getter
 	private CustomSource customSource;
+	@Setter
+	@Getter
 	private Minion parent;
+	@Getter
 	private final List<MinionRequirement> requirements = new ArrayList<>();
 
+	@Setter
+	@Getter
 	private boolean crafted = false;
 
+	@Getter
 	private final int xpGain;
 
+	@Setter
 	private boolean meetRequirements = false;
 
 	public Minion(String internalName, int tier, int xpGain) {
@@ -49,60 +66,8 @@ public class Minion extends OverviewLine {
 		this.xpGain = xpGain;
 	}
 
-	public MinionSource getMinionSource() {
-		return minionSource;
-	}
-
-	public void setMinionSource(MinionSource minionSource) {
-		this.minionSource = minionSource;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public boolean isCrafted() {
-		return crafted;
-	}
-
-	public void setCrafted(boolean crafted) {
-		this.crafted = crafted;
-	}
-
-	public String getInternalName() {
-		return internalName;
-	}
-
-	public void setParent(Minion parent) {
-		this.parent = parent;
-	}
-
-	public Minion getParent() {
-		return parent;
-	}
-
-	public int getTier() {
-		return tier;
-	}
-
-	public List<MinionRequirement> getRequirements() {
-		return requirements;
-	}
-
 	public boolean doesMeetRequirements() {
 		return meetRequirements;
-	}
-
-	public void setMeetRequirements(boolean meetRequirements) {
-		this.meetRequirements = meetRequirements;
-	}
-
-	public int getXpGain() {
-		return xpGain;
 	}
 
 	@Override
@@ -110,11 +75,4 @@ public class Minion extends OverviewLine {
 		NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(internalName);
 	}
 
-	public void setCustomSource(CustomSource customSource) {
-		this.customSource = customSource;
-	}
-
-	public CustomSource getCustomSource() {
-		return customSource;
-	}
 }

@@ -19,9 +19,12 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
 public abstract class Weight {
 
 	public static final List<String> SKILL_NAMES = Arrays.asList(
@@ -52,18 +55,6 @@ public abstract class Weight {
 			.add(slayerWeight.getWeightStruct())
 			.add(skillsWeight.getWeightStruct())
 			.add(dungeonsWeight.getWeightStruct());
-	}
-
-	public SlayerWeight getSlayerWeight() {
-		return slayerWeight;
-	}
-
-	public SkillsWeight getSkillsWeight() {
-		return skillsWeight;
-	}
-
-	public DungeonsWeight getDungeonsWeight() {
-		return dungeonsWeight;
 	}
 
 	protected abstract void calculateWeight();

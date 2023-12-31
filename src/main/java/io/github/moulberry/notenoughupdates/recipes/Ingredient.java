@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.recipes;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import lombok.Getter;
 import net.minecraft.item.ItemStack;
 
 import java.util.HashMap;
@@ -32,7 +33,9 @@ import java.util.Set;
 public class Ingredient {
 
 	public static final String SKYBLOCK_COIN = "SKYBLOCK_COIN";
+	@Getter
 	private final double count;
+	@Getter
 	private final String internalItemId;
 	private final NEUManager manager;
 	private ItemStack itemStack;
@@ -80,14 +83,6 @@ public class Ingredient {
 
 	public boolean isCoins() {
 		return "SKYBLOCK_COIN".equals(internalItemId);
-	}
-
-	public double getCount() {
-		return count;
-	}
-
-	public String getInternalItemId() {
-		return internalItemId;
 	}
 
 	public ItemStack getItemStack() {

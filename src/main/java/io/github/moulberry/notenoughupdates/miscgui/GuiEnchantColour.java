@@ -601,15 +601,9 @@ public class GuiEnchantColour extends GuiScreen {
 			if (mouseY > guiTop + 23 + 25 * yIndex && mouseY < guiTop + 23 + 25 * yIndex + 20) {
 				if (mouseX > guiLeft + 86 && mouseX < guiLeft + 86 + 20) {
 					switch (comparators.get(yIndex)) {
-						case ">":
-							comparators.put(yIndex, "=");
-							break;
-						case "=":
-							comparators.put(yIndex, "<");
-							break;
-						default:
-							comparators.put(yIndex, ">");
-							break;
+						case ">" -> comparators.put(yIndex, "=");
+						case "=" -> comparators.put(yIndex, "<");
+						default -> comparators.put(yIndex, ">");
 					}
 					NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.remove(yIndex);
 					NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.add(
@@ -617,7 +611,7 @@ public class GuiEnchantColour extends GuiScreen {
 						getEnchantOpString(guiElementTextFields.get(yIndex), comparators.get(yIndex), modifiers.get(yIndex))
 					);
 				} else if (mouseX > guiLeft + 160 && mouseX < guiLeft + 160 + 20) {
-					if (NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.size() > 0) {
+					if (!NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.isEmpty()) {
 						NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.remove(yIndex);
 						guiElementTextFields.remove(yIndex);
 						comparators.remove(yIndex);
@@ -653,7 +647,7 @@ public class GuiEnchantColour extends GuiScreen {
 						}
 					}
 				}
-				if (presetList.size() != 0) {
+				if (!presetList.isEmpty()) {
 					NotEnoughUpdates.INSTANCE.config.hidden.enchantColours = presetList;
 				}
 

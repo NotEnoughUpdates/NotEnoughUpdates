@@ -69,9 +69,7 @@ public class MBGuiGroupFloating extends MBGuiGroup {
 				int guiLeft = -1;
 				int guiTop = -1;
 
-				if (currentScreen instanceof GuiContainer) {
-					GuiContainer currentContainer = (GuiContainer) currentScreen;
-
+				if (currentScreen instanceof GuiContainer currentContainer) {
 					try {
 						xSize = (int) Utils.getField(GuiContainer.class, currentContainer, "xSize", "field_146999_f");
 						ySize = (int) Utils.getField(GuiContainer.class, currentContainer, "ySize", "field_147000_g");

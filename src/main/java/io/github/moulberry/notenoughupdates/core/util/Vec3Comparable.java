@@ -111,10 +111,9 @@ public class Vec3Comparable extends Vec3 implements Comparable<Vec3Comparable> {
 	public boolean equals(Object other) {
 		if (this == other) {
 			return true;
-		} else if (!(other instanceof Vec3Comparable)) {
+		} else if (!(other instanceof Vec3Comparable vec3c)) {
 			return false;
 		} else {
-			Vec3Comparable vec3c = (Vec3Comparable) other;
 			return this.xCoord == vec3c.xCoord && this.yCoord == vec3c.yCoord && this.zCoord == vec3c.zCoord;
 		}
 	}

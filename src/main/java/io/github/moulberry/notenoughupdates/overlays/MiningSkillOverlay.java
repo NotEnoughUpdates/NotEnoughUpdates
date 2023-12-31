@@ -134,36 +134,16 @@ public class MiningSkillOverlay
 		}
 
 		switch (compactTier) {
-			case 1:
-				compactTierAmount = "100";
-				break;
-			case 2:
-				compactTierAmount = "500";
-				break;
-			case 3:
-				compactTierAmount = "1,500";
-				break;
-			case 4:
-				compactTierAmount = "5,000";
-				break;
-			case 5:
-				compactTierAmount = "15,000";
-				break;
-			case 6:
-				compactTierAmount = "50,000";
-				break;
-			case 7:
-				compactTierAmount = "150,000";
-				break;
-			case 8:
-				compactTierAmount = "500,000";
-				break;
-			case 9:
-				compactTierAmount = "1,000,000";
-				break;
-			case 10:
-				compactTierAmount = "Maxed";
-				break;
+			case 1 -> compactTierAmount = "100";
+			case 2 -> compactTierAmount = "500";
+			case 3 -> compactTierAmount = "1,500";
+			case 4 -> compactTierAmount = "5,000";
+			case 5 -> compactTierAmount = "15,000";
+			case 6 -> compactTierAmount = "50,000";
+			case 7 -> compactTierAmount = "150,000";
+			case 8 -> compactTierAmount = "500,000";
+			case 9 -> compactTierAmount = "1,000,000";
+			case 10 -> compactTierAmount = "Maxed";
 		}
 
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);

@@ -123,15 +123,15 @@ public class CrystalOverlay {
 		ReverseWorldRenderer overlayVBO = null;
 		Set<BlockPos> circleOffsets = null;
 		int updates = 0;
-		int rgb;
-		int radius;
+		final int rgb;
+		final int radius;
 	}
 
 	private static double posLastUpdateX;
 	private static double posLastUpdateY;
 	private static double posLastUpdateZ;
 
-	private static final HashMap<String, CrystalType> skullId = new HashMap<String, CrystalType>() {{
+	private static final HashMap<String, CrystalType> skullId = new HashMap<>() {{
 		put("d9c3168a-8654-3dd8-b297-4d3b7e55b95a", CrystalType.FARMING_MINION);
 		put("949d100c-aa74-3b09-a642-af5529f808aa", CrystalType.MINING_MINION);
 		put("bd79a474-cf07-3f8c-b5a4-98657c33520a", CrystalType.FORAGING_MINION);
@@ -176,9 +176,7 @@ public class CrystalOverlay {
 
 		Set<CrystalType> foundTypes = new HashSet<>();
 		for (Entity entity : Minecraft.getMinecraft().theWorld.loadedEntityList) {
-			if (entity instanceof EntityArmorStand) {
-				EntityArmorStand armorStand = (EntityArmorStand) entity;
-
+			if (entity instanceof EntityArmorStand armorStand) {
 				if (armorStand.isChild() && armorStand.getEquipmentInSlot(4) != null) {
 					ItemStack helmet = armorStand.getEquipmentInSlot(4);
 

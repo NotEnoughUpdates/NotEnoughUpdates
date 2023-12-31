@@ -19,23 +19,21 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * Wrapper around a {@link T} that implements hashing and equality according to object identity instead of the objects
  * default equals implementation.
  */
+@Getter
+@AllArgsConstructor
 public final class IdentityCharacteristics<T> {
 	private final T object;
 
-	public IdentityCharacteristics(T object) {
-		this.object = object;
-	}
 
 	public static <T> IdentityCharacteristics<T> of(T object) {
 		return new IdentityCharacteristics<>(object);
-	}
-
-	public T getObject() {
-		return object;
 	}
 
 	@Override

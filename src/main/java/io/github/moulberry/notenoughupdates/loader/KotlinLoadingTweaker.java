@@ -81,7 +81,7 @@ public class KotlinLoadingTweaker implements ITweaker {
 	 * Full version format: [1, 7, 20] (1.7.20)
 	 * RC version format: [1, 7, 20, 1] (1.7.20-rc1)
 	 */
-	public static final int[] BUNDLED_KOTLIN_VERSION = new int[]{1, 8, 21};
+	public static final int[] BUNDLED_KOTLIN_VERSION = {1, 8, 21};
 
 	@Override
 	public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
@@ -118,8 +118,7 @@ public class KotlinLoadingTweaker implements ITweaker {
 				return;
 			}
 			Object relinquishIfBelow = Launch.blackboard.get("neu.relinquishkotlin.ifbelow");
-			if ((relinquishIfBelow instanceof int[])) {
-				int[] requiredVersion = (int[]) relinquishIfBelow;
+			if (relinquishIfBelow instanceof int[] requiredVersion) {
 				if (!areWeBundlingAKotlinVersionHigherThan(requiredVersion)) {
 					System.err.println(
 						"NEU is relinquishing loading Kotlin because a higher version is requested. This may lead to errors if the advertised Kotlin version is not found. (" +

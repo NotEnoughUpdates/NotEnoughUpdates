@@ -209,7 +209,7 @@ public class DungeonMap {
 		}
 	}
 
-	private class Room {
+	private static class Room {
 		Color colour = new Color(0, 0, 0, 0);
 		int tickColour = 0;
 		boolean fillCorner = false;
@@ -387,18 +387,6 @@ public class DungeonMap {
 	public static Matrix4f projectionMatrix = null;
 	public static Shader mapShader = null;
 
-	private static Framebuffer checkFramebufferSizes(Framebuffer framebuffer, int width, int height) {
-		if (framebuffer == null || framebuffer.framebufferWidth != width || framebuffer.framebufferHeight != height) {
-			if (framebuffer == null) {
-				framebuffer = new Framebuffer(width, height, true);
-			} else {
-				framebuffer.createBindFramebuffer(width, height);
-			}
-			framebuffer.setFramebufferFilter(GL11.GL_NEAREST);
-		}
-		return framebuffer;
-	}
-
 	private static void upload(Shader shader, int width, int height, int scale, float radiusSq) {
 		if (shader == null) return;
 		shader.getShaderManager().getShaderUniformOrDefault("ProjMat").set(projectionMatrix);
@@ -455,15 +443,18 @@ public class DungeonMap {
 		boolean useFb = NotEnoughUpdates.INSTANCE.config.dungeonMap.dmCompat <= 1 && OpenGlHelper.isFramebufferEnabled();
 		boolean useShd = NotEnoughUpdates.INSTANCE.config.dungeonMap.dmCompat <= 0 && OpenGlHelper.areShadersSupported();
 
-        /*if((useFb && !OpenGlHelper.isFramebufferEnabled()) || (useShd && !OpenGlHelper.areShadersSupported())) {
-            Utils.drawStringCentered(EnumChatFormatting.RED+"NEU Dungeon Map requires framebuffers & shaders",
-                    Minecraft.getMinecraft().fontRendererObj, centerX, centerY-10, true, 0);
-            Utils.drawStringCentered(EnumChatFormatting.RED+"Turn off Optifine Fast Render",
-                    Minecraft.getMinecraft().fontRendererObj, centerX, centerY, true, 0);
-            Utils.drawStringCentered(EnumChatFormatting.RED+"If that doesn't work, join NEU discord for support",
-                    Minecraft.getMinecraft().fontRendererObj, centerX, centerY+10, true, 0);
-            return;
-        }*/
+		/*if ((useFb && !OpenGlHelper.isFramebufferEnabled()) || (useShd && !OpenGlHelper.areShadersSupported())) {
+			Utils.drawStringCentered(EnumChatFormatting.RED + "NEU Dungeon Map requires framebuffers & shaders",
+				Minecraft.getMinecraft().fontRendererObj, centerX, centerY - 10, true, 0
+			);
+			Utils.drawStringCentered(EnumChatFormatting.RED + "Turn off Optifine Fast Render",
+				Minecraft.getMinecraft().fontRendererObj, centerX, centerY, true, 0
+			);
+			Utils.drawStringCentered(EnumChatFormatting.RED + "If that doesn't work, join NEU discord for support",
+				Minecraft.getMinecraft().fontRendererObj, centerX, centerY + 10, true, 0
+			);
+			return;
+		}*/
 
 		ScaledResolution scaledResolution = Utils.pushGuiScale(2);
 
@@ -503,15 +494,17 @@ public class DungeonMap {
 			mapSizeX = borderSizeOption == 0 ? 90 : borderSizeOption == 1 ? 120 : borderSizeOption == 2 ? 160 : 240;
 		}
 		mapSizeY = mapSizeX;
-		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize + (isFloorOne ? getRenderRoomSize() : 0);
-		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize + (isEntrance ? getRenderRoomSize() : 0);
+		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize +
+			(isFloorOne ? getRenderRoomSize() : 0);
+		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize +
+			(isEntrance ? getRenderRoomSize() : 0);
 		int mapCenterX = mapSizeX / 2;
 		int mapCenterY = mapSizeY / 2;
 		int scaleFactor = 8;
 
 		projectionMatrix = Utils.createProjectionMatrix(mapSizeX * scaleFactor, mapSizeY * scaleFactor);
-		mapFramebuffer1 = checkFramebufferSizes(mapFramebuffer1, mapSizeX * scaleFactor, mapSizeY * scaleFactor);
-		mapFramebuffer2 = checkFramebufferSizes(mapFramebuffer2, mapSizeX * scaleFactor, mapSizeY * scaleFactor);
+		mapFramebuffer1 = Utils.checkFramebufferSizes(mapFramebuffer1, mapSizeX * scaleFactor, mapSizeY * scaleFactor);
+		mapFramebuffer2 = Utils.checkFramebufferSizes(mapFramebuffer2, mapSizeX * scaleFactor, mapSizeY * scaleFactor);
 		mapFramebuffer1.framebufferColor[1] = 0;
 		mapFramebuffer1.framebufferColor[2] = 0;
 
@@ -728,7 +721,7 @@ public class DungeonMap {
 					}
 					GlStateManager.color(1, 1, 1, 1);
 					if ((!NotEnoughUpdates.INSTANCE.config.dungeons.showOwnHeadAsMarker ||
-						playerMarkerMapPositions.size() < 1 || minU != 1 / 4f) &&
+						playerMarkerMapPositions.isEmpty() || minU != 1 / 4f) &&
 						NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPlayerHeads >= 1 &&
 						playerSkinMap.containsKey(entry.getKey())) {
 						Minecraft.getMinecraft().getTextureManager().bindTexture(playerSkinMap.get(entry.getKey()));
@@ -1263,8 +1256,7 @@ public class DungeonMap {
 		actualPlayers.add(Minecraft.getMinecraft().thePlayer.getName());
 		if (searchForPlayers) {
 			for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) {
-				if (player instanceof AbstractClientPlayer && actualPlayers.contains(player.getName())) {
-					AbstractClientPlayer aplayer = (AbstractClientPlayer) player;
+				if (player instanceof AbstractClientPlayer aplayer && actualPlayers.contains(player.getName())) {
 					ResourceLocation skin = aplayer.getLocationSkin();
 					if (skin != DefaultPlayerSkin.getDefaultSkin(aplayer.getUniqueID())) {
 						playerSkinMap.put(player.getName(), skin);
@@ -1279,9 +1271,7 @@ public class DungeonMap {
 			for (String playerName : actualPlayers) {
 				if (playerIdMap.containsKey(playerName)) {
 					Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(playerIdMap.get(playerName));
-					if (entity instanceof EntityPlayer) {
-						EntityPlayer player = (EntityPlayer) entity;
-
+					if (entity instanceof EntityPlayer player) {
 						float roomX = (float) (player.posX + 200) / (roomSizeBlocks + 1);
 						float roomY = (float) (player.posZ + 200) / (roomSizeBlocks + 1);
 
@@ -1341,7 +1331,7 @@ public class DungeonMap {
 			return;
 		}
 
-		if (mapDecorations != null && mapDecorations.size() > 0) {
+		if (mapDecorations != null && !mapDecorations.isEmpty()) {
 			List<MapPosition> positions = new ArrayList<>();
 			int decorations = 0;
 			for (Vec4b vec4b : mapDecorations.values()) {
@@ -1408,14 +1398,12 @@ public class DungeonMap {
 				}
 			}
 
-			if (different && positions.size() > 0) {
+			if (different && !positions.isEmpty()) {
 				lastLastDecorationsMillis = lastDecorationsMillis;
 				lastDecorationsMillis = System.currentTimeMillis();
 
 				playerMarkerMapPositionsLast.clear();
-				for (Map.Entry<String, MapPosition> entry : playerMarkerMapPositions.entrySet()) {
-					playerMarkerMapPositionsLast.put(entry.getKey(), entry.getValue());
-				}
+				playerMarkerMapPositionsLast.putAll(playerMarkerMapPositions);
 				playerMarkerMapPositions.clear();
 
 				Set<String> foundPlayers = new HashSet<>();
@@ -1440,7 +1428,7 @@ public class DungeonMap {
 				List<List<String>> playerPermutations = permutations(playerList);
 
 				List<Integer> finalUsedIndexes = new ArrayList<>();
-				if (playerPermutations.size() > 0) {
+				if (!playerPermutations.isEmpty()) {
 					HashMap<String, Integer> smallestPermutation = null;
 					float smallestTotalDistance = 0;
 
@@ -1496,9 +1484,7 @@ public class DungeonMap {
 			playerMarkerMapPositions.clear();
 			playerMarkerMapPositionsLast.clear();
 
-			for (Map.Entry<String, MapPosition> entry : playerEntityMapPositions.entrySet()) {
-				playerMarkerMapPositions.put(entry.getKey(), entry.getValue());
-			}
+			playerMarkerMapPositions.putAll(playerEntityMapPositions);
 		}
 
 		if (!roomMap.isEmpty() && startRoomX >= 0 && startRoomY >= 0) {
@@ -1568,48 +1554,48 @@ public class DungeonMap {
 				}
 
 				int roomSizeBlocks = 31;
-                /*List<Integer> dists = new ArrayList<>();
-                int currentBlockCount = 0;
-                for(int i=0; i<300; i++) {
-                    IBlockState state = Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(0, 99, i));
-                    if(state == null || state.getBlock() == Blocks.air) {
-                        if(currentBlockCount > 0) dists.add(currentBlockCount);
-                        currentBlockCount = 0;
-                    } else {
-                        currentBlockCount++;
-                    }
-                }
-                currentBlockCount = 0;
-                for(int i=0; i<300; i++) {
-                    IBlockState state = Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(i, 99, 0));
-                    if(state == null || state.getBlock() == Blocks.air) {
-                        if(currentBlockCount > 0) dists.add(currentBlockCount);
-                        currentBlockCount = 0;
-                    } else {
-                        currentBlockCount++;
-                    }
-                }
-                int count = 0;
-                int mostCommonDist = -1;
-                for(int dist : dists) {
-                    if(dist == mostCommonDist) {
-                        count++;
-                    } else {
-                        if(--count < 0) {
-                            count = 1;
-                            mostCommonDist = dist;
-                        }
-                    }
-                }
-                if(mostCommonDist > 31) roomSizeBlocks = mostCommonDist;*/
+				/*List<Integer> dists = new ArrayList<>();
+				int currentBlockCount = 0;
+				for (int i = 0; i < 300; i++) {
+					IBlockState state = Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(0, 99, i));
+					if (state == null || state.getBlock() == Blocks.air) {
+						if (currentBlockCount > 0) dists.add(currentBlockCount);
+						currentBlockCount = 0;
+					} else {
+						currentBlockCount++;
+					}
+				}
+				currentBlockCount = 0;
+				for (int i = 0; i < 300; i++) {
+					IBlockState state = Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(i, 99, 0));
+					if (state == null || state.getBlock() == Blocks.air) {
+						if (currentBlockCount > 0) dists.add(currentBlockCount);
+						currentBlockCount = 0;
+					} else {
+						currentBlockCount++;
+					}
+				}
+				int count = 0;
+				int mostCommonDist = -1;
+				for (int dist : dists) {
+					if (dist == mostCommonDist) {
+						count++;
+					} else {
+						if (--count < 0) {
+							count = 1;
+							mostCommonDist = dist;
+						}
+					}
+				}
+				if (mostCommonDist > 31) roomSizeBlocks = mostCommonDist;*/
 
 				Set<String> actualPlayers = new HashSet<>();
-                /*for(EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) {
-                    if(player.getUniqueID().toString().charAt(14) == '4') {
-                        actualPlayers.add(player.getName());
-                        System.out.println(player.getName());
-                    }
-                }*/
+				/*for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) {
+					if (player.getUniqueID().toString().charAt(14) == '4') {
+						actualPlayers.add(player.getName());
+						System.out.println(player.getName());
+					}
+				}*/
 				int players = 0;
 				for (ScorePlayerTeam team : Minecraft.getMinecraft().thePlayer.getWorldScoreboard().getTeams()) {
 					if (team.getTeamName().startsWith("a") && team.getMembershipCollection().size() == 1) {
@@ -1645,7 +1631,7 @@ public class DungeonMap {
 				Utils.pushGuiScale(-1);
 			} else if (stack != null && Item.getIdFromItem(stack.getItem()) == 399) {
 				//This should clear the map if you're in the dungeon boss room
-				//so when you're holding a bow it doesnt show the map anymore
+				//so when you're holding a bow it doesn't show the map anymore
 				this.colourMap = null;
 			}
 		}

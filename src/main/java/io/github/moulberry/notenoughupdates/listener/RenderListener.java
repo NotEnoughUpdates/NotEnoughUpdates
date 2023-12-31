@@ -191,8 +191,7 @@ public class RenderListener {
 		if (Minecraft.getMinecraft().theWorld == null) return;
 		if (Minecraft.getMinecraft().thePlayer == null) return;
 
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 			ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
 			if (!loadedInvName.equals(cc.getLowerChestInventory().getDisplayName().getUnformattedText())) {
@@ -252,8 +251,7 @@ public class RenderListener {
 			neu.overlay.reset();
 		}
 		if (event.gui != null && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			if (event.gui instanceof GuiChest) {
-				GuiChest eventGui = (GuiChest) event.gui;
+			if (event.gui instanceof GuiChest eventGui) {
 				ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 				IInventory lower = cc.getLowerChestInventory();
 				ses.schedule(() -> {
@@ -346,10 +344,10 @@ public class RenderListener {
 					focusInv = !hoverPane;
 				}
 			}
-			if (event.gui instanceof GuiItemRecipe) {
-				GuiItemRecipe guiItemRecipe = ((GuiItemRecipe) event.gui);
+			if (event.gui instanceof GuiItemRecipe guiItemRecipe) {
 				hoverInv = event.getMouseX() > guiItemRecipe.guiLeft &&
-					event.getMouseX() < guiItemRecipe.guiLeft + guiItemRecipe.xSize && event.getMouseY() > guiItemRecipe.guiTop &&
+					event.getMouseX() < guiItemRecipe.guiLeft + guiItemRecipe.xSize &&
+					event.getMouseY() > guiItemRecipe.guiTop &&
 					event.getMouseY() < guiItemRecipe.guiTop + guiItemRecipe.ySize;
 
 				if (hoverPane) {
@@ -394,8 +392,7 @@ public class RenderListener {
 
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-		if (guiScreen instanceof GuiChest) {
-			GuiChest eventGui = (GuiChest) guiScreen;
+		if (guiScreen instanceof GuiChest eventGui) {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 		}
@@ -519,8 +516,7 @@ public class RenderListener {
 
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-		if (guiScreen instanceof GuiChest) {
-			GuiChest eventGui = (GuiChest) guiScreen;
+		if (guiScreen instanceof GuiChest eventGui) {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
@@ -674,24 +670,22 @@ public class RenderListener {
 								worth = bazaarPrice;
 								isOnBz = true;
 							} else {
-								switch (NotEnoughUpdates.INSTANCE.config.dungeons.profitType) {
-									case 1:
-										worth = neu.manager.auctionManager.getItemAvgBin(internal);
-										break;
-									case 2:
+								worth = switch (NotEnoughUpdates.INSTANCE.config.dungeons.profitType) {
+									case 1 -> neu.manager.auctionManager.getItemAvgBin(internal);
+									case 2 -> {
 										JsonObject auctionInfo = neu.manager.auctionManager.getItemAuctionInfo(internal);
 										if (auctionInfo != null) {
 											if (auctionInfo.has("clean_price")) {
-												worth = (long) auctionInfo.get("clean_price").getAsDouble();
+												yield (long) auctionInfo.get("clean_price").getAsDouble();
 											} else {
-												worth =
-													(long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
+												yield (long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
 											}
+										} else {
+											yield worth;
 										}
-										break;
-									default:
-										worth = neu.manager.auctionManager.getLowestBin(internal);
-								}
+									}
+									default -> neu.manager.auctionManager.getLowestBin(internal);
+								};
 								if (worth <= 0) {
 									worth = neu.manager.auctionManager.getLowestBin(internal);
 									if (worth <= 0) {
@@ -898,8 +892,7 @@ public class RenderListener {
 
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-		if (guiScreen instanceof GuiChest) {
-			GuiChest eventGui = (GuiChest) guiScreen;
+		if (guiScreen instanceof GuiChest eventGui) {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (containerName.contains(" Profile") && BetterContainers.profileViewerStackIndex != -1 &&
@@ -1026,8 +1019,8 @@ public class RenderListener {
 				RepoExporters.getInstance().draconicAlterExporter();
 			}
 		} else if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
-			Minecraft.getMinecraft().currentScreen instanceof GuiChest &&
-			((((ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots)
+			Minecraft.getMinecraft().currentScreen instanceof GuiChest guiChest &&
+			((((ContainerChest) guiChest.inventorySlots)
 				.getLowerChestInventory()
 				.getDisplayName()
 				.getUnformattedText()
@@ -1092,12 +1085,12 @@ public class RenderListener {
 		}
 
 		if (tradeWindowActive) {
-				TradeWindow.keyboardInput();
-				if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
-					event.setCanceled(true);
-					Minecraft.getMinecraft().dispatchKeypresses();
-					neu.overlay.keyboardInput(focusInv);
-				}
+			TradeWindow.keyboardInput();
+			if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
+				event.setCanceled(true);
+				Minecraft.getMinecraft().dispatchKeypresses();
+				neu.overlay.keyboardInput(focusInv);
+			}
 			return;
 		}
 
@@ -1219,6 +1212,7 @@ public class RenderListener {
 
 	/**
 	 * Support for switching between different pages in the RecipeView gui via right and left arrow key
+	 *
 	 * @param event
 	 */
 	//Because GuiScreen.keyTyped does not fire the KEY_LEFT and KEY_RIGHT keys. Maybe some event cancelled it?
@@ -1231,8 +1225,7 @@ public class RenderListener {
 		if (minecraft == null || minecraft.thePlayer == null) return;
 
 		GuiScreen screen = minecraft.currentScreen;
-		if (screen instanceof GuiItemRecipe) {
-			GuiItemRecipe itemRecipe = (GuiItemRecipe) screen;
+		if (screen instanceof GuiItemRecipe itemRecipe) {
 			itemRecipe.arrowKeyboardInput();
 		}
 	}

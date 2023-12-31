@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.compat.oneconfig;
 import cc.polyfrost.oneconfig.config.core.OneColor;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigColorElement;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
-import lombok.var;
 
 import java.awt.*;
 import java.lang.invoke.MethodHandle;

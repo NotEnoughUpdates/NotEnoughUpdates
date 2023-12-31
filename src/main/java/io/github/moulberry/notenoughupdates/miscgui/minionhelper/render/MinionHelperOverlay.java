@@ -37,6 +37,7 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -74,7 +75,9 @@ public class MinionHelperOverlay {
 	private LinkedHashMap<String, OverviewLine> cacheRenderMap = null;
 	private int cacheTotalPages = -1;
 
+	@Getter
 	private boolean filterEnabled = true;
+	@Getter
 	private boolean useInstantBuyPrice = true;
 
 	private int maxPerPage = 7;
@@ -146,8 +149,7 @@ public class MinionHelperOverlay {
 
 	private void renderArrows() {
 		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
-		if (gui instanceof AccessorGuiContainer) {
-			AccessorGuiContainer container = (AccessorGuiContainer) gui;
+		if (gui instanceof AccessorGuiContainer container) {
 			int guiLeft = container.getGuiLeft();
 			int guiTop = container.getGuiTop();
 			int totalPages = getTotalPages();
@@ -387,8 +389,7 @@ public class MinionHelperOverlay {
 		int count = 0;
 		MinionSource minionSource = minion.getMinionSource();
 
-		if (minionSource instanceof NpcSource) {
-			NpcSource source = (NpcSource) minionSource;
+		if (minionSource instanceof NpcSource source) {
 			ArrayListMultimap<String, Integer> items = source.getItems();
 			if (items.containsKey(specialItem)) {
 				for (Integer amount : items.get(specialItem)) {
@@ -508,13 +509,5 @@ public class MinionHelperOverlay {
 
 	public void setTopLeft(int[] topLeft) {
 		this.topLeft = topLeft;
-	}
-
-	public boolean isFilterEnabled() {
-		return filterEnabled;
-	}
-
-	public boolean isUseInstantBuyPrice() {
-		return useInstantBuyPrice;
 	}
 }

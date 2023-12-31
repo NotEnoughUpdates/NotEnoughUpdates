@@ -173,7 +173,7 @@ public class DungeonBlocks {
 		return false;
 	}
 
-	private static final HashMap<ResourceLocation, String> dynamicPreloadMap = new HashMap<ResourceLocation, String>() {{
+	private static final HashMap<ResourceLocation, String> dynamicPreloadMap = new HashMap<>() {{
 		put(new ResourceLocation("textures/entity/bat.png"), NotEnoughUpdates.INSTANCE.config.dungeons.dungBatColour);
 		put(
 			new ResourceLocation("textures/entity/chest/normal.png"),
@@ -231,7 +231,7 @@ public class DungeonBlocks {
 			GlStateManager.color(1, 1, 1, 1);
 			Utils.drawTexturedRectNoBlend(0, 0, w, h, 0, 1, 1, 0, GL11.GL_LINEAR);
 
-			HashMap<TextureAtlasSprite, Integer> spriteMap = new HashMap<TextureAtlasSprite, Integer>() {{
+			HashMap<TextureAtlasSprite, Integer> spriteMap = new HashMap<>() {{
 				put(
 					Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/stonebrick_cracked"),
 					SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.dungeons.dungCrackedColour)

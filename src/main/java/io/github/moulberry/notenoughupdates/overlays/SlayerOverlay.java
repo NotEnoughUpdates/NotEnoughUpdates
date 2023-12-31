@@ -85,11 +85,11 @@ public class SlayerOverlay extends TextOverlay {
 				break;
 			case "Revenant":
 				if ((!locrawLocation.equals("hub") || !revenantLocations.contains(scoreboardLocation)) &&
-					!locrawLocation.equals("crystal_hollows")) return false;
+						!locrawLocation.equals("crystal_hollows")) return false;
 				break;
 			case "Sven":
 				if ((!locrawLocation.equals("hub") || !scoreboardLocation.equals("Ruins")) &&
-					(!locrawLocation.equals("foraging_1") || !scoreboardLocation.equals("Howling Cave")))
+						(!locrawLocation.equals("foraging_1") || !scoreboardLocation.equals("Howling Cave")))
 					return false;
 				break;
 			case "Enderman":
@@ -131,17 +131,10 @@ public class SlayerOverlay extends TextOverlay {
 
 			differenceFromLastXP = slayerIntXP - Integer.parseInt(slayerEXP);
 			if (differenceFromLastXP != 0) {
-				switch (differenceFromLastXP) {
-					case 1875:
-					case 625:
-					case 125:
-					case 31:
-					case 6:
-						slayerXPBuffActive = true;
-						break;
-					default:
-						slayerXPBuffActive = false;
-				}
+				slayerXPBuffActive = switch (differenceFromLastXP) {
+					case 1875, 625, 125, 31, 6 -> true;
+					default -> false;
+				};
 			}
 
 			slayerIntXP = Integer.parseInt(slayerEXP);
@@ -154,72 +147,40 @@ public class SlayerOverlay extends TextOverlay {
 		if (SBInfo.getInstance().slayer.equals("Tarantula") || SBInfo.getInstance().slayer.equals("Revenant")) {
 			useSmallXpNext = true;
 		} else if (SBInfo.getInstance().slayer.equals("Sven") || SBInfo.getInstance().slayer.equals("Enderman") ||
-			SBInfo.getInstance().slayer.equals("Blaze")) {
+							 SBInfo.getInstance().slayer.equals("Blaze")) {
 			useSmallXpNext = false;
 		}
-		switch (slayerLVL) {
-			case "9":
-				xpToLevelUp = 2000000;
-				break;
-			case "8":
-				xpToLevelUp = 1000000;
-				break;
-			case "7":
-				xpToLevelUp = 400000;
-				break;
-			case "6":
-				xpToLevelUp = 100000;
-				break;
-			case "5":
-				xpToLevelUp = 20000;
-				break;
-			case "4":
-				xpToLevelUp = 5000;
-				break;
-			case "3":
-				if (useSmallXpNext) {
-					xpToLevelUp = 1000;
-				} else {
-					xpToLevelUp = 1500;
-				}
-				break;
-			case "2":
-				if (useSmallXpNext) {
-					xpToLevelUp = 200;
-				} else {
-					xpToLevelUp = 250;
-				}
-				break;
-			case "1":
+
+		xpToLevelUp = switch (slayerLVL) {
+			case "9" -> 2000000;
+			case "8" -> 1000000;
+			case "7" -> 400000;
+			case "6" -> 100000;
+			case "5" -> 20000;
+			case "4" -> 5000;
+			case "3" -> useSmallXpNext ? 1000 : 1500;
+			case "2" -> useSmallXpNext ? 200 : 250;
+			case "1" -> {
 				if (SBInfo.getInstance().slayer.equals("Revenant")) {
-					xpToLevelUp = 15;
+					yield 15;
 				} else if (SBInfo.getInstance().slayer.equals("Tarantula")) {
-					xpToLevelUp = 25;
+					yield 25;
 				} else {
-					xpToLevelUp = 30;
+					yield 30;
 				}
-				break;
-			case "0":
-				if (useSmallXpNext) {
-					xpToLevelUp = 5;
-				} else {
-					xpToLevelUp = 10;
-				}
-				break;
-		}
-		if (slayerTier == 5) {
-			xpPerBoss = 1500;
-		} else if (slayerTier == 4) {
-			xpPerBoss = 500;
-		} else if (slayerTier == 3) {
-			xpPerBoss = 100;
-		} else if (slayerTier == 2) {
-			xpPerBoss = 25;
-		} else if (slayerTier == 1) {
-			xpPerBoss = 5;
-		} else {
-			xpPerBoss = 0;
-		}
+			}
+			case "0" -> useSmallXpNext ? 5 : 10;
+			default -> xpToLevelUp;
+		};
+
+		xpPerBoss = switch (slayerTier) {
+			case 5 -> 1500;
+			case 4 -> 500;
+			case 3 -> 100;
+			case 2 -> 25;
+			case 1 -> 5;
+			default -> 0;
+		};
 
 		if (slayerXPBuffActive) {
 			xpPerBoss *= 1.25;
@@ -227,7 +188,7 @@ public class SlayerOverlay extends TextOverlay {
 
 		untilNextSlayerLevel = xpToLevelUp - slayerIntXP;
 		if (xpPerBoss != 0 && untilNextSlayerLevel != 0 && xpToLevelUp != 0) {
-			bossesUntilNextLevel = (int) Math.ceil((float) (xpToLevelUp - untilNextSlayerLevel) / (float)(xpPerBoss));
+			bossesUntilNextLevel = (int) Math.ceil((float) (xpToLevelUp - untilNextSlayerLevel) / (float) (xpPerBoss));
 		} else {
 			bossesUntilNextLevel = 0;
 		}

@@ -94,7 +94,7 @@ import java.util.Set;
 
 public class NEUConfig extends Config {
 	public void editOverlay() {
-		final LinkedHashMap<TextOverlay, Position> overlayPositions = new LinkedHashMap<TextOverlay, Position>();
+		final LinkedHashMap<TextOverlay, Position> overlayPositions = new LinkedHashMap<>();
 		for (TextOverlay overlay : OverlayManager.textOverlays) {
 			overlayPositions.put(overlay, overlay.getPosition());
 		}
@@ -171,78 +171,47 @@ public class NEUConfig extends Config {
 	@Override
 	public void executeRunnable(int runnableId) {
 		String activeConfigCategory = null;
-		if (Minecraft.getMinecraft().currentScreen instanceof io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper) {
-			io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper wrapper =
-				(io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper wrapper) {
 			if (wrapper.element instanceof MoulConfigEditor) {
 				activeConfigCategory = ((MoulConfigEditor) wrapper.element).getSelectedCategory();
 			}
 		}
 
 		switch (runnableId) {
-			case -1:
-				return;
-			case 0:
+			case -1 -> {}
+			case 0 -> {
 				GuiScreen savedGui = Minecraft.getMinecraft().currentScreen;
-				NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(() -> {
-					NotEnoughUpdates.INSTANCE.openGui = savedGui;
-				});
-				return;
-			case 1:
-			case 4:
-				editOverlay();
-				return;
-			case 6:
-				NotEnoughUpdates.INSTANCE.openGui = new NEUOverlayPlacements();
-				return;
-			case 7:
-				NotEnoughUpdates.INSTANCE.openGui = new GuiInvButtonEditor();
-				return;
-			case 8:
-				NotEnoughUpdates.INSTANCE.openGui = new GuiEnchantColour();
-				return;
-			case 12:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/dn");
-				return;
-			case 13:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/pv");
-				return;
-			case 15:
+				NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(() -> NotEnoughUpdates.INSTANCE.openGui = savedGui);
+			}
+			case 1, 4 -> editOverlay();
+			case 6 -> NotEnoughUpdates.INSTANCE.openGui = new NEUOverlayPlacements();
+			case 7 -> NotEnoughUpdates.INSTANCE.openGui = new GuiInvButtonEditor();
+			case 8 -> NotEnoughUpdates.INSTANCE.openGui = new GuiEnchantColour();
+			case 12 -> ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/dn");
+			case 13 -> ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/pv");
+			case 15 -> {
 				String command = NotEnoughUpdates.INSTANCE.config.misc.fariySoul ? "/neusouls on" : "/neusouls off";
 				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command);
-				return;
-			case 16:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls clear");
-				return;
-			case 17:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls unclear");
-				return;
-			case 20:
-				FairySouls.getInstance().setTrackFairySouls(NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls);
-				return;
-			case 21:
-				NotEnoughUpdates.INSTANCE.overlay.updateSearch();
-				return;
-			case 22:
+			}
+			case 16 -> ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls clear");
+			case 17 -> ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls unclear");
+			case 20 -> FairySouls.getInstance().setTrackFairySouls(NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls);
+			case 21 -> NotEnoughUpdates.INSTANCE.overlay.updateSearch();
+			case 22 -> {
 				NotEnoughUpdates.INSTANCE.manager
 					.userFacingRepositoryReload()
 					.thenAccept(strings ->
 						NotificationHandler.displayNotification(strings, true, true));
 				Minecraft.getMinecraft().displayGuiScreen(null);
-				return;
-			case 23:
+			}
+			case 23 -> {
 				NotEnoughUpdates.INSTANCE.config.apiData.repoUser = "NotEnoughUpdates";
 				NotEnoughUpdates.INSTANCE.config.apiData.repoName = "NotEnoughUpdates-REPO";
 				NotEnoughUpdates.INSTANCE.config.apiData.repoBranch = "master";
-				return;
-			case 26:
-				OverlayManager.powderGrindingOverlay.reset();
-				return;
-			case 27:
-				IQTest.testIQ();
-				return;
-			default:
-				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
+			}
+			case 26 -> OverlayManager.powderGrindingOverlay.reset();
+			case 27 -> IQTest.testIQ();
+			default -> System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}
 	}
 
@@ -573,7 +542,7 @@ public class NEUConfig extends Config {
 	}
 
 	private static ArrayList<String> createDefaultQuickCommands() {
-		return new ArrayList<String>() {{
+		return new ArrayList<>() {{
 			add(
 				"/warp home:Warp Home:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzljODg4MWU0MjkxNWE5ZDI5YmI2MWExNmZiMjZkMDU5OTEzMjA0ZDI2NWRmNWI0MzliM2Q3OTJhY2Q1NiJ9fX0=");
 			add(
@@ -623,7 +592,7 @@ public class NEUConfig extends Config {
 		public int commissionMilestone = 0;
 
 		@Expose
-		public HashMap<String, Boolean> automatonParts = new HashMap<String, Boolean>() {{
+		public HashMap<String, Boolean> automatonParts = new HashMap<>() {{
 			put("Electron Transmitter", false);
 			put("FTX 3070", false);
 			put("Robotron Reflector", false);
@@ -633,7 +602,7 @@ public class NEUConfig extends Config {
 		}};
 
 		@Expose
-		public HashMap<String, Boolean> divanMinesParts = new HashMap<String, Boolean>() {{
+		public HashMap<String, Boolean> divanMinesParts = new HashMap<>() {{
 			put("Scavenged Lapis Sword", false);
 			put("Scavenged Golden Hammer", false);
 			put("Scavenged Diamond Axe", false);
@@ -641,7 +610,7 @@ public class NEUConfig extends Config {
 		}};
 
 		@Expose
-		public HashMap<String, Integer> crystals = new HashMap<String, Integer>() {{
+		public HashMap<String, Integer> crystals = new HashMap<>() {{
 			put("Jade", 0);
 			put("Amber", 0);
 			put("Amethyst", 0);
@@ -706,7 +675,7 @@ public class NEUConfig extends Config {
 	}
 
 	public static List<InventoryButton> createDefaultInventoryButtons() {
-		return new ArrayList<InventoryButton>() {{
+		return new ArrayList<>() {{
 			//Below crafting
 			add(new InventoryButton(87, 63, null, true, false, false, 0, ""));
 			add(new InventoryButton(87 + 21, 63, null, true, false, false, 0, ""));
@@ -787,7 +756,7 @@ public class NEUConfig extends Config {
 		public String icon;
 
 		public boolean isActive() {
-			return command.trim().length() > 0;
+			return !command.trim().isEmpty();
 		}
 
 		public InventoryButton(

@@ -54,7 +54,7 @@ public class StringUtils {
 		return shortNumberFormat(n, 0);
 	}
 
-	private static final char[] sizeSuffix = new char[]{'k', 'm', 'b', 't'};
+	private static final char[] sizeSuffix = {'k', 'm', 'b', 't'};
 
 	public static String shortNumberFormat(BigInteger bigInteger) {
 		BigInteger THOUSAND = BigInteger.valueOf(1000);

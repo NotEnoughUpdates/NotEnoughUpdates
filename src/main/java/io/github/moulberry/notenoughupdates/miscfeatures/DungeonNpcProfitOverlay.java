@@ -30,8 +30,8 @@ import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -136,11 +136,10 @@ public class DungeonNpcProfitOverlay {
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay || !(event.gui instanceof GuiChest)) {
+		if (!NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay || !(event.gui instanceof GuiChest guiChest)) {
 			chestProfits.clear();
 			return;
 		}
-		GuiChest guiChest = (GuiChest) event.gui;
 		if (!isChestOverview(guiChest)) {
 			chestProfits.clear();
 			return;
@@ -169,7 +168,7 @@ public class DungeonNpcProfitOverlay {
 		dungeonChest.slot = slot.slotNumber;
 
 		List<String> lore = ItemUtils.getLore(stack);
-		if (lore.size() == 0 || !"§7Contents".equals(lore.get(0))) {
+		if (lore.isEmpty() || !"§7Contents".equals(lore.get(0))) {
 			return;
 		}
 		dungeonChest.name = stack.getDisplayName();
@@ -271,11 +270,8 @@ public class DungeonNpcProfitOverlay {
 		@Getter
 		private int slot;
 		private boolean shouldHighlight;
+		@Getter
 		private double profit;
-
-		public double getProfit() {
-			return profit;
-		}
 
 		public void calculateProfitAndBuildLore() {
 			profit = 0d;
@@ -314,14 +310,10 @@ public class DungeonNpcProfitOverlay {
 	 *
 	 * @see DungeonChest
 	 */
+	@AllArgsConstructor
 	private static class SkyblockItem {
 		private final String internalName;
 		private final int amount;
-
-		private SkyblockItem(String internalName, int amount) {
-			this.internalName = internalName;
-			this.amount = amount;
-		}
 
 		/**
 		 * Try to create a SkyblockItem from the given lore line.
@@ -347,14 +339,10 @@ public class DungeonNpcProfitOverlay {
 			} else if (essenceMatcher.matches() && NotEnoughUpdates.INSTANCE.config.dungeons.useEssenceCostFromBazaar) {
 				String essenceType = essenceMatcher.group("essenceType");
 				String essenceAmount = essenceMatcher.group("essenceAmount");
-				if (essenceType == null || essenceAmount == null) {
-					return null;
-				}
+				if (essenceType == null || essenceAmount == null) return null;
 
 				String internalName = "ESSENCE_" + essenceType.toUpperCase(Locale.ROOT);
-				if (!NotEnoughUpdates.INSTANCE.manager.isValidInternalName(internalName)) {
-					return null;
-				}
+				if (!NotEnoughUpdates.INSTANCE.manager.isValidInternalName(internalName)) return null;
 
 				//this can only be an integer if the regex matches
 				int amount = Integer.parseInt(essenceAmount);
@@ -378,10 +366,7 @@ public class DungeonNpcProfitOverlay {
 		 */
 		public double calculateCost() {
 			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName, true);
-			if (price != -1) {
-				return price * amount;
-			}
-			return 0d;
+			return price != -1 ? price * amount : 0d;
 		}
 
 		public String getDisplayName() {
@@ -390,11 +375,9 @@ public class DungeonNpcProfitOverlay {
 			if (entry != null) {
 				String displayName = entry.get("displayname").getAsString();
 				String cleanedDisplayName = StringUtils.cleanColour(displayName);
-				if ("Enchanted Book".equals(cleanedDisplayName)) {
-					return entry.get("lore").getAsJsonArray().get(0).getAsString();
-				} else {
-					return entry.get("displayname").getAsString();
-				}
+				return "Enchanted Book".equals(cleanedDisplayName)
+					? entry.get("lore").getAsJsonArray().get(0).getAsString()
+					: entry.get("displayname").getAsString();
 			}
 			return "ERROR";
 		}

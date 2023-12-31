@@ -25,6 +25,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.shader.Framebuffer;
@@ -60,6 +63,7 @@ public class CapeManager {
 
 	public JsonObject lastJsonSync = null;
 
+	@AllArgsConstructor
 	public static class CapeData {
 		public String capeName;
 		public boolean special;
@@ -68,15 +72,10 @@ public class CapeManager {
 		public boolean canShow() {
 			return !special && !hidden;
 		}
-
-		public CapeData(String capeName, boolean special, boolean hidden) {
-			this.capeName = capeName;
-			this.special = special;
-			this.hidden = hidden;
-		}
 	}
 
-	public CapeData[] capes = new CapeData[]{
+	@Getter
+	public CapeData[] capes = {
 		//Patreon
 		new CapeData("patreon1", false, false),
 		new CapeData("patreon2", false, false),
@@ -245,25 +244,13 @@ public class CapeManager {
 		return null;
 	}
 
-	private static Framebuffer checkFramebufferSizes(Framebuffer framebuffer, int width, int height) {
-		if (framebuffer == null || framebuffer.framebufferWidth != width || framebuffer.framebufferHeight != height) {
-			if (framebuffer == null) {
-				framebuffer = new Framebuffer(width, height, true);
-			} else {
-				framebuffer.createBindFramebuffer(width, height);
-			}
-			framebuffer.setFramebufferFilter(GL11.GL_NEAREST);
-		}
-		return framebuffer;
-	}
-
 	public boolean updateWorldFramebuffer = false;
 	public Framebuffer backgroundFramebuffer = null;
 
 	public void postRenderBlocks() {
 		int width = Minecraft.getMinecraft().displayWidth;
 		int height = Minecraft.getMinecraft().displayHeight;
-		backgroundFramebuffer = checkFramebufferSizes(backgroundFramebuffer,
+		backgroundFramebuffer = Utils.checkFramebufferSizes(backgroundFramebuffer,
 			width, height
 		);
 
@@ -380,9 +367,5 @@ public class CapeManager {
 		for (String playerName : toRemove) {
 			capeMap.remove(playerName);
 		}
-	}
-
-	public CapeData[] getCapes() {
-		return capes;
 	}
 }

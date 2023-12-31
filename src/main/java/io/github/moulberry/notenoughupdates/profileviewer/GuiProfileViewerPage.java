@@ -19,23 +19,20 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 
+@Getter
+@AllArgsConstructor
 public abstract class GuiProfileViewerPage {
 
-	private final GuiProfileViewer instance;
-
-	public GuiProfileViewerPage(GuiProfileViewer instance) {
-		this.instance = instance;
-	}
-
 	/**
-	 * @return Instance of the current {@link GuiProfileViewer}
+	 * Instance of the current {@link GuiProfileViewer}
 	 */
-	public GuiProfileViewer getInstance() {
-		return instance;
-	}
+	private final GuiProfileViewer instance;
 
 	/**
 	 * @see GuiProfileViewer#getSelectedProfile()

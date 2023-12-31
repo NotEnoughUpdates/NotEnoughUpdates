@@ -84,7 +84,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0="
 	);
 
-	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<>() {
 		{
 			put(
 				"first_page",
@@ -270,7 +270,7 @@ public class BasicPage extends GuiProfileViewerPage {
 								rankPlus,
 								rankColor,
 								name
-							) + (icon.equals("") ? "" : " " + icon);
+							) + (icon.isEmpty() ? "" : " " + icon);
 						}
 					}
 				}
@@ -328,72 +328,72 @@ public class BasicPage extends GuiProfileViewerPage {
 
 			if (fontWidth >= 117) {
 				fr.drawString(EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
-					StringUtils.formatNumber(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);
+											StringUtils.formatNumber(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);
 			} else {
 				Utils.drawStringCentered(
 					EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
-						StringUtils.formatNumber(networth),
+					StringUtils.formatNumber(networth),
 					guiLeft + 68, guiTop + 38, true, 0
 				);
 			}
 			double networthInCookies = -1;
 			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE") != null &&
-				NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE").has("avg_buy"))
+					NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE").has("avg_buy"))
 
 				networthInCookies = (
-						networth /
-							NotEnoughUpdates.INSTANCE.manager.auctionManager
-								.getBazaarInfo("BOOSTER_COOKIE")
-								.get("avg_buy")
-								.getAsDouble()
-					);
+					networth /
+					NotEnoughUpdates.INSTANCE.manager.auctionManager
+						.getBazaarInfo("BOOSTER_COOKIE")
+						.get("avg_buy")
+						.getAsDouble()
+				);
 
 			String networthIRLMoney = StringUtils.formatNumber(Math.round(
-					((networthInCookies * 325) / 675) * 4.99));
+				((networthInCookies * 325) / 675) * 4.99));
 
-				if (mouseX > guiLeft + offset - fontWidth / 2 && mouseX < guiLeft + offset + fontWidth / 2) {
-					if (mouseY > guiTop + 32 && mouseY < guiTop + 38 + fr.FONT_HEIGHT) {
-						getInstance().tooltipToDisplay = new ArrayList<>();
-						getInstance()
-							.tooltipToDisplay.add(
-								EnumChatFormatting.GREEN +
-									"Net worth in IRL money: " +
-									EnumChatFormatting.DARK_GREEN +
-									"$" +
-									EnumChatFormatting.GOLD +
-									(networthInCookies >= 0 ? networthIRLMoney : EnumChatFormatting.RED + "ERROR")
-							);
+			if (mouseX > guiLeft + offset - fontWidth / 2 && mouseX < guiLeft + offset + fontWidth / 2) {
+				if (mouseY > guiTop + 32 && mouseY < guiTop + 38 + fr.FONT_HEIGHT) {
+					getInstance().tooltipToDisplay = new ArrayList<>();
+					getInstance()
+						.tooltipToDisplay.add(
+							EnumChatFormatting.GREEN +
+							"Net worth in IRL money: " +
+							EnumChatFormatting.DARK_GREEN +
+							"$" +
+							EnumChatFormatting.GOLD +
+							(networthInCookies >= 0 ? networthIRLMoney : EnumChatFormatting.RED + "ERROR")
+						);
 
-						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
+					if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
 							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
 							&& profile.isProfileMaxSoopyWeight(profileName)) {
-							getInstance().tooltipToDisplay.add("");
-							String lbPosStr =
-								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
-									profile.getSoopyNetworthLeaderboardPosition());
-							getInstance().tooltipToDisplay.add(
-								lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
-						}
-
-						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-							getInstance().tooltipToDisplay.addAll(nwCategoryHover);
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "The IRL price is calculated using the current");
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "price of booster cookies on bazaar and the price");
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "for cookies using gems, then the price of gems");
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "is where we get the amount of IRL money you");
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "theoretically have on SkyBlock in net worth.");
-						} else {
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
-						}
 						getInstance().tooltipToDisplay.add("");
-						getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "THIS IS IN NO WAY ENDORSING IRL TRADING!");
+						String lbPosStr =
+							EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
+								profile.getSoopyNetworthLeaderboardPosition());
+						getInstance().tooltipToDisplay.add(
+							lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
 					}
+
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+						getInstance().tooltipToDisplay.addAll(nwCategoryHover);
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "The IRL price is calculated using the current");
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "price of booster cookies on bazaar and the price");
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "for cookies using gems, then the price of gems");
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "is where we get the amount of IRL money you");
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "theoretically have on SkyBlock in net worth.");
+					} else {
+						getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
+					}
+					getInstance().tooltipToDisplay.add("");
+					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "THIS IS IN NO WAY ENDORSING IRL TRADING!");
 				}
+			}
 		} else {
 			int errFontWidth = fr.getStringWidth("Net Worth: " + stateStr);
 			if (errFontWidth >= 117) {
@@ -544,17 +544,14 @@ public class BasicPage extends GuiProfileViewerPage {
 						entityPlayer.getGameProfile(),
 						(type, location1, profileTexture) -> {
 							switch (type) {
-								case SKIN:
+								case SKIN -> {
 									playerLocationSkin = location1;
 									skinType = profileTexture.getMetadata("model");
-
 									if (skinType == null) {
 										skinType = "default";
 									}
-
-									break;
-								case CAPE:
-									playerLocationCape = location1;
+								}
+								case CAPE -> playerLocationCape = location1;
 							}
 						},
 						false
@@ -699,8 +696,14 @@ public class BasicPage extends GuiProfileViewerPage {
 							"% to " + level.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
 							// double drops + pelts
-							int doubleDrops = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "jacobs_contest.perks.double_drops"), 0);
-							int peltCount = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "quests.trapper_quest.pelt_count"), 0);
+							int doubleDrops = Utils.getElementAsInt(Utils.getElement(
+								selectedProfile.getProfileJson(),
+								"jacobs_contest.perks.double_drops"
+							), 0);
+							int peltCount = Utils.getElementAsInt(Utils.getElement(
+								selectedProfile.getProfileJson(),
+								"quests.trapper_quest.pelt_count"
+							), 0);
 
 							if (doubleDrops == 15) {
 								tooltipToDisplay.add("§7Double Drops: §6" + (doubleDrops * 2) + "%");
@@ -739,7 +742,10 @@ public class BasicPage extends GuiProfileViewerPage {
 							for (int i = 0; i < 5; i++) {
 								if (i >= maxLevel) break;
 								float tier = Utils.getElementAsFloat(
-									Utils.getElement(selectedProfile.getProfileJson(), "slayer.slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
+									Utils.getElement(
+										selectedProfile.getProfileJson(),
+										"slayer.slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i
+									),
 									0
 								);
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "T" + (i + 1) + " Kills: " +
@@ -774,16 +780,12 @@ public class BasicPage extends GuiProfileViewerPage {
 	}
 
 	private String getIcon(String gameModeType) {
-		switch (gameModeType) {
-			case "island":
-				return "§a☀";
-			case "bingo":
-				return "§7Ⓑ";
-			case "ironman":
-				return "§7♲";
-			default:
-				return "";
-		}
+		return switch (gameModeType) {
+			case "island" -> "§a☀";
+			case "bingo" -> "§7Ⓑ";
+			case "ironman" -> "§7♲";
+			default -> "";
+		};
 	}
 
 	@Override
@@ -828,7 +830,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		String profileName = GuiProfileViewer.getProfileName();
 
 		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null ||
-			!Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
+				!Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
 			Utils.showOutdatedRepoNotification("weight.json");
 			return;
 		}
@@ -1005,15 +1007,10 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
-			case 1:
-				onSecondPage = false;
-				break;
-			case 2:
-				onSecondPage = true;
-				break;
-
-			default:
-				break;
+			case 1 -> onSecondPage = false;
+			case 2 -> onSecondPage = true;
+			default -> {
+			}
 		}
 
 		return false;

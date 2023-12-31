@@ -23,5 +23,5 @@ import java.time.Instant
 import java.util.concurrent.CompletableFuture
 
 interface GraphDataProvider {
-    fun loadData(itemId: String,): CompletableFuture<Map<Instant, PriceObject>?>
+    fun loadData(itemId: String): CompletableFuture<Map<Instant, PriceObject>?>
 }

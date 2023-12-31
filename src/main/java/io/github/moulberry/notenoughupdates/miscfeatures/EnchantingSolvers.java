@@ -121,8 +121,7 @@ public class EnchantingSolvers {
 		}
 
 		if (stack != null && stack.getDisplayName() != null) {
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-				GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 				ContainerChest container = (ContainerChest) chest.inventorySlots;
 				IInventory lower = container.getLowerChestInventory();
 
@@ -237,8 +236,7 @@ public class EnchantingSolvers {
 		}
 
 		if (stack != null && stack.getDisplayName() != null) {
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-				GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 				ContainerChest container = (ContainerChest) chest.inventorySlots;
 				IInventory lower = container.getLowerChestInventory();
 
@@ -323,10 +321,9 @@ public class EnchantingSolvers {
 			return;
 		}
 		String displayName = stack.getDisplayName();
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest chest)) {
 			return;
 		}
-		GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 		ContainerChest container = (ContainerChest) chest.inventorySlots;
 		IInventory lower = container.getLowerChestInventory();
 
@@ -406,8 +403,7 @@ public class EnchantingSolvers {
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 
@@ -562,7 +558,7 @@ public class EnchantingSolvers {
 		if (NotEnoughUpdates.INSTANCE.config.enchantingSolvers.hideTooltips &&
 			(currentSolver == SolverType.CHRONOMATRON || currentSolver == SolverType.ULTRASEQUENCER)) {
 			String internal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(event.itemStack);
-			if (internal == null && event.toolTip.size() > 0 && !event.toolTip
+			if (internal == null && !event.toolTip.isEmpty() && !event.toolTip
 				.get(0)
 				.trim()
 				.replaceAll("\\(#.+\\)$", "")
@@ -579,9 +575,7 @@ public class EnchantingSolvers {
 			currentSolver = SolverType.NONE;
 		}
 
-		if (event.phase != TickEvent.Phase.END) {
-			return;
-		}
+		if (event.phase != TickEvent.Phase.END) return;
 
 		processInventoryContents(true);
 	}

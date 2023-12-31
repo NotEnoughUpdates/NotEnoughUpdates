@@ -38,12 +38,8 @@ public class MixinCrashReport {
 	@Shadow private CrashReportCategory theReportCategory;
 	@Inject(method = "populateEnvironment", at = @At(value = "HEAD"))
 	private void populateEnvironment(CallbackInfo ci) {
-		this.theReportCategory.addCrashSectionCallable("Game Directory", new Callable<String>(){
-
-			@Override
-			public String call() throws Exception {
-				return Minecraft.getMinecraft().mcDataDir.getCanonicalPath();
-			}
-		});
+		this.theReportCategory.addCrashSectionCallable("Game Directory",
+			() -> Minecraft.getMinecraft().mcDataDir.getCanonicalPath()
+		);
 	}
 }

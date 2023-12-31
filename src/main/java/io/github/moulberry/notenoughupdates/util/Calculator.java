@@ -20,6 +20,8 @@
 package io.github.moulberry.notenoughupdates.util;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -89,6 +91,7 @@ public class Calculator {
 		}
 	}
 
+	@Getter
 	public static class CalculatorException extends Exception {
 		int offset, length;
 
@@ -96,14 +99,6 @@ public class Calculator {
 			super(message);
 			this.offset = offset;
 			this.length = length;
-		}
-
-		public int getLength() {
-			return length;
-		}
-
-		public int getOffset() {
-			return offset;
 		}
 	}
 
@@ -170,7 +165,7 @@ public class Calculator {
 					token.operatorValue += d;
 					token.tokenLength++;
 				}
-				if (token.operatorValue.length() == 0 || inParenthesis) {
+				if (token.operatorValue.isEmpty() || inParenthesis) {
 					throw new CalculatorException("Unterminated variable literal", token.tokenStart, token.tokenLength);
 				}
 			} else if (digits.indexOf(c) != -1) {
@@ -197,18 +192,16 @@ public class Calculator {
 
 	///<editor-fold desc="Shunting Time">
 	static int getPrecedence(Token token) throws CalculatorException {
-		switch (token.operatorValue.intern()) {
-			case "+":
-			case "-":
-				return 0;
-			case "*":
-			case "/":
-			case "x":
-				return 1;
-			case "^":
-				return 2;
-		}
-		throw new CalculatorException("Unknown operator " + token.operatorValue, token.tokenStart, token.tokenLength);
+		return switch (token.operatorValue.intern()) {
+			case "+", "-" -> 0;
+			case "*", "/", "x" -> 1;
+			case "^" -> 2;
+			default -> throw new CalculatorException(
+				"Unknown operator " + token.operatorValue,
+				token.tokenStart,
+				token.tokenLength
+			);
+		};
 	}
 
 	public static List<Token> shuntingYard(List<Token> toShunt) throws CalculatorException {
@@ -220,11 +213,8 @@ public class Calculator {
 
 		for (Token currentlyShunting : toShunt) {
 			switch (currentlyShunting.type) {
-				case NUMBER:
-				case VARIABLE:
-					out.add(currentlyShunting);
-					break;
-				case BINOP:
+				case NUMBER, VARIABLE, POSTOP -> out.add(currentlyShunting);
+				case BINOP -> {
 					int p = getPrecedence(currentlyShunting);
 					while (!op.isEmpty()) {
 						Token l = op.peek();
@@ -239,14 +229,9 @@ public class Calculator {
 						}
 					}
 					op.push(currentlyShunting);
-					break;
-				case PREOP:
-					op.push(currentlyShunting);
-					break;
-				case LPAREN:
-					op.push(currentlyShunting);
-					break;
-				case RPAREN:
+				}
+				case PREOP, LPAREN -> op.push(currentlyShunting);
+				case RPAREN -> {
 					while (1 > 0) {
 						if (op.isEmpty())
 							throw new CalculatorException(
@@ -260,10 +245,7 @@ public class Calculator {
 						}
 						out.add(l);
 					}
-					break;
-				case POSTOP:
-					out.add(currentlyShunting);
-					break;
+				}
 			}
 		}
 		while (!op.isEmpty()) {
@@ -284,25 +266,19 @@ public class Calculator {
 		try {
 			for (Token command : rpnTokens) {
 				switch (command.type) {
-					case VARIABLE:
-						values.push(provider.provideVariable(command.operatorValue)
-																.orElseThrow(() -> new CalculatorException(
-																	"Unknown variable " + command.operatorValue,
-																	command.tokenStart,
-																	command.tokenLength
-																)));
-						break;
-					case PREOP:
-						values.push(values.pop().negate());
-						break;
-					case NUMBER:
-						values.push(new BigDecimal(command.numericValue).scaleByPowerOfTen(command.exponent));
-						break;
-					case BINOP:
+					case VARIABLE -> values.push(provider.provideVariable(command.operatorValue)
+																							 .orElseThrow(() -> new CalculatorException(
+																								 "Unknown variable " + command.operatorValue,
+																								 command.tokenStart,
+																								 command.tokenLength
+																							 )));
+					case PREOP -> values.push(values.pop().negate());
+					case NUMBER -> values.push(new BigDecimal(command.numericValue).scaleByPowerOfTen(command.exponent));
+					case BINOP -> {
 						BigDecimal right = values.pop().setScale(precision, RoundingMode.HALF_UP);
 						BigDecimal left = values.pop().setScale(precision, RoundingMode.HALF_UP);
 						switch (command.operatorValue.intern()) {
-							case "^":
+							case "^" -> {
 								if (right.compareTo(new BigDecimal(1000)) >= 0) {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
 									throw new CalculatorException(
@@ -311,7 +287,6 @@ public class Calculator {
 										rightToken.tokenLength
 									);
 								}
-
 								if (right.doubleValue() != right.intValue()) {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
 									throw new CalculatorException(
@@ -320,7 +295,6 @@ public class Calculator {
 										rightToken.tokenLength
 									);
 								}
-
 								if (right.doubleValue() < 0) {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
 									throw new CalculatorException(
@@ -330,71 +304,52 @@ public class Calculator {
 									);
 								}
 								values.push(left.pow(right.intValue()).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							case "x":
-							case "*":
-								values.push(left.multiply(right).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							case "/":
+							}
+							case "x", "*" -> values.push(left.multiply(right).setScale(precision, RoundingMode.HALF_UP));
+							case "/" -> {
 								try {
 									values.push(left.divide(right, RoundingMode.HALF_UP).setScale(precision, RoundingMode.HALF_UP));
 								} catch (ArithmeticException e) {
 									throw new CalculatorException("Encountered division by 0", command.tokenStart, command.tokenLength);
 								}
-								break;
-							case "+":
-								values.push(left.add(right).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							case "-":
-								values.push(left.subtract(right).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							default:
-								throw new CalculatorException(
-									"Unknown operation " + command.operatorValue,
-									command.tokenStart,
-									command.tokenLength
-								);
+							}
+							case "+" -> values.push(left.add(right).setScale(precision, RoundingMode.HALF_UP));
+							case "-" -> values.push(left.subtract(right).setScale(precision, RoundingMode.HALF_UP));
+							default -> throw new CalculatorException(
+								"Unknown operation " + command.operatorValue,
+								command.tokenStart,
+								command.tokenLength
+							);
 						}
-						break;
-					case LPAREN:
-					case RPAREN:
-						throw new CalculatorException(
-							"Did not expect unshunted token in RPN",
-							command.tokenStart,
-							command.tokenLength
-						);
-					case POSTOP:
+					}
+					case LPAREN, RPAREN -> throw new CalculatorException(
+						"Did not expect unshunted token in RPN",
+						command.tokenStart,
+						command.tokenLength
+					);
+					case POSTOP -> {
 						BigDecimal p = values.pop();
 						switch (command.operatorValue.intern()) {
-							case "s":
-								values.push(p.multiply(new BigDecimal(64)).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							case "k":
-								values.push(p.multiply(new BigDecimal(1_000)).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							case "m":
-								values.push(p.multiply(new BigDecimal(1_000_000)).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							case "b":
-								values.push(p.multiply(new BigDecimal(1_000_000_000)).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							case "t":
-								values.push(p.multiply(new BigDecimal("1000000000000")).setScale(precision, RoundingMode.HALF_UP));
-								break;
-							case "%":
-								values.push(p
-									.setScale(precision + 1, RoundingMode.HALF_UP)
-									.divide(new BigDecimal(100), RoundingMode.HALF_UP)
-									.setScale(precision, RoundingMode.HALF_UP));
-								break;
-							default:
-								throw new CalculatorException(
-									"Unknown operation " + command.operatorValue,
-									command.tokenStart,
-									command.tokenLength
-								);
+							case "s" -> values.push(p.multiply(new BigDecimal(64)).setScale(precision, RoundingMode.HALF_UP));
+							case "k" -> values.push(p.multiply(new BigDecimal(1_000)).setScale(precision, RoundingMode.HALF_UP));
+							case "m" -> values.push(p.multiply(new BigDecimal(1_000_000)).setScale(precision, RoundingMode.HALF_UP));
+							case "b" -> values.push(p
+								.multiply(new BigDecimal(1_000_000_000))
+								.setScale(precision, RoundingMode.HALF_UP));
+							case "t" -> values.push(p
+								.multiply(new BigDecimal("1000000000000"))
+								.setScale(precision, RoundingMode.HALF_UP));
+							case "%" -> values.push(p
+								.setScale(precision + 1, RoundingMode.HALF_UP)
+								.divide(new BigDecimal(100), RoundingMode.HALF_UP)
+								.setScale(precision, RoundingMode.HALF_UP));
+							default -> throw new CalculatorException(
+								"Unknown operation " + command.operatorValue,
+								command.tokenStart,
+								command.tokenLength
+							);
 						}
-						break;
+					}
 				}
 			}
 			BigDecimal peek = values.pop();

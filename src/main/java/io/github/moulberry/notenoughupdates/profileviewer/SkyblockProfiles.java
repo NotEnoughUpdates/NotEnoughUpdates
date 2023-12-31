@@ -100,7 +100,9 @@ public class SkyblockProfiles {
 	);
 	private final ProfileViewer profileViewer;
 	// TODO: replace with UUID type
+	@Getter
 	private final String uuid;
+	@Getter
 	private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
 	private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
 	private final AtomicBoolean updatingPlayerStatusState = new AtomicBoolean(false);
@@ -109,7 +111,9 @@ public class SkyblockProfiles {
 	@Getter
 	private Map<String, SkyblockProfile> nameToProfile = null;
 	private JsonArray profilesArray;
+	@Getter
 	private List<String> profileNames = new ArrayList<>();
+	@Getter
 	private String latestProfileName;
 	private long soopyNetworthLeaderboardPosition = -1; // -1 = default, -2 = loading, -3 = error
 	private long soopyWeightLeaderboardPosition = -1; // -1 = default, -2 = loading, -3 = error
@@ -298,20 +302,12 @@ public class SkyblockProfiles {
 		updatingSoopyData.set(false);
 	}
 
-	public AtomicBoolean getUpdatingSkyblockProfilesState() {
-		return updatingSkyblockProfilesState;
-	}
-
 	public @Nullable SkyblockProfile getProfile(String profileName) {
 		return nameToProfile == null ? null : nameToProfile.get(profileName);
 	}
 
 	public SkyblockProfile getLatestProfile() {
 		return nameToProfile.get(latestProfileName);
-	}
-
-	public String getLatestProfileName() {
-		return latestProfileName;
 	}
 
 	public Map<String, SkyblockProfile> getOrLoadSkyblockProfiles(Runnable runnable) {
@@ -428,10 +424,6 @@ public class SkyblockProfiles {
 		return isInGuild;
 	}
 
-	public List<String> getProfileNames() {
-		return profileNames;
-	}
-
 	public void resetCache() {
 		profilesArray = null;
 		profileNames = new ArrayList<>();
@@ -440,16 +432,16 @@ public class SkyblockProfiles {
 		nameToProfile = null;
 	}
 
-	public String getUuid() {
-		return uuid;
-	}
-
 	public @Nullable JsonObject getHypixelProfile() {
 		return profileViewer.getUuidToHypixelProfile().getOrDefault(uuid, null);
 	}
 
+	@Getter
 	public static class SoopyNetworth {
 		private final Map<String, Long> categoryToTotal = new LinkedHashMap<>();
+		/**
+		 * -2 = error, -1 = loading, >= 0 = success
+		 */
 		private long networth;
 
 		private SoopyNetworth(JsonObject nwData) {
@@ -477,20 +469,11 @@ public class SkyblockProfiles {
 			return this;
 		}
 
-		/**
-		 * @return -2 = error, -1 = loading, >= 0 = success
-		 */
-		public long getNetworth() {
-			return networth;
-		}
-
-		public Map<String, Long> getCategoryToTotal() {
-			return categoryToTotal;
-		}
 	}
 
 	public class SkyblockProfile {
 
+		@Getter
 		private final JsonObject outerProfileJson;
 		private final String gamemode;
 		private Integer magicPower = null;
@@ -509,10 +492,15 @@ public class SkyblockProfiles {
 
 		public class MuseumData {
 			private long museumValue;
+			@Getter
 			private final Map<String, JsonArray> weaponItems = new HashMap<>();
+			@Getter
 			private final Map<String, JsonArray> armorItems = new HashMap<>();
+			@Getter
 			private final Map<String, JsonArray> raritiesItems = new HashMap<>();
+			@Getter
 			private final List<JsonArray> specialItems = new ArrayList<>();
+			@Getter
 			private final Map<String, Pair<Long, Boolean>> savedItems = new HashMap<>();
 
 			private MuseumData(JsonObject museumJson) {
@@ -642,21 +630,6 @@ public class SkyblockProfiles {
 			public long getValue() {
 				return museumValue;
 			}
-			public Map<String, JsonArray> getWeaponItems() {
-				return weaponItems;
-			}
-			public Map<String, JsonArray> getArmorItems() {
-				return armorItems;
-			}
-			public Map<String, JsonArray> getRaritiesItems() {
-				return raritiesItems;
-			}
-			public List<JsonArray> getSpecialItems() {
-				return specialItems;
-			}
-			public Map<String, Pair<Long, Boolean>> getSavedItems() {
-				return savedItems;
-			}
 		}
 
 		private void loadMuseumData() {
@@ -680,10 +653,6 @@ public class SkyblockProfiles {
 		public SkyblockProfile(JsonObject outerProfileJson) {
 			this.outerProfileJson = outerProfileJson;
 			this.gamemode = Utils.getElementAsString(outerProfileJson.get("game_mode"), null);
-		}
-
-		public JsonObject getOuterProfileJson() {
-			return outerProfileJson;
 		}
 
 		/**
@@ -1094,7 +1063,7 @@ public class SkyblockProfiles {
 								NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
 								NBTTagList items = contents_nbt.getTagList("i", 10);
 								for (int j = 0; j < items.tagCount(); j++) {
-									if (items.getCompoundTagAt(j).getKeySet().size() > 0) {
+									if (!items.getCompoundTagAt(j).getKeySet().isEmpty()) {
 										NBTTagCompound nbt = items.getCompoundTagAt(j).getCompoundTag("tag");
 										String internalname2 =
 											profileViewer.getManager().createItemResolutionQuery().withItemNBT(nbt).resolveInternalName();

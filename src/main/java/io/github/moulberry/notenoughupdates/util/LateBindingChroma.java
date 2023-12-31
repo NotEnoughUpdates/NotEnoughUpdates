@@ -19,9 +19,9 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
+import com.github.bsideup.jabel.Desugar;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import lombok.var;
 import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
@@ -99,5 +99,4 @@ public abstract class LateBindingChroma {
 		String extraFormatting;
 		String text;
 	}
-
 }

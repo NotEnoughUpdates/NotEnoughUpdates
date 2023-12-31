@@ -20,16 +20,12 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources;
 
 import com.google.common.collect.ArrayListMultimap;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public class CraftingSource extends MinionSource {
 	//name -> amount
 	private final ArrayListMultimap<String, Integer> items;
-
-	public CraftingSource(ArrayListMultimap<String, Integer> items) {
-		this.items = items;
-	}
-
-	public ArrayListMultimap<String, Integer> getItems() {
-		return items;
-	}
 }

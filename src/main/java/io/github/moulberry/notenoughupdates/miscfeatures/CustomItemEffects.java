@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import lombok.var;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -402,7 +401,7 @@ public class CustomItemEffects {
 		} else {
 			itemCount = countItemsInInventoryAndStorage(matchStack);
 		}
-		if (candidatesOld.size() == 0) return;
+		if (candidatesOld.isEmpty()) return;
 
 		if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
 			Utils.drawStringCentered(
@@ -505,7 +504,7 @@ public class CustomItemEffects {
 				itemCount = countItemsInInventoryAndStorage(matchStack);
 			}
 		}
-		if (candidatesOld.size() == 0) return;
+		if (candidatesOld.isEmpty()) return;
 
 		if (!Minecraft.getMinecraft().thePlayer.isSneaking()) {
 			if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
@@ -655,7 +654,7 @@ public class CustomItemEffects {
 		NBTTagList items = contents_nbt.getTagList("i", 10);
 		for (int j = 0; j < items.tagCount(); j++) {
 			NBTTagCompound buildersItem = items.getCompoundTagAt(j);
-			if (buildersItem.getKeySet().size() > 0) {
+			if (!buildersItem.getKeySet().isEmpty()) {
 				if (buildersItem.getInteger("id") == Item.getIdFromItem(match.getItem()) &&
 					buildersItem.getInteger("Damage") == match.getItemDamage()) {
 					count += items.getCompoundTagAt(j).getByte("Count");
@@ -679,7 +678,7 @@ public class CustomItemEffects {
 		NBTTagList items = contents_nbt.getTagList("i", 10);
 		for (int j = 0; j < items.tagCount(); j++) {
 			NBTTagCompound buildersItem = items.getCompoundTagAt(j);
-			if (buildersItem.getKeySet().size() > 0) {
+			if (!buildersItem.getKeySet().isEmpty()) {
 				ItemStack newStack = new ItemStack(
 					Item.getItemById(buildersItem.getInteger("id")),
 					1,
@@ -720,7 +719,7 @@ public class CustomItemEffects {
 					NBTTagList items = contents_nbt.getTagList("i", 10);
 					for (int j = 0; j < items.tagCount(); j++) {
 						NBTTagCompound buildersItem = items.getCompoundTagAt(j);
-						if (buildersItem.getKeySet().size() > 0) {
+						if (!buildersItem.getKeySet().isEmpty()) {
 							String internalname =
 								NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
 																								 .withItemNBT(buildersItem.getCompoundTag("tag"))
@@ -738,7 +737,7 @@ public class CustomItemEffects {
 		return false;
 	}
 
-	private static final List<BlockPos> zapperOffsets = new ArrayList<BlockPos>() {{
+	private static final List<BlockPos> zapperOffsets = new ArrayList<>() {{
 		add(new BlockPos(0, 0, -1));
 		add(new BlockPos(0, 0, 1));
 		add(new BlockPos(-1, 0, 0));
@@ -747,7 +746,7 @@ public class CustomItemEffects {
 		add(new BlockPos(0, -1, 0));
 	}};
 
-	private static final HashSet<Block> cropBlocksZapper = new HashSet<Block>() {{
+	private static final HashSet<Block> cropBlocksZapper = new HashSet<>() {{
 		add(Blocks.wheat);
 		add(Blocks.carrots);
 		add(Blocks.potatoes);
@@ -762,7 +761,7 @@ public class CustomItemEffects {
 		add(Blocks.double_plant);
 	}};
 
-	private static final HashSet<Block> otherBannedBlocksZapper = new HashSet<Block>() {{
+	private static final HashSet<Block> otherBannedBlocksZapper = new HashSet<>() {{
 		add(Blocks.farmland);
 	}};
 

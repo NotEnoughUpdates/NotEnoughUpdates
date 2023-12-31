@@ -91,28 +91,11 @@ public class CookieWarning {
 				String unit = digits[i + 1];
 				long val = Integer.parseInt(number);
 				switch (unit.toLowerCase(Locale.ROOT)) {
-					case "years":
-					case "year":
-						minutes += val * 525600;
-						break;
-					case "months":
-					case "month":
-						minutes += val * 43200;
-						break;
-					case "days":
-					case "day":
-						minutes += val * 1440;
-						break;
-					case "hours":
-					case "hour":
-					case "h":
-						minutes += val * 60;
-						break;
-					case "minutes":
-					case "minute":
-					case "m":
-						minutes += val;
-						break;
+					case "years", "year" -> minutes += val * 525600;
+					case "months", "month" -> minutes += val * 43200;
+					case "days", "day" -> minutes += val * 1440;
+					case "hours", "hour", "h" -> minutes += val * 60;
+					case "minutes", "minute", "m" -> minutes += val;
 				} // ignore seconds
 			}
 		} catch (NumberFormatException e) {

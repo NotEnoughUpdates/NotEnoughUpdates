@@ -45,7 +45,7 @@ data class CustomTodo(
     }
 
     fun isValid(): Boolean {
-        return timer >= 0 && !trigger.isBlank()
+        return timer >= 0 && trigger.isNotBlank()
     }
 
     fun setDoneNow() {
@@ -76,8 +76,8 @@ data class CustomTodo(
 
 
     companion object {
-        val templatePrefix = "NEU:CUSTOMTODO/"
-        val DAY = (24 * 60 * 60 * 100)
+        const val templatePrefix = "NEU:CUSTOMTODO/"
+        const val DAY = (24 * 60 * 60 * 100)
         fun fromTemplate(data: String): CustomTodo? {
             return TemplateUtil.maybeDecodeTemplate(templatePrefix, data, CustomTodo::class.java)
                 ?.also {

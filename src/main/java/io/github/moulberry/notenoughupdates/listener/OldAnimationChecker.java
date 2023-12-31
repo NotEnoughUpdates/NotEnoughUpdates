@@ -55,14 +55,14 @@ public class OldAnimationChecker {
 
 		if (oldAnimations) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
-				"\u00a74Old animations warning",
-				"\u00a77You use a old animations mod from Orange or spiderfrog",
-				"\u00a77These mods break features in NEU and other mods",
-				"\u00a77Please remove them and optionally replace them with the OldAnimations mod from Sk1er",
-				"\u00a77It can be found at the following website: \u00a79sk1er.club/beta",
-				"\u00a77For more information join the discord at \u00a79discord.gg/moulberry\u00a77 and message in \u00a79#neu-support",
-				"\u00a77",
-				"\u00a77Press X on your keyboard to close this notification or turn it off in the config"
+				"§4Old animations warning",
+				"§7You use a old animations mod from Orange or spiderfrog",
+				"§7These mods break features in NEU and other mods",
+				"§7Please remove them and optionally replace them with the OldAnimations mod from Sk1er",
+				"§7It can be found at the following website: §9sk1er.club/beta",
+				"§7For more information join the discord at §9discord.gg/moulberry§7 and message in §9#neu-support",
+				"§7",
+				"§7Press X on your keyboard to close this notification or turn it off in the config"
 			), true, true);
 			unregister();
 		}

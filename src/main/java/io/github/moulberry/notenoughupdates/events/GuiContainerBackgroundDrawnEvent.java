@@ -19,9 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.events;
 
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
+@EqualsAndHashCode(callSuper = true)
 @Value
 public class GuiContainerBackgroundDrawnEvent extends NEUEvent {
 	public GuiContainer container;

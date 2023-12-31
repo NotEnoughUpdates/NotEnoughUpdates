@@ -421,38 +421,19 @@ public class GuiElementTextField {
 							int pos = textField.getCursorPosition() - 2;
 							if (pos >= 0 && pos < textField.getText().length()) {
 								if (textField.getText().charAt(pos) == '*') {
-									switch (i) {
-										case 0:
-											masterStarUnicode = "\u278A";
-											break;
-										case 1:
-											masterStarUnicode = "\u278B";
-											break;
-										case 2:
-											masterStarUnicode = "\u278C";
-											break;
-										case 3:
-											masterStarUnicode = "\u278D";
-											break;
-										case 4:
-											masterStarUnicode = "\u278E";
-											break;
-										case 5:
-											masterStarUnicode = "\u278F";
-											break;
-										case 6:
-											masterStarUnicode = "\u2790";
-											break;
-										case 7:
-											masterStarUnicode = "\u2791";
-											break;
-										case 8:
-											masterStarUnicode = "\u2792";
-											break;
-										case 9:
-											masterStarUnicode = "\u2793";
-											break;
-									}
+									masterStarUnicode = switch (i) {
+										case 0 -> "\u278A";
+										case 1 -> "\u278B";
+										case 2 -> "\u278C";
+										case 3 -> "\u278D";
+										case 4 -> "\u278E";
+										case 5 -> "\u278F";
+										case 6 -> "\u2790";
+										case 7 -> "\u2791";
+										case 8 -> "\u2792";
+										case 9 -> "\u2793";
+										default -> throw new IllegalStateException("Unexpected value: " + i);
+									};
 									String before = textField.getText().substring(0, pos);
 									String after = "";
 									if (pos + 2 < textField.getText().length()) {

@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.Panorama;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -109,11 +110,17 @@ public class MobLootRecipe implements NeuRecipe {
 		"textures/gui/mob_loot_tall.png"
 	);
 	private final Ingredient mobIngredient;
+	@Getter
 	private final List<MobDrop> drops;
+	@Getter
 	private final int coins;
+	@Getter
 	private final int combatXp;
+	@Getter
 	private final int xp;
+	@Getter
 	private final String name;
+	@Getter
 	private final String render;
 	private final int level;
 	private final List<String> extra;
@@ -147,32 +154,8 @@ public class MobLootRecipe implements NeuRecipe {
 		this.panoName = panoName;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public List<MobDrop> getDrops() {
-		return drops;
-	}
-
-	public int getCoins() {
-		return coins;
-	}
-
-	public int getCombatXp() {
-		return combatXp;
-	}
-
 	public Ingredient getMob() {
 		return mobIngredient;
-	}
-
-	public int getXp() {
-		return xp;
-	}
-
-	public String getRender() {
-		return render;
 	}
 
 	public synchronized EntityLivingBase getRenderEntity() {

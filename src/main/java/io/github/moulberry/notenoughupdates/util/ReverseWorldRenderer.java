@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.util;
 
 import com.google.common.primitives.Floats;
+import lombok.Getter;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -38,10 +39,12 @@ import java.util.BitSet;
 
 @SideOnly(Side.CLIENT)
 public class ReverseWorldRenderer {
+	@Getter
 	private ByteBuffer byteBuffer;
 	private IntBuffer rawIntBuffer;
 	private ShortBuffer rawShortBuffer;
 	private FloatBuffer rawFloatBuffer;
+	@Getter
 	private int vertexCount;
 	private VertexFormatElement vertexFormatElement;
 	private int vertexFormatIndex;
@@ -49,10 +52,12 @@ public class ReverseWorldRenderer {
 	 * None
 	 */
 	private boolean noColor;
+	@Getter
 	private int drawMode;
 	private double xOffset;
 	private double yOffset;
 	private double zOffset;
+	@Getter
 	private VertexFormat vertexFormat;
 	private boolean isDrawing;
 
@@ -213,24 +218,22 @@ public class ReverseWorldRenderer {
 		int i = this.vertexCount * this.vertexFormat.getNextOffset() + this.vertexFormat.getOffset(this.vertexFormatIndex);
 
 		switch (this.vertexFormatElement.getType()) {
-			case FLOAT:
+			case FLOAT -> {
 				this.byteBuffer.putFloat(i, (float) u);
 				this.byteBuffer.putFloat(i + 4, (float) v);
-				break;
-			case UINT:
-			case INT:
+			}
+			case UINT, INT -> {
 				this.byteBuffer.putInt(i, (int) u);
 				this.byteBuffer.putInt(i + 4, (int) v);
-				break;
-			case USHORT:
-			case SHORT:
+			}
+			case USHORT, SHORT -> {
 				this.byteBuffer.putShort(i, (short) ((int) v));
 				this.byteBuffer.putShort(i + 2, (short) ((int) u));
-				break;
-			case UBYTE:
-			case BYTE:
+			}
+			case UBYTE, BYTE -> {
 				this.byteBuffer.put(i, (byte) ((int) v));
 				this.byteBuffer.put(i + 1, (byte) ((int) u));
+			}
 		}
 
 		this.nextVertexFormatIndex();
@@ -241,24 +244,22 @@ public class ReverseWorldRenderer {
 		int i = this.vertexCount * this.vertexFormat.getNextOffset() + this.vertexFormat.getOffset(this.vertexFormatIndex);
 
 		switch (this.vertexFormatElement.getType()) {
-			case FLOAT:
+			case FLOAT -> {
 				this.byteBuffer.putFloat(i, (float) p_181671_1_);
 				this.byteBuffer.putFloat(i + 4, (float) p_181671_2_);
-				break;
-			case UINT:
-			case INT:
+			}
+			case UINT, INT -> {
 				this.byteBuffer.putInt(i, p_181671_1_);
 				this.byteBuffer.putInt(i + 4, p_181671_2_);
-				break;
-			case USHORT:
-			case SHORT:
+			}
+			case USHORT, SHORT -> {
 				this.byteBuffer.putShort(i, (short) p_181671_2_);
 				this.byteBuffer.putShort(i + 2, (short) p_181671_1_);
-				break;
-			case UBYTE:
-			case BYTE:
+			}
+			case UBYTE, BYTE -> {
 				this.byteBuffer.put(i, (byte) p_181671_2_);
 				this.byteBuffer.put(i + 1, (byte) p_181671_1_);
+			}
 		}
 
 		this.nextVertexFormatIndex();
@@ -372,28 +373,25 @@ public class ReverseWorldRenderer {
 				this.vertexCount * this.vertexFormat.getNextOffset() + this.vertexFormat.getOffset(this.vertexFormatIndex);
 
 			switch (this.vertexFormatElement.getType()) {
-				case FLOAT:
+				case FLOAT -> {
 					this.byteBuffer.putFloat(i, (float) red / 255.0F);
 					this.byteBuffer.putFloat(i + 4, (float) green / 255.0F);
 					this.byteBuffer.putFloat(i + 8, (float) blue / 255.0F);
 					this.byteBuffer.putFloat(i + 12, (float) alpha / 255.0F);
-					break;
-				case UINT:
-				case INT:
+				}
+				case UINT, INT -> {
 					this.byteBuffer.putFloat(i, (float) red);
 					this.byteBuffer.putFloat(i + 4, (float) green);
 					this.byteBuffer.putFloat(i + 8, (float) blue);
 					this.byteBuffer.putFloat(i + 12, (float) alpha);
-					break;
-				case USHORT:
-				case SHORT:
+				}
+				case USHORT, SHORT -> {
 					this.byteBuffer.putShort(i, (short) red);
 					this.byteBuffer.putShort(i + 2, (short) green);
 					this.byteBuffer.putShort(i + 4, (short) blue);
 					this.byteBuffer.putShort(i + 6, (short) alpha);
-					break;
-				case UBYTE:
-				case BYTE:
+				}
+				case UBYTE, BYTE -> {
 					if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
 						this.byteBuffer.put(i, (byte) red);
 						this.byteBuffer.put(i + 1, (byte) green);
@@ -405,6 +403,7 @@ public class ReverseWorldRenderer {
 						this.byteBuffer.put(i + 2, (byte) green);
 						this.byteBuffer.put(i + 3, (byte) red);
 					}
+				}
 			}
 
 			this.nextVertexFormatIndex();
@@ -428,28 +427,26 @@ public class ReverseWorldRenderer {
 		int i = this.vertexCount * this.vertexFormat.getNextOffset() + this.vertexFormat.getOffset(this.vertexFormatIndex);
 
 		switch (this.vertexFormatElement.getType()) {
-			case FLOAT:
+			case FLOAT -> {
 				this.byteBuffer.putFloat(i, (float) (x + this.xOffset));
 				this.byteBuffer.putFloat(i + 4, (float) (y + this.yOffset));
 				this.byteBuffer.putFloat(i + 8, (float) (z + this.zOffset));
-				break;
-			case UINT:
-			case INT:
+			}
+			case UINT, INT -> {
 				this.byteBuffer.putInt(i, Float.floatToRawIntBits((float) (x + this.xOffset)));
 				this.byteBuffer.putInt(i + 4, Float.floatToRawIntBits((float) (y + this.yOffset)));
 				this.byteBuffer.putInt(i + 8, Float.floatToRawIntBits((float) (z + this.zOffset)));
-				break;
-			case USHORT:
-			case SHORT:
+			}
+			case USHORT, SHORT -> {
 				this.byteBuffer.putShort(i, (short) ((int) (x + this.xOffset)));
 				this.byteBuffer.putShort(i + 2, (short) ((int) (y + this.yOffset)));
 				this.byteBuffer.putShort(i + 4, (short) ((int) (z + this.zOffset)));
-				break;
-			case UBYTE:
-			case BYTE:
+			}
+			case UBYTE, BYTE -> {
 				this.byteBuffer.put(i, (byte) ((int) (x + this.xOffset)));
 				this.byteBuffer.put(i + 1, (byte) ((int) (y + this.yOffset)));
 				this.byteBuffer.put(i + 2, (byte) ((int) (z + this.zOffset)));
+			}
 		}
 
 		this.nextVertexFormatIndex();
@@ -483,28 +480,26 @@ public class ReverseWorldRenderer {
 		int i = this.vertexCount * this.vertexFormat.getNextOffset() + this.vertexFormat.getOffset(this.vertexFormatIndex);
 
 		switch (this.vertexFormatElement.getType()) {
-			case FLOAT:
+			case FLOAT -> {
 				this.byteBuffer.putFloat(i, p_181663_1_);
 				this.byteBuffer.putFloat(i + 4, p_181663_2_);
 				this.byteBuffer.putFloat(i + 8, p_181663_3_);
-				break;
-			case UINT:
-			case INT:
+			}
+			case UINT, INT -> {
 				this.byteBuffer.putInt(i, (int) p_181663_1_);
 				this.byteBuffer.putInt(i + 4, (int) p_181663_2_);
 				this.byteBuffer.putInt(i + 8, (int) p_181663_3_);
-				break;
-			case USHORT:
-			case SHORT:
+			}
+			case USHORT, SHORT -> {
 				this.byteBuffer.putShort(i, (short) ((int) (p_181663_1_ * 32767) & 65535));
 				this.byteBuffer.putShort(i + 2, (short) ((int) (p_181663_2_ * 32767) & 65535));
 				this.byteBuffer.putShort(i + 4, (short) ((int) (p_181663_3_ * 32767) & 65535));
-				break;
-			case UBYTE:
-			case BYTE:
+			}
+			case UBYTE, BYTE -> {
 				this.byteBuffer.put(i, (byte) ((int) (p_181663_1_ * 127) & 255));
 				this.byteBuffer.put(i + 1, (byte) ((int) (p_181663_2_ * 127) & 255));
 				this.byteBuffer.put(i + 2, (byte) ((int) (p_181663_3_ * 127) & 255));
+			}
 		}
 
 		this.nextVertexFormatIndex();
@@ -525,22 +520,6 @@ public class ReverseWorldRenderer {
 			this.byteBuffer.position(0);
 			this.byteBuffer.limit(this.getBufferSize() * 4);
 		}
-	}
-
-	public ByteBuffer getByteBuffer() {
-		return this.byteBuffer;
-	}
-
-	public VertexFormat getVertexFormat() {
-		return this.vertexFormat;
-	}
-
-	public int getVertexCount() {
-		return this.vertexCount;
-	}
-
-	public int getDrawMode() {
-		return this.drawMode;
 	}
 
 	public void putColor4(int argb) {

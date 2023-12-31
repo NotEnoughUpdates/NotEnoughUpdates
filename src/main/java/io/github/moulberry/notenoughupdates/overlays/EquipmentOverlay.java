@@ -105,37 +105,27 @@ public class EquipmentOverlay {
 
 	//<editor-fold desc="dynamic resources">
 	public ResourceLocation getCustomEquipmentTexture(boolean isPetRendering) {
-		switch (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle) {
-			case 0:
-				return ARMOR_DISPLAY;
-			case 1:
-				return ARMOR_DISPLAY_GREY;
-			case 2:
-				return ARMOR_DISPLAY_DARK;
-			case 3:
-				return NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && isPetRendering
-					? ARMOR_DISPLAY_TRANSPARENT_PET
-					: ARMOR_DISPLAY_TRANSPARENT;
-			case 4:
-				return ARMOR_DISPLAY_FSR;
-		}
-		return null;
+		return switch (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle) {
+			case 0 -> ARMOR_DISPLAY;
+			case 1 -> ARMOR_DISPLAY_GREY;
+			case 2 -> ARMOR_DISPLAY_DARK;
+			case 3 -> NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && isPetRendering
+				? ARMOR_DISPLAY_TRANSPARENT_PET
+				: ARMOR_DISPLAY_TRANSPARENT;
+			case 4 -> ARMOR_DISPLAY_FSR;
+			default -> null;
+		};
 	}
 
 	public ResourceLocation getCustomPetTexture(boolean isArmorRendering) {
-		switch (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle) {
-			case 0:
-				return isArmorRendering ? PET_ARMOR_DISPLAY : PET_DISPLAY;
-			case 1:
-				return isArmorRendering ? PET_ARMOR_DISPLAY_GREY : PET_DISPLAY_GREY;
-			case 2:
-				return isArmorRendering ? PET_ARMOR_DISPLAY_DARK : PET_DISPLAY_DARK;
-			case 3:
-				return isArmorRendering ? PET_ARMOR_DISPLAY_TRANSPARENT : PET_DISPLAY_TRANSPARENT;
-			case 4:
-				return isArmorRendering ? PET_ARMOR_DISPLAY_FSR : PET_DISPLAY_FSR;
-		}
-		return null;
+		return switch (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle) {
+			case 0 -> isArmorRendering ? PET_ARMOR_DISPLAY : PET_DISPLAY;
+			case 1 -> isArmorRendering ? PET_ARMOR_DISPLAY_GREY : PET_DISPLAY_GREY;
+			case 2 -> isArmorRendering ? PET_ARMOR_DISPLAY_DARK : PET_DISPLAY_DARK;
+			case 3 -> isArmorRendering ? PET_ARMOR_DISPLAY_TRANSPARENT : PET_DISPLAY_TRANSPARENT;
+			case 4 -> isArmorRendering ? PET_ARMOR_DISPLAY_FSR : PET_DISPLAY_FSR;
+			default -> null;
+		};
 	}
 	//</editor-fold>
 
@@ -194,8 +184,7 @@ public class EquipmentOverlay {
 
 	@SubscribeEvent
 	public void onRenderGuiPost(GuiInventoryBackgroundDrawnEvent event) {
-		if (!(event.getContainer() instanceof GuiInventory)) return;
-		GuiInventory inventory = ((GuiInventory) event.getContainer());
+		if (!(event.getContainer() instanceof GuiInventory inventory)) return;
 		renderGuis(inventory);
 	}
 
@@ -485,8 +474,7 @@ public class EquipmentOverlay {
 
 	public void renderPreviewArmorHud() {
 		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ||
-			!(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
-		GuiInvButtonEditor container = (GuiInvButtonEditor) Minecraft.getMinecraft().currentScreen;
+			!(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor container)) return;
 
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop();
@@ -499,8 +487,7 @@ public class EquipmentOverlay {
 
 	public void renderPreviewPetInvHud() {
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay ||
-			!(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
-		GuiInvButtonEditor container = (GuiInvButtonEditor) Minecraft.getMinecraft().currentScreen;
+			!(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor container)) return;
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;
 

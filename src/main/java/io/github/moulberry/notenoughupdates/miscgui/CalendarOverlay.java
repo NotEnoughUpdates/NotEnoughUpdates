@@ -32,7 +32,7 @@ import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import kotlin.Pair;
-import lombok.var;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
@@ -88,6 +88,7 @@ public class CalendarOverlay {
 
 	private static JsonObject farmingEventTypes = null;
 
+	@Getter
 	private static boolean enabled = false;
 
 	public static boolean ableToClickCalendar = true;
@@ -99,10 +100,6 @@ public class CalendarOverlay {
 
 	public static void setEnabled(boolean enabled) {
 		CalendarOverlay.enabled = enabled;
-	}
-
-	public static boolean isEnabled() {
-		return enabled;
 	}
 
 	private int guiLeft = -1;
@@ -405,13 +402,12 @@ public class CalendarOverlay {
 
 		getFarmingEventTypes();
 
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest eventGui)) {
 			jfFavouriteSelect = null;
 			populateDefaultEvents();
 			return;
 		}
 
-		GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 		ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 		String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
@@ -520,7 +516,7 @@ public class CalendarOverlay {
 							String lastsForS = Utils.cleanColour(line.substring(lastsForText.length()));
 							lastsFor = getTimeOffset(lastsForS);
 						}
-						if (Utils.cleanColour(line).trim().length() == 0) {
+						if (Utils.cleanColour(line).trim().isEmpty()) {
 							foundBreak = true;
 						}
 					}
@@ -572,7 +568,7 @@ public class CalendarOverlay {
 
 	@SubscribeEvent
 	public void onGuiDraw(GuiScreenEvent.DrawScreenEvent.Pre event) {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest eventGui)) {
 			return;
 		}
 
@@ -580,7 +576,6 @@ public class CalendarOverlay {
 			return;
 		}
 
-		GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 		ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 		String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 		if (!containerName.trim().equals("Calendar and Events")) {
@@ -1007,11 +1002,10 @@ public class CalendarOverlay {
 			return;
 		}
 
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest eventGui)) {
 			return;
 		}
 
-		GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 		ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 		String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 		if (!containerName.trim().equals("Calendar and Events")) {
@@ -1092,11 +1086,10 @@ public class CalendarOverlay {
 				return;
 			}
 
-			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest eventGui)) {
 				return;
 			}
 
-			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (!containerName.trim().equals("Calendar and Events")) {
@@ -1182,9 +1175,7 @@ public class CalendarOverlay {
 						String[] split = id.split(":");
 						if (split.length > 1 && split[0].equals("jacob_farming")) {
 							jfFavouriteSelect = new ArrayList<>();
-							for (int i = 1; i < split.length; i++) {
-								jfFavouriteSelect.add(split[i]);
-							}
+							jfFavouriteSelect.addAll(Arrays.asList(split).subList(1, split.length));
 							jfFavouriteSelectIndex = 0;
 							jfFavouriteSelectX = mouseX;
 							jfFavouriteSelectY = mouseY;
@@ -1250,9 +1241,7 @@ public class CalendarOverlay {
 			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer) &&
 				NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
 				var nextFavouriteEvent = getNextFavouriteEvent(false);
-				nextFavouriteEvent.ifPresent((nextEvent) -> {
-					renderToast(nextEvent.component1(), nextEvent.component2());
-				});
+				nextFavouriteEvent.ifPresent((nextEvent) -> renderToast(nextEvent.component1(), nextEvent.component2()));
 			}
 			GlStateManager.translate(0, 0, -10);
 			GlStateManager.popMatrix();

@@ -45,8 +45,9 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Mines Waypoints",
-		desc = "Show waypoints in the Dwarven mines to the various locations\n" +
-			"Use \"Commissions Only\" to only show active commission locations"
+		desc = """
+			Show waypoints in the Dwarven mines to the various locations
+			Use "Commissions Only" to only show active commission locations"""
 	)
 	@ConfigEditorDropdown(
 		values = {"Hide", "Commissions Only", "Always"}
@@ -57,8 +58,10 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Hide waypoints when at Location",
-		desc = "Hides the Commission Waypoints if you are already at the location of the waypoint.\n" +
-			"Only active if Waypoints are set to \"Commissions Only\""
+		desc = """
+			Hides the Commission Waypoints if you are already at the location of the waypoint.
+			Only active if Waypoints are set to "Commissions Only\""""
+
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
@@ -67,8 +70,9 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Emissary Waypoints",
-		desc = "Show waypoints in the Dwarven mines to emissaries\n" +
-			"Use \"Commission End\" to only show after finishing commissions"
+		desc = """
+			Show waypoints in the Dwarven mines to emissaries
+			Use "Commission End" to only show after finishing commissions"""
 	)
 	@ConfigEditorDropdown(
 		values = {"Hide", "Commission End", "Always"}
@@ -145,8 +149,9 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Dwarven Text",
-		desc = "\u00a7eDrag text to change the appearance of the Overlay\n" +
-			"\u00a7rGo to the Dwarven Mines to show this Overlay with useful information"
+		desc = """
+			§eDrag text to change the appearance of the Overlay
+			§rGo to the Dwarven Mines to show this Overlay with useful information"""
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
@@ -210,8 +215,9 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Forge Tab",
-		desc = "Only show the forge display when tab list is open\n" +
-			"\u00A7cThis only works outside of Dwarven Caves!"
+		desc = """
+			Only show the forge display when tab list is open
+			This only works outside of Dwarven Caves!"""
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
@@ -231,8 +237,9 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Star Cult Tab",
-		desc = "Only show the star cult timer when tab list is open\n" +
-			"§cThis only works outside of Dwarven Caves!"
+		desc = """
+			Only show the star cult timer when tab list is open
+			§cThis only works outside of Dwarven Caves!"""
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
@@ -252,8 +259,9 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Sky Mall Tab",
-		desc = "Only show the Sky Mall perk when tab list is open\n" +
-			"§cThis only works outside of Dwarven Caves!"
+		desc = """
+			Only show the Sky Mall perk when tab list is open
+			§cThis only works outside of Dwarven Caves!"""
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
@@ -327,42 +335,51 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Options",
-		desc = "Drag text to change the appearance of the overlay!\n" +
-			"Click add to add extra things!"
+		desc = """
+			Drag text to change the appearance of the overlay!
+			Click add to add extra things!"""
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a73Amber Crystal: \u00a7aPlaced\n" +
-				"\u00a73Sapphire Crystal: \u00a7eCollected\n" +
-				"\u00a73Jade Crystal: \u00a7eMissing\n" +
-				"\u00a73Amethyst Crystal: \u00a7cMissing\n" +
-				"\u00a73Topaz Crystal: \u00a7cMissing\n",
-			"\u00a73Crystals: \u00a7a4/5",
-			"\u00a73Crystals: \u00a7a80%",
-			"\u00a73Electron Transmitter: \u00a7aDone\n" +
-				"\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
-				"\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
-				"\u00a73Synthetic Heart: \u00a7cMissing\n" +
-				"\u00a73Control Switch: \u00a7cMissing\n" +
-				"\u00a73FTX 3070: \u00a7cMissing",
-			"\u00a73Electron Transmitter: \u00a7a3\n" +
-				"\u00a73Robotron Reflector: \u00a7e2\n" +
-				"\u00a73Superlite Motor: \u00a7e1\n" +
-				"\u00a73Synthetic Heart: \u00a7c0\n" +
-				"\u00a73Control Switch: \u00a7c0\n" +
-				"\u00a73FTX 3070: \u00a7c0",
-			"\u00a73Automaton parts: \u00a7a5/6",
-			"\u00a73Automaton parts: \u00a7a83%",
-			"\u00a73Scavenged Lapis Sword: \u00a7aDone\n" +
-				"\u00a73Scavenged Golden Hammer: \u00a7eIn Storage\n" +
-				"\u00a73Scavenged Diamond Axe: \u00a7eIn Inventory\n" +
-				"\u00a73Scavenged Emerald Hammer: \u00a7cMissing\n",
-			"\u00a73Scavenged Lapis Sword: \u00a7a3\n" +
-				"\u00a73Scavenged Golden Hammer: \u00a7e2\n" +
-				"\u00a73Scavenged Diamond Axe: \u00a7e1\n" +
-				"\u00a73Scavenged Emerald Hammer: \u00a7c0\n",
-			"\u00a73Mines of Divan parts: \u00a7a3/4",
-			"\u00a73Mines of Divan parts: \u00a7a75%"
+			"""
+				§3Amber Crystal: §aPlaced
+				§3Sapphire Crystal: §eCollected
+				§3Jade Crystal: §eMissing
+				§3Amethyst Crystal: §cMissing
+				§3Topaz Crystal: §cMissing
+				""",
+			"§3Crystals: §a4/5",
+			"§3Crystals: §a80%",
+			"""
+				§3Electron Transmitter: §aDone
+				§3Robotron Reflector: §eIn Storage
+				§3Superlite Motor: §eIn Inventory
+				§3Synthetic Heart: §cMissing
+				§3Control Switch: §cMissing
+				§3FTX 3070: §cMissing""",
+			"""
+				§3Electron Transmitter: §a3
+				§3Robotron Reflector: §e2
+				§3Superlite Motor: §e1
+				§3Synthetic Heart: §c0
+				§3Control Switch: §c0
+				§3FTX 3070: §c0""",
+			"§3Automaton parts: §a5/6",
+			"§3Automaton parts: §a83%",
+			"""
+				§3Scavenged Lapis Sword: §aDone
+				§3Scavenged Golden Hammer: §eIn Storage
+				§3Scavenged Diamond Axe: §eIn Inventory
+				§3Scavenged Emerald Hammer: §cMissing
+				""",
+			"""
+				§3Scavenged Lapis Sword: §a3
+				§3Scavenged Golden Hammer: §e2
+				§3Scavenged Diamond Axe: §e1
+				§3Scavenged Emerald Hammer: §c0
+				""",
+			"§3Mines of Divan parts: §a3/4",
+			"§3Mines of Divan parts: §a75%"
 		}
 	)
 	@ConfigAccordionId(id = 4)
@@ -783,18 +800,19 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Tracker Text",
-		desc = "\u00a7eDrag text to change the appearance of the Overlay\n" +
-			"\u00a7rGo to the Crystal Hollows to show this Overlay with useful information"
+		desc = """
+			§eDrag text to change the appearance of the Overlay
+			§rGo to the Crystal Hollows to show this Overlay with useful information"""
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a73Chests Found: \u00a7a13",
-			"\u00a73Opened Chests: \u00a7a11",
-			"\u00a73Unopened Chests: \u00a7c2",
-			"\u00a73Mithril Powder Found: \u00a726,243",
-			"\u00a73Average Mithril Powder/Chest: \u00a72568",
-			"\u00a73Gemstone Powder Found: \u00a7d6,243",
-			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+			"§3Chests Found: §a13",
+			"§3Opened Chests: §a11",
+			"§3Unopened Chests: §c2",
+			"§3Mithril Powder Found: §26,243",
+			"§3Average Mithril Powder/Chest: §2568",
+			"§3Gemstone Powder Found: §d6,243",
+			"§3Average Gemstone Powder/Chest: §d568"
 		}
 	)
 	@ConfigAccordionId(id = 9)

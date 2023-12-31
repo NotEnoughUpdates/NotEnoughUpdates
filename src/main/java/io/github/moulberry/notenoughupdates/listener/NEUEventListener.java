@@ -93,13 +93,14 @@ public class NEUEventListener {
 
 		if ((Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1) && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4) && Keyboard.isKeyDown(
 			Keyboard.KEY_NUMPAD9))) {
-			ChatComponentText component = new ChatComponentText("\u00a7cYou are permanently banned from this server!");
-			component.appendText("\n");
-			component.appendText("\n\u00a77Reason: \u00a7rSuspicious account activity/Other");
-			component.appendText("\n\u00a77Find out more: \u00a7b\u00a7nhttps://www.hypixel.net/appeal");
-			component.appendText("\n");
-			component.appendText("\n\u00a77Ban ID: \u00a7r#49871982");
-			component.appendText("\n\u00a77Sharing your Ban ID may affect the processing of your appeal!");
+			ChatComponentText component = new ChatComponentText("""
+				§cYou are permanently banned from this server!
+
+				§7Reason: §rSuspicious account activity/Other
+				§7Find out more: §b§nhttps://www.hypixel.net/appeal
+
+				§7Ban ID: §r#49871982
+				§7Sharing your Ban ID may affect the processing of your appeal!""");
 			Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(component);
 			return;
 		}
@@ -138,8 +139,7 @@ public class NEUEventListener {
 		DungeonWin.tick();
 
 		String containerName = null;
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest eventGui) {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
@@ -154,8 +154,7 @@ public class NEUEventListener {
 		//MiningOverlay and TimersOverlay need real tick speed
 		if (neu.hasSkyblockScoreboard()) {
 			for (TextOverlay overlay : OverlayManager.textOverlays) {
-				if (overlay instanceof TextTabOverlay) {
-					TextTabOverlay skillOverlay = (TextTabOverlay) overlay;
+				if (overlay instanceof TextTabOverlay skillOverlay) {
 					skillOverlay.realTick();
 				}
 			}

@@ -19,8 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.trophy;
 
+import lombok.Getter;
+
 import java.util.Map;
 
+@Getter
 public class TrophyFish {
 
 	public final Map<TrophyFishRarity, Integer> trophyFishRarityIntegerMap;
@@ -36,20 +39,8 @@ public class TrophyFish {
 		total += n;
 	}
 
-	public int getTotal() {
-		return total;
-	}
-
 	public void removeTotal(int n) {
 		total -= n;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Map<TrophyFishRarity, Integer> getTrophyFishRarityIntegerMap() {
-		return trophyFishRarityIntegerMap;
 	}
 
 	public void add(TrophyFishRarity rarity, int value) {

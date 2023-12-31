@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -81,17 +82,10 @@ public class GuiInvButtonEditor extends GuiScreen {
 	private final int xSize = 176;
 	private final int ySize = 166;
 
+	@Getter
 	private int guiLeft;
+	@Getter
 	private int guiTop;
-
-	//region getGuiCoordinates
-	public int getGuiLeft() {
-		return this.guiLeft;
-	}
-	public int getGuiTop() {
-		return this.guiTop;
-	}
-	//endregion
 
 	private static final int BACKGROUND_TYPES = 5;
 	private static final int ICON_TYPES = 3;
@@ -115,7 +109,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		GuiElementTextField.SCALE_TEXT
 	);
 
-	private static final HashSet<String> prioritisedIcons = new HashSet<String>() {{
+	private static final HashSet<String> prioritisedIcons = new HashSet<>() {{
 		add("WORKBENCH");
 		add("LEATHER_CHESTPLATE");
 		add("CHEST");
@@ -138,7 +132,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 
 	private static HashMap<String, String> extraIcons = null;
 
-	private static final HashMap<String, String> skullIcons = new HashMap<String, String>() {{
+	private static final HashMap<String, String> skullIcons = new HashMap<>() {{
 		put("personal bank", "skull:e36e94f6c34a35465fce4a90f2e25976389eb9709a12273574ff70fd4daa6852");
 		put("skyblock hub", "skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8");
 		put("private island", "skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56");

@@ -304,7 +304,7 @@ public class ItemCustomizeManager {
 
 	public static Item getCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.customItem.split(":").length == 0) return stack.getItem();
+		if (data == null || data.customItem == null || data.customItem.isEmpty() || data.customItem.split(":").length == 0) return stack.getItem();
 		Item newItem = Item.getByNameOrId(data.customItem.split(":")[0]);
 		if (newItem == null) return stack.getItem();
 		return newItem;
@@ -323,7 +323,7 @@ public class ItemCustomizeManager {
 
 	public static int getCustomItemDamage(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getMetadata();
+		if (data == null || data.customItem == null || data.customItem.isEmpty()) return stack.getMetadata();
 		try {
 			String damageString = data.customItem.split(":")[1];
 			if (damageString.equals("?")) {
@@ -351,7 +351,7 @@ public class ItemCustomizeManager {
 
 	public static boolean shouldRenderLeatherColour(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem() instanceof ItemArmor &&
+		if (data == null || data.customItem == null || data.customItem.isEmpty()) return stack.getItem() instanceof ItemArmor &&
 			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
 		Item item = Item.getByNameOrId(data.customItem);
 		if (item == null) return stack.getItem() instanceof ItemArmor &&
@@ -362,7 +362,7 @@ public class ItemCustomizeManager {
 
 	public static boolean hasCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.defaultItem == null || data.customItem.equals(data.defaultItem) || data.customItem.split(":").length == 0) return false;
+		if (data == null || data.customItem == null || data.customItem.isEmpty() || data.defaultItem == null || data.customItem.equals(data.defaultItem) || data.customItem.split(":").length == 0) return false;
 		Item item = Item.getByNameOrId(data.customItem.split(":")[0]);
 		Item defaultItem = Item.getByNameOrId(data.defaultItem);
 		if (item == null) {

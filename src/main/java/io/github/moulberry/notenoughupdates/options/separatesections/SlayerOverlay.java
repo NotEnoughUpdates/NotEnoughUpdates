@@ -34,7 +34,7 @@ import java.util.List;
 public class SlayerOverlay {
 	@Expose
 	@ConfigOption(
-		name = "\u00A7cWarning",
+		name = "§cWarning",
 		desc = "You may have to do 2 bosses before everything shows"
 	)
 	@ConfigEditorInfoText()
@@ -59,17 +59,17 @@ public class SlayerOverlay {
 	@Expose
 	@ConfigOption(
 		name = "Slayer Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay"
+		desc = "§eDrag text to change the appearance of the overlay"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7eSlayer: \u00a74Sven",
-			"\u00a7eRNG Meter: \u00a75100%",
-			"\u00a7eLvl: \u00a7d7",
-			"\u00a7eKill time: \u00a7c1:30",
-			"\u00a7eXP: \u00a7d75,450/100,000",
-			"\u00a7eBosses till next Lvl: \u00a7d17",
-			"\u00a7eAverage kill time: \u00a7c3:20"
+			"§eSlayer: §4Sven",
+			"§eRNG Meter: §5100%",
+			"§eLvl: §d7",
+			"§eKill time: §c1:30",
+			"§eXP: §d75,450/100,000",
+			"§eBosses till next Lvl: §d17",
+			"§eAverage kill time: §c3:20"
 		}
 	)
 	public List<Integer> slayerText = new ArrayList<>(Arrays.asList(0, 1, 4, 5, 3, 6));

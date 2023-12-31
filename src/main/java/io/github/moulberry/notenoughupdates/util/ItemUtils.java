@@ -333,7 +333,7 @@ public class ItemUtils {
 						}
 					}
 					if (currentPet.candyUsed > 0) {
-						if (petItemLore.size() > 0) {
+						if (!petItemLore.isEmpty()) {
 							petItemLore.add("");
 						}
 						petItemLore.add("§a(" + currentPet.candyUsed + "/10) Pet Candy Used");

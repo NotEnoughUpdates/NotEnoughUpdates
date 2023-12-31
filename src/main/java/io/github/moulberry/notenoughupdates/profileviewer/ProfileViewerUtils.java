@@ -129,12 +129,8 @@ public class ProfileViewerUtils {
 
 			if (entry.getKey().equals("HEGEMONY_ARTIFACT")) {
 				switch (entry.getValue()) {
-					case 4:
-						powerAmount += 16;
-						break;
-					case 5:
-						powerAmount += 22;
-						break;
+					case 4 -> powerAmount += 16;
+					case 5 -> powerAmount += 22;
 				}
 			}
 
@@ -154,26 +150,12 @@ public class ProfileViewerUtils {
 			}
 
 			switch (entry.getValue()) {
-				case 0:
-				case 6:
-					powerAmount += 3;
-					break;
-				case 1:
-				case 7:
-					powerAmount += 5;
-					break;
-				case 2:
-					powerAmount += 8;
-					break;
-				case 3:
-					powerAmount += 12;
-					break;
-				case 4:
-					powerAmount += 16;
-					break;
-				case 5:
-					powerAmount += 22;
-					break;
+				case 0, 6 -> powerAmount += 3;
+				case 1, 7 -> powerAmount += 5;
+				case 2 -> powerAmount += 8;
+				case 3 -> powerAmount += 12;
+				case 4 -> powerAmount += 16;
+				case 5 -> powerAmount += 22;
 			}
 		}
 		return powerAmount;

@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -178,18 +177,12 @@ public class TimersOverlay extends TextTabOverlay {
 			icon = CustomTodoHud.INSTANCE.parseItem(CustomTodoHud.INSTANCE.decodeCustomItem(beforeColon));
 		} else
 			switch (beforeColon) {
-				case "Cakes":
-					icon = CAKES_ICON;
-					break;
-				case "Puzzler":
-					icon = PUZZLER_ICON;
-					break;
-				case "Godpot":
-					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.get("GOD_POTION"));
-					break;
-				case "Fetchur": {
+				case "Cakes" -> icon = CAKES_ICON;
+				case "Puzzler" -> icon = PUZZLER_ICON;
+				case "Godpot" -> icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+					.getItemInformation()
+					.get("GOD_POTION"));
+				case "Fetchur" -> {
 					if (FETCHUR_ICONS == null) {
 						FETCHUR_ICONS = new ItemStack[]{
 							new ItemStack(Blocks.wool, 50, 14),
@@ -221,41 +214,22 @@ public class TimersOverlay extends TextTabOverlay {
 					if (fetchurIndex < 0) fetchurIndex += 12;
 
 					icon = FETCHUR_ICONS[(int) fetchurIndex];
-					break;
 				}
-				case "Commissions":
-					icon = COMMISSIONS_ICON;
-					break;
-				case "Experiments":
-					icon = EXPERIMENTS_ICON;
-					break;
-				case "Cookie Buff":
-					icon = COOKIE_ICON;
-					break;
-				case "Mithril Powder":
-					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.get("MITHRIL_ORE"));
-					break;
-				case "Gemstone Powder":
-					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.get("PERFECT_AMETHYST_GEM"));
-					break;
-				case "Heavy Pearls":
-					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.get("HEAVY_PEARL"));
-					break;
-				case "Free Rift Infusion":
-					icon = new ItemStack(Blocks.double_plant, 1, 1);
-					break;
-				case "Crimson Isle Quests":
-					icon = QUEST_ICON;
-					break;
-				case "NPC Buy Daily Limit":
-					icon = SHOP_ICON;
-					break;
+				case "Commissions" -> icon = COMMISSIONS_ICON;
+				case "Experiments" -> icon = EXPERIMENTS_ICON;
+				case "Cookie Buff" -> icon = COOKIE_ICON;
+				case "Mithril Powder" -> icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+					.getItemInformation()
+					.get("MITHRIL_ORE"));
+				case "Gemstone Powder" -> icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+					.getItemInformation()
+					.get("PERFECT_AMETHYST_GEM"));
+				case "Heavy Pearls" -> icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+					.getItemInformation()
+					.get("HEAVY_PEARL"));
+				case "Free Rift Infusion" -> icon = new ItemStack(Blocks.double_plant, 1, 1);
+				case "Crimson Isle Quests" -> icon = QUEST_ICON;
+				case "NPC Buy Daily Limit" -> icon = SHOP_ICON;
 			}
 
 		if (icon != null) {
@@ -292,8 +266,7 @@ public class TimersOverlay extends TextTabOverlay {
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
@@ -396,34 +369,12 @@ public class TimersOverlay extends TextTabOverlay {
 									try {
 										long val = Integer.parseInt(number);
 										switch (unit) {
-											case "Years":
-											case "Year":
-												hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
-												break;
-											case "Months":
-											case "Month":
-												hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
-												break;
-											case "Days":
-											case "Day":
-											case "d":
-												hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
-												break;
-											case "Hours":
-											case "Hour":
-											case "h":
-												hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
-												break;
-											case "Minutes":
-											case "Minute":
-											case "m":
-												hidden.cookieBuffRemaining += val * 60 * 1000;
-												break;
-											case "Seconds":
-											case "Second":
-											case "s":
-												hidden.cookieBuffRemaining += val * 1000;
-												break;
+											case "Years", "Year" -> hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
+											case "Months", "Month" -> hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
+											case "Days", "Day", "d" -> hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
+											case "Hours", "Hour", "h" -> hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
+											case "Minutes", "Minute", "m" -> hidden.cookieBuffRemaining += val * 60 * 1000;
+											case "Seconds", "Second", "s" -> hidden.cookieBuffRemaining += val * 1000;
 										}
 									} catch (NumberFormatException e) {
 										e.printStackTrace();
@@ -466,25 +417,10 @@ public class TimersOverlay extends TextTabOverlay {
 							godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
 							String godpotRemainingTimeType = activeEffectsMatcher.group(i + 1);
 							switch (godpotRemainingTimeType) {
-								case "Days":
-								case "Day":
-									godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
-									break;
-								case "Hours":
-								case "Hour":
-								case "h":
-									godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
-									break;
-								case "Minutes":
-								case "Minute":
-								case "m":
-									godPotDuration += godpotRemainingTime * 60 * 1000;
-									break;
-								case "Seconds":
-								case "Second":
-								case "s":
-									godPotDuration += godpotRemainingTime * 1000;
-									break;
+								case "Days", "Day" -> godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
+								case "Hours", "Hour", "h" -> godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
+								case "Minutes", "Minute", "m" -> godPotDuration += godpotRemainingTime * 60 * 1000;
+								case "Seconds", "Second", "s" -> godPotDuration += godpotRemainingTime * 1000;
 							}
 						}
 					} catch (Exception e) {

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 class CrystalMetalDetectorSolverTest {
-	class Location {
+	static class Location {
 		double distance;
 		Vec3Comparable playerPosition;
 		SolutionState expectedState;
@@ -49,7 +49,7 @@ class CrystalMetalDetectorSolverTest {
 		}
 	}
 
-	class Solution {
+	static class Solution {
 		ArrayList<Location> locations = new ArrayList<>();
 		BlockPos center = BlockPos.ORIGIN;
 		BlockPos expectedSolution = BlockPos.ORIGIN;

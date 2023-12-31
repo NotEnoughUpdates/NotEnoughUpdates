@@ -25,22 +25,17 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 
 public class RecipeBuilder {
 	private final MinionHelperManager manager;
+	@Getter
 	private Minion parent = null;
+	@Getter
 	private final ArrayListMultimap<String, Integer> items = ArrayListMultimap.create();
 
 	public RecipeBuilder(MinionHelperManager manager) {
 		this.manager = manager;
-	}
-
-	public Minion getParent() {
-		return parent;
-	}
-
-	public ArrayListMultimap<String, Integer> getItems() {
-		return items;
 	}
 
 	public void addLine(Minion minion, String rawString) {

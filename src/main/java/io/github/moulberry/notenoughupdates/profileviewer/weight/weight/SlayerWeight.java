@@ -20,21 +20,19 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import lombok.Getter;
 
 import java.util.Map;
 
 public abstract class SlayerWeight {
 
 	protected final Map<String, ProfileViewer.Level> player;
+	@Getter
 	protected final WeightStruct weightStruct;
 
 	public SlayerWeight(Map<String, ProfileViewer.Level> player) {
 		this.player = player;
 		this.weightStruct = new WeightStruct();
-	}
-
-	public WeightStruct getWeightStruct() {
-		return weightStruct;
 	}
 
 	public abstract void getSlayerWeight(String slayerName);

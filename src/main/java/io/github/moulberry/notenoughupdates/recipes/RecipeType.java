@@ -21,10 +21,12 @@ package io.github.moulberry.notenoughupdates.recipes;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import lombok.Getter;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
+@Getter
 public enum RecipeType {
 	CRAFTING("crafting", "Crafting", CraftingRecipe::parseCraftingRecipe, new ItemStack(Blocks.crafting_table)),
 	FORGE("forge", "Forging", ForgeRecipe::parseForgeRecipe, new ItemStack(Blocks.anvil)),
@@ -45,22 +47,6 @@ public enum RecipeType {
 		this.recipeFactory = recipeFactory;
 		this.icon = icon;
 		icon.setStackDisplayName("neurecipe-" + id);
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public RecipeFactory getRecipeFactory() {
-		return recipeFactory;
-	}
-
-	public ItemStack getIcon() {
-		return icon;
 	}
 
 	public NeuRecipe createRecipe(NEUManager manager, JsonObject recipe, JsonObject outputItemJson) {

@@ -26,9 +26,8 @@ import net.minecraft.entity.boss.EntityWither;
 public class WitherModifier extends EntityViewerModifier {
 	@Override
 	public EntityLivingBase applyModifier(EntityLivingBase base, JsonObject info) {
-		if (!(base instanceof EntityWither))
+		if (!(base instanceof EntityWither wither))
 			return null;
-		EntityWither wither = (EntityWither) base;
 		if (info.has("tiny")) {
 			if (info.get("tiny").getAsBoolean()) {
 				wither.setInvulTime(800);

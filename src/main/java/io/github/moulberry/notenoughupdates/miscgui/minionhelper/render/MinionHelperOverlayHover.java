@@ -146,12 +146,10 @@ public class MinionHelperOverlayHover {
 	private List<String> getTooltip(OverviewLine overviewLine) {
 		List<String> lines = new ArrayList<>();
 
-		if (overviewLine instanceof OverviewText) {
-			OverviewText overviewText = (OverviewText) overviewLine;
+		if (overviewLine instanceof OverviewText overviewText) {
 			lines.addAll(overviewText.getLines());
-		} else if (overviewLine instanceof Minion) {
+		} else if (overviewLine instanceof Minion minion) {
 
-			Minion minion = (Minion) overviewLine;
 			MinionSource minionSource = minion.getMinionSource();
 			if (minion.getCustomSource() != null) {
 				minionSource = minion.getCustomSource();
@@ -169,8 +167,7 @@ public class MinionHelperOverlayHover {
 				lines.add("§cNo requirements loaded!");
 			}
 
-			if (minionSource instanceof CraftingSource) {
-				CraftingSource craftingSource = (CraftingSource) minionSource;
+			if (minionSource instanceof CraftingSource craftingSource) {
 				lines.add("");
 				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
 				if (minion.getTier() == 1) {
@@ -180,8 +177,7 @@ public class MinionHelperOverlayHover {
 				}
 				formatItems(lines, grabAllItems(craftingSource.getItems()));
 
-			} else if (minionSource instanceof NpcSource) {
-				NpcSource npcSource = (NpcSource) minionSource;
+			} else if (minionSource instanceof NpcSource npcSource) {
 				String npcName = npcSource.getNpcName();
 				lines.add("");
 				lines.add("§7Buy from: §9" + npcName + " (NPC)");
@@ -210,8 +206,7 @@ public class MinionHelperOverlayHover {
 		}
 
 		if (!meetRequirement) {
-			if (requirement instanceof ReputationRequirement) {
-				ReputationRequirement reputationRequirement = (ReputationRequirement) requirement;
+			if (requirement instanceof ReputationRequirement reputationRequirement) {
 				String reputationType = reputationRequirement.getReputationType();
 				ApiData apiData = manager.getApi().getApiData();
 				int having;

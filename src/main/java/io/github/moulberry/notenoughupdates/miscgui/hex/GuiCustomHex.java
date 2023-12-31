@@ -250,14 +250,14 @@ public class GuiCustomHex extends Gui {
 		}
 		boolean config = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableHexGUI;
 		final List<String> gemList = new ArrayList<>(Arrays.asList(
-			"\u2764",
-			"\u2748",
-			"\u270e",
-			"\u2618",
-			"\u2e15",
-			"\u2727",
-			"\u2741",
-			"\u2742"
+			"❤",
+			"❈",
+			"✎",
+			"☘",
+			"⸕",
+			"✧",
+			"❁",
+			"❂"
 		));
 		shouldOverrideFast = config &&
 			(containerName.length() >= 7 && Objects.equals("The Hex", containerName.substring(0, "The Hex".length()))) &&
@@ -500,13 +500,13 @@ public class GuiCustomHex extends Gui {
 									for (String lore : enchantment.displayLore) {
 										if (lore.contains("N/A") && enchantment.price > 0) {
 											String price = StringUtils.formatNumber(enchantment.price);
-											enchantment.displayLore.set(index, "\u00a76" + price + ".0 Coins");
+											enchantment.displayLore.set(index, "§6" + price + ".0 Coins");
 										}
 										if (lore.contains("Loading...")) {
 											if (enchantment.price > 0) {
-												enchantment.displayLore.set(index, "\u00a7eClick to buy on the Bazaar!");
+												enchantment.displayLore.set(index, "§eClick to buy on the Bazaar!");
 											} else {
-												enchantment.displayLore.set(index, "\u00a7cNot enough supply on the Bazaar!");
+												enchantment.displayLore.set(index, "§cNot enough supply on the Bazaar!");
 											}
 										}
 										index++;
@@ -925,7 +925,7 @@ public class GuiCustomHex extends Gui {
 												else applicableItem.add(item);
 
 											} else if (item.itemType == ItemType.REFORGE) {
-												if (item.getReforge().equalsIgnoreCase(reforge) && !reforge.equals("")) removableItem.add(item);
+												if (item.getReforge().equalsIgnoreCase(reforge) && !reforge.isEmpty()) removableItem.add(item);
 												else applicableItem.add(item);
 
 											} else if (item.itemType == ItemType.ART_OF_PEACE) {
@@ -1252,7 +1252,7 @@ public class GuiCustomHex extends Gui {
 	}
 
 	private List<String> createTooltip(String title, int selectedOption, String... options) {
-		String selPrefix = EnumChatFormatting.DARK_AQUA + " \u25b6 ";
+		String selPrefix = EnumChatFormatting.DARK_AQUA + " ▶ ";
 		String unselPrefix = EnumChatFormatting.GRAY.toString();
 
 		for (int i = 0; i < options.length; i++) {
@@ -1286,11 +1286,10 @@ public class GuiCustomHex extends Gui {
 	}
 
 	private void renderEnchantment(float partialTicks) {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return;
 
 		int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
 
-		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
 		leftScroll.tick();
@@ -1513,7 +1512,7 @@ public class GuiCustomHex extends Gui {
 		if (currentState == EnchantState.HAS_ITEM) {
 			if (searchField.getText().isEmpty() && !searchField.getFocus()) {
 				searchField.setSize(90, 14);
-				searchField.setPrependText("\u00a77Search...");
+				searchField.setPrependText("§7Search...");
 			} else {
 				if (searchField.getFocus()) {
 					int len = fr.getStringWidth(searchField.getTextDisplay()) + 10;
@@ -1673,7 +1672,7 @@ public class GuiCustomHex extends Gui {
 					}
 				} else if (mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48) {
 					disallowClick = true;
-					tooltipToDisplay = Lists.newArrayList("\u00a7cCancel");
+					tooltipToDisplay = Lists.newArrayList("§cCancel");
 				}
 			}
 
@@ -1748,9 +1747,9 @@ public class GuiCustomHex extends Gui {
 			if (mouseX > left + 96 && mouseX <= left + 96 + 16 &&
 				mouseY > top && mouseY <= top + 16) {
 				if (isChangingEnchLevel) {
-					tooltipToDisplay = Lists.newArrayList("\u00a7cCancel level change");
+					tooltipToDisplay = Lists.newArrayList("§cCancel level change");
 				} else {
-					tooltipToDisplay = Lists.newArrayList("\u00a7aChange enchant level");
+					tooltipToDisplay = Lists.newArrayList("§aChange enchant level");
 				}
 			}
 		}
@@ -1818,11 +1817,10 @@ public class GuiCustomHex extends Gui {
 	}
 
 	private void renderBooks(float partialTicks) {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return;
 
 		int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
 
-		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
 		leftScroll.tick();
@@ -2073,7 +2071,7 @@ public class GuiCustomHex extends Gui {
 		if (currentState == EnchantState.HAS_ITEM) {
 			if (searchField.getText().isEmpty() && !searchField.getFocus()) {
 				searchField.setSize(90, 14);
-				searchField.setPrependText("\u00a77Search...");
+				searchField.setPrependText("§7Search...");
 			} else {
 				if (searchField.getFocus()) {
 					int len = fr.getStringWidth(searchField.getTextDisplay()) + 10;
@@ -2186,7 +2184,7 @@ public class GuiCustomHex extends Gui {
 					}
 				} else if (mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48) {
 					disallowClick = true;
-					tooltipToDisplay = Lists.newArrayList("\u00a7cCancel");
+					tooltipToDisplay = Lists.newArrayList("§cCancel");
 				}
 			}
 		}
@@ -2254,11 +2252,10 @@ public class GuiCustomHex extends Gui {
 	}
 
 	private void renderHex(float partialTicks) {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return;
 
 		int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
 
-		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
 		leftScroll.tick();
@@ -2462,7 +2459,7 @@ public class GuiCustomHex extends Gui {
 					}
 				} else if (mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48) {
 					disallowClick = true;
-					tooltipToDisplay = Lists.newArrayList("\u00a7cCancel");
+					tooltipToDisplay = Lists.newArrayList("§cCancel");
 				}
 			}
 		}
@@ -2530,11 +2527,10 @@ public class GuiCustomHex extends Gui {
 	}
 
 	private void renderGemstones(float partialTicks) {
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return;
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return;
 
 		int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
 
-		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
 		leftScroll.tick();
@@ -2804,7 +2800,7 @@ public class GuiCustomHex extends Gui {
 					}
 				} else if (mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48) {
 					disallowClick = true;
-					tooltipToDisplay = Lists.newArrayList("\u00a7cCancel");
+					tooltipToDisplay = Lists.newArrayList("§cCancel");
 				}
 			}
 		}
@@ -3371,8 +3367,7 @@ public class GuiCustomHex extends Gui {
 				if (click >= 0) {
 					if (currentState == EnchantState.ADDING_ENCHANT || currentState == EnchantState.ADDING_BOOK) {
 						if (Mouse.getEventButtonState()) {
-							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-							GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 							EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 							short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -3383,8 +3378,7 @@ public class GuiCustomHex extends Gui {
 							cancelButtonAnimTime = System.currentTimeMillis();
 						}
 					} else {
-						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-						GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -3405,10 +3399,9 @@ public class GuiCustomHex extends Gui {
 
 				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
 					mouseY > top + 18 && mouseY <= top + 18 + 14) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 					leftScroll.setValue(0);
 					rightScroll.setValue(0);
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 
 					if (currentState != EnchantState.ADDING_BOOK) {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
@@ -3451,8 +3444,7 @@ public class GuiCustomHex extends Gui {
 
 				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
 					mouseY > top + 18 && mouseY <= top + 18 + 14) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -3466,8 +3458,7 @@ public class GuiCustomHex extends Gui {
 						mouseY > top && mouseY <= top + 16) ||
 					(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
 						mouseY > top + 18 && mouseY <= top + 18 + 14)) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -3567,8 +3558,7 @@ public class GuiCustomHex extends Gui {
 						mouseY > top && mouseY <= top + 16) ||
 					(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
 						mouseY > top + 18 && mouseY <= top + 18 + 14)) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -3667,8 +3657,7 @@ public class GuiCustomHex extends Gui {
 						mouseY > top && mouseY <= top + 16) ||
 					(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
 						mouseY > top + 18 && mouseY <= top + 18 + 14)) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -3750,8 +3739,7 @@ public class GuiCustomHex extends Gui {
 
 				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
 					mouseY > top + 18 && mouseY <= top + 18 + 14) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					if (currentState != EnchantState.APPLYING_GEMSTONE) {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
@@ -3772,8 +3760,7 @@ public class GuiCustomHex extends Gui {
 						mouseY > top && mouseY <= top + 16) ||
 					(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
 						mouseY > top + 18 && mouseY <= top + 18 + 14) && currentState == EnchantState.APPLYING_GEMSTONE) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -3985,8 +3972,7 @@ public class GuiCustomHex extends Gui {
 								mouseY > top && mouseY <= top + 16) {
 								Enchantment ench = applicable.get(index);
 
-								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 								if (currentState == EnchantState.HAS_ITEM) {
 									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
@@ -4020,8 +4006,7 @@ public class GuiCustomHex extends Gui {
 								mouseY > top && mouseY <= top + 16) {
 								HexItem item = applicableItem.get(index);
 
-								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 								if (currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
 									currentState = EnchantState.ADDING_BOOK;
@@ -4056,8 +4041,7 @@ public class GuiCustomHex extends Gui {
 								mouseY > top && mouseY <= top + 16) {
 								HexItem item = applicableItem.get(index);
 
-								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 								currentState = EnchantState.HAS_ITEM_IN_BOOKS;
 								EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
@@ -4084,8 +4068,7 @@ public class GuiCustomHex extends Gui {
 								mouseY > top && mouseY <= top + 16) {
 								HexItem item = applicableItem.get(index);
 
-								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 								if (currentState == EnchantState.ADDING_GEMSTONE) {
 									currentState = EnchantState.APPLYING_GEMSTONE;
@@ -4122,8 +4105,7 @@ public class GuiCustomHex extends Gui {
 								mouseY > top && mouseY <= top + 16) {
 								HexItem item = applicableItem.get(index);
 
-								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 								EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -4158,8 +4140,7 @@ public class GuiCustomHex extends Gui {
 								mouseY > top && mouseY <= top + 16) {
 								Enchantment ench = removable.get(index);
 
-								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 								if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.HAS_ITEM_IN_HEX) {
 									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
@@ -4193,8 +4174,7 @@ public class GuiCustomHex extends Gui {
 								mouseY > top && mouseY <= top + 16) {
 								HexItem item = removableItem.get(index);
 
-								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 								if (currentState == EnchantState.ADDING_GEMSTONE) {
 									currentState = EnchantState.APPLYING_GEMSTONE;
@@ -4230,8 +4210,7 @@ public class GuiCustomHex extends Gui {
 								mouseY > top && mouseY <= top + 16) {
 								HexItem item = removableItem.get(index);
 
-								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 								if (currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
 									currentState = EnchantState.ADDING_BOOK;
@@ -4293,8 +4272,7 @@ public class GuiCustomHex extends Gui {
 				(mouseY > guiTop + 133 + 54 + 4 && mouseY < guiTop + 133 + 54 + 4 + 18)) {
 				if (currentState == EnchantState.ADDING_ENCHANT) {
 					if (Mouse.getEventButtonState()) {
-						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-						GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -4314,8 +4292,7 @@ public class GuiCustomHex extends Gui {
 			mouseY >= guiTop + 57 && mouseY < guiTop + 57 + 18) {
 			if (currentState == EnchantState.ADDING_ENCHANT) {
 				if (Mouse.getEventButtonState()) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer chest)) return true;
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -4360,18 +4337,18 @@ public class GuiCustomHex extends Gui {
 			name = "Recombobulator";
 		} else if (name.contains("Power Scroll")) {
 			name = name.replace("Power ", "");
-		} else if (name.contains("\u272a")) {
+		} else if (name.contains("✪")) {
 			name = name.replaceAll("[^✪]*", "");
 		} else if (name.equalsIgnoreCase("First Master Star")) {
-			name = "Master Star \u00a7c➊";
+			name = "Master Star §c➊";
 		} else if (name.equalsIgnoreCase("Second Master Star")) {
-			name = "Master Star \u00a7c➋";
+			name = "Master Star §c➋";
 		} else if (name.equalsIgnoreCase("Third Master Star")) {
-			name = "Master Star \u00a7c➌";
+			name = "Master Star §c➌";
 		} else if (name.equalsIgnoreCase("Fourth Master Star")) {
-			name = "Master Star \u00a7c➍";
+			name = "Master Star §c➍";
 		} else if (name.equalsIgnoreCase("Fifth Master Star")) {
-			name = "Master Star \u00a7c➎";
+			name = "Master Star §c➎";
 		} else if (name.equalsIgnoreCase("The Art Of Peace")) {
 			name = "Art Of Peace";
 		} else if (name.equalsIgnoreCase("Mana Disintegrator")) {

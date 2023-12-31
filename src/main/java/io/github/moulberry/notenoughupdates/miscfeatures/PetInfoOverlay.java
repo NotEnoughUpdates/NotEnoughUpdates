@@ -39,6 +39,7 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -114,19 +115,14 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 
 		public PetInfoOverlay.Rarity nextRarity() {
-			switch (this) {
-				case COMMON:
-					return PetInfoOverlay.Rarity.UNCOMMON;
-				case UNCOMMON:
-					return PetInfoOverlay.Rarity.RARE;
-				case RARE:
-					return PetInfoOverlay.Rarity.EPIC;
-				case EPIC:
-					return PetInfoOverlay.Rarity.LEGENDARY;
-				case LEGENDARY:
-					return PetInfoOverlay.Rarity.MYTHIC;
-			}
-			return null;
+			return switch (this) {
+				case COMMON -> Rarity.UNCOMMON;
+				case UNCOMMON -> Rarity.RARE;
+				case RARE -> Rarity.EPIC;
+				case EPIC -> Rarity.LEGENDARY;
+				case LEGENDARY -> Rarity.MYTHIC;
+				default -> null;
+			};
 		}
 	}
 
@@ -143,11 +139,8 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	private static long lastPetSelect = -1;
+	@Getter
 	private static PetConfig config = new PetConfig();
-
-	public static PetConfig getConfig() {
-		return config;
-	}
 
 	private static long lastUpdate = 0;
 	private static float levelXpLast = 0;
@@ -497,33 +490,25 @@ public class PetInfoOverlay extends TextOverlay {
 		String finalPetItemStr = petItemStr;
 		String finalLvlString = lvlString;
 		String finalLvlStringShort = lvlStringShort;
-		return new ArrayList<String>() {{
+		return new ArrayList<>() {{
 			for (int index : NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText) {
 				switch (index) {
-					case 0:
-						add(petName);
-						break;
-					case 1:
+					case 0 -> add(petName);
+					case 1 -> {
 						if (finalLvlStringShort != null) add(finalLvlStringShort);
-						break;
-					case 2:
+					}
+					case 2 -> {
 						if (finalLvlString != null) add(finalLvlString);
-						break;
-					case 3:
-						add(finalXpGainString);
-						break;
-					case 4:
-						add(totalXpString);
-						break;
-					case 5:
-						add(finalPetItemStr);
-						break;
-					case 6:
+					}
+					case 3 -> add(finalXpGainString);
+					case 4 -> add(totalXpString);
+					case 5 -> add(finalPetItemStr);
+					case 6 -> {
 						if (finalEtaStr != null) add(finalEtaStr);
-						break;
-					case 7:
+					}
+					case 7 -> {
 						if (finalEtaMaxStr != null) add(finalEtaMaxStr);
-						break;
+					}
 				}
 			}
 		}};
@@ -692,8 +677,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 		int slotIdMod = (event.slotId - 10) % 9;
 		if (event.slotId >= 10 && event.slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
-			Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+				Minecraft.getMinecraft().currentScreen instanceof GuiChest chest) {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
@@ -745,8 +729,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest chest && RenderListener.inventoryLoaded) {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
