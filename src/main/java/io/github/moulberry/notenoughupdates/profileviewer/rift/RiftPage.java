@@ -141,7 +141,7 @@ public class RiftPage extends GuiProfileViewerPage {
 				"rift.dead_cats.montezuma",
 				new JsonObject()
 			).getAsJsonObject();
-			if (montezuma != null) {
+			if (montezuma != null && !montezuma.entrySet().isEmpty()) {
 				String montezumaType = montezuma.get("type").getAsString();
 
 				PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
@@ -149,12 +149,12 @@ public class RiftPage extends GuiProfileViewerPage {
 				pet.rarity = PetInfoOverlay.Rarity.valueOf(montezuma.get("tier").getAsString().toUpperCase());
 				pet.petType = montezumaType;
 				pet.candyUsed = montezuma.get("candyUsed").getAsInt();
-				ItemStack petItemstackFromPetInfo = ItemUtils.createPetItemstackFromPetInfo(pet);
-				Utils.drawItemStack(petItemstackFromPetInfo, guiLeft + 37, guiTop + 158, true);
+				ItemStack petItemStackFromPetInfo = ItemUtils.createPetItemstackFromPetInfo(pet);
+				Utils.drawItemStack(petItemStackFromPetInfo, guiLeft + 37, guiTop + 158, true);
 
 				if ((mouseX > guiLeft + 37 && mouseX < guiLeft + 37 + 20) &&
 					(mouseY > guiTop + 158 && mouseY < guiTop + 158 + 20)) {
-					List<String> tooltip = petItemstackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					List<String> tooltip = petItemStackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 					tooltip.set(3, "§7Found: §9" + size + "/9 Soul Pieces");
 					tooltip.set(5, "§7Rift Time: §a+" + riftTime + "s");
 					if (pet.rarity == PetInfoOverlay.Rarity.EPIC) tooltip.set(6, "§7Mana Regen: §a+" + manaRegen + "%");
