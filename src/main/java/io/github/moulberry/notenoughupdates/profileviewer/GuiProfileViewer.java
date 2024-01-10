@@ -32,7 +32,9 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWe
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.AsyncDependencyLoader;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
+import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.GuiScreen;
@@ -453,7 +455,29 @@ public class GuiProfileViewer extends GuiScreen {
 					//like telling them to go find a psychotherapist
 					long timeDiff = System.currentTimeMillis() - startTime;
 
-					if (timeDiff > 20000) {
+					val authState = NotEnoughUpdates.INSTANCE.manager.ursaClient.getAuthenticationState();
+					if (authState == UrsaClient.AuthenticationState.FAILED_TO_JOINSERVER) {
+						Utils.drawStringCentered(
+							EnumChatFormatting.RED +
+								"Looks like we cannot authenticate with Mojang.",
+							guiLeft + sizeX / 2f, guiTop + 111, true, 0
+						);
+						Utils.drawStringCentered(
+							EnumChatFormatting.RED + "Is your game open for more than 24 hours?",
+							guiLeft + sizeX / 2f, guiTop + 121, true, 0
+						);
+					} else if (authState == UrsaClient.AuthenticationState.REJECTED) {
+						Utils.drawStringCentered(
+							EnumChatFormatting.RED +
+								"Looks like we cannot authenticate with Ursa.",
+							guiLeft + sizeX / 2f, guiTop + 111, true, 0
+						);
+						Utils.drawStringCentered(
+							EnumChatFormatting.RED + "Is your game open for more than 24 hours?",
+							guiLeft + sizeX / 2f, guiTop + 121, true, 0
+						);
+
+					} else if (timeDiff > 20000) {
 						Utils.drawStringCentered(
 							EnumChatFormatting.YELLOW + "Its taking a while...",
 							guiLeft + sizeX / 2f, guiTop + 111, true, 0
@@ -494,7 +518,8 @@ public class GuiProfileViewer extends GuiScreen {
 										);
 										if (timeDiff > 1200000) {
 											Utils.drawStringCentered(
-												EnumChatFormatting.RED + String.valueOf(EnumChatFormatting.BOLD) + "You're a menace to society",
+												EnumChatFormatting.RED + String.valueOf(EnumChatFormatting.BOLD) +
+													"You're a menace to society",
 												guiLeft + sizeX / 2f, guiTop + 181, true, 0
 											);
 											if (timeDiff > 1800000) {
@@ -505,7 +530,8 @@ public class GuiProfileViewer extends GuiScreen {
 												);
 												if (timeDiff > 3000000) {
 													Utils.drawStringCentered(
-														EnumChatFormatting.RED + String.valueOf(EnumChatFormatting.BOLD) + "You really want this?",
+														EnumChatFormatting.RED + String.valueOf(EnumChatFormatting.BOLD) +
+															"You really want this?",
 														guiLeft + sizeX / 2f, guiTop + 91, true, 0
 													);
 													if (timeDiff > 3300000) {
