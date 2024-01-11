@@ -133,25 +133,25 @@ public class MinionHelperApiLoader {
 		JsonObject slayerLeveling = Constants.LEVELING.getAsJsonObject("slayer_xp");
 
 		Map<String, Integer> slayerTier = new HashMap<>();
-		if (player.has("slayer_bosses")) {
-			JsonObject slayerBosses = player.getAsJsonObject("slayer.slayer_bosses");
-			for (Map.Entry<String, JsonElement> entry : slayerBosses.entrySet()) {
-				String name = entry.getKey();
-				JsonObject slayerEntry = entry.getValue().getAsJsonObject();
-				if (slayerEntry.has("xp")) {
-					long xp = slayerEntry.get("xp").getAsLong();
+		JsonObject slayerBosses = Utils
+			.getElementOrDefault(player, "slayer.slayer_bosses", new JsonObject())
+			.getAsJsonObject();
+		for (Map.Entry<String, JsonElement> entry : slayerBosses.entrySet()) {
+			String name = entry.getKey();
+			JsonObject slayerEntry = entry.getValue().getAsJsonObject();
+			if (slayerEntry.has("xp")) {
+				long xp = slayerEntry.get("xp").getAsLong();
 
-					int tier = 0;
-					for (JsonElement element : slayerLeveling.getAsJsonArray(name)) {
-						int needForLevel = element.getAsInt();
-						if (xp >= needForLevel) {
-							tier++;
-						} else {
-							break;
-						}
+				int tier = 0;
+				for (JsonElement element : slayerLeveling.getAsJsonArray(name)) {
+					int needForLevel = element.getAsInt();
+					if (xp >= needForLevel) {
+						tier++;
+					} else {
+						break;
 					}
-					slayerTier.put(name, tier);
 				}
+				slayerTier.put(name, tier);
 			}
 		}
 		return slayerTier;
