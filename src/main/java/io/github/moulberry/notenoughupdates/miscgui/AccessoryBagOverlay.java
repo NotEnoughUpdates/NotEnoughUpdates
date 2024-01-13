@@ -444,7 +444,7 @@ public class AccessoryBagOverlay {
 					if (checkItemType(
 						entry.getValue().get("lore").getAsJsonArray(),
 						"ACCESSORY",
-						"HATCCESSORY",
+						"HATCESSORY",
 						"DUNGEON ACCESSORY"
 					) >= 0) {
 						missingInternal.add(entry.getKey());
@@ -1038,7 +1038,7 @@ public class AccessoryBagOverlay {
 	}
 
 	public static boolean isAccessory(ItemStack stack) {
-		return checkItemType(stack, true, "ACCESSORY", "HATCCESSORY") >= 0;
+		return checkItemType(stack, true, "ACCESSORY", "HATCESSORY") >= 0;
 	}
 
 	public static int getRarity(ItemStack stack) {

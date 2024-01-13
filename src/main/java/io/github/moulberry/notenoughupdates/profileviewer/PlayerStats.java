@@ -421,7 +421,7 @@ public class PlayerStats {
 					if (itemBonuses.containsKey(internalname)) {
 						continue;
 					}
-					if (!talismanOnly || Utils.checkItemType(item.get("lore").getAsJsonArray(), true, "ACCESSORY", "HATCCESSORY") >= 0) {
+					if (!talismanOnly || Utils.checkItemType(item.get("lore").getAsJsonArray(), true, "ACCESSORY", "HATCESSORY") >= 0) {
 						Stats itemBonus = getStatForItem(internalname, item, item.get("lore").getAsJsonArray());
 
 						itemBonuses.put(internalname, itemBonus);
