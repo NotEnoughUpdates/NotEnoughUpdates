@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -192,7 +192,11 @@ public class GuiProfileViewer extends GuiScreen {
 		GuiProfileViewer.profile = profile;
 		GuiProfileViewer.profileName = profile.getLatestProfileName();
 
-		playerNameTextField = new GuiElementTextField(getDisplayName(), GuiElementTextField.SCALE_TEXT);
+		String displayname = getDisplayName();
+		// Make search bar empty in case no name was found, e.g. while currently loading
+		if (displayname.startsWith("§")) displayname = "";
+
+		playerNameTextField = new GuiElementTextField(displayname, GuiElementTextField.SCALE_TEXT);
 		playerNameTextField.setSize(100, 20);
 
 		if (currentPage == ProfileViewerPage.LOADING) {
