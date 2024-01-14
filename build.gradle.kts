@@ -180,18 +180,14 @@ tasks.withType(JavaCompile::class) {
 	options.encoding = "UTF-8"
 	options.isFork = true
 }
-tasks.named("compileOneconfigJava", JavaCompile::class) {
-	doFirst {
-		println("oneconfig args: ${this@named.options.compilerArgs}")
-	}
-}
-
 
 tasks.named<Test>("test") {
 	useJUnitPlatform()
 	systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
 	this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
+
+val badJars = project.layout.buildDirectory.dir("badjars")
 
 tasks.named("jar", Jar::class) {
 	from(oneconfigQuarantineSourceSet.output)
@@ -210,17 +206,26 @@ tasks.withType(Jar::class) {
 }
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
-	archiveClassifier.set("dep")
+	archiveClassifier.set("remapJar")
 	from(tasks.shadowJar)
 	input.set(tasks.shadowJar.get().archiveFile)
-	doLast {
-		println("Jar name: ${archiveFile.get().asFile}")
-	}
 }
 
 tasks.remapSourcesJar {
 	this.enabled = false
 }
+
+val normalizedJar by tasks.creating(Zip::class) {
+	archiveExtension.set("jar")
+	destinationDirectory.set(layout.buildDirectory.dir("libs"))
+	from(zipTree(remapJar.archiveFile))
+	dependsOn(remapJar)
+	archiveClassifier.set("")
+	doLast {
+		println(archiveFile.get().asFile.absolutePath)
+	}
+}
+tasks.assemble.get().dependsOn(normalizedJar)
 
 /* Bypassing https://github.com/johnrengelman/shadow/issues/111 */
 // Use Zip instead of Jar as to not include META-INF
@@ -247,7 +252,7 @@ tasks.register("includeBackupRepo") {
 
 
 tasks.shadowJar {
-	archiveClassifier.set("dep-dev")
+	archiveClassifier.set("shadow")
 	configurations = listOf(shadowImplementation, shadowApi, shadowOnly)
 	archiveBaseName.set("NotEnoughUpdates")
 	exclude("**/module-info.class", "LICENSE.txt")
@@ -264,7 +269,6 @@ tasks.shadowJar {
 	relocate("com.mojang.brigadier")
 }
 
-tasks.assemble.get().dependsOn(remapJar)
 
 tasks.processResources {
 	from(tasks["generateBuildFlags"])
@@ -306,13 +310,15 @@ sourceSets.main {
 allprojects {
 	afterEvaluate {
 		tasks.withType<AbstractArchiveTask>().configureEach {
+			if (this.name != "normalizedJar")
+				destinationDirectory.set(badJars)
 			isPreserveFileTimestamps = false
 			isReproducibleFileOrder = true
 			archiveVersion.set("${this@allprojects.version}${if (System.getenv("CI") == "true") ".ci" else ""}")
 		}
 		tasks.withType<net.fabricmc.loom.task.RemapJarTask>().configureEach {
 			isPreserveFileTimestamps = false
-			isReproducibleFileOrder= true
+			isReproducibleFileOrder = true
 		}
 	}
 }
