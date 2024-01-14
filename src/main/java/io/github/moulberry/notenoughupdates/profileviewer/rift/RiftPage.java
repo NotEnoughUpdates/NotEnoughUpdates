@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.rift;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -95,6 +96,8 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		JsonObject riftData = profileInfo.getAsJsonObject("rift");
 		JsonObject riftInventory = riftData.getAsJsonObject("inventory");
+		// TODO change everything to RiftJson walker moment
+		RiftJson rift = new GsonBuilder().create().fromJson(riftData, RiftJson.class);
 		if (riftInventory == null) {
 			drawErrorMessage();
 			return;
@@ -119,36 +122,22 @@ public class RiftPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
 		Utils.drawTexturedRect(guiLeft + 35, guiTop + 156, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 
-		JsonObject deadCats = Utils.getElementOrDefault(
-			selectedProfile.getProfileJson(),
-			"rift.dead_cats",
-			new JsonObject()
-		).getAsJsonObject();
-
-		if (deadCats != null && !deadCats.entrySet().isEmpty() && deadCats.has("found_cats")) {
-			JsonArray foundCats = Utils.getElementOrDefault(
-				selectedProfile.getProfileJson(),
-				"rift.dead_cats.found_cats",
-				new JsonArray()
-			).getAsJsonArray();
+		RiftJson.RiftDeadCats deadCats = rift.dead_cats;
+		if (deadCats != null && deadCats.found_cats != null) {
+			List<String> foundCats = deadCats.found_cats;
 
 			int size = foundCats.size();
 			int riftTime = size * 15;
 			int manaRegen = size * 2;
 
-			JsonObject montezuma = Utils.getElementOrDefault(
-				selectedProfile.getProfileJson(),
-				"rift.dead_cats.montezuma",
-				new JsonObject()
-			).getAsJsonObject();
-			if (montezuma != null && !montezuma.entrySet().isEmpty()) {
-				String montezumaType = montezuma.get("type").getAsString();
+			RiftJson.RiftDeadCats.Pet montezuma = deadCats.montezuma;
+			if (montezuma != null) {
 
 				PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
-				pet.petLevel = new PetLeveling.PetLevel(100, 100, 0, 0, 0, montezuma.get("exp").getAsInt());
-				pet.rarity = PetInfoOverlay.Rarity.valueOf(montezuma.get("tier").getAsString().toUpperCase());
-				pet.petType = montezumaType;
-				pet.candyUsed = montezuma.get("candyUsed").getAsInt();
+				pet.petLevel = new PetLeveling.PetLevel(100, 100, 0, 0, 0, montezuma.exp);
+				pet.rarity = PetInfoOverlay.Rarity.valueOf(montezuma.tier);
+				pet.petType = montezuma.type;
+				pet.candyUsed = montezuma.candyUsed;
 				ItemStack petItemStackFromPetInfo = ItemUtils.createPetItemstackFromPetInfo(pet);
 				Utils.drawItemStack(petItemStackFromPetInfo, guiLeft + 37, guiTop + 158, true);
 
