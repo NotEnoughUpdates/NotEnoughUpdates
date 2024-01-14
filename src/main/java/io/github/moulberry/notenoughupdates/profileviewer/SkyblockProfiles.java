@@ -19,20 +19,25 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryData;
+import io.github.moulberry.notenoughupdates.profileviewer.rift.RiftJson;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
+import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
@@ -42,6 +47,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -330,7 +336,9 @@ public class SkyblockProfiles {
 			.get(UrsaClient.profiles(Utils.parseDashlessUUID(uuid)))
 			.handle((profilesJson, throwable) -> {
 				try {
-					if (Utils.parseDashlessUUID(uuid).toString().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())) {
+					if (Utils.parseDashlessUUID(uuid).toString().equals(Minecraft.getMinecraft().thePlayer
+						.getUniqueID()
+						.toString())) {
 						new ProfileDataLoadedEvent(uuid, profilesJson).post();
 					}
 				} catch (Exception ignored) {
@@ -489,6 +497,10 @@ public class SkyblockProfiles {
 		}
 	}
 
+	private static final Gson gson = new GsonBuilder()
+		.registerTypeAdapterFactory(KotlinTypeAdapterFactory.INSTANCE)
+		.create();
+
 	public class SkyblockProfile {
 
 		private final JsonObject outerProfileJson;
@@ -505,6 +517,8 @@ public class SkyblockProfiles {
 		private Long networth = null;
 		private SoopyNetworth soopyNetworth = null;
 		private MuseumData museumData = null;
+		@Getter
+		private @Nullable RiftJson riftJson;
 		private final AtomicBoolean updatingMuseumData = new AtomicBoolean(false);
 
 		public class MuseumData {
@@ -642,18 +656,23 @@ public class SkyblockProfiles {
 			public long getValue() {
 				return museumValue;
 			}
+
 			public Map<String, JsonArray> getWeaponItems() {
 				return weaponItems;
 			}
+
 			public Map<String, JsonArray> getArmorItems() {
 				return armorItems;
 			}
+
 			public Map<String, JsonArray> getRaritiesItems() {
 				return raritiesItems;
 			}
+
 			public List<JsonArray> getSpecialItems() {
 				return specialItems;
 			}
+
 			public Map<String, Pair<Long, Boolean>> getSavedItems() {
 				return savedItems;
 			}
@@ -667,29 +686,36 @@ public class SkyblockProfiles {
 			updatingMuseumData.set(true);
 			String profileId = getOuterProfileJson().get("profile_id").getAsString();
 			profileViewer.getManager().ursaClient.get(UrsaClient.museumForProfile(profileId))
-			 .handle((museumJson, throwable) -> {
-				 if (museumJson != null && museumJson.has("success")
-					 && museumJson.get("success").getAsBoolean() && museumJson.has("members")) {
-					 museumData = new MuseumData(museumJson);
-					 return null;
-				 }
-				 return null;
-			 });
+																					 .handle((museumJson, throwable) -> {
+																						 if (museumJson != null && museumJson.has("success")
+																							 && museumJson.get("success").getAsBoolean() &&
+																							 museumJson.has("members")) {
+																							 museumData = new MuseumData(museumJson);
+																							 return null;
+																						 }
+																						 return null;
+																					 });
 		}
 
 		public SkyblockProfile(JsonObject outerProfileJson) {
 			this.outerProfileJson = outerProfileJson;
 			this.gamemode = Utils.getElementAsString(outerProfileJson.get("game_mode"), null);
+
+			try {
+				riftJson = gson.fromJson(getProfileJson().get("rift"), RiftJson.class);
+			} catch (Exception exception) {
+				NotEnoughUpdates.LOGGER.error("Could not read rift data", exception);
+			}
 		}
 
-		public JsonObject getOuterProfileJson() {
+		public @NotNull JsonObject getOuterProfileJson() {
 			return outerProfileJson;
 		}
 
 		/**
 		 * @return Profile json with UUID of {@link SkyblockProfiles#uuid}
 		 */
-		public JsonObject getProfileJson() {
+		public @NotNull JsonObject getProfileJson() {
 			return Utils.getElement(outerProfileJson, "members." + SkyblockProfiles.this.uuid).getAsJsonObject();
 		}
 
@@ -758,7 +784,8 @@ public class SkyblockProfiles {
 					if (invName.endsWith("bag") || invName.equals("quiver")) {
 						path = "inventory.bag_contents." + invName + ".data";
 					} else if (invName.equals("candy_inventory_contents")) {
-						path = "shared_inventory.candy_inventory_contents"; //the mappings said that this is the new path but i cant verify that because the data doesnt exist.
+						path =
+							"shared_inventory.candy_inventory_contents"; //the mappings said that this is the new path but i cant verify that because the data doesnt exist.
 					}
 
 					String contentBytes = Utils.getElementAsString(
@@ -860,7 +887,8 @@ public class SkyblockProfiles {
 		}
 
 		public boolean skillsApiEnabled() {
-			return Utils.getElementAsLong(Utils.getElement(getProfileJson(), "player_data.experience.SKILL_COMBAT"), -1 ) != -1;
+			return Utils.getElementAsLong(Utils.getElement(getProfileJson(), "player_data.experience.SKILL_COMBAT"), -1) !=
+				-1;
 		}
 
 		/**
@@ -1206,7 +1234,10 @@ public class SkyblockProfiles {
 				if (internalName.startsWith("BEASTMASTER_CREST")) {
 					hasBeastmasterCrest = true;
 					try {
-						PetInfoOverlay.Rarity talismanRarity = PetInfoOverlay.Rarity.valueOf(internalName.replace("BEASTMASTER_CREST_", ""));
+						PetInfoOverlay.Rarity talismanRarity = PetInfoOverlay.Rarity.valueOf(internalName.replace(
+							"BEASTMASTER_CREST_",
+							""
+						));
 						if (talismanRarity.beastcreatMultiplyer > currentBeastRarity.beastcreatMultiplyer)
 							currentBeastRarity = talismanRarity;
 					} catch (Exception ignored) {
@@ -1217,16 +1248,16 @@ public class SkyblockProfiles {
 				JsonObject stats = getProfileJson().get("player_stats").getAsJsonObject();
 
 				int mk = Utils.getElementAsInt(Utils.getElement(stats, "mythos.kills"), 0);
-					float petXpBoost = mk > 10000 ? 1f : mk > 7500 ? 0.9f : mk > 5000 ? 0.8f : mk > 2500 ? 0.7f :
-						mk > 1000
-							? 0.6f
-							: mk > 500
-								? 0.5f
-								: mk > 250
-									? 0.4f
-									: mk > 100
-										? 0.3f
-										: mk > 25 ? 0.2f : 0.1f;
+				float petXpBoost = mk > 10000 ? 1f : mk > 7500 ? 0.9f : mk > 5000 ? 0.8f : mk > 2500 ? 0.7f :
+					mk > 1000
+						? 0.6f
+						: mk > 500
+							? 0.5f
+							: mk > 250
+								? 0.4f
+								: mk > 100
+									? 0.3f
+									: mk > 25 ? 0.2f : 0.1f;
 				PetInfoOverlay.getConfig().beastMultiplier =
 					(petXpBoost == 0 ? 0.1f : petXpBoost) * currentBeastRarity.beastcreatMultiplyer;
 			}

@@ -89,15 +89,15 @@ public class RiftPage extends GuiProfileViewerPage {
 			return;
 		}
 		JsonObject profileInfo = selectedProfile.getProfileJson();
-		if (!profileInfo.has("rift")) {
+		// TODO change everything to RiftJson walker moment
+		RiftJson rift = selectedProfile.getRiftJson();
+		if (!profileInfo.has("rift") || rift == null) {
 			drawErrorMessage();
 			return;
 		}
 
 		JsonObject riftData = profileInfo.getAsJsonObject("rift");
 		JsonObject riftInventory = riftData.getAsJsonObject("inventory");
-		// TODO change everything to RiftJson walker moment
-		RiftJson rift = new GsonBuilder().create().fromJson(riftData, RiftJson.class);
 		if (riftInventory == null) {
 			drawErrorMessage();
 			return;
