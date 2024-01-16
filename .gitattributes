@@ -1,12 +1,9 @@
-* text=auto
+* text eol=lf
 
 gradle/verification-metadata.xml linguist-generated
 *.lockfile linguist-generated
 gradle/wrapper/gradle-wrapper.jar linguist-vendored
 gradlew* linguist-vendored
-
-# Always Unix-style line endings
-*.sh	text eol=lf
 
 # Always Windows-style line endings
 *.bat	text eol=crlf
@@ -17,3 +14,4 @@ gradlew* linguist-vendored
 *.ogg	-text
 *.png	-text
 *.xcf	-text
+*.jks   -text

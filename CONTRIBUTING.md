@@ -15,7 +15,7 @@ Ever since Moulberry has stopped working on NEU, other contributors have been wo
 ### Software prerequisites
 
 - Install a Java Development Kit (You will need both version 8 and version 17) [Eclipse Temurin Download](https://adoptium.net/temurin/releases) for convenience, however, any JDK will do.
-- Install Git. [Windows download](https://git-scm.com/download/win)
+- Install Git. [Windows download](https://git-scm.com/download/win). Make sure you use git version 2.10 or later.
 - Install an IDE, such as [Jetbrains IntelliJ IDEA](https://www.jetbrains.com/idea/download).
 
 ### Software configuration
