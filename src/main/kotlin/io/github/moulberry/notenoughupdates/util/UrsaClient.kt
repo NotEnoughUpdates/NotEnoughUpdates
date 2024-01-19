@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.util
 
 import com.google.gson.JsonObject
+import com.mojang.authlib.exceptions.AuthenticationException
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag
@@ -92,6 +93,7 @@ class UrsaClient(val apiUtil: ApiUtil) {
         } else {
             this.token = Token(validUntil, token, usedUrsaRoot)
             isPollingForToken = false
+            authenticationState = AuthenticationState.SUCCEEDED
             logger.log("Token saving successful")
         }
     }
@@ -115,6 +117,13 @@ class UrsaClient(val apiUtil: ApiUtil) {
             logger.log("Request failed")
             continueOn(MinecraftExecutor.OnThread)
             isPollingForToken = false
+            if (e is AuthenticationException) {
+                authenticationState = AuthenticationState.FAILED_TO_JOINSERVER
+            }
+            if (e is HttpStatusCodeException && e.statusCode == 401) {
+                authenticationState = AuthenticationState.REJECTED
+                this.token = null
+            }
             request.consumer.completeExceptionally(e)
         }
     }
@@ -179,6 +188,24 @@ class UrsaClient(val apiUtil: ApiUtil) {
         }
     }
 
+
+    private var authenticationState = AuthenticationState.NOT_ATTEMPTED
+
+    fun getAuthenticationState(): AuthenticationState {
+        if (authenticationState == AuthenticationState.SUCCEEDED && token?.isValid != true) {
+            return AuthenticationState.OUTDATED
+        }
+        return authenticationState
+    }
+
+    enum class AuthenticationState {
+        NOT_ATTEMPTED,
+        FAILED_TO_JOINSERVER,
+        REJECTED,
+        SUCCEEDED,
+        OUTDATED,
+    }
+
     companion object {
         @JvmStatic
         fun profiles(uuid: UUID) = KnownRequest("v1/hypixel/v2/profiles/${uuid}", JsonObject::class.java)
@@ -193,7 +220,8 @@ class UrsaClient(val apiUtil: ApiUtil) {
         fun bingo(uuid: UUID) = KnownRequest("v1/hypixel/v2/bingo/${uuid}", JsonObject::class.java)
 
         @JvmStatic
-        fun museumForProfile(profileUuid: String) = KnownRequest("v1/hypixel/v2/museum/${profileUuid}", JsonObject::class.java)
+        fun museumForProfile(profileUuid: String) =
+            KnownRequest("v1/hypixel/v2/museum/${profileUuid}", JsonObject::class.java)
 
         @JvmStatic
         fun status(uuid: UUID) = KnownRequest("v1/hypixel/v2/status/${uuid}", JsonObject::class.java)

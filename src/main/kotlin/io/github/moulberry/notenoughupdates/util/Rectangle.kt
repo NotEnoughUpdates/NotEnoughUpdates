@@ -31,6 +31,12 @@ data class Rectangle(
     val x: Int, val y: Int,
     val width: Int, val height: Int,
 ) {
+    val centerX: Int
+        get() = x + width / 2
+    val centerY: Int
+        get() = y + height / 2
+
+
     /**
      * The left edge of this rectangle (Low X)
      */
@@ -69,7 +75,7 @@ data class Rectangle(
     /**
      * Check if this rectangle contains the given coordinate
      */
-    fun contains(x1: Int, y1: Int) :Boolean{
+    fun contains(x1: Int, y1: Int): Boolean {
         return left <= x1 && x1 < left + width && top <= y1 && y1 < top + height
     }
 }
