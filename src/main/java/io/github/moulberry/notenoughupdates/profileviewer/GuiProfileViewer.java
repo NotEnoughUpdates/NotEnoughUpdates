@@ -251,7 +251,7 @@ public class GuiProfileViewer extends GuiScreen {
 		if (startTime == 0) startTime = currentTime;
 
 		ProfileViewerPage page = currentPage;
-		if (page == ProfileViewerPage.CRASH_RECOVERY) {
+		if (page != ProfileViewerPage.CRASH_RECOVERY) {
 			if (profile == null) {
 				page = ProfileViewerPage.INVALID_NAME;
 			} else if (profile.getOrLoadSkyblockProfiles(null) == null) {
