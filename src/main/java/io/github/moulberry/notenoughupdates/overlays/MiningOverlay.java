@@ -551,6 +551,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Borrows)";
 			if (name.equals("Golden Goblin Slayer")) return "Kill 1 Golden Goblin (anywhere)";
 			if (name.equals("Star Sentry Puncher")) return "Damage Star Sentries 10 times (anywhere)";
+			if (name.equals("Treasure Hoarder Puncher")) return "Damage Treasure Hoarders 10 times §b(Upper Mines)";
 
 			// Mining
 			if (name.equals("Mithril Miner")) return "Break 350 Mithril (anywhere)";
@@ -817,6 +818,7 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Ice Walker Slayer", "ENCHANTED_ICE");
 				addItem("Goblin Slayer", "GOBLIN_MONSTER");
 				addItem("Star Sentry Puncher", "NETHER_STAR");
+				addItem("Treasure Hoarder Puncher", "TREASURE_HOARDER_MONSTER");
 				addItem("Goblin Raid", "ENCHANTED_GOLD");
 				addItem("Goblin Raid Slayer", "ENCHANTED_GOLD");
 				addItem("Golden Goblin Slayer", "GOLD_HELMET");
