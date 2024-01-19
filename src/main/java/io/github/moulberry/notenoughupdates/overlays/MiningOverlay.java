@@ -548,7 +548,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 			// Slay
 			if (name.equals("Ice Walker Slayer")) return "Kill 50 Ice Walkers §b(Great Ice Wall)";
-			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Borrows)";
+			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Burrows)";
 			if (name.equals("Golden Goblin Slayer")) return "Kill 1 Golden Goblin (anywhere)";
 			if (name.equals("Star Sentry Puncher")) return "Damage Star Sentries 10 times (anywhere)";
 
