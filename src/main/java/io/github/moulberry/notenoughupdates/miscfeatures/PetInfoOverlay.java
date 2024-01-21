@@ -37,6 +37,7 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
@@ -368,7 +369,8 @@ public class PetInfoOverlay extends TextOverlay {
 	@Override
 	public void updateFrequent() {
 		Pet currentPet = getCurrentPet();
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo || currentPet == null) {
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo || currentPet == null ||
+			SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("rift")) {
 			overlayStrings = null;
 		} else {
 			firstPetLines = 0;
