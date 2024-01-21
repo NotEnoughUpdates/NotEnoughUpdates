@@ -52,7 +52,7 @@ object OldSkyBlockMenu {
     fun replaceItem(event: ReplaceItemEvent) {
         if (!isRightInventory()) return
         if (event.inventory !is ContainerLocalMenu) return
-        if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation() == "rift") return
+        if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("rift")) return
 
         val skyBlockButton = map[event.slotNumber] ?: return
         val showWarning = skyBlockButton.requiresBoosterCookie && !CookieWarning.hasActiveBoosterCookie()
@@ -77,7 +77,7 @@ object OldSkyBlockMenu {
     @SubscribeEvent(priority = EventPriority.HIGH)
     fun onStackClick(event: SlotClickEvent) {
         if (!isRightInventory()) return
-        if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation() == "rift") return
+        if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("rift")) return
 
         val skyBlockButton = map[event.slotId] ?: return
         event.isCanceled = true
