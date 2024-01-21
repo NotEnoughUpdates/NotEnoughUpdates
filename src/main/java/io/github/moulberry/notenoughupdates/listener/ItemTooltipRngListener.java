@@ -58,7 +58,7 @@ public class ItemTooltipRngListener {
 
 	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(?:Dungeon Score|Slayer XP): §d(.*)§5/§d(.+)");
 	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile(
-		"(?:§5§o)?§d§l§m *§f§l§m *§r §d([1-9,]+)§5/§d([0-9kKmM,.]+)");
+		"(?:§5§o)?§d§l§m *§f§l§m *§r §d([0-9,]+)§5/§d([0-9kKmM,.]+)");
 
 	private final Pattern SLAYER_INVENTORY_TITLE_PATTERN = Pattern.compile("(.+) RNG Meter");
 
