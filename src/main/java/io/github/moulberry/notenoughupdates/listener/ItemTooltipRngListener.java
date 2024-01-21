@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,8 +56,9 @@ public class ItemTooltipRngListener {
 	private final Pattern ODDS_PATTERN = Pattern.compile("§5§o§7Odds: (.+) §7\\(§7(.*)%\\)");
 	private final Pattern ODDS_SELECTED_PATTERN = Pattern.compile("§5§o§7Odds: (.+) §7\\(§8§m(.*)%§r §7(.+)%\\)");
 
-	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(Dungeon Score|Slayer XP): §d(.*)§5/§d(.+)");
-	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile("§5§o§d-(.+)- §d(.*)§5/§d(.+)");
+	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(?:Dungeon Score|Slayer XP): §d(.*)§5/§d(.+)");
+	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile(
+		"(?:§5§o)?§d§l§m *§f§l§m *§r §d([1-9,]+)§5/§d([0-9kKmM,.]+)");
 
 	private final Pattern SLAYER_INVENTORY_TITLE_PATTERN = Pattern.compile("(.+) RNG Meter");
 
@@ -73,7 +75,9 @@ public class ItemTooltipRngListener {
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!neu.isOnSkyblock()) return;
 		if (event.toolTip == null) return;
-		if (!Utils.getOpenChestName().endsWith(" RNG Meter") && !slayerData.containsKey(Utils.getOpenChestName())) return;
+		if (!Utils.getOpenChestName().endsWith(" RNG Meter")
+			&& !slayerData.containsKey(Utils.getOpenChestName())
+			&& !ItemUtils.getLore(event.itemStack).contains("§dRNG Meter")) return;
 
 		List<String> newToolTip = new ArrayList<>();
 
@@ -100,14 +104,14 @@ public class ItemTooltipRngListener {
 				if (m != null) {
 					int having;
 					try {
-						having = Calculator.calculate(m.group(2).replace(",", "")).intValue();
+						having = Calculator.calculate(m.group(1).replace(",", "").toLowerCase(Locale.ROOT)).intValue();
 					} catch (Calculator.CalculatorException e) {
 						having = -1;
 					}
 
 					int needed;
 					try {
-						needed = Calculator.calculate(m.group(3).replace(",", "")).intValue();
+						needed = Calculator.calculate(m.group(2).replace(",", "").toLowerCase(Locale.ROOT)).intValue();
 					} catch (Calculator.CalculatorException e) {
 						needed = -1;
 					}
@@ -140,7 +144,14 @@ public class ItemTooltipRngListener {
 		event.toolTip.addAll(newToolTip);
 	}
 
-	private String getFormatCoinsPer(ItemStack stack, int needed, int multiplier, int amountPerTier, int cost, String label) {
+	private String getFormatCoinsPer(
+		ItemStack stack,
+		int needed,
+		int multiplier,
+		int amountPerTier,
+		int cost,
+		String label
+	) {
 		String internalName = neu.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 		double profit = neu.manager.auctionManager.getBazaarOrBin(internalName, false) * amountPerTier;
 		if (profit <= 0) return null;
@@ -226,7 +237,6 @@ public class ItemTooltipRngListener {
 			Utils.showOutdatedRepoNotification("leveling.json (outdated)");
 			return;
 		}
-
 
 		List<Integer> defaultSlayerExp = new ArrayList<>();
 		for (JsonElement element : leveling.get("slayer_boss_xp").getAsJsonArray()) {
