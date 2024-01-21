@@ -370,7 +370,7 @@ public class PetInfoOverlay extends TextOverlay {
 	public void updateFrequent() {
 		Pet currentPet = getCurrentPet();
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo || currentPet == null ||
-			SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("rift")) {
+			Objects.equals(SBInfo.getInstance().getLocation(), "rift")) {
 			overlayStrings = null;
 		} else {
 			firstPetLines = 0;
