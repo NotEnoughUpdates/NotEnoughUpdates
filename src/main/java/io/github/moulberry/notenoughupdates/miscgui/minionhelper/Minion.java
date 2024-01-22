@@ -20,13 +20,22 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.auction.APIManager;
+import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
+import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Minion extends OverviewLine {
 	private final String internalName;
@@ -107,7 +116,30 @@ public class Minion extends OverviewLine {
 
 	@Override
 	public void onClick() {
-		NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(internalName);
+		if (Mouse.getEventButton() != 0 || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(internalName);
+		} else {
+			if (minionSource instanceof CraftingSource) {
+				CraftingSource craftingSource = (CraftingSource) minionSource;
+				String bazaarName = null;
+				int totalAmount = 0;
+				for (Map.Entry<String, Integer> entry : craftingSource.getItems().entries()) {
+					String internalName = entry.getKey();
+					Integer amount = entry.getValue();
+					if (!APIManager.hardcodedVanillaItems.contains(internalName)) {
+						totalAmount += amount;
+						bazaarName = internalName;
+					}
+				}
+				MiscUtils.copyToClipboard(String.valueOf(totalAmount));
+				ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager).withKnownInternalName(
+					bazaarName).resolveToItemStack();
+				if (itemStack != null) {
+					String displayName = Utils.cleanColour(itemStack.getDisplayName());
+					NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + displayName);
+				}
+			}
+		}
 	}
 
 	public void setCustomSource(CustomSource customSource) {

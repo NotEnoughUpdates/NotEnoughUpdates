@@ -271,7 +271,7 @@ public class APIManager {
 		return e.getAsJsonObject();
 	}
 
-	private static final List<String> hardcodedVanillaItems = Utils.createList(
+	public static final List<String> hardcodedVanillaItems = Utils.createList(
 		"WOOD_AXE", "WOOD_HOE", "WOOD_PICKAXE", "WOOD_SPADE", "WOOD_SWORD",
 		"GOLD_AXE", "GOLD_HOE", "GOLD_PICKAXE", "GOLD_SPADE", "GOLD_SWORD",
 		"ROOKIE_HOE"
