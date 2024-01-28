@@ -316,7 +316,7 @@ public class TimersOverlay extends TextTabOverlay {
 						break;
 					}
 					if (hidden.commissionsCompleted == 0) {
-						hidden.commissionsCompleted = currentTime + TimeEnums.DAY.time;
+						hidden.commissionsCompleted = currentTime;
 					}
 					for (int i = 9; i < 18; i++) {
 						stack = lower.getStackInSlot(i);
