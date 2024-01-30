@@ -61,6 +61,7 @@ loom {
 		}
 	}
 	forge {
+		accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 		pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
 		mixinConfig("mixins.notenoughupdates.json")
 	}
@@ -204,6 +205,7 @@ tasks.withType(Jar::class) {
 				this["FMLCorePluginContainsFMLMod"] = "true"
 				this["ForceLoadAsMod"] = "true"
 				this["Manifest-Version"] = "1.0"
+				this["FMLAT"] = "accesstransformer.cfg"
 		}
 }
 
