@@ -83,7 +83,7 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern DAILY_GEMSTONE_POWDER = Pattern.compile(
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
 	private static final Pattern DAILY_SHOP_LIMIT = Pattern.compile(
-		"\u00a7r\u00a7cYou may only buy up to (640|6400) of this item each day!\u00a7r");
+		"\u00a7r\u00a7cYou may only buy up to 6,?400? of this item each day!\u00a7r");
 
 	@SubscribeEvent
 	public void onClickItem(SlotClickEvent event) {
