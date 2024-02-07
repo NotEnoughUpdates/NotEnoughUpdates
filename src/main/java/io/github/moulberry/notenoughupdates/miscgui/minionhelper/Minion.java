@@ -34,8 +34,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Minion extends OverviewLine {
 	private final String internalName;
@@ -121,16 +124,20 @@ public class Minion extends OverviewLine {
 		} else {
 			if (minionSource instanceof CraftingSource) {
 				CraftingSource craftingSource = (CraftingSource) minionSource;
-				String bazaarName = null;
-				int totalAmount = 0;
+				Map<String, Integer> counts = new HashMap<>();
 				for (Map.Entry<String, Integer> entry : craftingSource.getItems().entries()) {
-					String internalName = entry.getKey();
-					Integer amount = entry.getValue();
-					if (!APIManager.hardcodedVanillaItems.contains(internalName)) {
-						totalAmount += amount;
-						bazaarName = internalName;
-					}
+					counts.compute(entry.getKey(), (k, v) -> (v == null ? 0 : v) + entry.getValue());
 				}
+				Optional<Map.Entry<String, Integer>> resource = counts
+					.entrySet()
+					.stream()
+					.filter(it -> !APIManager.hardcodedVanillaItems.contains(it.getKey()))
+					.max(Comparator.comparingInt(Map.Entry::getValue));
+				if (!resource.isPresent()) return;
+
+				String bazaarName = resource.get().getKey();
+				int totalAmount = resource.get().getValue();
+
 				MiscUtils.copyToClipboard(String.valueOf(totalAmount));
 				ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager).withKnownInternalName(
 					bazaarName).resolveToItemStack();
