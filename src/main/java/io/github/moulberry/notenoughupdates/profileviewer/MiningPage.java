@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class MiningPage extends GuiProfileViewerPage {
 
@@ -97,22 +98,10 @@ public class MiningPage extends GuiProfileViewerPage {
 			"powder_spent_gemstone"
 		), 0);
 
-		float amberCrystalsPlaced =
-			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.amber_crystal.total_placed"), 0);
-		float amethystCrystalsPlaced =
-			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.amethyst_crystal.total_placed"), 0);
-		float jadeCrystalsPlaced =
-			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.jade_crystal.total_placed"), 0);
-		float sapphireCrystalsPlaced =
-			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.sapphire_crystal.total_placed"), 0);
-		float topazCrystalsPlaced =
-			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.topaz_crystal.total_placed"), 0);
-
-		float[] crystalsPlaced = {
-			amberCrystalsPlaced, amethystCrystalsPlaced, jadeCrystalsPlaced, sapphireCrystalsPlaced, topazCrystalsPlaced
-		};
-		Arrays.sort(crystalsPlaced);
-		float nucleusRunsCompleted = crystalsPlaced[0];
+		double nucleusRunsCompleted = Stream.of("amber_crystal", "amethyst_crystal", "jade_crystal", "sapphire_crystal", "topaz_crystal")
+			.mapToDouble(crystal -> Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals." + crystal + ".total_placed"), 0))
+			.min()
+			.orElse(0);
 
 		int miningFortune = Utils.getElementAsInt(Utils.getElement(nodes, "mining_fortune"), 0);
 		int miningFortuneStat = miningFortune * 5;
