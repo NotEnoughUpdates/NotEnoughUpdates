@@ -98,8 +98,8 @@ public class MiningPage extends GuiProfileViewerPage {
 			"powder_spent_gemstone"
 		), 0);
 
-		double nucleusRunsCompleted = Stream.of("amber_crystal", "amethyst_crystal", "jade_crystal", "sapphire_crystal", "topaz_crystal")
-			.mapToDouble(crystal -> Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals." + crystal + ".total_placed"), 0))
+		double nucleusRunsCompleted = Stream.of("amber", "amethyst", "jade", "sapphire", "topaz")
+			.mapToDouble(crystal -> Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals." + crystal + "_crystal.total_placed"), 0))
 			.min()
 			.orElse(0);
 
