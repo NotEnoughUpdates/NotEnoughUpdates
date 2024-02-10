@@ -871,7 +871,7 @@ public class NEUManager {
 	}
 
 	public static String cleanForTitleMapSearch(String str) {
-		return str.replaceAll("(\u00a7.)|[^0-9a-zA-Z ]", "").toLowerCase().trim();
+		return str.replaceAll("(\u00a7.)|[^#0-9a-zA-Z ]", "").toLowerCase().trim();
 	}
 
 	public void showRecipe(JsonObject item) {
