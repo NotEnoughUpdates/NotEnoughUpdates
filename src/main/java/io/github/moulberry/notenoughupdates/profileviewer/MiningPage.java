@@ -97,8 +97,22 @@ public class MiningPage extends GuiProfileViewerPage {
 			"powder_spent_gemstone"
 		), 0);
 
-		float crystalPlacedAmount =
+		float amberCrystalsPlaced =
+			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.amber_crystal.total_placed"), 0);
+		float amethystCrystalsPlaced =
+			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.amethyst_crystal.total_placed"), 0);
+		float jadeCrystalsPlaced =
 			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.jade_crystal.total_placed"), 0);
+		float sapphireCrystalsPlaced =
+			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.sapphire_crystal.total_placed"), 0);
+		float topazCrystalsPlaced =
+			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.topaz_crystal.total_placed"), 0);
+
+		float[] crystalsPlaced = {
+			amberCrystalsPlaced, amethystCrystalsPlaced, jadeCrystalsPlaced, sapphireCrystalsPlaced, topazCrystalsPlaced
+		};
+		Arrays.sort(crystalsPlaced);
+		float nucleusRunsCompleted = crystalsPlaced[0];
 
 		int miningFortune = Utils.getElementAsInt(Utils.getElement(nodes, "mining_fortune"), 0);
 		int miningFortuneStat = miningFortune * 5;
@@ -211,8 +225,8 @@ public class MiningPage extends GuiProfileViewerPage {
 		}
 
 		Utils.renderAlignedString(
-			EnumChatFormatting.BLUE + "Total Placed Crystals:",
-			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(crystalPlacedAmount),
+			EnumChatFormatting.BLUE + "Nucleus Runs Completed:",
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(nucleusRunsCompleted),
 			guiLeft + xStart,
 			guiTop + yStartTop + 149,
 			110
