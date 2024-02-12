@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -124,11 +124,14 @@ object BestiaryData {
         val apiDeaths = profileInfo.getAsJsonObject("bestiary").getAsJsonObject("deaths") ?: return mutableListOf()
         val killsMap: HashMap<String, Int> = HashMap()
         for (entry in apiKills.entrySet()) {
-            killsMap[entry.key] = entry.value.asInt
+            if (entry.key == "last_killed_mob") {
+                continue
+            }
+            killsMap[entry.key] = entry.value.asString.toIntOrNull() ?: -1
         }
         val deathsMap: HashMap<String, Int> = HashMap()
         for (entry in apiDeaths.entrySet()) {
-            deathsMap[entry.key] = entry.value.asInt
+            deathsMap[entry.key] = entry.value.asString.toIntOrNull() ?: -1
         }
 
         for (categoryId in categoriesToParse) {
