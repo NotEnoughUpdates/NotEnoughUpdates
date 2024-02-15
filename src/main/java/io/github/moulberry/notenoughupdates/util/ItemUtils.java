@@ -38,6 +38,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -208,7 +209,7 @@ public class ItemUtils {
 		return text;
 	}
 
-	public static NBTTagCompound getExtraAttributes(ItemStack itemStack) {
+	public static @NotNull NBTTagCompound getExtraAttributes(ItemStack itemStack) {
 		NBTTagCompound tag = getOrCreateTag(itemStack);
 		NBTTagCompound extraAttributes = tag.getCompoundTag("ExtraAttributes");
 		tag.setTag("ExtraAttributes", extraAttributes);
