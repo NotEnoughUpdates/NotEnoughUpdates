@@ -96,7 +96,7 @@ import java.util.Set;
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
 	public static final String VERSION = "2.1.1-PRE";
-	public static final int VERSION_ID = 20104; //2.1.1 only so update notif works
+	public static final int VERSION_ID = 20105; //2.1.1 only so update notif works
 	public static final int PRE_VERSION_ID = 0;
 	public static final int HOTFIX_VERSION_ID = 0;
 
