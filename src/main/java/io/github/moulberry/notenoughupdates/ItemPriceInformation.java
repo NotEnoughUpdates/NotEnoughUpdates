@@ -459,7 +459,7 @@ public class ItemPriceInformation {
 			}
 		}
 		Double npcSellPrice = HypixelItemAPI.getNPCSellPrice(internalname);
-		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.npcSellPrice && npcSellPrice != null) {
+		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.npcSellPrice && npcSellPrice != null && npcSellPrice != 0) {
 			if (!added)
 				tooltip.add("");
 			tooltip.add(formatPrice("NPC Sell Price: ", npcSellPrice * stackMultiplier));
