@@ -228,16 +228,17 @@ public class ChatListener {
 		} else if (e.message.getFormattedText().startsWith(
 			EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "Invalid recipe ")) {
 			r = "";
+		} else if (unformatted.equals("  SLAYER QUEST FAILED!")) {
+			SlayerOverlay.isSlain = false;
+			timeSinceLastBoss = 0;
 		} else if (unformatted.equals("  NICE! SLAYER BOSS SLAIN!")) {
 			SlayerOverlay.isSlain = true;
 		} else if (unformatted.equals("  SLAYER QUEST STARTED!")) {
 			SlayerOverlay.isSlain = false;
-			if (timeSinceLastBoss == 0) {
-				SlayerOverlay.timeSinceLastBoss = System.currentTimeMillis();
-			} else {
+			if (timeSinceLastBoss != 0) {
 				timeSinceLastBoss2 = timeSinceLastBoss;
-				timeSinceLastBoss = System.currentTimeMillis();
 			}
+			timeSinceLastBoss = System.currentTimeMillis();
 		} else if (unformatted.startsWith("   RNG Meter")) {
 			RNGMeter = unformatted.substring("   RNG Meter - ".length());
 		} else if (matcher.matches()) {
