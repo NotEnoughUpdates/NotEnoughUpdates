@@ -155,12 +155,11 @@ public class TimersOverlay extends TextTabOverlay {
 		return super.getSize(strings);
 	}
 
-	private static final ItemStack CAKES_ICON = new ItemStack(Items.cake);
 	private static final ItemStack PUZZLER_ICON = new ItemStack(Items.book);
 	private static ItemStack[] FETCHUR_ICONS = null;
 	private static final ItemStack COMMISSIONS_ICON = new ItemStack(Items.iron_pickaxe);
 	private static final ItemStack EXPERIMENTS_ICON = new ItemStack(Items.enchanted_book);
-	private static final ItemStack COOKIE_ICON = new ItemStack(Items.cookie);
+	private static final ItemStack RIFT_ICON = new ItemStack(Blocks.double_plant, 1, 1);
 	private static final ItemStack QUEST_ICON = new ItemStack(Items.sign);
 	private static final ItemStack SHOP_ICON = new ItemStack(Blocks.hopper);
 
@@ -179,7 +178,9 @@ public class TimersOverlay extends TextTabOverlay {
 		} else
 			switch (beforeColon) {
 				case "Cakes":
-					icon = CAKES_ICON;
+					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+						.getItemInformation()
+						.get("EPOCH_CAKE_PINK"));
 					break;
 				case "Puzzler":
 					icon = PUZZLER_ICON;
@@ -187,7 +188,7 @@ public class TimersOverlay extends TextTabOverlay {
 				case "Godpot":
 					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 						.getItemInformation()
-						.get("GOD_POTION"));
+						.get("GOD_POTION_2"));
 					break;
 				case "Fetchur": {
 					if (FETCHUR_ICONS == null) {
@@ -230,7 +231,9 @@ public class TimersOverlay extends TextTabOverlay {
 					icon = EXPERIMENTS_ICON;
 					break;
 				case "Cookie Buff":
-					icon = COOKIE_ICON;
+					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+						.getItemInformation()
+						.get("BOOSTER_COOKIE"));
 					break;
 				case "Mithril Powder":
 					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
@@ -248,7 +251,7 @@ public class TimersOverlay extends TextTabOverlay {
 						.get("HEAVY_PEARL"));
 					break;
 				case "Free Rift Infusion":
-					icon = new ItemStack(Blocks.double_plant, 1, 1);
+					icon = RIFT_ICON;
 					break;
 				case "Crimson Isle Quests":
 					icon = QUEST_ICON;
