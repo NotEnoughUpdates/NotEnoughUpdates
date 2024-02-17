@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumTooltipManager;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -130,6 +131,17 @@ public class ItemPriceInformation {
 			shiftStackMultiplier = stack.getTagCompound().getInteger(STACKSIZE_OVERRIDE);
 		}
 		int stackMultiplier = 1;
+		for (int i = 3; i < tooltip.size(); i++) {
+			String line = StringUtils.cleanColour(tooltip.get(i));
+			if (line.startsWith("Stored:")) {
+
+				String[] sackTooltip = line.replace("Stored: ", "").split("/");
+				if (!(Integer.parseInt(sackTooltip[0]) == 0)){
+
+					shiftStackMultiplier = Integer.parseInt(sackTooltip[0]);
+				}
+			}
+		}
 		boolean shiftPressed = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (shiftPressed) {
 			stackMultiplier = shiftStackMultiplier;
@@ -138,6 +150,7 @@ public class ItemPriceInformation {
 		if (bazaarItem) {
 			List<Integer> lines = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.priceInfoBaz;
 			//values = {"", "Buy", "Sell", "Buy (Insta)", "Sell (Insta)", "Raw Craft Cost", "Instabuys (Hourly)", "Instasells (Hourly)", "Instabuys (Daily)", "Instasells (Daily)", "Instabuys (Weekly)", "Instasells (Weekly)"}
+
 			for (int lineId : lines) {
 				switch (lineId) {
 					case 0:
@@ -162,6 +175,7 @@ public class ItemPriceInformation {
 							}
 							double bazaarSellPrice = bazaarInfo.get("avg_sell").getAsDouble() * stackMultiplier;
 							tooltip.add(formatPrice("Bazaar Sell: ", bazaarSellPrice));
+
 						}
 						break;
 					case 2:
