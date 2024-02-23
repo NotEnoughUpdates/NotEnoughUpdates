@@ -287,7 +287,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						StringUtils.formatNumber(Math.pow(miningFortune + 2, 3)) +
+						StringUtils.formatNumber((int) Math.pow(miningFortune + 2, 3.05)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -331,7 +331,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						StringUtils.formatNumber((int) Math.pow(tittyInsane + 2, 3)) +
+						StringUtils.formatNumber((int) Math.pow(tittyInsane + 2, 3.1)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -929,7 +929,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						StringUtils.formatNumber(Math.pow(miningSpeed2 + 2, 3)) +
+						StringUtils.formatNumber((int) Math.pow(miningSpeed2 + 2, 3.2)) +
 						" Gemstone Powder"
 				)
 					: Lists.newArrayList(
@@ -1169,7 +1169,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						StringUtils.formatNumber((int) Math.pow(crystallized + 2, 2.4)) +
+						StringUtils.formatNumber((int) Math.pow(crystallized + 2, 3.4)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
