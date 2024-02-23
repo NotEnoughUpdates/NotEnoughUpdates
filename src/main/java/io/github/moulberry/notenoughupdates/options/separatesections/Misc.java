@@ -348,6 +348,14 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
+		name = "Open /recipe for current item",
+		desc = "Opens the SkyBlock recipe for the item you are hovering over. Intended for super crafting"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_NONE)
+	public int openSkyBlockRecipeKeybind = Keyboard.KEY_NONE;
+
+	@Expose
+	@ConfigOption(
 		name = "Countdown Calculations",
 		desc = "Shows a(n estimated) timestamp for when a countdown in an item's tooltip will end, relative to your timezone. Also applies to §e/neucalendar§r."
 	)

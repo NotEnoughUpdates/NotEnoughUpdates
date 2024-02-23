@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
@@ -1232,6 +1233,17 @@ public class NEUOverlay extends Gui {
 							} else {
 								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + cleanName);
 							}
+						} else if (
+							keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openSkyBlockRecipeKeybind &&
+								!manager.getAvailableRecipesFor(internalname.get()).isEmpty() &&
+								manager.getAvailableRecipesFor(internalname.get()).get(0) instanceof CraftingRecipe && !item.has(
+								"vanilla")) {
+							String displayName = Utils.cleanColour(item
+								.get("displayname")
+								.getAsString()
+								.replace("[Lvl {LVL}]", "")
+								.trim());
+							NotEnoughUpdates.INSTANCE.trySendCommand("/recipe " + displayName);
 						}
 					}
 				}
