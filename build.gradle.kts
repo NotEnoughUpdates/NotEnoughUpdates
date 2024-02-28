@@ -148,7 +148,7 @@ dependencies {
 
 		shadowImplementation("com.mojang:brigadier:1.0.18")
 
-		shadowImplementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+		shadowImplementation("org.spongepowered:mixin:0.8.5") {
 				isTransitive = false // Dependencies of mixin are already bundled by minecraft
 		}
 		annotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
