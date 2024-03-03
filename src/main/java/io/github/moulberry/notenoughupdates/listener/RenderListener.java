@@ -838,7 +838,7 @@ public class RenderListener {
 						Utils.getElement(SBInfo.getInstance().getMayorJson(), "mayor.name"),
 						""
 					);
-					if (mayorJson != null && Objects.equals(mayorJson, "Derpy") &&
+					if (Objects.equals(mayorJson, "Derpy") &&
 						NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
 						Utils.drawStringScaled(
 							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Mayor Derpy active!",
