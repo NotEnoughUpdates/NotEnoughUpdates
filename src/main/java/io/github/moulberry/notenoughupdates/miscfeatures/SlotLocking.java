@@ -31,6 +31,8 @@ import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSound;
@@ -45,6 +47,7 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -57,6 +60,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 
 @NEUAutoSubscribe
@@ -190,6 +194,15 @@ public class SlotLocking {
 		return slot;
 	}
 
+	private Slot getFocusedSlot(GuiContainer container) {
+		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
+		final int scaledWidth = scaledresolution.getScaledWidth();
+		final int scaledHeight = scaledresolution.getScaledHeight();
+		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
+		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
+		return ((AccessorGuiContainer) container).doGetSlotAtPosition(mouseX, mouseY);
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void keyboardInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ||
@@ -203,13 +216,7 @@ public class SlotLocking {
 
 		int key = NotEnoughUpdates.INSTANCE.config.slotLocking.slotLockKey;
 		if (!lockKeyHeld && KeybindHelper.isKeyPressed(key) && !Keyboard.isRepeatEvent()) {
-			final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
-			final int scaledWidth = scaledresolution.getScaledWidth();
-			final int scaledHeight = scaledresolution.getScaledHeight();
-			int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
-			int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
-
-			Slot slot = ((AccessorGuiContainer) container).doGetSlotAtPosition(mouseX, mouseY);
+			Slot slot = getFocusedSlot(container);
 			if (slot != null && slot.getSlotIndex() != 8 && slot.inventory == Minecraft.getMinecraft().thePlayer.inventory) {
 				int slotNum = slot.getSlotIndex();
 				if (slotNum >= 0 && slotNum <= 39) {
@@ -719,15 +726,50 @@ public class SlotLocking {
 
 	boolean setTopHalfBarrier = false;
 
+	private boolean shouldShowBarrier(int slotNumber, IInventory inventory) {
+		if (!(inventory instanceof InventoryPlayer))
+			return false;
+		if (slotNumber < 9)
+			return false;
+		if (pairingSlot != null && (slotNumber == pairingSlot.slotNumber || isArmourSlot(
+			slotNumber,
+			pairingSlot.slotNumber
+		)))
+			return false;
+		if (!setTopHalfBarrier)
+			return false;
+		return true;
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public void afterRenderInventory(GuiScreenEvent.DrawScreenEvent.Post event) {
+		if (!(event.gui instanceof GuiContainer)) return;
+		var gui = (GuiContainer) event.gui;
+		var slot = getFocusedSlot(gui);
+		if (slot == null || !shouldShowBarrier(slot.getSlotIndex(), slot.inventory))
+			return;
+		final var scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
+		final int scaledWidth = scaledresolution.getScaledWidth();
+		final int scaledHeight = scaledresolution.getScaledHeight();
+		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
+		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
+		Utils.drawHoveringText(
+			Arrays.asList(
+				"§cYou cannot bind slots to anything except the hotbar.",
+				"§cBinding to a normal inventory slot would require cheats.",
+				"§cAnd you are not a cheater, are you?",
+				"§cWe certainly hope you are not."),
+			mouseX,
+			mouseY,
+			scaledWidth,
+			scaledHeight,
+			-1
+		);
+	}
+
 	@SubscribeEvent
 	public void barrierInventory(ReplaceItemEvent event) {
-		if (event.getSlotNumber() < 9 ||
-			(pairingSlot != null && (event.getSlotNumber() == pairingSlot.slotNumber || isArmourSlot(
-				event.getSlotNumber(),
-				pairingSlot.slotNumber
-			))) ||
-			!setTopHalfBarrier ||
-			!(event.getInventory() instanceof InventoryPlayer)) return;
+		if (!shouldShowBarrier(event.getSlotNumber(), event.getInventory())) return;
 		ItemStack stack = new ItemStack(Blocks.barrier);
 		ItemUtils.getOrCreateTag(stack).setBoolean(
 			"NEUHIDETOOLIP",
