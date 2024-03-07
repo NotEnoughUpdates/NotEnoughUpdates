@@ -1267,7 +1267,7 @@ public class SkyblockProfiles {
 			if (!getUuid().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))) return;
 			if (!getLatestProfile().skillsApiEnabled()) return;
 
-			if (getLevelingInfo().get("taming") != null) { //idfk what else could cause an NPE here
+			if (getLevelingInfo() != null && getLevelingInfo().get("taming") != null) { //idfk what else could cause an NPE here
 				PetInfoOverlay.getConfig().tamingLevel = (int) getLevelingInfo().get("taming").level;
 			}
 		}
