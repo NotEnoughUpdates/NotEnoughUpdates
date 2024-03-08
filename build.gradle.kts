@@ -21,6 +21,7 @@
 import neubs.NEUBuildFlags
 import neubs.applyPublishingInformation
 import neubs.setVersionFromEnvironment
+import org.apache.commons.lang3.SystemUtils
 import java.net.URL
 
 plugins {
@@ -56,6 +57,12 @@ loom {
 		}
 	}
 	runConfigs {
+		"client" {
+			if (SystemUtils.IS_OS_MAC_OSX) {
+				vmArgs.remove("-XstartOnFirstThread")
+			}
+			vmArgs.add("-Xmx4G")
+		}
 		"server" {
 			isIdeConfigGenerated = false
 		}
