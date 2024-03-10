@@ -43,16 +43,21 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -375,6 +380,70 @@ public class EquipmentOverlay {
 				mouseX - calculateTooltipXOffset(tooltipToDisplay),
 				mouseY, width, height, -1
 			);
+		}
+	}
+
+	private final Map<ItemStack, Integer> itemsToAdd = new HashMap<>();
+
+	@SubscribeEvent
+	public void onClickItem(PlayerInteractEvent event) {
+		if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR || Minecraft.getMinecraft().thePlayer.getHeldItem() == null) return;
+
+		ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
+		NBTTagList heldItemLore = heldItem.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
+
+		String itemType = StringUtils.substringAfterLast(heldItemLore.get(heldItemLore.tagCount() - 1).toString(), " ").replace("\"", "");
+		if (!Arrays.asList("NECKLACE", "CLOAK", "BELT", "GLOVES", "BRACELET").contains(itemType)) return;
+
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (profileSpecific == null) return;
+
+		int slot;
+
+		switch (itemType) {
+			case "NECKLACE":
+				slot = 10;
+				break;
+			case "CLOAK":
+				slot = 19;
+				break;
+			case "BELT":
+				slot = 28;
+				break;
+			case "GLOVES": case "BRACELET":
+				slot = 37;
+				break;
+			default:
+				return;
+		}
+
+		ItemStack itemInSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(profileSpecific.savedEquipment.get(slot).getAsJsonObject(), false);
+		if (itemInSlot != null && itemInSlot.getDisplayName().contains("Empty")) itemsToAdd.put(heldItem, slot);
+	}
+
+	@SubscribeEvent
+	public void onReceiveChatMessage(ClientChatReceivedEvent event) {
+		if (event.type == 2 || !event.message.getUnformattedText().startsWith("You equipped a ") || itemsToAdd.isEmpty()) return;
+
+		try {
+			for (ItemStack item : itemsToAdd.keySet()) {
+				if (event.message.getUnformattedText().contains(net.minecraft.util.StringUtils.stripControlCodes(item.getDisplayName()))) {
+
+					NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+					if (profileSpecific == null) return;
+
+					JsonObject itemToSave = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(item);
+					if (!itemToSave.has("internalname")) {
+						itemToSave.add("internalname", new JsonPrimitive("_"));
+					}
+					profileSpecific.savedEquipment.put(itemsToAdd.get(item), itemToSave);
+					profileCache.get(SBInfo.getInstance().currentProfile).put(itemsToAdd.get(item), item);
+					itemsToAdd.remove(item);
+					return;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
