@@ -70,7 +70,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private val itemIconSize = 20
 
     // Lazy initialisation to allow for guiLeft and guiTop to be initialized first
-    private val priceSourceButtonRect by lazy { Rectangle(guiLeft + 18, guiTop + 130, 20, 20) }
+    private val priceSourceButtonRect by lazy { Rectangle(guiLeft + 54, guiTop + 155, 20, 20) }
 
     private enum class PriceSource {
         Bazaar,
@@ -80,7 +80,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private var currentPriceSource = PriceSource.Bazaar
 
 
-    private val sortButtonRect by lazy { Rectangle(guiLeft + 40, guiTop + 130, 20, 20) }
+    private val sortButtonRect by lazy { Rectangle(guiLeft + 76, guiTop + 155, 20, 20) }
 
     private enum class SortMode {
         Value,
@@ -371,14 +371,14 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         for (enumValue in enumValues<T>()) {
             var line = " "
             line += if (enumValue == currentlySelected) {
-                "§2>${enumValue.name}"
+                "§2> ${enumValue.name}"
             } else {
                 enumValue.name
             }
             tooltip.add(line)
         }
         tooltip.add("")
-        tooltip.add("§2Click to switch!")
+        tooltip.add("§eClick to switch!")
         return tooltip
     }
 
