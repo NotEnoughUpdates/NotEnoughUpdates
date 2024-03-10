@@ -387,12 +387,12 @@ public class EquipmentOverlay {
 
 	@SubscribeEvent
 	public void onClickItem(PlayerInteractEvent event) {
-		if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR || Minecraft.getMinecraft().thePlayer.getHeldItem() == null) return;
+		if (event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK || Minecraft.getMinecraft().thePlayer.getHeldItem() == null) return;
 
 		ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		NBTTagList heldItemLore = heldItem.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
 
-		String itemType = StringUtils.substringAfterLast(heldItemLore.get(heldItemLore.tagCount() - 1).toString(), " ").replace("\"", "");
+		String itemType = Objects.requireNonNull(StringUtils.substringAfterLast(heldItemLore.get(heldItemLore.tagCount() - 1).toString(), " "), "null").replace("\"", "");
 		if (!Arrays.asList("NECKLACE", "CLOAK", "BELT", "GLOVES", "BRACELET").contains(itemType)) return;
 
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
