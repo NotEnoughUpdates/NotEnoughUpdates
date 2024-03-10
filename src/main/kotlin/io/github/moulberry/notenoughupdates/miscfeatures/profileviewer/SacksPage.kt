@@ -31,6 +31,9 @@ import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI
 import io.github.moulberry.notenoughupdates.util.kotlin.set
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Blocks
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
@@ -70,11 +73,11 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private val priceSourceButtonRect by lazy { Rectangle(guiLeft + 18, guiTop + 130, 20, 20) }
 
     private enum class PriceSource {
-        NPC,
-        Bazaar
+        Bazaar,
+        NPC
     }
 
-    private var currentPriceSource = PriceSource.NPC
+    private var currentPriceSource = PriceSource.Bazaar
 
 
     private val sortButtonRect by lazy { Rectangle(guiLeft + 40, guiTop + 130, 20, 20) }
@@ -340,7 +343,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         )
         if (priceSourceButtonRect.contains(mouseX, mouseY)) {
             val tooltip = mutableListOf(
-                "§6Select Price Source",
+                "§6Select price source",
             )
             tooltip.addAll(generateTooltipFromEnum(currentPriceSource))
             tooltipToDisplay = tooltip
@@ -348,12 +351,15 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
 
         KotlinRenderUtils.renderItemStackButton(
             sortButtonRect,
-            ItemUtils.getCoinItemStack(100.0),
+            when (currentSortMode) {
+                SortMode.Value -> ItemStack(Items.gold_ingot)
+                SortMode.Quantity -> ItemStack(Blocks.hopper)
+            },
             GuiProfileViewer.pv_elements
         )
         if (sortButtonRect.contains(mouseX, mouseY)) {
             val tooltip = mutableListOf(
-                "§6Current Sorting Mode: §2${currentSortMode.name}",
+                "§6Select sorting mode",
             )
             tooltip.addAll(generateTooltipFromEnum(currentSortMode))
             tooltipToDisplay = tooltip
