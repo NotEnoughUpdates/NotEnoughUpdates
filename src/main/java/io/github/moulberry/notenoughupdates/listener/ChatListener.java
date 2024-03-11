@@ -126,14 +126,14 @@ public class ChatListener {
 
 		IChatComponent targetedComponent = siblings.get(siblings.size() - 2);
 
-		String startsWith = getChatClickEvent(siblings.get(0));
+		String chatClickCommand = getChatClickEvent(siblings.get(0));
 
-		if (startsWith == null) {
-			startsWith = getChatClickEvent(targetedComponent);
+		if (chatClickCommand == null) {
+			chatClickCommand = getChatClickEvent(targetedComponent);
 		}
-		if (startsWith == null) return chatComponent;
+		if (chatClickCommand == null) return chatComponent;
 
-		String username = startsWith.equals("/viewprofile") ?
+		String username = chatClickCommand.equals("/viewprofile") ?
 			Utils.getNameFromChatComponent(chatComponent) :
 			targetedComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
 		username = username.replaceAll("[^a-zA-Z0-9_]", "");
