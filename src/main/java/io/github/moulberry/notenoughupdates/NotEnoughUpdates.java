@@ -41,6 +41,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
+import io.github.moulberry.notenoughupdates.miscfeatures.RecipeSearch;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
@@ -267,6 +268,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipRngListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipEssenceShopListener(this));
 		MinecraftForge.EVENT_BUS.register(new RenderListener(this));
+		MinecraftForge.EVENT_BUS.register(RecipeSearch.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 		AutoLoad.INSTANCE.provide(supplier -> MinecraftForge.EVENT_BUS.register(supplier.get()));

@@ -62,6 +62,7 @@ import io.github.moulberry.notenoughupdates.options.separatesections.Museum;
 import io.github.moulberry.notenoughupdates.options.separatesections.Notifications;
 import io.github.moulberry.notenoughupdates.options.separatesections.PetOverlay;
 import io.github.moulberry.notenoughupdates.options.separatesections.ProfileViewer;
+import io.github.moulberry.notenoughupdates.options.separatesections.RecipeTweaks;
 import io.github.moulberry.notenoughupdates.options.separatesections.SkillOverlays;
 import io.github.moulberry.notenoughupdates.options.separatesections.SlayerOverlay;
 import io.github.moulberry.notenoughupdates.options.separatesections.SlotLocking;
@@ -430,6 +431,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Recipe Tweaks",
+		desc = "Tweaks for the Recipe Search"
+	)
+	public RecipeTweaks recipeTweaks = new RecipeTweaks();
+
+	@Expose
+	@Category(
 		name = "Price Graph",
 		desc = "Graph of auction and bazaar prices"
 	)
@@ -532,6 +540,8 @@ public class NEUConfig extends Config {
 		public ArrayList<String> previousBazaarSearches = new ArrayList<>();
 		@Expose
 		public ArrayList<String> previousProfileSearches = new ArrayList<>();
+		@Expose
+		public ArrayList<String> previousRecipeSearches = new ArrayList<>();
 		@Expose
 		public ArrayList<String> eventFavourites = new ArrayList<>();
 		@Expose

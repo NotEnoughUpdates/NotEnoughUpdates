@@ -414,6 +414,11 @@ public class NEUManager {
 		return getRecipesFor(internalname).stream().filter(NeuRecipe::isAvailable).collect(Collectors.toList());
 	}
 
+	public HashMap<String, Set<NeuRecipe>> getAllRecipes() {
+		return recipesMap;
+
+	}
+
 	public Set<NeuRecipe> getUsagesFor(String internalName) {
 		return usagesMap.getOrDefault(internalName, Collections.emptySet());
 	}
