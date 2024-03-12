@@ -50,7 +50,7 @@ public class AbiphoneFavourites {
 
 	private static final AbiphoneFavourites INSTANCE = new AbiphoneFavourites();
 	private long lastClick = 0L;
-	private ItemStack checkShowSlot = null;
+	private boolean isInShowMenu = false;
 
 	public static AbiphoneFavourites getInstance() {
 		return INSTANCE;
@@ -212,7 +212,8 @@ public class AbiphoneFavourites {
 
 		GuiContainer container = event.getContainer();
 
-		checkShowSlot = container.inventorySlots.getSlot(13).getStack();
+		ItemStack checkForShowMenu = container.inventorySlots.getSlot(1*9 + 4).getStack();
+		isInShowMenu = checkForShowMenu != null && checkForShowMenu.getDisplayName().contains("Abiphone ");
 
 		for (Slot slot : container.inventorySlots.inventorySlots) {
 			if (slot == null) continue;
@@ -237,7 +238,7 @@ public class AbiphoneFavourites {
 			|| !NotEnoughUpdates.INSTANCE.config.misc.abiphoneFavourites
 			|| Utils.getOpenChestName().equals("Abiphone Shop")
 			|| !Utils.getOpenChestName().startsWith("Abiphone ")
-			|| checkShowSlot != null && checkShowSlot.getDisplayName().contains("Abiphone ");
+			|| isInShowMenu;
 	}
 
 	private boolean isContact(ItemStack stack) {
