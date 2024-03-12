@@ -80,6 +80,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		EnumChatFormatting.GREEN + "Recipe Search",
 		EnumChatFormatting.YELLOW + "Click to open Recipe Search!"
 	);
+
 	@Inject(method = "drawSlot", at = @At("RETURN"))
 	public void drawSlotRet(Slot slotIn, CallbackInfo ci) {
 		SlotLocking.getInstance().drawSlot(slotIn);

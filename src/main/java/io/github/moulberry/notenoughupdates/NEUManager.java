@@ -432,11 +432,10 @@ public class NEUManager {
 		String match;
 
 		DebugMatch(int index, String match) {
-				this.index = index;
-				this.match = match;
+			this.index = index;
+			this.match = match;
 		}
 	}
-
 
 	private String searchDebug(String[] searchArray, ArrayList<DebugMatch> debugMatches) {
 		//splitToSearch, debugMatches and query
@@ -513,10 +512,10 @@ public class NEUManager {
 			for (int k = 0; k < splitToSearch.length; k++) {
 				if (queryIndex - 1 != -1 && (queryArray.length - queryIndex) > (splitToSearch.length - k)) continue;
 				if (splitToSearch[k].startsWith(currentSearch)) {
-					if (((lastStringMatch != -1 ? lastStringMatch : k-1) == k-1)) {
+					if (((lastStringMatch != -1 ? lastStringMatch : k - 1) == k - 1)) {
 						debugMatches.add(new DebugMatch(k, currentSearch));
 						lastStringMatch = k;
-						if (queryIndex+1 != queryArray.length) {
+						if (queryIndex + 1 != queryArray.length) {
 							queryIndex++;
 							currentSearch = queryArray[queryIndex];
 						} else {
@@ -532,11 +531,13 @@ public class NEUManager {
 
 			if (matchedLastQueryItem) {
 				if (NEUDebugFlag.SEARCH.isSet()) {
-					NotEnoughUpdates.LOGGER.info("Found match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t" + searchDebug(splitToSearch, debugMatches));
+					NotEnoughUpdates.LOGGER.info("Found match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t" +
+						searchDebug(splitToSearch, debugMatches));
 				}
 			} else {
 				if (NEUDebugFlag.SEARCH.isSet() && lastStringMatch != -1) {
-					NotEnoughUpdates.LOGGER.info("Found partial match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t" + searchDebug(splitToSearch, debugMatches));
+					NotEnoughUpdates.LOGGER.info("Found partial match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t" +
+						searchDebug(splitToSearch, debugMatches));
 				}
 			}
 
@@ -580,12 +581,12 @@ public class NEUManager {
 				result = result || multiSearchString(stack.getDisplayName(), sb.toString());
 			}
 
-
 			result = result || multiSearchString(stack.getDisplayName(), query);
 
 			String lore = "";
-			if (stack.getItem() instanceof ItemArmor && ((ItemArmor)stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER) {
-				lore = String.format("#%06x ",((ItemArmor)stack.getItem()).getColor(stack));
+			if (stack.getItem() instanceof ItemArmor &&
+				((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER) {
+				lore = String.format("#%06x ", ((ItemArmor) stack.getItem()).getColor(stack));
 			}
 			NBTTagCompound tag = stack.getTagCompound();
 			if (tag != null) {

@@ -349,7 +349,7 @@ public class RecipeSearchOverlay {
 
 			for (Map.Entry<String, Set<NeuRecipe>> entry : items.entrySet()) {
 				for (NeuRecipe recipe : entry.getValue()) {
-					if(recipe.isAvailable()) keys.add(entry.getKey());
+					if (recipe.isAvailable()) keys.add(entry.getKey());
 				}
 			}
 			title.retainAll(keys);

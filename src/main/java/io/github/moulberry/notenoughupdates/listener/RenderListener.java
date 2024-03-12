@@ -776,7 +776,8 @@ public class RenderListener {
 						}
 					}
 					JsonObject kismetBazaar = neu.manager.auctionManager.getBazaarInfo("KISMET_FEATHER");
-					double kismetPrice = (kismetBazaar != null && kismetBazaar.has("curr_buy")) ? kismetBazaar.get("curr_buy").getAsFloat() : 0;
+					double kismetPrice =
+						(kismetBazaar != null && kismetBazaar.has("curr_buy")) ? kismetBazaar.get("curr_buy").getAsFloat() : 0;
 					String kismetStr = EnumChatFormatting.RED + formatCoins(kismetPrice) + " coins";
 					if (neu.config.dungeons.useKismetOnDungeonProfit)
 						profitLossBIN = kismetUsed ? profitLossBIN - kismetPrice : profitLossBIN;
@@ -1120,12 +1121,12 @@ public class RenderListener {
 		}
 
 		if (tradeWindowActive) {
-				TradeWindow.keyboardInput();
-				if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
-					event.setCanceled(true);
-					Minecraft.getMinecraft().dispatchKeypresses();
-					neu.overlay.keyboardInput(focusInv);
-				}
+			TradeWindow.keyboardInput();
+			if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
+				event.setCanceled(true);
+				Minecraft.getMinecraft().dispatchKeypresses();
+				neu.overlay.keyboardInput(focusInv);
+			}
 			return;
 		}
 
@@ -1247,6 +1248,7 @@ public class RenderListener {
 
 	/**
 	 * Support for switching between different pages in the RecipeView gui via right and left arrow key
+	 *
 	 * @param event
 	 */
 	//Because GuiScreen.keyTyped does not fire the KEY_LEFT and KEY_RIGHT keys. Maybe some event cancelled it?
