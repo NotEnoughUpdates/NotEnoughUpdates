@@ -64,7 +64,7 @@ public class RecipeTweaks {
 	@Expose
 	@ConfigOption(
 		name = "ESC to Full Close",
-		desc = "Make pressing ESCAPE close the search GUI without opening up the Bazaar again\n" +
+		desc = "Make pressing ESCAPE close the search GUI without opening up the Craft menu again\n" +
 			"ENTER can still be used to search"
 	)
 	@ConfigEditorBoolean

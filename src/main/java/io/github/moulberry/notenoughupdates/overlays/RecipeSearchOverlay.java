@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -331,6 +332,8 @@ public class RecipeSearchOverlay {
 			if (thisSearchId != searchId.get()) return;
 
 			Set<String> bazaarItems = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarKeySet();
+//			ItemResolutionQuery query = new ItemResolutionQuery().resolveToItemListJson();
+//			NotEnoughUpdates.INSTANCE.manager
 			// Amalgamated Crimsonite (Old) // TODO remove from repo
 			bazaarItems.remove("AMALGAMATED_CRIMSONITE");
 
@@ -442,7 +445,7 @@ public class RecipeSearchOverlay {
 						close();
 						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
 						NotEnoughUpdates.INSTANCE.openGui =
-							new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "Bazaar Tweaks"));
+							new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "Recipe Tweaks"));
 					}
 				}
 			} else if (Mouse.getEventButton() == 0) {

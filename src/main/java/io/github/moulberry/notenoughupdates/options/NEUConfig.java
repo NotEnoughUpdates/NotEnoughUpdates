@@ -56,6 +56,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.NeuAuctionH
 import io.github.moulberry.notenoughupdates.options.seperateSections.Notifications;
 import io.github.moulberry.notenoughupdates.options.seperateSections.PetOverlay;
 import io.github.moulberry.notenoughupdates.options.seperateSections.ProfileViewer;
+import io.github.moulberry.notenoughupdates.options.seperateSections.RecipeTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.SkillOverlays;
 import io.github.moulberry.notenoughupdates.options.seperateSections.SlayerOverlay;
 import io.github.moulberry.notenoughupdates.options.seperateSections.SlotLocking;
@@ -382,7 +383,7 @@ public class NEUConfig extends Config {
 		name = "Recipe Tweaks",
 		desc = "Tweaks for the Recipe Search"
 	)
-	public BazaarTweaks recipeTweaks = new BazaarTweaks();
+	public RecipeTweaks recipeTweaks = new RecipeTweaks();
 
 	@Expose
 	@Category(
