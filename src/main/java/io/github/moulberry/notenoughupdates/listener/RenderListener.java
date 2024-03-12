@@ -465,7 +465,6 @@ public class RenderListener {
 			return;
 		}
 
-
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 		boolean customAhActive =
@@ -807,7 +806,7 @@ public class RenderListener {
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
 							double worth = -1;
- 							boolean isOnBz = false;
+							boolean isOnBz = false;
 							if (bazaarPrice >= 0) {
 								worth = bazaarPrice;
 								isOnBz = true;
@@ -1085,7 +1084,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -1566,7 +1564,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);

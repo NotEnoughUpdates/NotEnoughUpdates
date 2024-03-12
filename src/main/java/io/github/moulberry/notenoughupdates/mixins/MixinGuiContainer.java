@@ -129,8 +129,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 					}
 				}
 			}
-		}
-		else if (!hasRecipeSearchStack && $this instanceof GuiChest && slot.getSlotIndex() == 32 &&
+		} else if (!hasRecipeSearchStack && $this instanceof GuiChest && slot.getSlotIndex() == 32 &&
 			BetterContainers.isBlankStack(-1, slot.getStack())) {
 			BetterContainers.recipeSearchStackIndex = -1;
 			hasRecipeSearchStack = true;
@@ -138,7 +137,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 			GuiChest eventGui = (GuiChest) $this;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if(containerName.equals("Craft Item") && cc.inventorySlots.size() >= 54) {
+			if (containerName.equals("Craft Item") && cc.inventorySlots.size() >= 54) {
 				ci.cancel();
 
 				this.zLevel = 100.0F;
@@ -157,14 +156,13 @@ public abstract class MixinGuiContainer extends GuiScreen {
 				this.itemRender.zLevel = 0.0F;
 				this.zLevel = 0.0F;
 				BetterContainers.recipeSearchStackIndex = slot.getSlotIndex();
-			}else {
+			} else {
 				BetterContainers.recipeSearchStackIndex = -1;
 			}
 		} else if (slot.getSlotIndex() == 0) {
 			hasProfileViewerStack = false;
 			hasRecipeSearchStack = false;
-		}
-		else if (!($this instanceof GuiChest)) {
+		} else if (!($this instanceof GuiChest)) {
 			BetterContainers.recipeSearchStackIndex = -1;
 			BetterContainers.profileViewerStackIndex = -1;
 		}

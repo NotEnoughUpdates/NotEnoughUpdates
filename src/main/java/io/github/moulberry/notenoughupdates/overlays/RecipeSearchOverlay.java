@@ -77,8 +77,7 @@ public class RecipeSearchOverlay {
 		}
 
 		String lastContainer = Utils.getLastOpenChestName();
-		if(lastContainer.equals("Craft Item") || lastContainer.contains("Recipes (")) return true;
-		else return false;
+		return lastContainer.equals("Craft Item") || lastContainer.contains("Recipes (");
 	}
 
 	public static void render() {
@@ -124,8 +123,7 @@ public class RecipeSearchOverlay {
 					if (i == tabCompletionIndex) {
 						Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED);
 						GlStateManager.color(1, 1, 1, 1);
-						Utils.drawTexturedRect(
-							width / 2 - 96 + 1,
+						Utils.drawTexturedRect(width / 2 - 96 + 1,
 							topY + 30 + num * 22 + 1,
 							193,
 							21,
@@ -138,8 +136,7 @@ public class RecipeSearchOverlay {
 					} else {
 						Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
 						GlStateManager.color(1, 1, 1, 1);
-						Utils.drawTexturedRect(
-							width / 2 - 96 + 1,
+						Utils.drawTexturedRect(width / 2 - 96 + 1,
 							topY + 30 + num * 22 + 1,
 							193,
 							21,
@@ -157,12 +154,9 @@ public class RecipeSearchOverlay {
 						itemName = lore[0].trim();
 					}
 
-					Minecraft.getMinecraft().fontRendererObj.drawString(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(
-							itemName,
-							165
-						),
-						width / 2 - 74, topY + 35 + num * 22 + 1, 0xdddddd, true
-					);
+					Minecraft.getMinecraft().fontRendererObj.drawString(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(itemName,
+						165
+					), width / 2 - 74, topY + 35 + num * 22 + 1, 0xdddddd, true);
 
 					GlStateManager.enableDepth();
 					Utils.drawItemStack(stack, width / 2 - 94 + 2, topY + 32 + num * 22 + 1);
@@ -178,8 +172,7 @@ public class RecipeSearchOverlay {
 		}
 
 		if (NotEnoughUpdates.INSTANCE.config.recipeTweaks.showPastSearches) {
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				"Past Searches:",
+			Minecraft.getMinecraft().fontRendererObj.drawString("Past Searches:",
 				width / 2 - 100,
 				topY + 25 + AUTOCOMPLETE_HEIGHT + 5,
 				0xdddddd,
@@ -190,8 +183,7 @@ public class RecipeSearchOverlay {
 				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.size()) break;
 
 				String s = NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.get(i);
-				Minecraft.getMinecraft().fontRendererObj.drawString(
-					s,
+				Minecraft.getMinecraft().fontRendererObj.drawString(s,
 					width / 2 - 95 + 1,
 					topY + 45 + AUTOCOMPLETE_HEIGHT + i * 10 + 2,
 					0xdddddd,
@@ -200,8 +192,7 @@ public class RecipeSearchOverlay {
 			}
 
 			if (tooltipToDisplay != null) {
-				Utils.drawHoveringText(
-					tooltipToDisplay,
+				Utils.drawHoveringText(tooltipToDisplay,
 					mouseX,
 					mouseY,
 					width,
@@ -253,10 +244,9 @@ public class RecipeSearchOverlay {
 
 		String search = stringBuilder.toString();
 
-		if(search.isEmpty()) return;
+		if (search.isEmpty()) return;
 
 		Minecraft.getMinecraft().thePlayer.sendChatMessage("/recipe " + search);
-
 
 		if (!searchString.trim().isEmpty()) {
 			List<String> previousRecipeSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches;
@@ -346,7 +336,6 @@ public class RecipeSearchOverlay {
 
 			title.retainAll(bazaarItems);
 			desc.retainAll(bazaarItems);
-
 
 			if (thisSearchId != searchId.get()) return;
 
@@ -452,8 +441,8 @@ public class RecipeSearchOverlay {
 						searchStringExtra = "";
 						close();
 						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
-						NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(new NEUConfigEditor(
-							NotEnoughUpdates.INSTANCE.config, "Bazaar Tweaks"));
+						NotEnoughUpdates.INSTANCE.openGui =
+							new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "Bazaar Tweaks"));
 					}
 				}
 			} else if (Mouse.getEventButton() == 0) {

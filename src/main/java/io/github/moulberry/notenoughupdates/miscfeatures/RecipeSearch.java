@@ -44,14 +44,10 @@ public class RecipeSearch {
 	@SubscribeEvent
 	public void onGuiOpen(SlotClickEvent event) {
 		ContainerChest chest = (ContainerChest) event.guiContainer.inventorySlots;
-//		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-//			"Gui opened! " + chest.getLowerChestInventory().getName()));
 		String guiName = chest.getLowerChestInventory().getName();
 		if (!Objects.equals(guiName, "Craft Item")) return;
 		if (event.slot.slotNumber != 32) return;
-//		RecipeSearchOverlay.render();
 		Minecraft.getMinecraft().displayGuiScreen(new GuiEditSign(new TileEntitySign()));
-//		AuctionSearchOverlay.render();
 		event.setCanceled(true);
 	}
 }
