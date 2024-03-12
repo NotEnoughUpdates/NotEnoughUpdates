@@ -61,6 +61,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -70,6 +71,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -939,6 +941,15 @@ public class RenderListener {
 						});
 					}
 				}
+			} else if (containerName.equals("Craft Item") && BetterContainers.recipeSearchStackIndex != -1 &&
+				((AccessorGuiContainer) eventGui).doIsMouseOverSlot(
+					cc.inventorySlots.get(BetterContainers.recipeSearchStackIndex),
+					mouseX,
+					mouseY
+				) &&
+				Mouse.getEventButton() >= 0) {
+				event.setCanceled(true);
+				NotEnoughUpdates.INSTANCE.openGui = new GuiEditSign(new TileEntitySign());
 			}
 		}
 

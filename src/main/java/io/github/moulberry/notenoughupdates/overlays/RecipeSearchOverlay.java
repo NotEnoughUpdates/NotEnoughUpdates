@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
+import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.StreamExtL;
@@ -268,6 +269,8 @@ public class RecipeSearchOverlay {
 
 		Minecraft.getMinecraft().displayGuiScreen(null);
 
+		BetterContainers.recipeSearchStackIndex = -1;
+
 		if (Minecraft.getMinecraft().currentScreen == null) {
 			Minecraft.getMinecraft().setIngameFocus();
 		}
@@ -349,7 +352,6 @@ public class RecipeSearchOverlay {
 					if(recipe.isAvailable()) keys.add(entry.getKey());
 				}
 			}
-			System.out.println(keys);
 			title.retainAll(keys);
 			desc.retainAll(keys);
 
