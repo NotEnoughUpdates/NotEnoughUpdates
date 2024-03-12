@@ -22,9 +22,9 @@ package io.github.moulberry.notenoughupdates.overlays;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
-import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodo;
 import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodoHud;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -83,7 +83,7 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern DAILY_GEMSTONE_POWDER = Pattern.compile(
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
 	private static final Pattern DAILY_SHOP_LIMIT = Pattern.compile(
-		"\u00a7r\u00a7cYou may only buy up to (640|6400) of this item each day!\u00a7r");
+		"\u00a7r\u00a7cYou may only buy up to 6,?400? of this item each day!\u00a7r");
 
 	@SubscribeEvent
 	public void onClickItem(SlotClickEvent event) {
@@ -155,14 +155,39 @@ public class TimersOverlay extends TextTabOverlay {
 		return super.getSize(strings);
 	}
 
-	private static final ItemStack CAKES_ICON = new ItemStack(Items.cake);
-	private static final ItemStack PUZZLER_ICON = new ItemStack(Items.book);
 	private static ItemStack[] FETCHUR_ICONS = null;
-	private static final ItemStack COMMISSIONS_ICON = new ItemStack(Items.iron_pickaxe);
-	private static final ItemStack EXPERIMENTS_ICON = new ItemStack(Items.enchanted_book);
-	private static final ItemStack COOKIE_ICON = new ItemStack(Items.cookie);
-	private static final ItemStack QUEST_ICON = new ItemStack(Items.sign);
-	private static final ItemStack SHOP_ICON = new ItemStack(Blocks.hopper);
+
+	private static HashMap<String, ItemStack> todoItems;
+
+	private static void setupTodoItems() {
+		todoItems = new HashMap<String, ItemStack>() {
+			{
+				addItem("Mithril Powder", "INK_SACK-10");
+				addItem("God Potion", "GOD_POTION_2");
+				addItem("Crimson Isle Quest", "SIGN");
+				addItem("Daily Shop Limit", "HOPPER");
+				addItem("Rift", "DOUBLE_PLANT-1");
+				addItem("Cakes", "EPOCH_CAKE_PINK");
+				addItem("Experiments", "ENCHANTED_BOOK");
+				addItem("Puzzler", "BOOK");
+				addItem("Commission", "IRON_PICKAXE");
+				addItem("Heavy Pearls", "HEAVY_PEARL");
+				addItem("Gemstone Powder", "PERFECT_AMETHYST_GEM");
+				addItem("Mithril Powder", "MITHRIL_ORE");
+				addItem("Cookie Buff", "BOOSTER_COOKIE");
+			}
+
+			private void addItem(String eventName, String internalName) {
+				ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager)
+					.withKnownInternalName(internalName).resolveToItemStack();
+				if (itemStack == null) {
+					Utils.showOutdatedRepoNotification(internalName);
+					return;
+				}
+				put(eventName, itemStack.copy());
+			}
+		};
+	}
 
 	@Override
 	protected void renderLine(String line, Vector2f position, boolean dummy) {
@@ -172,6 +197,10 @@ public class TimersOverlay extends TextTabOverlay {
 		GlStateManager.enableDepth();
 		ItemStack icon = null;
 
+		if (todoItems == null) {
+			setupTodoItems();
+		}
+
 		String clean = Utils.cleanColour(line);
 		String beforeColon = clean.split(":")[0];
 		if (beforeColon.startsWith("CUSTOM")) {
@@ -179,15 +208,13 @@ public class TimersOverlay extends TextTabOverlay {
 		} else
 			switch (beforeColon) {
 				case "Cakes":
-					icon = CAKES_ICON;
+					icon = todoItems.get("Cakes");
 					break;
 				case "Puzzler":
-					icon = PUZZLER_ICON;
+					icon = todoItems.get("Puzzler");
 					break;
 				case "Godpot":
-					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.get("GOD_POTION"));
+					icon = todoItems.get("God Potion");
 					break;
 				case "Fetchur": {
 					if (FETCHUR_ICONS == null) {
@@ -224,37 +251,31 @@ public class TimersOverlay extends TextTabOverlay {
 					break;
 				}
 				case "Commissions":
-					icon = COMMISSIONS_ICON;
+					icon = todoItems.get("Commission");
 					break;
 				case "Experiments":
-					icon = EXPERIMENTS_ICON;
+					icon = todoItems.get("Experiments");
 					break;
 				case "Cookie Buff":
-					icon = COOKIE_ICON;
+					icon = todoItems.get("Cookie Buff");
 					break;
 				case "Mithril Powder":
-					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.get("MITHRIL_ORE"));
+					icon = todoItems.get("Mithril Powder");
 					break;
 				case "Gemstone Powder":
-					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.get("PERFECT_AMETHYST_GEM"));
+					icon = todoItems.get("Gemstone Powder");
 					break;
 				case "Heavy Pearls":
-					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.get("HEAVY_PEARL"));
+					icon = todoItems.get("Heavy Pearls");
 					break;
 				case "Free Rift Infusion":
-					icon = new ItemStack(Blocks.double_plant, 1, 1);
+					icon = todoItems.get("Rift");
 					break;
 				case "Crimson Isle Quests":
-					icon = QUEST_ICON;
+					icon = todoItems.get("Crimson Isle Quest");
 					break;
 				case "NPC Buy Daily Limit":
-					icon = SHOP_ICON;
+					icon = todoItems.get("Daily Shop Limit");
 					break;
 			}
 
@@ -316,7 +337,7 @@ public class TimersOverlay extends TextTabOverlay {
 						break;
 					}
 					if (hidden.commissionsCompleted == 0) {
-						hidden.commissionsCompleted = currentTime + TimeEnums.DAY.time;
+						hidden.commissionsCompleted = currentTime;
 					}
 					for (int i = 9; i < 18; i++) {
 						stack = lower.getStackInSlot(i);
@@ -398,6 +419,7 @@ public class TimersOverlay extends TextTabOverlay {
 										switch (unit) {
 											case "Years":
 											case "Year":
+											case "y":
 												hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
 												break;
 											case "Months":

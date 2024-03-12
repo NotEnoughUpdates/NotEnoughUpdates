@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumTooltip
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
+import lombok.val;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
@@ -48,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class ItemPriceInformation {
 	private static File file;
@@ -55,6 +57,9 @@ public class ItemPriceInformation {
 	private static Gson gson;
 	private static final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
 	public static String STACKSIZE_OVERRIDE = "NEU_STACKSIZE_OVERRIDE";
+
+	private static final Pattern SACK_STORED_AMOUNT = Pattern.compile(
+		".*Stored: §.(?<amount>[\\d,]+)§.\\/.*");
 
 	public static void addToTooltip(List<String> tooltip, String internalName, ItemStack stack) {
 		addToTooltip(tooltip, internalName, stack, true);
@@ -130,6 +135,20 @@ public class ItemPriceInformation {
 			shiftStackMultiplier = stack.getTagCompound().getInteger(STACKSIZE_OVERRIDE);
 		}
 		int stackMultiplier = 1;
+		for (int i = 3; i < tooltip.size(); i++) {
+			val matcher = SACK_STORED_AMOUNT.matcher(tooltip.get(i));
+			if (matcher.matches()) {
+				String amountString = matcher.group("amount").replace(",", "");
+				try {
+					int parsedValue = Integer.parseInt(amountString);
+					if (parsedValue != 0) {
+						shiftStackMultiplier = parsedValue;
+					}
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		boolean shiftPressed = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (shiftPressed) {
 			stackMultiplier = shiftStackMultiplier;
@@ -459,7 +478,7 @@ public class ItemPriceInformation {
 			}
 		}
 		Double npcSellPrice = HypixelItemAPI.getNPCSellPrice(internalname);
-		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.npcSellPrice && npcSellPrice != null) {
+		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.npcSellPrice && npcSellPrice != null && npcSellPrice != 0) {
 			if (!added)
 				tooltip.add("");
 			tooltip.add(formatPrice("NPC Sell Price: ", npcSellPrice * stackMultiplier));

@@ -196,6 +196,7 @@ public class MinionHelperOverlayHover {
 
 			lines.add("");
 			lines.add("§eClick to view recipe!");
+			lines.add("§eCtrl-Click to open bazaar!");
 		}
 		return lines;
 	}

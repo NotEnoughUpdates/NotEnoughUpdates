@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -40,8 +40,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -218,7 +216,7 @@ public class ItemUtils {
 		return text;
 	}
 
-	public static NBTTagCompound getExtraAttributes(ItemStack itemStack) {
+	public static @NotNull NBTTagCompound getExtraAttributes(ItemStack itemStack) {
 		NBTTagCompound tag = getOrCreateTag(itemStack);
 		NBTTagCompound extraAttributes = tag.getCompoundTag("ExtraAttributes");
 		tag.setTag("ExtraAttributes", extraAttributes);

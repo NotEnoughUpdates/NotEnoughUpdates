@@ -21,35 +21,38 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
-import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
+import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.util.Calculator;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NEUAutoSubscribe
 public class FuelBar {
 	public static final ResourceLocation FUEL_BAR = new ResourceLocation("notenoughupdates:fuel_bar.png");
-
-	private float fuelAmount = -1;
-	private String fuelString = "";
+	private static final Pattern FUEL_PATTERN = Pattern.compile("§7Fuel: .*/([0-9km]+)");
+	private int currentFuel = -1;
+	private int maxFuel = -1;
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
-		fuelAmount = -1;
+		currentFuel = -1;
 
 		if (SBInfo.getInstance().getLocation() == null) return;
 		if (!(SBInfo.getInstance().getLocation().startsWith("mining_") || SBInfo.getInstance().getLocation().equals(
@@ -60,36 +63,24 @@ public class FuelBar {
 		if (!NotEnoughUpdates.INSTANCE.config.mining.drillFuelBar) return;
 
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
-		if (held != null) {
-			String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
-			if (internalname != null && (internalname.contains("_DRILL_") || internalname.equals("DIVAN_DRILL"))) {
-				String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(held.getTagCompound());
-				for (String line : lore) {
-					try {
-						if (line.startsWith("\u00A77Fuel: ")) {
-							String[] split = Utils.cleanColour(line).split("/");
-							if (split.length == 2) {
-								String fuelS = split[0].split(" ")[1];
-								int fuel = Integer.parseInt(fuelS.replace(",", "").trim());
-
-								String maxFuelS = split[1].trim();
-								int mult = 1;
-								if (maxFuelS.endsWith("k")) {
-									mult = 1000;
-								}
-								int maxFuel = Integer.parseInt(maxFuelS.replace("k", "").trim()) * mult;
-								fuelAmount = fuel / (float) maxFuel;
-								if (fuelAmount > 1) {
-									fuelAmount = 1;
-								}
-								fuelString = line;
-
-								break;
-							}
-						}
-					} catch (Exception ignored) {
-					}
-				}
+		if (held == null) {
+			return;
+		}
+		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
+		if (internalname == null || (!internalname.contains("_DRILL_") && !internalname.equals("DIVAN_DRILL"))) {
+			return;
+		}
+		NBTTagCompound extraAttributes = ItemUtils.getExtraAttributes(held);
+		currentFuel = extraAttributes.getInteger("drill_fuel");
+		String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(held.getTagCompound());
+		for (String line : lore) {
+			try {
+				Matcher matcher = FUEL_PATTERN.matcher(line);
+				if (!matcher.matches()) continue;
+				maxFuel = Calculator.calculate(matcher.group(1)).intValue();
+				if (maxFuel < currentFuel)
+					maxFuel = currentFuel;
+			} catch (Exception ignored) {
 			}
 		}
 	}
@@ -97,10 +88,10 @@ public class FuelBar {
 	@SubscribeEvent
 	public void onRenderScreen(RenderGameOverlayEvent.Post event) {
 		if (!GuiPositionEditor.renderDrill) {
-			if (fuelAmount < 0) return;
+			if (currentFuel < 0) return;
 			if (!NotEnoughUpdates.INSTANCE.config.mining.drillFuelBar) return;
 		} else {
-			fuelAmount = .3f;
+			currentFuel = 300;
 		}
 		if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
 			GlStateManager.pushMatrix();
@@ -110,18 +101,21 @@ public class FuelBar {
 			int x = position.getAbsX(scaledResolution, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth + 2);
 			int y = position.getAbsY(scaledResolution, 5);
 			x -= NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth / 2 - 1;
-			renderBar(x, y + 6, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth + 2, fuelAmount);
 
-			String str = fuelString.replace("\u00A77", EnumChatFormatting.DARK_GREEN.toString()) +
-				EnumChatFormatting.GOLD + String.format(" (%d%%)", (int) (fuelAmount * 100));
+			float fuelPercentage = ((float) currentFuel) / maxFuel;
+			renderBar(x, y + 6, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth + 2, fuelPercentage);
+
+			String str = String.format("§2%d§7/§2%d §6(%d%%)", currentFuel, maxFuel, (int) (fuelPercentage * 100));
 
 			GlStateManager.enableBlend();
-			GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA,
+			GL14.glBlendFuncSeparate(
+				GL11.GL_SRC_ALPHA,
 				GL11.GL_ONE_MINUS_SRC_ALPHA,
 				GL11.GL_ONE,
 				GL11.GL_ONE_MINUS_SRC_ALPHA
 			);
-			GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA,
+			GlStateManager.tryBlendFuncSeparate(
+				GL11.GL_SRC_ALPHA,
 				GL11.GL_ONE_MINUS_SRC_ALPHA,
 				GL11.GL_ONE,
 				GL11.GL_ONE_MINUS_SRC_ALPHA
@@ -131,7 +125,8 @@ public class FuelBar {
 			for (int xO = -2; xO <= 2; xO++) {
 				for (int yO = -2; yO <= 2; yO++) {
 					if (Math.abs(xO) != Math.abs(yO)) {
-						Minecraft.getMinecraft().fontRendererObj.drawString(clean,
+						Minecraft.getMinecraft().fontRendererObj.drawString(
+							clean,
 							x + 2 + xO / 2f,
 							y + yO / 2f,
 							new Color(0, 0, 0, 200 / Math.max(Math.abs(xO), Math.abs(yO))).getRGB(),

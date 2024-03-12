@@ -48,7 +48,7 @@
                 <TextField width="300" value="@timer"/>
             </Row>
             <Row>
-                <Text text="Rest at fixed time: " width="150"/>
+                <Text text="Reset at fixed time: " width="150"/>
                 <Switch value="@isResetOffset"/>
             </Row>
             <Row>

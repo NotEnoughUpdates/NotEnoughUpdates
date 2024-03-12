@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.listener;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUApi;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
@@ -96,6 +95,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -749,7 +749,7 @@ public class RenderListener {
 						valueStringBIN1 = EnumChatFormatting.YELLOW + "Value (BIN): ";
 						valueStringBIN2 = EnumChatFormatting.GOLD + formatCoins(totalValue) + " coins";
 					} else {
-						valueStringBIN1 = EnumChatFormatting.YELLOW + "Can't find BIN: ";
+						valueStringBIN1 = EnumChatFormatting.YELLOW + "Can't find Price: ";
 						valueStringBIN2 = missingItem;
 					}
 
@@ -834,11 +834,12 @@ public class RenderListener {
 							160
 						);
 					}
-					JsonObject mayorJson = SBInfo.getInstance().getMayorJson();
-					JsonElement mayor = mayorJson.get("mayor");
-					if (mayorJson.has("mayor") && mayor != null && mayor.getAsJsonObject().has("name") &&
-						mayor.getAsJsonObject().get("name").getAsString().equals("Derpy")
-						&& NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
+					String mayorJson = Utils.getElementAsString(
+						Utils.getElement(SBInfo.getInstance().getMayorJson(), "mayor.name"),
+						""
+					);
+					if (Objects.equals(mayorJson, "Derpy") &&
+						NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
 						Utils.drawStringScaled(
 							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Mayor Derpy active!",
 							guiLeft + xSize + 4 + 10,

@@ -117,60 +117,56 @@ public class ChatListener {
 
 	private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
 
+		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 0 || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+			return chatComponent;
+		}
 
-		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 &&
-			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() &&
-			((!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
-				// Party/global chat with levels off components are different from global chat with levels on, so need to check for them here
-				// Party/global without levels being 0 and global with levels being 1
-			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().size() > 1 && chatComponent.getSiblings().get(1).getChatStyle() != null &&
-				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent() != null &&
-				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND))) {
+		List<IChatComponent> siblings = chatComponent.getSiblings();
+		if (siblings.size() < 2) return chatComponent;
 
-			String startsWith = null;
-			List<IChatComponent> siblings = chatComponent.getSiblings();
-			int chatComponentsCount = siblings.size()-2;
+		IChatComponent targetedComponent = siblings.get(siblings.size() - 2);
 
-			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null && siblings.get(0).getChatStyle().getChatClickEvent() != null && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
-				startsWith = "/viewprofile";
-			} else if (!siblings.isEmpty() && siblings.size() > 1 && siblings.get(1).getChatStyle() != null) {
+		String chatClickCommand = getChatClickEvent(siblings.get(0));
 
-				ClickEvent chatClickEvent = chatComponent.getSiblings().get(chatComponentsCount).getChatStyle().getChatClickEvent();
-				if (chatClickEvent != null) {
-					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
-						startsWith = "/socialoptions";
-					}
-				}
-			}
+		if (chatClickCommand == null) {
+			chatClickCommand = getChatClickEvent(targetedComponent);
+		}
+		if (chatClickCommand == null) return chatComponent;
 
-			if (startsWith != null) {
-				String username = startsWith.equals("/viewprofile") ?
-					Utils.getNameFromChatComponent(chatComponent) :
-					chatComponent.getSiblings().get(chatComponentsCount).getChatStyle().getChatClickEvent().getValue().substring(15);
-				username = username.replaceAll("[^a-zA-Z0-9_]", "");
+		String username = chatClickCommand.equals("/viewprofile") ?
+			Utils.getNameFromChatComponent(chatComponent) :
+			targetedComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
+		username = username.replaceAll("[^a-zA-Z0-9_]", "");
 
-				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
+		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
 
-					ChatStyle pvClickStyle = getPVChatStyle(username);
-						chatComponent.getSiblings().get(chatComponentsCount).setChatStyle(pvClickStyle);
-					return chatComponent;
-				} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
+			ChatStyle pvClickStyle = getPVChatStyle(username);
+			targetedComponent.setChatStyle(pvClickStyle);
 
-					ChatStyle ahClickStyle = Utils.createClickStyle(
-						ClickEvent.Action.RUN_COMMAND,
-						"/ah " + username,
-						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
-					);
+			return chatComponent;
+		} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
 
-						chatComponent.getSiblings().get(chatComponentsCount).setChatStyle(ahClickStyle);
-					return chatComponent;
-				}
-			} // wanted to add this for guild but guild uses uuid :sad:
+			ChatStyle ahClickStyle = Utils.createClickStyle(
+				ClickEvent.Action.RUN_COMMAND,
+				"/ah " + username,
+				"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
+					username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
+			);
+
+			targetedComponent.setChatStyle(ahClickStyle);
+			return chatComponent;
 		}
 		return chatComponent;
+	}
+
+	private String getChatClickEvent(IChatComponent sibling) {
+		if (sibling.getChatStyle() != null && sibling.getChatStyle().getChatClickEvent() != null) {
+			String clickEvent = sibling.getChatStyle().getChatClickEvent().getValue();
+
+			if (clickEvent.startsWith("/socialoptions")) return "/socialoptions";
+			if (clickEvent.startsWith("/viewprofile")) return "/viewprofile";
+		}
+		return null;
 	}
 
 	private static ChatStyle getPVChatStyle(String username) {
@@ -228,16 +224,17 @@ public class ChatListener {
 		} else if (e.message.getFormattedText().startsWith(
 			EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "Invalid recipe ")) {
 			r = "";
+		} else if (unformatted.equals("  SLAYER QUEST FAILED!")) {
+			SlayerOverlay.isSlain = false;
+			timeSinceLastBoss = 0;
 		} else if (unformatted.equals("  NICE! SLAYER BOSS SLAIN!")) {
 			SlayerOverlay.isSlain = true;
 		} else if (unformatted.equals("  SLAYER QUEST STARTED!")) {
 			SlayerOverlay.isSlain = false;
-			if (timeSinceLastBoss == 0) {
-				SlayerOverlay.timeSinceLastBoss = System.currentTimeMillis();
-			} else {
+			if (timeSinceLastBoss != 0) {
 				timeSinceLastBoss2 = timeSinceLastBoss;
-				timeSinceLastBoss = System.currentTimeMillis();
 			}
+			timeSinceLastBoss = System.currentTimeMillis();
 		} else if (unformatted.startsWith("   RNG Meter")) {
 			RNGMeter = unformatted.substring("   RNG Meter - ".length());
 		} else if (matcher.matches()) {

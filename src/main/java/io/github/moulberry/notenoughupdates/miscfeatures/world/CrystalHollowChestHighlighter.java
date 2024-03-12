@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -62,13 +63,16 @@ public class CrystalHollowChestHighlighter extends GenericBlockHighlighter {
 	}
 
 	public static void checkForChest(BlockPos pos, IBlockState blockState) {
-		IBlockState oldState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
+		val world = Minecraft.getMinecraft().theWorld;
+		val player = Minecraft.getMinecraft().thePlayer;
+		if (world == null || player == null) return;
+		IBlockState oldState = world.getBlockState(pos);
 
 		if ((oldState.getBlock() == Blocks.air || oldState.getBlock() == Blocks.stone) &&
 			blockState.getBlock() == Blocks.chest) {
 
 			// Only add if in a 10x10x10 area. Minimises other players' chests being caught
-			if (Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().expand(10, 10, 10).isVecInside(new Vec3(pos))) {
+			if (player.getEntityBoundingBox().expand(10, 10, 10).isVecInside(new Vec3(pos))) {
 				markedBlocks.add(pos);
 			}
 		}

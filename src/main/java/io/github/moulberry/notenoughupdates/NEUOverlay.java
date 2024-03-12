@@ -38,12 +38,14 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
+import io.github.moulberry.notenoughupdates.util.StreamExtL;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.var;
 import net.minecraft.client.Minecraft;
@@ -742,8 +744,7 @@ public class NEUOverlay extends Gui {
 			if (NotEnoughUpdates.INSTANCE.config.itemlist.wikiInBrowser) {
 				Utils.openUrl(infoText);
 				Utils.addChatMessage("§e[NEU] Opening webpage in browser.");
-			}
-				else {
+			} else {
 				displayInformationPane(new TextInfoPane(
 					this,
 					manager,
@@ -1232,6 +1233,21 @@ public class NEUOverlay extends Gui {
 							} else {
 								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + cleanName);
 							}
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openSkyBlockRecipeKeybind
+							&& !item.has("vanilla")
+							&& StreamExtL.filterIsInstance(
+														 manager.getAvailableRecipesFor(internalname.get()).stream(),
+														 CraftingRecipe.class
+													 )
+													 .findAny()
+													 .isPresent()
+						) {
+							String displayName = Utils.cleanColour(item
+								.get("displayname")
+								.getAsString()
+								.replace("[Lvl {LVL}]", "")
+								.trim());
+							NotEnoughUpdates.INSTANCE.trySendCommand("/recipe " + displayName);
 						}
 					}
 				}

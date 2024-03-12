@@ -82,11 +82,11 @@ public class DwarvenMinesWaypoints {
 		add(EnumChatFormatting.GOLD + "Emissary Lilith" + EnumChatFormatting.RESET);
 		add(EnumChatFormatting.GOLD + "Emissary Frasier" + EnumChatFormatting.RESET);
 		add(EnumChatFormatting.GOLD + "Emissary Eliza" + EnumChatFormatting.RESET);
-		add(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "King Thormyr" + EnumChatFormatting.RESET);
+		add(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "King" + EnumChatFormatting.RESET);
 	}};
 
 	private enum Emissary {
-		THORMYR("King Thormyr", 0, new Vector3f(129, 196, 196)),
+		KING("King", 0, new Vector3f(129, 196, 196)),
 		CEANNA("Emissary Ceanna", 1, new Vector3f(42, 134, 22)),
 		CARLTON("Emissary Carlton", 1, new Vector3f(-73, 153, -11)),
 		WILSON("Emissary Wilson", 2, new Vector3f(171, 150, 31)),

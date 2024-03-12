@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -383,7 +383,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		totalCount = 0;
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : trophyObject.entrySet()) {
 			String key = stringJsonElementEntry.getKey();
-			if (key.equalsIgnoreCase("rewards") || key.equalsIgnoreCase("total_caught")) {
+			if (key.equalsIgnoreCase("rewards") || key.equalsIgnoreCase("total_caught") ||
+				key.equalsIgnoreCase("last_caught")) {
 				if (key.equalsIgnoreCase("total_caught")) {
 					totalCount = stringJsonElementEntry.getValue().getAsInt();
 				}
@@ -393,7 +394,12 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			String[] s = key.split("_");
 			String type = s[s.length - 1];
 			TrophyFish.TrophyFishRarity trophyFishRarity;
-			int value = stringJsonElementEntry.getValue().getAsInt();
+			int value = 0;
+			try {
+				value = stringJsonElementEntry.getValue().getAsInt();
+			} catch (NumberFormatException e) {
+				value = -1;
+			}
 
 			if (key.startsWith("golden_fish_")) {
 				type = s[2];

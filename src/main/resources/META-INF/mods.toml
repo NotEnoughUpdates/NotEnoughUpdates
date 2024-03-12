@@ -1,6 +1,4 @@
 # This mods.toml is loaded by forge 1.13-1.19 and is only here to make forge display an error message
-modLoader = "javafml"
-loaderVersion = "[12,)"
 license = "LGPL"
 
 [[mods]]

@@ -107,9 +107,9 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 
 		public static Rarity getRarityFromColor(EnumChatFormatting chatFormatting) {
-			for (int i = 0; i < Rarity.values().length; i++) {
-				if (Rarity.values()[i].chatFormatting.equals(chatFormatting))
-					return Rarity.values()[i];
+			for (Rarity rarity : Rarity.values()) {
+				if (rarity.chatFormatting.equals(chatFormatting))
+					return rarity;
 			}
 			return COMMON;
 		}
@@ -976,7 +976,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private int lastLevelHovered = 0;
 
 	private static final Pattern AUTOPET_EQUIP = Pattern.compile(
-		"\u00a7cAutopet \u00a7eequipped your \u00a77\\[Lvl (\\d+)] \u00a7(.{2,})\u00a7e! \u00a7a\u00a7lVIEW RULE\u00a7r");
+		"§cAutopet §eequipped your §7\\[Lvl (?<level>\\d+)](?: §8\\[§6\\d+§8§.✦§8])? §(?<rarityColor>.)(?<name>.*)§e! §a§lVIEW RULE§r");
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onChatReceived(ClientChatReceivedEvent event) {
@@ -988,26 +988,14 @@ public class PetInfoOverlay extends TextOverlay {
 				Matcher autopetMatcher = AUTOPET_EQUIP.matcher(event.message.getFormattedText());
 				if (autopetMatcher.matches()) {
 					try {
-						lastLevelHovered = Integer.parseInt(autopetMatcher.group(1));
+						lastLevelHovered = Integer.parseInt(autopetMatcher.group("level"));
 					} catch (NumberFormatException ignored) {
 					}
 
-					String petStringMatch = autopetMatcher.group(2);
-					char colChar = petStringMatch.charAt(0);
-					EnumChatFormatting col = EnumChatFormatting.RESET;
-					for (EnumChatFormatting formatting : EnumChatFormatting.values()) {
-						if (formatting.toString().equals("\u00a7" + colChar)) {
-							col = formatting;
-							break;
-						}
+					String petName = autopetMatcher.group("name");
+					Rarity rarity = getRarityByColor(autopetMatcher.group("rarityColor"));
 
-					}
-					Rarity rarity = Rarity.COMMON;
-					if (col != EnumChatFormatting.RESET) {
-						rarity = Rarity.getRarityFromColor(col);
-					}
-
-					String pet = Utils.cleanColour(petStringMatch.substring(1))
+					String pet = Utils.cleanColour(petName)
 														.replaceAll("[^\\w ]", "").trim()
 														.replace(" ", "_").toUpperCase();
 
@@ -1017,7 +1005,7 @@ public class PetInfoOverlay extends TextOverlay {
 						if (getCurrentPet() != null && !"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
 							PetInfoOverlay.config.selectedPet = -1;
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
+								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petName +
 									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
 						}
 					}
@@ -1028,5 +1016,21 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 		}
+	}
+
+	private static Rarity getRarityByColor(String colChar) {
+		EnumChatFormatting col = EnumChatFormatting.RESET;
+		for (EnumChatFormatting formatting : EnumChatFormatting.values()) {
+			if (formatting.toString().equals("§" + colChar)) {
+				col = formatting;
+				break;
+			}
+
+		}
+		Rarity rarity = Rarity.COMMON;
+		if (col != EnumChatFormatting.RESET) {
+			rarity = Rarity.getRarityFromColor(col);
+		}
+		return rarity;
 	}
 }

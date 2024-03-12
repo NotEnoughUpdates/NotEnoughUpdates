@@ -78,6 +78,7 @@ public class EnvironmentScan {
 
 		public static void showErrorMessage(String... messages) {
 				String message = String.join("\n", messages);
+				System.setProperty("java.awt.headless", "false");
 				JOptionPane.showMessageDialog(
 								null, message, "NotEnoughUpdates - Problematic System Configuration", JOptionPane.ERROR_MESSAGE
 				);

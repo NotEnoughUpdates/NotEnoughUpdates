@@ -19,25 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.loader;
 
-import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
 
 /**
  * <h3>TO OTHER MOD AUTHORS THAT WANT TO BUNDLE KOTLIN AND ARE RUNNING INTO CONFLICTS WITH NEU:</h3>
@@ -75,7 +61,7 @@ import java.util.stream.Stream;
  * so we have to make due with our crude hack.
  * </p>
  */
-public class KotlinLoadingTweaker implements ITweaker {
+public class KotlinLoadingTweaker extends JARLoadingTweaker {
 
 	/**
 	 * Full version format: [1, 7, 20] (1.7.20)
@@ -84,8 +70,41 @@ public class KotlinLoadingTweaker implements ITweaker {
 	public static final int[] BUNDLED_KOTLIN_VERSION = new int[]{1, 8, 21};
 
 	@Override
-	public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
+	protected Path getFilesToLoad() {
+		if ("1".equals(System.getProperty("neu.relinquishkotlin"))) {
+			System.out.println("NEU is forced to relinquish Kotlin by user configuration.");
+			return null;
+		}
+		if (Launch.blackboard.get("fml.deobfuscatedEnvironment") == Boolean.TRUE) {
+			System.out.println("Skipping NEU Kotlin loading in development environment.");
+			return null;
+		}
+		Object relinquishAlways = Launch.blackboard.get("neu.relinquishkotlin.always");
+		if (relinquishAlways == Boolean.TRUE) {
+			System.err.println(
+				"NEU is forced to blanket relinquish loading Kotlin. This is probably a bad judgement call by another developer.");
+			return null;
+		}
+		Object relinquishIfBelow = Launch.blackboard.get("neu.relinquishkotlin.ifbelow");
+		if ((relinquishIfBelow instanceof int[])) {
+			int[] requiredVersion = (int[]) relinquishIfBelow;
+			if (!areWeBundlingAKotlinVersionHigherThan(requiredVersion)) {
+				System.err.println(
+					"NEU is relinquishing loading Kotlin because a higher version is requested. This may lead to errors if the advertised Kotlin version is not found. (" +
+						Arrays.toString(requiredVersion) + " required, " + Arrays.toString(BUNDLED_KOTLIN_VERSION) +
+						" available)");
+				return null;
+			}
+		}
 
+		System.out.println("Attempting to load Kotlin from NEU wrapped libraries.");
+
+		return getShadowedElement("/neu-kotlin-libraries-wrapped");
+	}
+
+	@Override
+	protected String getTestClass() {
+		return "kotlin.KotlinVersion";
 	}
 
 	public boolean areWeBundlingAKotlinVersionHigherThan(int[] x) {
@@ -101,92 +120,6 @@ public class KotlinLoadingTweaker implements ITweaker {
 
 	@Override
 	public void injectIntoClassLoader(LaunchClassLoader classLoader) {
-		FileSystem fs = null;
-		try {
-			if ("1".equals(System.getProperty("neu.relinquishkotlin"))) {
-				System.out.println("NEU is forced to relinquish Kotlin by user configuration.");
-				return;
-			}
-			if (Launch.blackboard.get("fml.deobfuscatedEnvironment") == Boolean.TRUE) {
-				System.out.println("Skipping NEU Kotlin loading in development environment.");
-				return;
-			}
-			Object relinquishAlways = Launch.blackboard.get("neu.relinquishkotlin.always");
-			if (relinquishAlways == Boolean.TRUE) {
-				System.err.println(
-					"NEU is forced to blanket relinquish loading Kotlin. This is probably a bad judgement call by another developer.");
-				return;
-			}
-			Object relinquishIfBelow = Launch.blackboard.get("neu.relinquishkotlin.ifbelow");
-			if ((relinquishIfBelow instanceof int[])) {
-				int[] requiredVersion = (int[]) relinquishIfBelow;
-				if (!areWeBundlingAKotlinVersionHigherThan(requiredVersion)) {
-					System.err.println(
-						"NEU is relinquishing loading Kotlin because a higher version is requested. This may lead to errors if the advertised Kotlin version is not found. (" +
-							Arrays.toString(requiredVersion) + " required, " + Arrays.toString(BUNDLED_KOTLIN_VERSION) + " available)");
-					return;
-				}
-			}
-
-			System.out.println("Attempting to load Kotlin from NEU wrapped libraries.");
-
-			URI uri = getClass().getResource("/neu-kotlin-libraries-wrapped").toURI();
-			Path p;
-			if ("jar".equals(uri.getScheme())) {
-				fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
-				p = fs.getPath(
-					"/neu-kotlin-libraries-wrapped");
-			} else {
-				p = Paths.get(uri);
-			}
-			System.out.println("Loading NEU Kotlin from " + p.toAbsolutePath());
-			Path tempDirectory = Files.createTempDirectory("notenoughupdates-extracted-kotlin");
-			System.out.println("Using temporary directory " + tempDirectory + " to store extracted kotlin.");
-			tempDirectory.toFile().deleteOnExit();
-			try (Stream<Path> libraries = Files.walk(p, 1)) {
-				libraries.filter(it -> it.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jar"))
-								 .forEach(it -> {
-									 try {
-										 Path extractedPath = tempDirectory.resolve(it.getFileName().toString());
-										 extractedPath.toFile().deleteOnExit();
-										 Files.copy(it, extractedPath);
-										 addClassSourceTwice(classLoader, extractedPath.toUri().toURL());
-									 } catch (Exception e) {
-										 throw new RuntimeException(e);
-									 }
-								 });
-			}
-			classLoader.loadClass("kotlin.KotlinVersion");
-			System.out.println("Could successfully load a Kotlin class.");
-		} catch (Throwable e) {
-			System.err.println("Failed to load Kotlin into NEU. This is most likely a bad thing.");
-			e.printStackTrace();
-		} finally {
-			if (fs != null) {
-				try {
-					fs.close();
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	private void addClassSourceTwice(LaunchClassLoader classLoader, URL url) throws Exception {
-		classLoader.addURL(url);
-		ClassLoader classLoaderYetAgain = classLoader.getClass().getClassLoader();
-		Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-		addURL.setAccessible(true);
-		addURL.invoke(classLoaderYetAgain, url);
-	}
-
-	@Override
-	public String getLaunchTarget() {
-		return null;
-	}
-
-	@Override
-	public String[] getLaunchArguments() {
-		return new String[0];
+		performLoading(classLoader);
 	}
 }

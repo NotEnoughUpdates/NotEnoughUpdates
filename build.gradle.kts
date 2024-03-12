@@ -21,6 +21,7 @@
 import neubs.NEUBuildFlags
 import neubs.applyPublishingInformation
 import neubs.setVersionFromEnvironment
+import org.apache.commons.lang3.SystemUtils
 import java.net.URL
 
 plugins {
@@ -56,6 +57,12 @@ loom {
 		}
 	}
 	runConfigs {
+		"client" {
+			if (SystemUtils.IS_OS_MAC_OSX) {
+				vmArgs.remove("-XstartOnFirstThread")
+			}
+			vmArgs.add("-Xmx4G")
+		}
 		"server" {
 			isIdeConfigGenerated = false
 		}
@@ -106,6 +113,10 @@ val kotlinDependencies: Configuration by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)
 }
 
+val mixinRTDependencies: Configuration by configurations.creating {
+		configurations.implementation.get().extendsFrom(this)
+}
+
 val oneconfigQuarantineSourceSet: SourceSet = sourceSets.create("oneconfig") {
 		java {
 				srcDir(layout.projectDirectory.dir("src/main/oneconfig"))
@@ -149,7 +160,7 @@ dependencies {
 
 		shadowImplementation("com.mojang:brigadier:1.0.18")
 
-		shadowImplementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+		mixinRTDependencies("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 				isTransitive = false // Dependencies of mixin are already bundled by minecraft
 		}
 		annotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
@@ -226,9 +237,15 @@ tasks.remapSourcesJar {
 // Use Zip instead of Jar as to not include META-INF
 val kotlinDependencyCollectionJar by tasks.creating(Zip::class) {
 	archiveFileName.set("kotlin-libraries-wrapped.jar")
-	destinationDirectory.set(project.layout.buildDirectory.dir("kotlinwrapper"))
+	destinationDirectory.set(project.layout.buildDirectory.dir("wrapperjars"))
 	from(kotlinDependencies)
 	into("neu-kotlin-libraries-wrapped")
+}
+val mixinDependencyCollectionJar by tasks.creating(Zip::class) {
+	archiveFileName.set("mixin-libraries-wrapped.jar")
+	destinationDirectory.set(project.layout.buildDirectory.dir("wrapperjars"))
+	from(mixinRTDependencies)
+	into("neu-mixin-libraries-wrapped")
 }
 
 tasks.register("includeBackupRepo") {
@@ -259,7 +276,9 @@ tasks.shadowJar {
 	}
 	from(oneconfigQuarantineSourceSet.output)
 	from(kotlinDependencyCollectionJar)
+	from(mixinDependencyCollectionJar)
 	dependsOn(kotlinDependencyCollectionJar)
+	dependsOn(mixinDependencyCollectionJar)
 	fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
 	relocate("com.mojang.brigadier")
 	relocate("io.github.moulberry.moulconfig")
