@@ -29,7 +29,6 @@ import io.github.moulberry.notenoughupdates.mixins.AccessorGlStateManager
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.StateManagerUtils
-import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.brigadier.get
 import io.github.moulberry.notenoughupdates.util.brigadier.thenArgument
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
@@ -89,6 +88,9 @@ object TablistTutorial {
 
     @SubscribeEvent
     fun onGuiPostRender(event: GuiScreenEvent.DrawScreenEvent.Post) {
+        if (activeTask == null) {
+            activeTask = TablistTaskQueue.getNextQueueItem()
+        }
         val task = activeTask ?: return
 
         val gui = event.gui as? GuiChest ?: return
@@ -99,15 +101,16 @@ object TablistTutorial {
         StateManagerUtils.withSavedState(AccessorGlStateManager.getLightingState()) {
             GlStateManager.disableLighting()
             if (name == "Tablist Widgets") {
-                drawSelectAreaArrow(gui, chestInventory, task);
+                drawSelectAreaArrow(gui, chestInventory, task)
             }
             val regionName = getRegionName(name)
             if (regionName == task.regionName) {
                 drawEnableEffect(gui, chestInventory, task)
             } else if (regionName != null) {
                 val backSlot = chestInventory.inventorySlots.getOrNull(5 * 9 + 3)
-                if (backSlot != null)
+                if (backSlot != null) {
                     Arrow.drawBigRedArrow(gui, backSlot, "Go back!")
+                }
             }
         }
     }
@@ -171,12 +174,15 @@ object TablistTutorial {
     fun drawPriorityClick(gui: GuiChest, chestInventory: ContainerChest, widget: WidgetStatus) {
         val prioritySlot = chestInventory.inventorySlots.getOrNull(4) ?: return
         val leftSide = chestInventory.inventory.getOrNull(3).let(ItemUtils::getLore)
-        val priorityList = chestInventory.inventory.getOrNull(4).let(ItemUtils::getLore)
+        val middle = chestInventory.inventory.getOrNull(4).let(ItemUtils::getLore)
         val rightSide = chestInventory.inventory.getOrNull(5).let(ItemUtils::getLore)
-        val allTabListEntries = leftSide + rightSide
+
+        val priorityList = chestInventory.inventory.getOrNull(13).let(ItemUtils::getLore)
+        val allTabListEntries = leftSide + middle + rightSide
         if (allTabListEntries.any { StringUtils.cleanColour(it).contains("${widget.widgetName}:") }) {
-            activeTask = null
-            Utils.addChatMessage("Success! You enabled ${widget.widgetName}!")
+            activeTask = TablistTaskQueue.getNextQueueItem()
+            // see todo in MiningOverlay.java:377
+//            Utils.addChatMessage("Success! You enabled ${widget.widgetName}!")
             return
         }
         val editingIndex = priorityList.indexOfFirst { it.contains("EDITING") }
@@ -199,7 +205,6 @@ object TablistTutorial {
             .removePrefix("the ")
     }
 
-
     private fun drawSelectAreaArrow(gui: GuiChest, inventory: ContainerChest, task: EnableTask) {
         val regionSlot = inventory.inventorySlots.find {
             val name = ItemUtils.getDisplayName(it.stack)?.let(StringUtils::cleanColour) ?: ""
@@ -208,16 +213,17 @@ object TablistTutorial {
         Arrow.drawBigRedArrow(gui, regionSlot, "§cClick here!")
     }
 
-
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("testtablisttutorial") {
             thenArgument("region", string()) { region ->
                 thenArgument("widget", string()) { widget ->
                     thenExecute {
-                        activeTask = EnableTask(
-                            this[region],
-                            this[widget],
+                        TablistTaskQueue.addToQueue(
+                            EnableTask(
+                                this[region],
+                                this[widget],
+                            )
                         )
                         NotEnoughUpdates.INSTANCE.sendChatMessage("/tab")
                     }
