@@ -22,9 +22,9 @@ package io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial
 import io.github.moulberry.notenoughupdates.util.NotificationHandler
 
 object TablistTaskQueue {
-    val queue = mutableListOf<TablistTutorial.EnableTask>()
+    private val queue = mutableListOf<TablistTutorial.TabListWidget>()
 
-    fun addToQueue(task: TablistTutorial.EnableTask) {
+    fun addToQueue(task: TablistTutorial.TabListWidget) {
         if (!queueContainsElements()) {
             NotificationHandler.displayNotification(
                 listOf(
@@ -44,7 +44,7 @@ object TablistTaskQueue {
         }
     }
 
-    fun removeFromQueue(task: TablistTutorial.EnableTask) {
+    fun removeFromQueue(task: TablistTutorial.TabListWidget) {
         queue.remove(task)
     }
 
@@ -52,7 +52,7 @@ object TablistTaskQueue {
         return queue.isNotEmpty()
     }
 
-    fun getNextQueueItem(): TablistTutorial.EnableTask? {
+    fun getNextQueueItem(): TablistTutorial.TabListWidget? {
         return if (!queueContainsElements()) {
             null
         } else {

@@ -29,10 +29,10 @@ import io.github.moulberry.notenoughupdates.mixins.AccessorGlStateManager
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.StateManagerUtils
-import io.github.moulberry.notenoughupdates.util.brigadier.get
 import io.github.moulberry.notenoughupdates.util.brigadier.thenArgument
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
+import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -45,6 +45,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
 object TablistTutorial {
+    data class TabListWidget(
+        val regionName: String,
+        val widgetName: TablistAPI.WidgetNames,
+    )
 
     private object Arrow {
         val imageLocation = ResourceLocation("notenoughupdates:textures/gui/tablisttutorial/arrow.png")
@@ -79,12 +83,7 @@ object TablistTutorial {
         }
     }
 
-    data class EnableTask(
-        val regionName: String,
-        val widgetName: String,
-    )
-
-    var activeTask: EnableTask? = null
+    var activeTask: TabListWidget? = null
 
     @SubscribeEvent
     fun onGuiPostRender(event: GuiScreenEvent.DrawScreenEvent.Post) {
@@ -136,9 +135,9 @@ object TablistTutorial {
         }
     }
 
-    private fun drawEnableEffect(gui: GuiChest, chestInventory: ContainerChest, task: EnableTask) {
+    private fun drawEnableEffect(gui: GuiChest, chestInventory: ContainerChest, task: TabListWidget) {
         val widgets = findWidgets(chestInventory)
-        val widget = widgets.find { it.widgetName == task.widgetName }
+        val widget = widgets.find { it.widgetName == task.widgetName.toString() }
         if (widget == null) return
         if (widget.enabled) {
             drawPriorityClick(gui, chestInventory, widget)
@@ -172,16 +171,16 @@ object TablistTutorial {
         Damage: 3s
     }*/
     fun drawPriorityClick(gui: GuiChest, chestInventory: ContainerChest, widget: WidgetStatus) {
-        val prioritySlot = chestInventory.inventorySlots.getOrNull(4) ?: return
+        val prioritySlot = chestInventory.inventorySlots.getOrNull(13) ?: return
         val leftSide = chestInventory.inventory.getOrNull(3).let(ItemUtils::getLore)
         val middle = chestInventory.inventory.getOrNull(4).let(ItemUtils::getLore)
         val rightSide = chestInventory.inventory.getOrNull(5).let(ItemUtils::getLore)
 
         val priorityList = chestInventory.inventory.getOrNull(13).let(ItemUtils::getLore)
         val allTabListEntries = leftSide + middle + rightSide
-        if (allTabListEntries.any { StringUtils.cleanColour(it).contains("${widget.widgetName}:") }) {
+        val regex = activeTask?.widgetName?.regex ?: Regex.fromLiteral("${widget.widgetName}:")
+        if (allTabListEntries.any { it.replace("⬛", "").stripControlCodes().matches(regex) }) {
             activeTask = TablistTaskQueue.getNextQueueItem()
-            // see todo in MiningOverlay.java:377
 //            Utils.addChatMessage("Success! You enabled ${widget.widgetName}!")
             return
         }
@@ -205,7 +204,7 @@ object TablistTutorial {
             .removePrefix("the ")
     }
 
-    private fun drawSelectAreaArrow(gui: GuiChest, inventory: ContainerChest, task: EnableTask) {
+    private fun drawSelectAreaArrow(gui: GuiChest, inventory: ContainerChest, task: TabListWidget) {
         val regionSlot = inventory.inventorySlots.find {
             val name = ItemUtils.getDisplayName(it.stack)?.let(StringUtils::cleanColour) ?: ""
             getRegionName(name) == task.regionName
@@ -215,19 +214,29 @@ object TablistTutorial {
 
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
-        event.command("testtablisttutorial") {
+        event.command("neutesttablisttutorial") {
             thenArgument("region", string()) { region ->
                 thenArgument("widget", string()) { widget ->
                     thenExecute {
                         TablistTaskQueue.addToQueue(
-                            EnableTask(
-                                this[region],
-                                this[widget],
+                            TabListWidget(
+                                "Dwarven Mines",
+                                TablistAPI.WidgetNames.COMMISSIONS,
                             )
                         )
                         NotEnoughUpdates.INSTANCE.sendChatMessage("/tab")
                     }
                 }.withHelp("Test command for showing a tab list tutorial")
+            }
+        }
+
+        event.command("neutesttablistapi") {
+            thenExecute {
+                TablistAPI.getWidgetLines(TabListWidget("Dwarven Mines", TablistAPI.WidgetNames.CRYSTALS))
+                    .forEach { println(it) }
+                println("SEP")
+                TablistAPI.getWidgetLines(TabListWidget("Dwarven Mines", TablistAPI.WidgetNames.FORGE))
+                    .forEach { println(it) }
             }
         }
     }

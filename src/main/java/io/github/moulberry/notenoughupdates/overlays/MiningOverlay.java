@@ -26,13 +26,12 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
-import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistTaskQueue;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistTutorial;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
-import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -257,44 +256,31 @@ public class MiningOverlay extends TextTabOverlay {
 
 			// These strings will be displayed one after the other when the player list is disabled
 			String mithrilPowder = RED + "[NEU] Failed to get data from your tablist";
-			String gemstonePowder = RED + "Please enable player list info in your SkyBlock settings";
+			String gemstonePowder = RED + "You should have already received a notification about this";
 
 			int forgeInt = 0;
-			boolean commissions = false;
-			boolean forges = false;
-			boolean sawCommissions = false;
 
-			for (String name : TabListUtils.getTabList()) {
-				if (name.contains("Mithril Powder:")) {
-					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
-					continue;
+			for (String line : TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
+				"Dwarven Mines",
+				TablistAPI.WidgetNames.POWDER
+			))) {
+				if (line.contains("Mithril Powder:")) {
+					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
-
-				if (name.contains("Gemstone Powder:")) {
-					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
-					continue;
+				if (line.contains("Gemstone Powder:")) {
+					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
+			}
 
-				Matcher forgesMatcher = forgesHeaderPattern.matcher(name);
-				if (forgesMatcher.matches() && profileConfig != null) {
-					commissions = false;
-					forges = true;
-					continue;
-				}
-
-				// Commissions appear after Forges, start enumerating Commissions instead of Forges
-				if (name.equals("§r§9§lCommissions:§r") && profileConfig != null) {
-					commissions = true;
-					forges = false;
-					sawCommissions = true;
-					continue;
-				}
-
+			for (String name : TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
+				"Dwarven Mines",
+				TablistAPI.WidgetNames.FORGE
+			))) {
 				String cleanName = StringUtils.cleanColour(name);
-				if (forges && cleanName.startsWith(" ") && profileConfig != null) {
+				if (cleanName.startsWith(" ") && profileConfig != null) {
 					char firstChar = cleanName.trim().charAt(0);
 					if (firstChar < '0' || firstChar > '9') {
-						forges = false;
+						break;
 					} else {
 
 						if (name.contains("LOCKED")) {
@@ -345,7 +331,15 @@ public class MiningOverlay extends TextTabOverlay {
 						}
 						forgeInt++;
 					}
-				} else if (commissions && cleanName.startsWith(" ") && profileConfig != null) {
+				}
+			}
+
+			for (String name : TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
+				"Dwarven Mines",
+				TablistAPI.WidgetNames.COMMISSIONS
+			))) {
+				String cleanName = StringUtils.cleanColour(name);
+				if (cleanName.startsWith(" ") && profileConfig != null) {
 					String[] split = cleanName.trim().split(": ");
 					if (split.length == 2) {
 						if (split[1].endsWith("%")) {
@@ -359,24 +353,11 @@ public class MiningOverlay extends TextTabOverlay {
 							commissionProgress.put(split[0], 1.0f);
 						}
 					}
-				} else {
-					commissions = false;
-					forges = false;
 				}
 			}
 
 			if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
 				return;
-			}
-
-			if (!sawCommissions) {
-				TablistTaskQueue.INSTANCE.addToQueue(new TablistTutorial.EnableTask("Dwarven Mines", "Commissions"));
-				TablistTaskQueue.INSTANCE.addToQueue(new TablistTutorial.EnableTask("Dwarven Mines", "Pet"));
-			} else {
-				// Workaround for the changes not instantly being displayed in the tab list -> Task gets added again
-				// TODO delete after implementing tablist api
-				TablistTaskQueue.INSTANCE.removeFromQueue(new TablistTutorial.EnableTask("Dwarven Mines", "Commissions"));
-				TablistTaskQueue.INSTANCE.removeFromQueue(new TablistTutorial.EnableTask("Dwarven Mines", "Pet"));
 			}
 
 			List<String> commissionsStrings = new ArrayList<>();
