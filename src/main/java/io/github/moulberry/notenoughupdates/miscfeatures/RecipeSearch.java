@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiEditSign;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -37,6 +38,7 @@ public class RecipeSearch {
 
 	@SubscribeEvent
 	public void onGuiOpen(SlotClickEvent event) {
+		if(event.guiContainer == null || !(event.guiContainer.inventorySlots instanceof ContainerChest)) return;
 		ContainerChest chest = (ContainerChest) event.guiContainer.inventorySlots;
 		String guiName = chest.getLowerChestInventory().getName();
 		if (!Objects.equals(guiName, "Craft Item")) return;

@@ -338,7 +338,6 @@ public class RecipeSearchOverlay {
 
 			if (thisSearchId != searchId.get()) return;
 
-//			Set<String> bazaarItems = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarKeySet();
 			HashMap<String, Set<NeuRecipe>> items = NotEnoughUpdates.INSTANCE.manager.getAllRecipes();
 
 			System.out.println(items.toString());
