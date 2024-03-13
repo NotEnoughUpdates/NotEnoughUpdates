@@ -308,7 +308,6 @@ public class SBInfo {
 		return lastLocation;
 	}
 
-	private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
 	private static final String skillsPrefix = "\u00a7r\u00a7e\u00a7lSkills: \u00a7r\u00a7a";
 	private static final String completedFactionQuests =
 		"\u00a7r \u00a7r\u00a7a(?!(Paul|Finnegan|Aatrox|Cole|Diana|Diaz|Foxy|Marina)).*";
@@ -333,19 +332,18 @@ public class SBInfo {
 			updateMayor();
 			lastMayorUpdate = currentTime;
 		}
-
+		List<String> profileData = TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
+			"CURRENT_REGION",
+			TablistAPI.WidgetNames.PROFILE
+		));
+		if (!profileData.isEmpty()) {
+			String newProfile = Utils.cleanColour(profileData.get(0)).split(" ")[1];
+			System.out.println("Setting profile from tablist: " + newProfile);
+			setCurrentProfile(newProfile);
+		}
 		// todo convert to api
 		for (String s : TabListUtils.getTabList()) {
-			if (s.startsWith(profilePrefix)) {
-				String newProfile = Utils.cleanColour(s.substring(profilePrefix.length()));
-				setCurrentProfile(newProfile);
-				if (!Objects.equals(currentProfile, newProfile)) {
-					currentProfile = newProfile;
-					if (NotEnoughUpdates.INSTANCE.config != null)
-						if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
-							OverlayManager.powderGrindingOverlay.load();
-				}
-			} else if (s.matches(completedFactionQuests) && "crimson_isle".equals(mode)) {
+			if (s.matches(completedFactionQuests) && "crimson_isle".equals(mode)) {
 				if (completedQuests.isEmpty()) {
 					completedQuests.add(s);
 				} else if (!completedQuests.contains(s)) {
@@ -370,7 +368,6 @@ public class SBInfo {
 //		))) {
 //
 //		}
-
 
 		try {
 			List<String> lines = SidebarUtil.readSidebarLines(true, false);
@@ -486,6 +483,9 @@ public class SBInfo {
 			currentProfile = newProfile;
 			MinionHelperManager.getInstance().onProfileSwitch();
 			CookieWarning.onProfileSwitch();
+			if (NotEnoughUpdates.INSTANCE.config != null)
+				if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
+					OverlayManager.powderGrindingOverlay.load();
 		}
 	}
 }

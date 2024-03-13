@@ -61,7 +61,9 @@ object TablistAPI {
         EVENTS(Regex.fromLiteral("Event:")),
         POWDER(Regex.fromLiteral("Powders:")),
         CRYSTALS(Regex.fromLiteral("Crystals:")),
-        EFFECT(Regex("""Active Effects\(\d+\):"""));
+        EFFECT(Regex("""Active Effects\(\d+\):""")),
+        PROFILE(Regex("Profile: ([A-Z][a-z]*)( .*)"))
+        ;
         // TODO other patterns
 
         override fun toString(): String {
