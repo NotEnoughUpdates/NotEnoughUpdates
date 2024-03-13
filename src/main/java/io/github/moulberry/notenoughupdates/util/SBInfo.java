@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -27,12 +27,13 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.SidebarChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistTutorial;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
@@ -332,40 +333,44 @@ public class SBInfo {
 			updateMayor();
 			lastMayorUpdate = currentTime;
 		}
-		try {
-			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
-				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
-				if (name.startsWith(profilePrefix)) {
-					String newProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
-					setCurrentProfile(newProfile);
-					if (!Objects.equals(currentProfile, newProfile)) {
-						currentProfile = newProfile;
-						if (NotEnoughUpdates.INSTANCE.config != null)
-							if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
-								OverlayManager.powderGrindingOverlay.load();
-					}
-					hasNewTab = true;
-				} else if (name.startsWith(skillsPrefix)) {
-					String levelInfo = name.substring(skillsPrefix.length()).trim();
-					Matcher matcher = SKILL_LEVEL_PATTERN.matcher(Utils.cleanColour(levelInfo).split(":")[0]);
-					if (matcher.find()) {
-						try {
-							int level = Integer.parseInt(matcher.group(2).trim());
-							XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
-						} catch (Exception ignored) {
-						}
-					}
-				} else if (name.matches(completedFactionQuests) && "crimson_isle".equals(mode)) {
-					if (completedQuests.isEmpty()) {
-						completedQuests.add(name);
-					} else if (!completedQuests.contains(name)) {
-						completedQuests.add(name);
-					}
+
+		// todo convert to api
+		for (String s : TabListUtils.getTabList()) {
+			if (s.startsWith(profilePrefix)) {
+				String newProfile = Utils.cleanColour(s.substring(profilePrefix.length()));
+				setCurrentProfile(newProfile);
+				if (!Objects.equals(currentProfile, newProfile)) {
+					currentProfile = newProfile;
+					if (NotEnoughUpdates.INSTANCE.config != null)
+						if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
+							OverlayManager.powderGrindingOverlay.load();
+				}
+			} else if (s.matches(completedFactionQuests) && "crimson_isle".equals(mode)) {
+				if (completedQuests.isEmpty()) {
+					completedQuests.add(s);
+				} else if (!completedQuests.contains(s)) {
+					completedQuests.add(s);
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+//			else if (s.startsWith(skillsPrefix)) {
+//				String levelInfo = s.substring(skillsPrefix.length()).trim();
+//				Matcher matcher = SKILL_LEVEL_PATTERN.matcher(Utils.cleanColour(levelInfo).split(":")[0]);
+//				if (matcher.find()) {
+//					try {
+//						int level = Integer.parseInt(matcher.group(2).trim());
+//						XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
+//					} catch (Exception ignored) {
+//					}
+//				}
+//			}
 		}
+//		for (String line : TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
+//			"ALL",
+//			TablistAPI.WidgetNames.SKILLS
+//		))) {
+//
+//		}
+
 
 		try {
 			List<String> lines = SidebarUtil.readSidebarLines(true, false);

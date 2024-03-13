@@ -48,9 +48,15 @@ object TablistAPI {
         return list
     }
 
+    @JvmStatic
+    fun getWidgetLines(widgetName: WidgetNames): List<String> {
+        return getWidgetLines(TablistTutorial.TabListWidget("CURRENT_REGION", widgetName))
+    }
+
     enum class WidgetNames(val regex: Regex?) {
         PET(null),
         COMMISSIONS(null),
+        SKILLS(null),
         FORGE(Regex.fromLiteral("Forges:")),
         EVENTS(Regex.fromLiteral("Event:")),
         POWDER(Regex.fromLiteral("Powders:")),

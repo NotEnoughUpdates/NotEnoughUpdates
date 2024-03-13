@@ -272,10 +272,9 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
-			for (String name : TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
-				"Dwarven Mines",
+			for (String name : TablistAPI.getWidgetLines(
 				TablistAPI.WidgetNames.FORGE
-			))) {
+			)) {
 				String cleanName = StringUtils.cleanColour(name);
 				if (cleanName.startsWith(" ") && profileConfig != null) {
 					char firstChar = cleanName.trim().charAt(0);

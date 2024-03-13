@@ -46,7 +46,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 @NEUAutoSubscribe
 object TablistTutorial {
     data class TabListWidget(
-        val regionName: String,
+        var regionName: String,
         val widgetName: TablistAPI.WidgetNames,
     )
 
@@ -103,6 +103,11 @@ object TablistTutorial {
                 drawSelectAreaArrow(gui, chestInventory, task)
             }
             val regionName = getRegionName(name)
+
+            // Assume the user is capable of clicking on the current region
+            if (task.regionName == "CURRENT_REGION") {
+                activeTask!!.regionName = regionName ?: return
+            }
             if (regionName == task.regionName) {
                 drawEnableEffect(gui, chestInventory, task)
             } else if (regionName != null) {
@@ -205,9 +210,23 @@ object TablistTutorial {
     }
 
     private fun drawSelectAreaArrow(gui: GuiChest, inventory: ContainerChest, task: TabListWidget) {
+        var regionName = task.regionName
+        if (regionName == "CURRENT_REGION") {
+            val infoSlot = inventory.inventory.getOrNull(4).let(ItemUtils::getLore)
+            if (infoSlot.isEmpty()) {
+                return
+            }
+            val lastLine = infoSlot.last().stripControlCodes()
+            val pattern = Regex("Click to edit (?<area>[\\w\\s]+) settings!")
+
+            val result = pattern.matchEntire(lastLine) ?: return
+            regionName = result.groups["area"]?.value!!
+            activeTask!!.regionName = regionName
+        }
+
         val regionSlot = inventory.inventorySlots.find {
             val name = ItemUtils.getDisplayName(it.stack)?.let(StringUtils::cleanColour) ?: ""
-            getRegionName(name) == task.regionName
+            getRegionName(name) == regionName
         } ?: return
         Arrow.drawBigRedArrow(gui, regionSlot, "§cClick here!")
     }
@@ -232,11 +251,11 @@ object TablistTutorial {
 
         event.command("neutesttablistapi") {
             thenExecute {
-                TablistAPI.getWidgetLines(TabListWidget("Dwarven Mines", TablistAPI.WidgetNames.CRYSTALS))
+                TablistAPI.getWidgetLines(TabListWidget("CURRENT_REGION", TablistAPI.WidgetNames.SKILLS))
                     .forEach { println(it) }
-                println("SEP")
-                TablistAPI.getWidgetLines(TabListWidget("Dwarven Mines", TablistAPI.WidgetNames.FORGE))
-                    .forEach { println(it) }
+//                println("SEP")
+//                TablistAPI.getWidgetLines(TabListWidget("Dwarven Mines", TablistAPI.WidgetNames.FORGE))
+//                    .forEach { println(it) }
             }
         }
     }
