@@ -62,7 +62,7 @@ object TablistAPI {
         POWDER(Regex.fromLiteral("Powders:")),
         CRYSTALS(Regex.fromLiteral("Crystals:")),
         EFFECT(Regex("""Active Effects\(\d+\):""")),
-        PROFILE(Regex("Profile: ([A-Z][a-z]*)( .*)"))
+        PROFILE(Regex("Profile: ([A-Z][a-z]*)( .*)?"))
         ;
         // TODO other patterns
 
