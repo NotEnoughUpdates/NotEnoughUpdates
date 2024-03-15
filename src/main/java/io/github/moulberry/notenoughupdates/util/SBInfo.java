@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.events.SidebarChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
-import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistTutorial;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
@@ -332,13 +331,9 @@ public class SBInfo {
 			updateMayor();
 			lastMayorUpdate = currentTime;
 		}
-		List<String> profileData = TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
-			"CURRENT_REGION",
-			TablistAPI.WidgetNames.PROFILE
-		));
+		List<String> profileData = TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PROFILE);
 		if (!profileData.isEmpty()) {
 			String newProfile = Utils.cleanColour(profileData.get(0)).split(" ")[1];
-			System.out.println("Setting profile from tablist: " + newProfile);
 			setCurrentProfile(newProfile);
 		}
 		// todo convert to api

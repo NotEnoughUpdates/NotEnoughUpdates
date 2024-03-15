@@ -26,11 +26,17 @@ import java.util.*
 object TablistAPI {
 
     @JvmStatic
-    fun getWidgetLines(widget: TablistTutorial.TabListWidget): List<String> {
+    fun getWidgetLinesInRegion(widget: TablistTutorial.TabListWidget): List<String> {
         val regex = widget.widgetName.regex ?: Regex.fromLiteral("${widget.widgetName}:")
         val list = mutableListOf<String>()
+        // If not a single reset is present, the tab list hasn't been initialized yet
+        var sawReset = false
 
         for (entry in TabListUtils.getTabList()) {
+            if (entry.contains("§r")) {
+                sawReset = true
+            }
+
             if (list.isNotEmpty()) {
                 // New tab section, or empty line indicate a new section
                 if (entry == "§r               §r§3§lInfo§r" || entry == "§r") {
@@ -42,7 +48,9 @@ object TablistAPI {
             }
         }
 
-        if (list.isEmpty()) {
+        if (list.isEmpty() && sawReset) {
+//            Thread.dumpStack()
+//            println(TabListUtils.getTabList())
             TablistTaskQueue.addToQueue(widget)
         }
         return list
@@ -50,7 +58,7 @@ object TablistAPI {
 
     @JvmStatic
     fun getWidgetLines(widgetName: WidgetNames): List<String> {
-        return getWidgetLines(TablistTutorial.TabListWidget("CURRENT_REGION", widgetName))
+        return getWidgetLinesInRegion(TablistTutorial.TabListWidget("CURRENT_REGION", widgetName))
     }
 
     enum class WidgetNames(val regex: Regex?) {

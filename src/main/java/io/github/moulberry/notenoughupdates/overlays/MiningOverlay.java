@@ -260,10 +260,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 			int forgeInt = 0;
 
-			for (String line : TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
-				"Dwarven Mines",
-				TablistAPI.WidgetNames.POWDER
-			))) {
+			for (String line : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.POWDER)) {
 				if (line.contains("Mithril Powder:")) {
 					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
@@ -272,9 +269,7 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
-			for (String name : TablistAPI.getWidgetLines(
-				TablistAPI.WidgetNames.FORGE
-			)) {
+			for (String name : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.FORGE)) {
 				String cleanName = StringUtils.cleanColour(name);
 				if (cleanName.startsWith(" ") && profileConfig != null) {
 					char firstChar = cleanName.trim().charAt(0);
@@ -333,7 +328,7 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
-			for (String name : TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
+			for (String name : TablistAPI.getWidgetLinesInRegion(new TablistTutorial.TabListWidget(
 				"Dwarven Mines",
 				TablistAPI.WidgetNames.COMMISSIONS
 			))) {

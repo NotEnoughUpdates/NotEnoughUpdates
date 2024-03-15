@@ -205,6 +205,7 @@ object TablistTutorial {
 
     fun getRegionName(label: String): String? {
         if (!label.startsWith("Widgets")) return null
+        if (label == "Private Islands") return "Private Island"
         return label.removePrefix("Widgets ").removePrefix("in ").removePrefix("on ")
             .removePrefix("the ")
     }
@@ -251,7 +252,7 @@ object TablistTutorial {
 
         event.command("neutesttablistapi") {
             thenExecute {
-                TablistAPI.getWidgetLines(TabListWidget("CURRENT_REGION", TablistAPI.WidgetNames.SKILLS))
+                TablistAPI.getWidgetLinesInRegion(TabListWidget("CURRENT_REGION", TablistAPI.WidgetNames.SKILLS))
                     .forEach { println(it) }
 //                println("SEP")
 //                TablistAPI.getWidgetLines(TabListWidget("Dwarven Mines", TablistAPI.WidgetNames.FORGE))
