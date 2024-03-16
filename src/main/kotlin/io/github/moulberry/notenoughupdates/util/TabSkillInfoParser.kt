@@ -69,7 +69,7 @@ object TabSkillInfoParser {
             return
         }
 
-        for (s in TablistAPI.getWidgetLines(
+        for (s in TablistAPI.getOptionalWidgetLines(
             TablistAPI.WidgetNames.SKILLS
         )) {
             val matcher = skillTabPattern.matcher(s)
