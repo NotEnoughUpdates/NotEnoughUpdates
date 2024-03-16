@@ -27,7 +27,6 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
-import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistTutorial;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -328,10 +327,9 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
-			for (String name : TablistAPI.getWidgetLinesInRegion(new TablistTutorial.TabListWidget(
-				"Dwarven Mines",
+			for (String name : TablistAPI.getWidgetLines(
 				TablistAPI.WidgetNames.COMMISSIONS
-			))) {
+			)) {
 				String cleanName = StringUtils.cleanColour(name);
 				if (cleanName.startsWith(" ") && profileConfig != null) {
 					String[] split = cleanName.trim().split(": ");

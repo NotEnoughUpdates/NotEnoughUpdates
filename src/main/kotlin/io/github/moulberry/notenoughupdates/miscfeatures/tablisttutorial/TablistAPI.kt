@@ -26,7 +26,11 @@ import java.util.*
 object TablistAPI {
 
     @JvmStatic
-    fun getWidgetLinesInRegion(widget: TablistTutorial.TabListWidget): List<String> {
+    fun getWidgetLinesInRegion(
+        widget: TablistTutorial.TabListWidget,
+        addToQueue: Boolean,
+        showNotification: Boolean
+    ): List<String> {
         val regex = widget.widgetName.regex ?: Regex.fromLiteral("${widget.widgetName}:")
         val list = mutableListOf<String>()
         // If not a single reset is present, the tab list hasn't been initialized yet
@@ -48,23 +52,62 @@ object TablistAPI {
             }
         }
 
-        if (list.isEmpty() && sawReset) {
+        if (addToQueue && list.isEmpty() && sawReset) {
 //            Thread.dumpStack()
 //            println(TabListUtils.getTabList())
-            TablistTaskQueue.addToQueue(widget)
+            TablistTaskQueue.addToQueue(widget, showNotification)
         }
         return list
     }
 
+    /**
+     * Attempt to get the lines for this widget.
+     * Otherwise, add the widget to the tablist queue and show a notification to the user
+     */
     @JvmStatic
     fun getWidgetLines(widgetName: WidgetNames): List<String> {
-        return getWidgetLinesInRegion(TablistTutorial.TabListWidget("CURRENT_REGION", widgetName))
+        return getWidgetLinesInRegion(
+            TablistTutorial.TabListWidget("CURRENT_REGION", widgetName),
+            addToQueue = true,
+            showNotification = true
+        )
+    }
+
+    /**
+     * Attempt to get the lines for this widget.
+     * Otherwise, add the widget to the tablist queue without showing a notification to the user.
+     *
+     * Consider using this if there is a more optimal way of informing the user.
+     */
+    @JvmStatic
+    fun getWidgetLinesWithoutNotification(widgetName: WidgetNames): List<String> {
+        return getWidgetLinesInRegion(
+            TablistTutorial.TabListWidget("CURRENT_REGION", widgetName),
+            addToQueue = true,
+            showNotification = false
+        )
+    }
+
+    /**
+     * Attempt to get the lines for this widget.
+     * Otherwise, do nothing.
+     *
+     * Consider using this if the result is not important, but simply a nice to have.
+     */
+    @JvmStatic
+    fun getOptionalWidgetLines(widgetName: WidgetNames): List<String> {
+        return getWidgetLinesInRegion(
+            TablistTutorial.TabListWidget("CURRENT_REGION", widgetName),
+            addToQueue = false,
+            showNotification = false
+        )
     }
 
     enum class WidgetNames(val regex: Regex?) {
         PET(null),
         COMMISSIONS(null),
         SKILLS(null),
+        TRAPPER(null),
         FORGE(Regex.fromLiteral("Forges:")),
         EVENTS(Regex.fromLiteral("Event:")),
         POWDER(Regex.fromLiteral("Powders:")),

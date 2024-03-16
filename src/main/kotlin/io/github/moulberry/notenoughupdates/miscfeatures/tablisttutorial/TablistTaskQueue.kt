@@ -24,8 +24,8 @@ import io.github.moulberry.notenoughupdates.util.NotificationHandler
 object TablistTaskQueue {
     private val queue = mutableListOf<TablistTutorial.TabListWidget>()
 
-    fun addToQueue(task: TablistTutorial.TabListWidget) {
-        if (!queueContainsElements()) {
+    fun addToQueue(task: TablistTutorial.TabListWidget, showNotification: Boolean) {
+        if (showNotification && !queueContainsElements()) {
             NotificationHandler.displayNotification(
                 listOf(
                     "§l§4Widget missing",

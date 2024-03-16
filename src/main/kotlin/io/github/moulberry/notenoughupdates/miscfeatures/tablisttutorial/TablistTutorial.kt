@@ -242,7 +242,8 @@ object TablistTutorial {
                             TabListWidget(
                                 "Dwarven Mines",
                                 TablistAPI.WidgetNames.COMMISSIONS,
-                            )
+                            ),
+                            true
                         )
                         NotEnoughUpdates.INSTANCE.sendChatMessage("/tab")
                     }
@@ -252,7 +253,10 @@ object TablistTutorial {
 
         event.command("neutesttablistapi") {
             thenExecute {
-                TablistAPI.getWidgetLinesInRegion(TabListWidget("CURRENT_REGION", TablistAPI.WidgetNames.SKILLS))
+                TablistAPI.getWidgetLinesInRegion(TabListWidget("CURRENT_REGION", TablistAPI.WidgetNames.SKILLS),
+                    addToQueue = true,
+                    showNotification = true
+                )
                     .forEach { println(it) }
 //                println("SEP")
 //                TablistAPI.getWidgetLines(TabListWidget("Dwarven Mines", TablistAPI.WidgetNames.FORGE))
