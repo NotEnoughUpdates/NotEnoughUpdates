@@ -63,7 +63,7 @@ class SigningGithubSource(username: String, repo: String) :
     }
 
     fun verifySignature(signatureDownload: GithubRelease.Download, asset: UpdateData): Boolean {
-        val name = signatureDownload.name.substringBeforeLast('.')
+        val name = signatureDownload.name.substringBeforeLast('.').removePrefix("_")
         val signatureBytes = URL(signatureDownload.browserDownloadUrl).openStream().readBytes()
         val hashBytes = ByteArrayInputStream(asset.sha256.uppercase().encodeToByteArray())
         return SigningPool.verifySignature(name, hashBytes, signatureBytes)

@@ -27,8 +27,8 @@ echo use key $1, label $2, signing hash $3
 work=$(mktemp)
 echo $work
 echo "$3" | tr '[:lower:]' '[:upper:]' |tr -d '\n ' > "$work"
-openssl dgst -sign "$1" "$work" > "$2.asc"
-echo signature saved to "$2.asc"
+openssl dgst -sign "$1" "$work" > "_$2.asc"
+echo signature saved to "_$2.asc"
 
 
 
