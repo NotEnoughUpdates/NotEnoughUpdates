@@ -60,6 +60,8 @@ object AutoUpdater {
                         } else {
                             reply("No updated :(")
                         }
+                    }.handle { t, u ->
+                        u?.printStackTrace()
                     }
             }
         }

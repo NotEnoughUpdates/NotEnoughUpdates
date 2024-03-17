@@ -35,7 +35,8 @@ object JarUtil {
 
     val access = NotEnoughUpdates::class.java.protectionDomain.codeSource.location.let {
         if (it.protocol.equals("jar")) {
-            val jarFilePath = it.toString().split("!")[0]
+            val jarFilePath = URL(it.toString().split("!")[0].substring(4))
+                .toURI().toPath().toFile()
             val jarFile = JarFile(jarFilePath)
             object : Access {
                 override fun listFiles(path: String): List<String> {

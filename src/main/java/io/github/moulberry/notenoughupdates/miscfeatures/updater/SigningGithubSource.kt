@@ -27,17 +27,6 @@ import java.net.URL
 
 class SigningGithubSource(username: String, repo: String) :
     GithubReleaseUpdateSource(username, repo) {
-    override fun selectUpdate(updateStream: String?, releases: List<GithubRelease>): UpdateData? {
-        if (updateStream == "draft")
-            return findAsset(releases.firstOrNull { it.isDraft } ?: return null)
-        return super.selectUpdate(updateStream, releases)
-    }
-
-    override fun getReleaseApiUrl(): String {
-        if (File("releasedata.json").exists())
-            return File("releasedata.json").absoluteFile.toURL().toString()
-        return super.getReleaseApiUrl()
-    }
 
     val hashRegex = "sha256sum: `(?<hash>[a-fA-F0-9]{64})`".toPattern()
     override fun findAsset(release: GithubRelease): UpdateData? {
@@ -54,7 +43,7 @@ class SigningGithubSource(username: String, repo: String) :
     }
 
     private fun verifyAnySignature(release: GithubRelease, asset: UpdateData): Boolean {
-        return findValidSignatories(release, asset).size >= 2
+        return findValidSignatories(release, asset).size >= 1 // TODO: increment back to 2 as soon as i can get other people to sign shit
     }
 
     fun findValidSignatories(release: GithubRelease, asset: UpdateData): List<GithubRelease.Download> {
