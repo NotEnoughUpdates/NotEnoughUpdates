@@ -12,6 +12,8 @@ meta: Remove outdated documentation in CONTRIBUTING.md
 
 Use the meta prefix for things that don't affect users and use Add, Fix, or Remove for the rest of your PR.
 
+Do not end your PR title with a .
+
 If your PR bundles two features, consider opening two PRs, one for each instead.
 
 -->

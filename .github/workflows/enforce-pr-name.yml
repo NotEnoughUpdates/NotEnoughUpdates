@@ -13,6 +13,6 @@ jobs:
     steps:
       - uses: deepakputhraya/action-pr-title@master
         with:
-          regex: '(meta: )?(Add|Fix|Remove) .+'
+          regex: '(meta: )?(Add|Fix|Remove) .+[^\\.]'
           prefix_case_sensitive: true
           github_token: ${{ github.token }}
