@@ -19,11 +19,24 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial
 
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.util.TabListUtils
 import io.github.moulberry.notenoughupdates.util.stripControlCodes
+import net.minecraft.client.Minecraft
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
+@NEUAutoSubscribe
 object TablistAPI {
+
+    var lastWorldSwitch = 0L
+
+    @SubscribeEvent
+    fun onWorldSwitch(event: EntityJoinWorldEvent) {
+        if (event.entity == Minecraft.getMinecraft().thePlayer)
+            lastWorldSwitch = System.nanoTime()
+    }
 
     @JvmStatic
     fun getWidgetLinesInRegion(
@@ -52,7 +65,7 @@ object TablistAPI {
             }
         }
 
-        if (addToQueue && list.isEmpty() && sawReset) {
+        if (addToQueue && list.isEmpty() && sawReset && (System.nanoTime() - lastWorldSwitch > 10_000_000L)) {
 //            Thread.dumpStack()
 //            println(TabListUtils.getTabList())
             TablistTaskQueue.addToQueue(widget, showNotification)
