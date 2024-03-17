@@ -334,6 +334,8 @@ public class SBInfo {
 		List<String> profileData = TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PROFILE);
 		if (!profileData.isEmpty()) {
 			String newProfile = Utils.cleanColour(profileData.get(0)).split(" ")[1];
+			if (Character.isLowerCase(newProfile.charAt(0)))
+				newProfile = new StringBuilder(newProfile).reverse().toString();
 			setCurrentProfile(newProfile);
 		}
 		// todo convert to api
