@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -20,15 +20,17 @@
 package io.github.moulberry.notenoughupdates.util
 
 import com.google.gson.JsonArray
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI
 import net.minecraft.util.EnumChatFormatting
 import java.util.regex.Pattern
 import kotlin.math.abs
 
 object TabSkillInfoParser {
     private val skillTabPattern: Pattern =
-        Pattern.compile("^§r§e§lSkills: §r§a(?<type>\\w+) (?<level>\\d+): §r§3(?<progress>.+)%§r\$")
+        Pattern.compile("^§r (?<type>\\w+) (?<level>\\d+): §r§a(?<progress>.+)%§r\$")
     private val maxSkillTabPattern: Pattern =
-        Pattern.compile("^§r§e§lSkills: §r§a(?<type>\\w+) (?<level>\\d+): §r§c§lMAX§r\$")
+        Pattern.compile("^§r (?<type>\\w+) (?<level>\\d+): §r§c§lMAX§r\$")
     private var sentErrorOnce = false
 
     private fun calculateLevelXp(levelingArray: JsonArray, level: Int): Double {
@@ -58,12 +60,18 @@ object TabSkillInfoParser {
 
     @JvmStatic
     fun parseSkillInfo() {
+        if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+            return
+        }
+
         if (Constants.LEVELING == null) {
             sendError("${EnumChatFormatting.RED}[NEU] There is an error with your repo, please report this in the discord at ${EnumChatFormatting.AQUA}discord.gg/moulberry")
             return
         }
 
-        for (s in TabListUtils.getTabList()) {
+        for (s in TablistAPI.getOptionalWidgetLines(
+            TablistAPI.WidgetNames.SKILLS
+        )) {
             val matcher = skillTabPattern.matcher(s)
             val maxLevelMatcher = maxSkillTabPattern.matcher(s)
             if (matcher.matches()) {
