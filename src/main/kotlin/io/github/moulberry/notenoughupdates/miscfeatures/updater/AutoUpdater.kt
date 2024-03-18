@@ -22,12 +22,19 @@ package io.github.moulberry.notenoughupdates.miscfeatures.updater
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.util.brigadier.reply
+import io.github.moulberry.notenoughupdates.util.MinecraftExecutor
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import moe.nea.libautoupdate.CurrentVersion
+import moe.nea.libautoupdate.PotentialUpdate
 import moe.nea.libautoupdate.UpdateContext
 import moe.nea.libautoupdate.UpdateTarget
+import net.minecraft.client.Minecraft
+import net.minecraft.event.ClickEvent
+import net.minecraft.util.ChatComponentText
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.apache.logging.log4j.LogManager
 import java.util.concurrent.CompletableFuture
 
 @NEUAutoSubscribe
@@ -38,33 +45,108 @@ object AutoUpdater {
         CurrentVersion.ofTag(NotEnoughUpdates.VERSION.substringBefore("+")),
         "notenoughupdates"
     )
+    val logger = LogManager.getLogger("NEUUpdater")
+    private var activePromise: CompletableFuture<*>? = null
+        set(value) {
+            field?.cancel(true)
+            field = value
+        }
+
+
+    var updateState: UpdateState = UpdateState.NONE
+        private set
+
+    var potentialUpdate: PotentialUpdate? = null
+
+    enum class UpdateState {
+        AVAILABLE,
+        QUEUED,
+        DOWNLOADED,
+        NONE
+    }
+
+    fun reset() {
+        updateState = UpdateState.NONE
+        activePromise = null
+        potentialUpdate = null
+        logger.info("Reset update state")
+    }
+
+    fun checkUpdate() {
+        if (updateState != UpdateState.NONE) {
+            logger.error("Trying to perform update check while another update is already in progress")
+            return
+        }
+        logger.info("Starting update check")
+        var updateStream = config.updateStream
+        activePromise = updateContext.checkUpdate(updateStream.stream)
+            .thenAcceptAsync({
+                logger.info("Update check completed")
+                if (updateState != UpdateState.NONE) {
+                    logger.warn("This appears to be the second update check. Ignoring this one")
+                    return@thenAcceptAsync
+                }
+                potentialUpdate = it
+                if (it.isUpdateAvailable) {
+                    updateState = UpdateState.AVAILABLE
+                    Minecraft.getMinecraft().thePlayer?.addChatMessage(ChatComponentText("§e[NEU] §aNEU found a new update: ${it.update.versionName}. Click here to automatically install this update.").apply {
+                        this.chatStyle = this.chatStyle.setChatClickEvent(
+                            ClickEvent(
+                                ClickEvent.Action.RUN_COMMAND,
+                                "/neuinternalupdatenow"
+                            )
+                        )
+                    })
+                }
+            }, MinecraftExecutor.OnThread)
+    }
+
+    fun queueUpdate() {
+        if (updateState != UpdateState.AVAILABLE) {
+            logger.error("Trying to enqueue an update while another one is already downloaded or none is present")
+        }
+        updateState = UpdateState.QUEUED
+        activePromise = CompletableFuture.supplyAsync {
+            logger.info("Update download started")
+            potentialUpdate!!.prepareUpdate()
+        }.thenAcceptAsync({
+            logger.info("Update download completed, setting exit hook")
+            updateState = UpdateState.DOWNLOADED
+            potentialUpdate!!.executeUpdate()
+        }, MinecraftExecutor.OnThread)
+    }
 
     init {
         updateContext.cleanup()
     }
 
+    fun getCurrentVersion(): String {
+        return NotEnoughUpdates.VERSION
+    }
+
+
+    val config get() = NotEnoughUpdates.INSTANCE.config.about
+
+    @SubscribeEvent
+    fun onPlayerAvailableOnce(event: TickEvent.ClientTickEvent) {
+        val p = Minecraft.getMinecraft().thePlayer ?: return
+        MinecraftForge.EVENT_BUS.unregister(this)
+        if (config.autoUpdates)
+            checkUpdate()
+    }
+
+
     @SubscribeEvent
     fun testCommand(event: RegisterBrigadierCommandEvent) {
-        event.command("testneuupdate") {
+        event.command("neuinternalupdatenow") {
             thenExecute {
-                updateContext.checkUpdate("pre")
-                    .thenCompose {
-                        if (it.isUpdateAvailable)
-                            it.launchUpdate().thenApply { true }
-                        else
-                            CompletableFuture.completedFuture(false)
-                    }
-                    .thenAccept {
-                        if (it) {
-                            reply("Updated!")
-                        } else {
-                            reply("No updated :(")
-                        }
-                    }.handle { t, u ->
-                        u?.printStackTrace()
-                    }
+                queueUpdate()
             }
         }
+    }
+
+    fun getNextVersion(): String? {
+        return potentialUpdate?.update?.versionName
     }
 
 
