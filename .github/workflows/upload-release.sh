@@ -31,7 +31,13 @@ sha256sum: \`$(sha256sum "$TARGET_NAME"|cut -f 1 -d ' '| tr -d '\n')\`
 md5sum: \`$(md5sum "$TARGET_NAME"|cut -f 1 -d ' '| tr -d '\n')\`
 
 EOF
-gh release create -t "NotEnoughUpdates $GITHUB_REF_NAME" "$GITHUB_REF_NAME" --generate-notes \
-  --draft --notes-start-tag "$last_tag" \
+
+preReleaseParam=""
+if echo "$GITHUB_REF_NAME" | grep -E '.*\.0'>/dev/null; then
+  preReleaseParam="--prerelease"
+fi
+
+gh release create -t "NotEnoughUpdates $GITHUB_REF_NAME" --verify-tag "$GITHUB_REF_NAME" --generate-notes \
+  --draft --notes-start-tag "$last_tag" $preReleaseParam \
   --notes "$extra_notes" "$TARGET_NAME"
 

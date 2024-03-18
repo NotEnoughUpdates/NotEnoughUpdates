@@ -62,6 +62,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.event.ClickEvent;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
@@ -87,6 +88,8 @@ import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NEUAutoSubscribe
 @Mod(
@@ -94,10 +97,38 @@ import java.util.Set;
 	guiFactory = "io.github.moulberry.notenoughupdates.core.config.MoulConfigGuiForgeInterop")
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
-	public static final String VERSION = "2.1.1-PRE";
-	public static final int VERSION_ID = 20105; //2.1.1 only so update notif works
-	public static final int PRE_VERSION_ID = 0;
-	public static final int HOTFIX_VERSION_ID = 0;
+	public static final String VERSION = VersionConst.VERSION;
+	private static final Pattern versionPattern = Pattern.compile("([0-9]+)\\.([0-9]+)\\.([0-9]+)");
+	public static final int VERSION_ID = parseVersion(VERSION);
+
+	private static void throwIfDevEnv(String message) {
+		if ((boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment"))
+			throw new RuntimeException(message);
+	}
+
+	private static int parseVersion(String versionName) {
+		Matcher matcher = versionPattern.matcher(versionName);
+		if (!matcher.matches()) {
+			throwIfDevEnv("Unknown version " + versionName);
+			return 0;
+		}
+		int major = Integer.parseInt(matcher.group(1));
+		if (major < 0 || major > 99) {
+			throwIfDevEnv("Invalid major " + versionName);
+			return 0;
+		}
+		int minor = Integer.parseInt(matcher.group(2));
+		if (minor < 0 || minor > 99) {
+			throwIfDevEnv("Invalid minor " + versionName);
+			return 0;
+		}
+		int patch = Integer.parseInt(matcher.group(3));
+		if (patch < 0 || patch > 99) {
+			throwIfDevEnv("Invalid patch " + versionName);
+			return 0;
+		}
+		return major * 10000 + minor * 100 + patch;
+	}
 
 	public static final Logger LOGGER = LogManager.getLogger("NotEnoughUpdates");
 	/**

@@ -94,7 +94,7 @@ public class About {
 		@ConfigEditorButton(buttonText = "Source")
 		public Runnable annotations = () -> Utils.openUrl("https://github.com/JetBrains/java-annotations");
 
-		@ConfigOption(name = "Moulconfig", desc = "Moulconfig is available under the LGPL 3.0 license")
+		@ConfigOption(name = "MoulConfig", desc = "MoulConfig is available under the LGPL 3.0 license")
 		@ConfigEditorButton(buttonText = "Source")
 		public Runnable moulConfig = () -> Utils.openUrl("https://github.com/NotEnoughUpdates/MoulConfig");
 

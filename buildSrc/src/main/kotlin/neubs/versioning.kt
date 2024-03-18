@@ -22,7 +22,7 @@ package neubs
 import org.gradle.api.Project
 import java.io.ByteArrayOutputStream
 
-fun Project.setVersionFromEnvironment() {
+fun Project.setVersionFromEnvironment(): String {
     val baseVersion = run {
         val baos = ByteArrayOutputStream()
         exec {
@@ -58,6 +58,6 @@ fun Project.setVersionFromEnvironment() {
     }
 
     version = baseVersion + (if (buildExtra.isEmpty()) "" else buildExtra.joinToString(prefix = "+", separator = "."))
-
+    return baseVersion
 }
 

@@ -18,6 +18,7 @@
  */
 
 
+import neubs.CustomSignTask
 import neubs.NEUBuildFlags
 import neubs.applyPublishingInformation
 import neubs.setVersionFromEnvironment
@@ -35,6 +36,7 @@ plugins {
 	kotlin("jvm") version "1.8.21"
 	id("io.gitlab.arturbosch.detekt") version "1.23.0"
 	id("com.google.devtools.ksp") version "1.8.21-1.0.11"
+	id("net.kyori.blossom") version "2.1.0"
 }
 
 
@@ -44,7 +46,7 @@ apply<NEUBuildFlags>()
 
 group = "io.github.moulberry"
 
-setVersionFromEnvironment()
+val baseVersion = setVersionFromEnvironment()
 
 // Minecraft configuration:
 loom {
@@ -327,7 +329,14 @@ idea {
 
 sourceSets.main {
 	output.setResourcesDir(file("$buildDir/classes/java/main"))
+	this.blossom {
+		this.javaSources {
+			this.property("neuVersion", baseVersion)
+		}
+	}
 }
+
+tasks.register("signRelease", CustomSignTask::class)
 
 applyPublishingInformation(
 	"deobf" to tasks.jar,
