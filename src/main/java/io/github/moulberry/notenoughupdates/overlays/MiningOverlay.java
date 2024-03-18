@@ -283,7 +283,7 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 
 				// Commissions appear after Forges, start enumerating Commissions instead of Forges
-				if (name.equals(RESET.toString() + BLUE + BOLD + "Commissions" + RESET) && profileConfig != null) {
+				if (name.equals(RESET.toString() + BLUE + BOLD + "Commissions:" + RESET) && profileConfig != null) {
 					commissions = true;
 					forges = false;
 					continue;
