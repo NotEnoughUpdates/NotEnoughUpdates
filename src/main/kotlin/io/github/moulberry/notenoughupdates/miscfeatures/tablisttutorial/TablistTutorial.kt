@@ -185,6 +185,7 @@ object TablistTutorial {
         val allTabListEntries = leftSide + middle + rightSide
         val regex = activeTask?.widgetName?.regex ?: Regex.fromLiteral("${widget.widgetName}:")
         if (allTabListEntries.any { it.replace("⬛", "").stripControlCodes().matches(regex) }) {
+            TablistAPI.lastWidgetEnabled = activeTask!!.widgetName
             activeTask = TablistTaskQueue.getNextQueueItem()
 //            Utils.addChatMessage("Success! You enabled ${widget.widgetName}!")
             return

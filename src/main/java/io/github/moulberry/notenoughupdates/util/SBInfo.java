@@ -108,7 +108,6 @@ public class SBInfo {
 	public long unloadedWorld = -1;
 	private JsonObject locraw = null;
 	public boolean isInDungeon = false;
-	public boolean hasNewTab = false;
 
 	public enum Gamemode {
 		NORMAL("", ""), IRONMAN("Ironman", "♲"), STRANDED("Stranded", "☀");
@@ -242,7 +241,6 @@ public class SBInfo {
 		joinedWorld = System.currentTimeMillis();
 		currentlyOpenChestName = "";
 		lastOpenChestName = "";
-		hasNewTab = false;
 	}
 
 	@SubscribeEvent

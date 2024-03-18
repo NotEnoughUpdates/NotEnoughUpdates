@@ -30,12 +30,14 @@ import java.util.*
 @NEUAutoSubscribe
 object TablistAPI {
 
-    var lastWorldSwitch = 0L
+    private var lastWorldSwitch = 0L
+    var lastWidgetEnabled: WidgetNames? = null
 
     @SubscribeEvent
     fun onWorldSwitch(event: EntityJoinWorldEvent) {
-        if (event.entity == Minecraft.getMinecraft().thePlayer)
+        if (event.entity == Minecraft.getMinecraft().thePlayer) {
             lastWorldSwitch = System.nanoTime()
+        }
     }
 
     @JvmStatic
@@ -64,10 +66,12 @@ object TablistAPI {
                 list.add(entry)
             }
         }
-
-        if (addToQueue && list.isEmpty() && sawReset && (System.nanoTime() - lastWorldSwitch > 10_000_000L)) {
-//            Thread.dumpStack()
-//            println(TabListUtils.getTabList())
+        if (addToQueue &&
+            list.isEmpty() &&
+            sawReset &&
+            (System.nanoTime() - lastWorldSwitch > 10_000_000L) &&
+            widget.widgetName != lastWidgetEnabled
+        ) {
             TablistTaskQueue.addToQueue(widget, showNotification)
         }
         return list
@@ -117,18 +121,13 @@ object TablistAPI {
     }
 
     enum class WidgetNames(val regex: Regex?) {
-        PET(null),
         COMMISSIONS(null),
         SKILLS(null),
         TRAPPER(null),
         FORGE(Regex.fromLiteral("Forges:")),
-        EVENTS(Regex.fromLiteral("Event:")),
         POWDER(Regex.fromLiteral("Powders:")),
-        CRYSTALS(Regex.fromLiteral("Crystals:")),
-        EFFECT(Regex("""Active Effects\(\d+\):""")),
         PROFILE(Regex("Profile: ([A-Za-z]+)( .*)?"))
         ;
-        // TODO other patterns
 
         override fun toString(): String {
             return this.name.lowercase().split(" ").joinToString(" ") { str ->

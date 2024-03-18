@@ -236,7 +236,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 	@Override
 	public void update() {
-		overlayStrings = null;
+		overlayStrings = new ArrayList<>();
 		NEUConfig.HiddenProfileSpecific profileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay &&
@@ -254,12 +254,15 @@ public class MiningOverlay extends TextTabOverlay {
 			commissionProgress.clear();
 
 			// These strings will be displayed one after the other when the player list is disabled
-			String mithrilPowder = RED + "[NEU] Failed to get data from your tablist";
-			String gemstonePowder = RED + "You should have already received a notification about this";
+			String mithrilPowder = "";
+			String gemstonePowder = "";
 
 			int forgeInt = 0;
 
-			for (String line : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.POWDER)) {
+			List<String> powderLines = getTabLinesOrAddWarning(1, TablistAPI.WidgetNames.POWDER);
+			getTabLinesOrAddWarning(2, TablistAPI.WidgetNames.POWDER);
+
+			for (String line : powderLines) {
 				if (line.contains("Mithril Powder:")) {
 					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
@@ -268,7 +271,9 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
-			for (String name : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.FORGE)) {
+			List<String> tabForgeLines = getTabLinesOrAddWarning(3, TablistAPI.WidgetNames.FORGE);
+
+			for (String name : tabForgeLines) {
 				String cleanName = StringUtils.cleanColour(name);
 				if (cleanName.startsWith(" ") && profileConfig != null) {
 					char firstChar = cleanName.trim().charAt(0);
@@ -326,10 +331,9 @@ public class MiningOverlay extends TextTabOverlay {
 					}
 				}
 			}
+			List<String> tabCommissionLines = getTabLinesOrAddWarning(0, TablistAPI.WidgetNames.COMMISSIONS);
 
-			for (String name : TablistAPI.getWidgetLines(
-				TablistAPI.WidgetNames.COMMISSIONS
-			)) {
+			for (String name : tabCommissionLines) {
 				String cleanName = StringUtils.cleanColour(name);
 				if (cleanName.startsWith(" ") && profileConfig != null) {
 					String[] split = cleanName.trim().split(": ");
@@ -346,10 +350,6 @@ public class MiningOverlay extends TextTabOverlay {
 						}
 					}
 				}
-			}
-
-			if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
-				return;
 			}
 
 			List<String> commissionsStrings = new ArrayList<>();
@@ -405,7 +405,6 @@ public class MiningOverlay extends TextTabOverlay {
 					DARK_AQUA + "Pickaxe CD: \u00a7a" + (ItemCooldowns.pickaxeUseCooldownMillisRemaining / 1000) + "s";
 			}
 
-			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2) {
 				switch (index) {
 					case 0:
@@ -505,6 +504,22 @@ public class MiningOverlay extends TextTabOverlay {
 		}
 
 		if (overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
+	}
+
+	private List<String> getTabLinesOrAddWarning(int configIndex, TablistAPI.WidgetNames widgetName) {
+		List<String> lines;
+		if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.contains(configIndex) &&
+			NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
+			lines = TablistAPI.getWidgetLinesWithoutNotification(widgetName);
+			if (lines.isEmpty() && !overlayStrings.contains("§l§4One or more tab widgets missing!")) {
+				overlayStrings.add("§l§4One or more tab widgets missing!");
+				overlayStrings.add("§l§4Enable it in §b/tab§4!");
+			}
+		} else {
+			lines = TablistAPI.getOptionalWidgetLines(widgetName);
+		}
+
+		return lines;
 	}
 
 	private String getTipPart(String name) {
