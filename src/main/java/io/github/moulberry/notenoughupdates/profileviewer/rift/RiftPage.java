@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.rift;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,9 +30,11 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -89,13 +90,12 @@ public class RiftPage extends GuiProfileViewerPage {
 			return;
 		}
 		JsonObject profileInfo = selectedProfile.getProfileJson();
-		// TODO change everything to RiftJson walker moment
-		RiftJson rift = selectedProfile.getRiftJson();
-		if (!profileInfo.has("rift") || rift == null) {
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (!profileInfo.has("rift") || data == null || data.rift == null) {
 			drawErrorMessage();
 			return;
 		}
-
+		var rift = data.rift;
 		JsonObject riftData = profileInfo.getAsJsonObject("rift");
 		JsonObject riftInventory = riftData.getAsJsonObject("inventory");
 		if (riftInventory == null) {
@@ -103,26 +103,27 @@ public class RiftPage extends GuiProfileViewerPage {
 			return;
 		}
 
-		JsonObject riftArmor = riftInventory.getAsJsonObject("inv_armor");
-		if (riftArmor != null && riftArmor.has("data")) {
-			List<JsonObject> armorData = readBase64(riftArmor.get("data").getAsString());
-			drawArmorAndEquipment(armorData, guiLeft, guiTop, 27, 64, mouseX, mouseY, true);
+		APIDataJson.Rift.RiftInventory.Inventory riftArmor = rift.inventory.inv_armor;
+		if (riftArmor != null) {
+			List<JsonObject> armorData = riftArmor.readItems();
+			if (armorData != null) {
+				drawArmorAndEquipment(armorData, guiLeft, guiTop, 27, 64, mouseX, mouseY, true);
+			}
 		}
 
-		if (riftInventory.has("equipment_contents") &&
-			riftInventory.getAsJsonObject("equipment_contents").has("data")) {
-			List<JsonObject> equipmentData = readBase64(riftInventory
-				.getAsJsonObject("equipment_contents")
-				.get("data")
-				.getAsString());
-			drawArmorAndEquipment(equipmentData, guiLeft, guiTop, 46, 64, mouseX, mouseY, false);
+		APIDataJson.Rift.RiftInventory.Inventory riftEquipment = rift.inventory.equipment_contents;
+		if (riftEquipment != null) {
+			List<JsonObject> equipmentData = riftEquipment.readItems();
+			if (equipmentData != null) {
+				drawArmorAndEquipment(equipmentData, guiLeft, guiTop, 46, 64, mouseX, mouseY, false);
+			}
 		}
 
 		// pet
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
 		Utils.drawTexturedRect(guiLeft + 35, guiTop + 156, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 
-		RiftJson.RiftDeadCats deadCats = rift.dead_cats;
+		APIDataJson.Rift.RiftDeadCats deadCats = rift.dead_cats;
 		if (deadCats != null && deadCats.found_cats != null) {
 			List<String> foundCats = deadCats.found_cats;
 
@@ -130,7 +131,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			int riftTime = size * 15;
 			int manaRegen = size * 2;
 
-			RiftJson.RiftDeadCats.Pet montezuma = deadCats.montezuma;
+			APIDataJson.Rift.RiftDeadCats.Pet montezuma = deadCats.montezuma;
 			if (montezuma != null) {
 
 				PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
@@ -155,7 +156,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			}
 		}
 
-		float motesPurse = Utils.getElementAsFloat(Utils.getElement(profileInfo, "currencies.motes_purse"), 0);
+		float motesPurse = data.currencies.motes_purse;
 		Utils.drawStringCenteredScaledMaxWidth(
 			"§dMotes: §f" + Utils.shortNumberFormat(motesPurse, 0),
 			guiLeft + 45,
@@ -167,22 +168,15 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		if ((mouseX > guiLeft + 3 && mouseX < guiLeft + 90) &&
 			(mouseY > guiTop + 3 && mouseY < guiTop + 25)) {
-			int stats = Utils.getElementAsInt(Utils.getElement(
-				selectedProfile.getProfileJson(),
-				"player_stats.rift.lifetime_motes_earned"
-			), 0);
+			int stats = data.player_stats.rift.lifetime_motes_earned;
 			getInstance().tooltipToDisplay = Collections.singletonList(
 				"§dLifetime Motes: §f" + Utils.shortNumberFormat(stats, 0));
 		}
 
 		// Timecharms
-		JsonArray timecharm = Utils.getElementOrDefault(
-			selectedProfile.getProfileJson(),
-			"rift.gallery.secured_trophies",
-			new JsonArray()
-		).getAsJsonArray();
 
-		if (timecharm != null) {
+		if (rift.gallery != null) {
+			JsonArray timecharm = rift.gallery.secured_trophies;
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + "Timecharms:",
 				EnumChatFormatting.WHITE.toString() + timecharm.size() + "/7",
@@ -196,15 +190,17 @@ public class RiftPage extends GuiProfileViewerPage {
 
 				List<String> displayNames = new ArrayList<>();
 				for (JsonElement jsonElement : timecharm) {
-					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString();
+					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString().toUpperCase();
 					ItemStack timecharmItem = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
-						"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack();
+						"RIFT_TROPHY_" + timecharmType).resolveToItemStack();
 					if (timecharmItem != null) {
 						displayNames.add(timecharmItem.getDisplayName() + "§7: §a✔");
 					} else {
 						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "ERROR LOADING TIMECHARM!");
-						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "PLEASE REPORT THIS AT " + EnumChatFormatting.GOLD + "discord.gg/moulberry");
-						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "WITH THE FOLLOWING TEXT: " + EnumChatFormatting.AQUA + timecharmType.toUpperCase());
+						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "PLEASE REPORT THIS AT " +
+							EnumChatFormatting.GOLD + "discord.gg/moulberry");
+						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "WITH THE FOLLOWING TEXT: " +
+							EnumChatFormatting.AQUA + timecharmType);
 					}
 				}
 				getInstance().tooltipToDisplay = displayNames;
@@ -213,9 +209,10 @@ public class RiftPage extends GuiProfileViewerPage {
 			renderItem("GLASS", 316, 36, guiLeft, guiTop);
 		}
 
-		int grubberStacks = Utils.getElementAsInt(Utils.getElement(profileInfo, "rift.castle.grubber_stacks"), 0);
 
-		Utils.renderAlignedString(EnumChatFormatting.GOLD + "Burger:",
+		int grubberStacks = rift.castle.grubber_stacks;
+		Utils.renderAlignedString(
+			EnumChatFormatting.GOLD + "Burger:",
 			EnumChatFormatting.WHITE.toString() + grubberStacks + "/5",
 			guiLeft + 331,
 			guiTop + 87,
@@ -261,21 +258,19 @@ public class RiftPage extends GuiProfileViewerPage {
 			}
 		}
 
-		int foundSouls = Utils.getElementOrDefault(
-			selectedProfile.getProfileJson(),
-			"rift.enigma.found_souls",
-			new JsonArray()
-		).getAsJsonArray().size();
+		if (rift.enigma != null) {
+			int foundSouls = rift.enigma.found_souls.size();
 
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_PURPLE + "Enigma Souls:",
-			EnumChatFormatting.WHITE.toString() + foundSouls + "/42",
-			guiLeft + 331,
-			guiTop + 110,
-			83
-		);
+			Utils.renderAlignedString(
+				EnumChatFormatting.DARK_PURPLE + "Enigma Souls:",
+				EnumChatFormatting.WHITE.toString() + foundSouls + "/42",
+				guiLeft + 331,
+				guiTop + 110,
+				83
+			);
 
-		renderItem("SKYBLOCK_ENIGMA_SOUL", 314, 106, guiLeft, guiTop);
+			renderItem("SKYBLOCK_ENIGMA_SOUL", 314, 106, guiLeft, guiTop);
+		}
 
 		// button
 
@@ -306,108 +301,114 @@ public class RiftPage extends GuiProfileViewerPage {
 				drawErrorMessage();
 				return;
 			}
-			JsonObject enderChestContents = riftInventory.getAsJsonObject("ender_chest_contents");
-			String data = enderChestContents.get("data").getAsString();
-			List<JsonObject> jsonObjects = readBase64(data);
-			pages = (int) (Math.ceil(jsonObjects.size() / 45d));
+			APIDataJson.Rift.RiftInventory.Inventory riftEnderChest = rift.inventory.ender_chest_contents;
+			if (riftEnderChest != null) {
+				List<JsonObject> enderChestContents = riftEnderChest.readItems();
+				if (enderChestContents != null) {
+					pages = (int) (Math.ceil(enderChestContents.size() / 45d));
 
-			drawArrows(onPage, pages, 190, 77);
+					drawArrows(onPage, pages, 190, 77);
 
-			for (int i = 0; i <= pages; i++) {
-				if (i != onPage) continue;
+					for (int i = 0; i <= pages; i++) {
+						if (i != onPage) continue;
 
-				List<JsonObject> page = jsonObjects.subList(
-					Math.min(i == 0 ? 0 : i * 45, jsonObjects.size() - 45),
-					i == 0 ? 45 : jsonObjects.size()
-				); // if anybody has an idea how to make this less hard coded on 2 pages (more pages) please do it for me, i am doing this at 4 am
+						List<JsonObject> page = enderChestContents.subList(
+							Math.min(i == 0 ? 0 : i * 45, enderChestContents.size() - 45),
+							i == 0 ? 45 : enderChestContents.size()
+						); // if anybody has an idea how to make this less hard coded on 2 pages (more pages) please do it for me, i am doing this at 4 am
 
-				int row = 0;
-				int slot = 0;
+						int row = 0;
+						int slot = 0;
 
-				for (int j = 0; j < page.size(); j++) {
-					JsonObject jsonObject = page.get(j);
-					if (j % 9 == 0 && j > 0) {
-						slot = 0;
-						row++;
-					}
+						for (int j = 0; j < page.size(); j++) {
+							JsonObject jsonObject = page.get(j);
+							if (j % 9 == 0 && j > 0) {
+								slot = 0;
+								row++;
+							}
 
-					int x = (inventoryX - guiLeft) + 8 + (slot * 18);
-					int y = 91 + (row * 18);
-					slot++;
-					if (jsonObject != null) {
-						ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
+							int x = (inventoryX - guiLeft) + 8 + (slot * 18);
+							int y = 91 + (row * 18);
+							slot++;
+							if (jsonObject != null) {
+								ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
 
-						if ((mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) &&
-							(mouseY >= guiTop + y && mouseY <= guiTop + y + 16)) {
-							getInstance().tooltipToDisplay =
-								itemStack.getTooltip(
-									Minecraft.getMinecraft().thePlayer,
-									Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-								);
+								if ((mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) &&
+									(mouseY >= guiTop + y && mouseY <= guiTop + y + 16)) {
+									getInstance().tooltipToDisplay =
+										itemStack.getTooltip(
+											Minecraft.getMinecraft().thePlayer,
+											Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+										);
+								}
+								renderItem(itemStack, x, y, guiLeft, guiTop);
+							}
 						}
-						renderItem(itemStack, x, y, guiLeft, guiTop);
 					}
 				}
 			}
 		} else {
-
 			if (riftInventory == null || !riftInventory.has("inv_contents")) {
 				drawErrorMessage();
 				return;
 			}
-			String invData = riftInventory.getAsJsonObject("inv_contents").get("data").getAsString();
-			List<JsonObject> jsonObjects = readBase64(invData);
+			APIDataJson.Rift.RiftInventory.Inventory riftInventory2 = rift.inventory.inv_contents;
+			if (riftInventory2 != null) {
+				List<JsonObject> inventoryContents = riftInventory2.readItems();
+				if (inventoryContents != null) {
 
-			List<JsonObject> hotbar = new ArrayList<>();
-			for (int i = 0; i < 9; i++) {
-				hotbar.add(jsonObjects.get(i));
-			}
-			jsonObjects.removeAll(hotbar);
-			int hotbarSlot = 0;
-			for (JsonObject jsonObject : hotbar) {
-				if (jsonObject != null) {
-					int drawX = 123 + (hotbarSlot * 18);
-					ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
+					List<JsonObject> hotbar = new ArrayList<>();
+					for (int i = 0; i < 9; i++) {
+						hotbar.add(inventoryContents.get(i));
+					}
+					inventoryContents.removeAll(hotbar);
+					int hotbarSlot = 0;
+					for (JsonObject jsonObject : hotbar) {
+						if (jsonObject != null) {
+							int drawX = 123 + (hotbarSlot * 18);
+							ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
 
-					if ((mouseX >= guiLeft + drawX && mouseX <= guiLeft + drawX + 16) &&
-						(mouseY >= guiTop + 154 && mouseY <= guiTop + 154 + 16)) {
-						getInstance().tooltipToDisplay =
-							itemStack.getTooltip(
-								Minecraft.getMinecraft().thePlayer,
-								Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-							);
+							if ((mouseX >= guiLeft + drawX && mouseX <= guiLeft + drawX + 16) &&
+								(mouseY >= guiTop + 154 && mouseY <= guiTop + 154 + 16)) {
+								getInstance().tooltipToDisplay =
+									itemStack.getTooltip(
+										Minecraft.getMinecraft().thePlayer,
+										Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+									);
+							}
+
+							renderItem(itemStack, drawX, 154, guiLeft, guiTop);
+						}
+						hotbarSlot++;
+
 					}
 
-					renderItem(itemStack, drawX, 154, guiLeft, guiTop);
-				}
-				hotbarSlot++;
+					int row = 1;
+					int slot = 0;
+					for (int i = 0; i < inventoryContents.size(); i++) {
+						JsonObject jsonObject = inventoryContents.get(i);
+						if (i % 9 == 0 && i > 0) {
+							slot = 0;
+							row++;
+						}
 
-			}
-
-			int row = 1;
-			int slot = 0;
-			for (int i = 0; i < jsonObjects.size(); i++) {
-				JsonObject jsonObject = jsonObjects.get(i);
-				if (i % 9 == 0 && i > 0) {
-					slot = 0;
-					row++;
-				}
-
-				if (jsonObject != null) {
-					ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
-					int x1 = (inventoryX - guiLeft) + (slot * 18) + 8;
-					int y1 = (inventoryY - guiTop) + (row * 18);
-					if ((mouseX >= guiLeft + x1 && mouseX <= guiLeft + x1 + 16) &&
-						(mouseY >= guiTop + y1 && mouseY <= guiTop + y1 + 16)) {
-						getInstance().tooltipToDisplay =
-							itemStack.getTooltip(
-								Minecraft.getMinecraft().thePlayer,
-								Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-							);
+						if (jsonObject != null) {
+							ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
+							int x1 = (inventoryX - guiLeft) + (slot * 18) + 8;
+							int y1 = (inventoryY - guiTop) + (row * 18);
+							if ((mouseX >= guiLeft + x1 && mouseX <= guiLeft + x1 + 16) &&
+								(mouseY >= guiTop + y1 && mouseY <= guiTop + y1 + 16)) {
+								getInstance().tooltipToDisplay =
+									itemStack.getTooltip(
+										Minecraft.getMinecraft().thePlayer,
+										Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+									);
+							}
+							renderItem(itemStack, x1, y1, guiLeft, guiTop);
+						}
+						slot++;
 					}
-					renderItem(itemStack, x1, y1, guiLeft, guiTop);
 				}
-				slot++;
 			}
 		}
 	}
@@ -536,19 +537,19 @@ public class RiftPage extends GuiProfileViewerPage {
 					);
 			}
 		}
-	}
+		}
 
-	public List<JsonObject> readBase64(String data) {
-		List<JsonObject> itemStacks = new ArrayList<>();
-		try {
-			NBTTagList items = CompressedStreamTools.readCompressed(
-				new ByteArrayInputStream(Base64.getDecoder().decode(data))
-			).getTagList("i", 10);
-			for (int j = 0; j < items.tagCount(); j++) {
-				JsonObject item = NotEnoughUpdates.INSTANCE.manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
-				itemStacks.add(item);
-			}
-		} catch (IOException ignored) {
+		public static List<JsonObject> readBase64 (String data){
+			List<JsonObject> itemStacks = new ArrayList<>();
+			try {
+				NBTTagList items = CompressedStreamTools.readCompressed(
+					new ByteArrayInputStream(Base64.getDecoder().decode(data))
+				).getTagList("i", 10);
+				for (int j = 0; j < items.tagCount(); j++) {
+					JsonObject item = NotEnoughUpdates.INSTANCE.manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
+					itemStacks.add(item);
+				}
+			} catch (IOException ignored) {
 		}
 		return itemStacks;
 	}

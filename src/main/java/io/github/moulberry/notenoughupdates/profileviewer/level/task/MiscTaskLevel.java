@@ -25,8 +25,9 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.CrimsonIslePage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
-import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
@@ -48,24 +49,28 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		JsonObject miscellaneousTask = levelPage.getConstant().getAsJsonObject("miscellaneous_task");
 		// I love doing this on god!!!
 
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (data == null) {
+			return;
+		}
+		if (data.nether_island_player_data == null) {
+			return;
+		}
+		var netherData = data.nether_island_player_data;
 		int sbXpAccessoryUpgrade = 0;
 		int sbXpReaperPeppers = 0;
 		int sbXpUnlockedPowers = 0;
 		int sbXpAbiphone = 0;
-		if (object.has("accessory_bag_storage")) {
-			JsonObject accessoryBagStorage = object.getAsJsonObject("accessory_bag_storage");
-
-			sbXpAccessoryUpgrade = Utils.getElementAsInt(Utils.getElement(
-				accessoryBagStorage,
-				"bag_upgrades_purchased"
-			), 0) * miscellaneousTask.get("accessory_bag_upgrades_xp").getAsInt();
-			sbXpReaperPeppers =
-				miscellaneousTask.get("reaper_peppers_xp").getAsInt() * Utils.getElementAsInt(Utils.getElement(
-					object,
-					"reaper_peppers_eaten"
-				), 0);
-			if (accessoryBagStorage.has("unlocked_powers")) sbXpUnlockedPowers = accessoryBagStorage.getAsJsonArray(
-				"unlocked_powers").size() * miscellaneousTask.get("unlocking_powers_xp").getAsInt();
+		if (data.accessory_bag_storage != null && data.accessory_bag_storage.unlocked_powers != null) {
+			sbXpAccessoryUpgrade = data.accessory_bag_storage.bag_upgrades_purchased * miscellaneousTask.get(
+				"accessory_bag_upgrades_xp").getAsInt();
+			sbXpReaperPeppers = data.player_data.reaper_peppers_eaten * miscellaneousTask.get("reaper_peppers_xp").getAsInt();
+			sbXpUnlockedPowers = data.accessory_bag_storage.unlocked_powers.size() * miscellaneousTask.get(
+				"unlocking_powers_xp").getAsInt();
 		}
 
 		int sbXpDojo = 0;
@@ -74,14 +79,13 @@ public class MiscTaskLevel extends GuiTaskLevel {
 			JsonObject netherIslandPlayerData = object.getAsJsonObject("nether_island_player_data");
 			JsonObject abiphoneObject = netherIslandPlayerData.getAsJsonObject("abiphone");
 
-			if (abiphoneObject != null && abiphoneObject.has("operator_chip") &&
-				abiphoneObject.getAsJsonObject("operator_chip").has("repaired_index")) {
-				int repairedIndex = abiphoneObject.getAsJsonObject("operator_chip").get("repaired_index").getAsInt();
+			if (abiphoneObject != null && netherData.abiphone != null) {
+				int repairedIndex = netherData.abiphone.operator_chip.repaired_index;
 				sbXpRelays += (repairedIndex + 1) * miscellaneousTask.get("unlocking_relays_xp").getAsInt();
 			}
 
-			if (netherIslandPlayerData.has("dojo")) {
-				JsonObject dojoScoresObj = netherIslandPlayerData.getAsJsonObject("dojo");
+			if (netherData.dojo != null) {
+				JsonObject dojoScoresObj = netherData.dojo;
 
 				int pointsTotal = 0;
 				for (int i = 0; i < CrimsonIslePage.apiDojoTestNames.size(); i++) {
@@ -124,10 +128,7 @@ public class MiscTaskLevel extends GuiTaskLevel {
 			}
 		}
 
-		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
-		if (selectedProfile == null) {
-			return;
-		}
+
 
 		// community upgrades
 		int sbXpCommunityUpgrade = 0;
@@ -157,38 +158,23 @@ public class MiscTaskLevel extends GuiTaskLevel {
 
 		// personal bank
 		int sbXpPersonalBank = 0;
-		int personalBankUpgrade = Utils.getElementAsInt(Utils.getElement(
-			selectedProfile.getProfileJson(),
-			"profile.personal_bank_upgrade"
-		), 0);
+		int personalBankUpgrade = data.profile.personal_bank_upgrade;
 		JsonArray personalBankUpgradesXp = miscellaneousTask.getAsJsonArray("personal_bank_upgrades_xp");
 		for (int i = 1; i <= personalBankUpgrade; i++) {
 			sbXpPersonalBank += personalBankUpgradesXp.get(i - 1).getAsInt();
 		}
 
 		int sbXpTimeCharm = 0;
-		int sbXpBurger = 0;
-		if (object.has("rift")) {
-			JsonObject rift = object.getAsJsonObject("rift");
-			if (rift.has("gallery") &&
-				rift.getAsJsonObject("gallery").has("secured_trophies")) {
-				JsonArray timeCharms = rift.getAsJsonObject("gallery").getAsJsonArray(
-					"secured_trophies");
-				sbXpTimeCharm += timeCharms.size() * miscellaneousTask.get("timecharm_xp").getAsInt();
-			}
-
-
-			if (rift.has("castle") && rift.getAsJsonObject("castle").has("grubber_stacks") && miscellaneousTask.has("mcgrubber_burger_xp")) {
-				sbXpBurger = miscellaneousTask.get("mcgrubber_burger_xp").getAsInt()
-					* rift.getAsJsonObject("castle").get("grubber_stacks").getAsInt();
-			}
+		if (data.rift.gallery != null) {
+			JsonArray timecharms = data.rift.gallery.secured_trophies;
+			sbXpTimeCharm += timecharms.size() * miscellaneousTask.get("timecharm_xp").getAsInt();
 		}
 
+		int sbXpBurger = data.rift.castle.grubber_stacks * miscellaneousTask.get("mcgrubber_burger_xp").getAsInt();
+
 		int sbXpSerum = 0;
-		if (object.has("experimentation") &&
-			object.getAsJsonObject("experimentation").has("serums_drank")
-		 && miscellaneousTask.has("metaphysical_serum_xp")) {
-			sbXpSerum = miscellaneousTask.get("metaphysical_serum_xp").getAsInt() * object.getAsJsonObject("experimentation").get("serums_drank").getAsInt();
+		if (miscellaneousTask.has("metaphysical_serum_xp")) {
+			sbXpSerum = miscellaneousTask.get("metaphysical_serum_xp").getAsInt() * data.experimentation.serums_drank;
 		}
 
 		List<String> lore = new ArrayList<>();
