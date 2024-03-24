@@ -391,6 +391,8 @@ public class EquipmentOverlay {
 		ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		List<String> heldItemLore = ItemUtils.getLore(heldItem);
 
+		if (heldItemLore.isEmpty()) return;
+
 		String itemType = Objects.requireNonNull(StringUtils.substringAfterLast(heldItemLore.get(heldItemLore.size() - 1), " "), "null");
 		if (!Arrays.asList("NECKLACE", "CLOAK", "BELT", "GLOVES", "BRACELET").contains(itemType)) return;
 
