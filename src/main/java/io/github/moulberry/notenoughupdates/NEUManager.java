@@ -895,7 +895,9 @@ public class NEUManager {
 				displayGuiItemRecipe(internalName);
 				break;
 			case "viewpotion":
-				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
+				String potionName = internalName.split(";")[0];
+				potionName = potionName.replace("POTION_", "");
+				neu.sendChatMessage("/viewpotion " + potionName.toLowerCase(Locale.ROOT));
 				break;
 			default:
 				displayGuiItemRecipe(internalName);
