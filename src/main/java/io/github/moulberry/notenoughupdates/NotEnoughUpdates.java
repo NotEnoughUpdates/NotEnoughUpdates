@@ -101,30 +101,21 @@ public class NotEnoughUpdates {
 	private static final Pattern versionPattern = Pattern.compile("([0-9]+)\\.([0-9]+)\\.([0-9]+)");
 	public static final int VERSION_ID = parseVersion(VERSION);
 
-	private static void throwIfDevEnv(String message) {
-		if ((boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment"))
-			throw new RuntimeException(message);
-	}
-
 	private static int parseVersion(String versionName) {
 		Matcher matcher = versionPattern.matcher(versionName);
 		if (!matcher.matches()) {
-			throwIfDevEnv("Unknown version " + versionName);
 			return 0;
 		}
 		int major = Integer.parseInt(matcher.group(1));
 		if (major < 0 || major > 99) {
-			throwIfDevEnv("Invalid major " + versionName);
 			return 0;
 		}
 		int minor = Integer.parseInt(matcher.group(2));
 		if (minor < 0 || minor > 99) {
-			throwIfDevEnv("Invalid minor " + versionName);
 			return 0;
 		}
 		int patch = Integer.parseInt(matcher.group(3));
 		if (patch < 0 || patch > 99) {
-			throwIfDevEnv("Invalid patch " + versionName);
 			return 0;
 		}
 		return major * 10000 + minor * 100 + patch;
