@@ -175,15 +175,20 @@ public class StorageManager {
 	}
 
 	private static void fixPetInfo(ItemStack src) {
-		if (src.getTagCompound() == null || !src.getTagCompound().hasKey("ExtraAttributes") || !src.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("petInfo")) return;
-		PetInfo oldPetInfo = GSON.fromJson(src.getTagCompound().getCompoundTag("ExtraAttributes").getString("petInfo"), PetInfo.class);
+		if (src.getTagCompound() == null || !src.getTagCompound().hasKey("ExtraAttributes") ||
+			!src.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("petInfo")) return;
+		PetInfo oldPetInfo = GSON.fromJson(
+			src.getTagCompound().getCompoundTag("ExtraAttributes").getString("petInfo"),
+			PetInfo.class
+		);
 		src.getTagCompound().getCompoundTag("ExtraAttributes").removeTag("petInfo");
 		try {
 			src.getTagCompound().getCompoundTag("ExtraAttributes").setTag(
 				"petInfo",
 				JsonToNBT.getTagFromJson(oldPetInfo.toString())
 			);
-		} catch (NBTException | NullPointerException ignored) {}
+		} catch (NBTException | NullPointerException ignored) {
+		}
 	}
 
 	private static JsonElement loadJson(NBTBase tag) {

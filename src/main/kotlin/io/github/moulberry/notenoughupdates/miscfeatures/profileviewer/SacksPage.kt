@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -29,16 +29,24 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI
+import io.github.moulberry.notenoughupdates.util.kotlin.set
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Blocks
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
-
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
+import kotlin.math.max
 
 class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance) {
     private val manager get() = NotEnoughUpdates.INSTANCE.manager
     private val pv_sacks = ResourceLocation("notenoughupdates:pv_sacks.png")
     private var sacksJson = Constants.SACKS
+    private var sackTypes = sacksJson.getAsJsonObject("sacks") ?: JsonObject()
     private var tooltipToDisplay = listOf<String>()
     private var currentProfile: SkyblockProfiles.SkyblockProfile? = null
 
@@ -61,7 +69,27 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private val sackGridYSize = 41
     private val itemIconSize = 20
 
-    private val sackContents = mutableMapOf<String, SackInfo>()
+    // Lazy initialisation to allow for guiLeft and guiTop to be initialized first
+    private val priceSourceButtonRect by lazy { Rectangle(guiLeft + 54, guiTop + 155, 20, 20) }
+
+    private enum class PriceSource {
+        Bazaar,
+        NPC
+    }
+
+    private var currentPriceSource = PriceSource.Bazaar
+
+
+    private val sortButtonRect by lazy { Rectangle(guiLeft + 76, guiTop + 155, 20, 20) }
+
+    private enum class SortMode {
+        Value,
+        Quantity
+    }
+
+    private var currentSortMode = SortMode.Value
+
+    private var sackContents = mutableMapOf<String, SackInfo>()
     private val sackItems = mutableMapOf<String, SackItem>()
     private val playerRunes = mutableListOf<String>()
 
@@ -122,8 +150,6 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         )
 
         GlStateManager.enableDepth()
-
-        val sackTypes = sacksJson.getAsJsonObject("sacks")
 
         val startIndex = page * pageSize
         val endIndex = (page + 1) * pageSize
@@ -203,6 +229,14 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 sackItemNames = playerRunes
             }
 
+            sackItemNames = sackItemNames.sortedByDescending {
+                val sackInfo = sackItems[it] ?: SackItem(0, 0.0)
+                when (currentSortMode) {
+                    SortMode.Value -> sackInfo.value
+                    SortMode.Quantity -> sackInfo.amount.toDouble()
+                }
+            }
+
             for ((index, itemName) in sackItemNames.withIndex()) {
                 if (index < startIndex || index >= endIndex) continue
                 val adjustedIndex = index - startIndex
@@ -210,6 +244,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 val xIndex = adjustedIndex % columns
                 val yIndex = adjustedIndex / columns
                 if (yIndex >= rows) continue
+                val itemInfo = sackItems[itemName] ?: SackItem(0, 0.0)
 
                 val itemStack = manager.createItem(itemName)
 
@@ -229,7 +264,6 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                     GL11.GL_NEAREST
                 )
 
-                val itemInfo = sackItems[itemName] ?: SackItem(0, 0.0)
                 Utils.drawStringCentered(
                     "§6${StringUtils.shortNumberFormat(itemInfo.value.roundToDecimals(0))}",
                     x + itemIconSize / 2,
@@ -262,7 +296,12 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 100,
                 true
             )
-            Utils.renderShadowedString("§2Back", (guiLeft + sackArrayLeft + 40).toFloat(), (guiTop + arrowsHeight + 3).toFloat(), 79)
+            Utils.renderShadowedString(
+                "§2Back",
+                (guiLeft + sackArrayLeft + 40).toFloat(),
+                (guiTop + arrowsHeight + 3).toFloat(),
+                79
+            )
 
             if (Mouse.getEventButtonState() && Utils.isWithinRect(mouseX, mouseY, buttonRect)) {
                 currentSack = "All"
@@ -271,6 +310,8 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 maxPage = getPages(currentSack, sackTypes)
             }
         }
+
+        renderPriceSourceAndSortButtons(mouseX, mouseY)
 
         GlStateManager.color(1f, 1f, 1f, 1f)
         ArrowPagesUtils.onDraw(guiLeft, guiTop, intArrayOf(sackArrayLeft + arrowsXPos, arrowsHeight), page, maxPage + 1)
@@ -282,6 +323,65 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         }
     }
 
+    private fun renderPriceSourceAndSortButtons(mouseX: Int, mouseY: Int) {
+        KotlinRenderUtils.renderItemStackButton(
+            priceSourceButtonRect,
+            when (currentPriceSource) {
+                PriceSource.Bazaar -> {
+                    // Bazaar NPC
+                    val uuid = "c232e3820897429157619b0ee099fec0628f602fff12b695de54aef11d923ad7"
+                    ItemUtils.createSkullItemStack(
+                        uuid,
+                        uuid,
+                        "https://textures.minecraft.net/texture/$uuid"
+                    )
+                }
+
+                PriceSource.NPC -> ItemUtils.getCoinItemStack(100000.0)
+            },
+            GuiProfileViewer.pv_elements
+        )
+        if (priceSourceButtonRect.contains(mouseX, mouseY)) {
+            val tooltip = mutableListOf(
+                "§6Select price source",
+            )
+            tooltip.addAll(generateTooltipFromEnum(currentPriceSource))
+            tooltipToDisplay = tooltip
+        }
+
+        KotlinRenderUtils.renderItemStackButton(
+            sortButtonRect,
+            when (currentSortMode) {
+                SortMode.Value -> ItemStack(Items.gold_ingot)
+                SortMode.Quantity -> ItemStack(Blocks.hopper)
+            },
+            GuiProfileViewer.pv_elements
+        )
+        if (sortButtonRect.contains(mouseX, mouseY)) {
+            val tooltip = mutableListOf(
+                "§6Select sorting mode",
+            )
+            tooltip.addAll(generateTooltipFromEnum(currentSortMode))
+            tooltipToDisplay = tooltip
+        }
+    }
+
+    private inline fun <reified T : Enum<T>> generateTooltipFromEnum(currentlySelected: T): List<String> {
+        val tooltip = mutableListOf<String>()
+        for (enumValue in enumValues<T>()) {
+            var line = " "
+            line += if (enumValue == currentlySelected) {
+                "§2> ${enumValue.name}"
+            } else {
+                enumValue.name
+            }
+            tooltip.add(line)
+        }
+        tooltip.add("")
+        tooltip.add("§eClick to switch!")
+        return tooltip
+    }
+
     fun mouseClick(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
         super.mouseClicked(mouseX, mouseY, mouseButton)
 
@@ -291,8 +391,6 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         // after this point everything in the constants json exists and does not need to be checked again
 
         if (currentSack == "All") {
-            val sackTypes = sacksJson.getAsJsonObject("sacks")
-
             val startIndex = page * pageSize
             val endIndex = (page + 1) * pageSize
 
@@ -319,6 +417,18 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                     }
                 }
             }
+        }
+
+        if (priceSourceButtonRect.contains(mouseX, mouseY)) {
+            currentPriceSource = PriceSource.values()[(currentPriceSource.ordinal + 1) % PriceSource.values().size]
+            Utils.playPressSound()
+            getData()
+        }
+
+        if (sortButtonRect.contains(mouseX, mouseY)) {
+            currentSortMode = SortMode.values()[(currentSortMode.ordinal + 1) % SortMode.values().size]
+            Utils.playPressSound()
+            getData()
         }
 
         ArrowPagesUtils.onPageSwitchMouse(
@@ -366,7 +476,6 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         playerRunes.clear()
 
         if (!sacksJson.has("sacks") || !sacksJson.get("sacks").isJsonObject) return
-        val sackTypes = sacksJson.getAsJsonObject("sacks")
         val selectedProfile = selectedProfile?.profileJson ?: return
 
         val sacksInfo = Utils.getElementOrDefault(selectedProfile, "inventory.sacks_counts", JsonObject()).asJsonObject
@@ -407,22 +516,52 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
             sackContents[sackName] = SackInfo(sackItemCount, sackValue)
         }
 
+        sackTypes = sortSackTypesList()
+
+
         for ((itemName, _) in sacksInfo.entrySet()) {
             val adjustedName = itemName.replace(":", "-")
-            if (adjustedName.contains(Regex("(RUNE|PERFECT_|MUSHROOM_COLLECTION)"))) continue
-            if (adjustedName in sackItems) continue
+            if ((adjustedName in sackItems) || adjustedName.contains(Regex("(RUNE|PERFECT_|MUSHROOM_COLLECTION)"))) continue
             println("$adjustedName missing from repo sacks file!")
         }
 
         sackContents["All"] = SackInfo(totalItems, totalValue)
     }
 
+    /**
+     * Sort the sackTypes list via the chosen sorting mode.
+     *
+     * This will control the order in which the list will be rendered later
+     *
+     * @see SortMode
+     */
+    private fun sortSackTypesList(): JsonObject {
+        val sortedTypes = JsonObject()
+        Constants.SACKS.getAsJsonObject("sacks").entrySet()
+            .sortedByDescending { (key, _) ->
+                val sack = sackContents[key] ?: SackInfo(0, 0.0)
+                when (currentSortMode) {
+                    SortMode.Value -> sack.sackValue
+                    SortMode.Quantity -> sack.itemCount.toDouble()
+                }
+            }
+            .forEach { (key, value) ->
+                sortedTypes[key] = value
+            }
+        return sortedTypes
+    }
+
     private fun getPrice(itemName: String): Double {
         val npcPrice = HypixelItemAPI.getNPCSellPrice(itemName) ?: 0.0
-        val bazaarInfo = manager.auctionManager.getBazaarInfo(itemName) ?: return npcPrice
-        val buyPrice = bazaarInfo.getDoubleOrValue("curr_buy", 0.0)
-        val sellPrice = bazaarInfo.getDoubleOrValue("curr_sell", 0.0)
-        return maxOf(npcPrice, buyPrice, sellPrice)
+        return when (currentPriceSource) {
+            PriceSource.NPC -> npcPrice
+            PriceSource.Bazaar -> {
+                val bazaarInfo = manager.auctionManager.getBazaarInfo(itemName) ?: return npcPrice
+                val buyPrice = bazaarInfo.getDoubleOrValue("curr_buy", 0.0)
+                val sellPrice = bazaarInfo.getDoubleOrValue("curr_sell", 0.0)
+                max(buyPrice, sellPrice)
+            }
+        }
     }
 
     private fun getRuneData(sacksInfo: JsonObject): Int {

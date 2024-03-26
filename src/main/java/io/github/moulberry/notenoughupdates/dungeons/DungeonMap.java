@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NEUResourceManager;
 import io.github.moulberry.notenoughupdates.util.SidebarUtil;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
@@ -503,8 +504,10 @@ public class DungeonMap {
 			mapSizeX = borderSizeOption == 0 ? 90 : borderSizeOption == 1 ? 120 : borderSizeOption == 2 ? 160 : 240;
 		}
 		mapSizeY = mapSizeX;
-		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize + (isFloorOne ? getRenderRoomSize() : 0);
-		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize + (isEntrance ? getRenderRoomSize() : 0);
+		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize +
+			(isFloorOne ? getRenderRoomSize() : 0);
+		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize +
+			(isEntrance ? getRenderRoomSize() : 0);
 		int mapCenterX = mapSizeX / 2;
 		int mapCenterY = mapSizeY / 2;
 		int scaleFactor = 8;
@@ -1527,7 +1530,13 @@ public class DungeonMap {
 			}
 
 			ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.mainInventory[8];
-			boolean holdingBow = stack != null && stack.getItem() == Items.arrow && colourMap != null;
+			boolean holdingBow = false;
+			if (stack != null) {
+				holdingBow |= stack.getItem() == Items.arrow;
+				String customname = ItemUtils.getDisplayName(stack.getTagCompound());
+				holdingBow |= customname != null && customname.endsWith("Arrow");
+			}
+			holdingBow &= colourMap != null;
 			if (holdingBow || (stack != null && stack.getItem() instanceof ItemMap)) {
 				Map<String, Vec4b> decorations = null;
 

@@ -37,7 +37,6 @@ public class MiscOverlays {
 		name = "Todo Overlay",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 0)
 	public boolean todoAccordion = true;
 
 	@Expose
@@ -46,7 +45,6 @@ public class MiscOverlays {
 		desc = "Show an overlay that reminds you to do important tasks"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
 	public boolean todoOverlay2 = false;
 
 	@Expose
@@ -55,7 +53,6 @@ public class MiscOverlays {
 		desc = "Only show the todo overlay when tab list is open"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
 	public boolean todoOverlayOnlyShowTab = false;
 
 	@Expose
@@ -64,7 +61,6 @@ public class MiscOverlays {
 		desc = "Hide some tasks from the todo overlay while on a bingo profile: Cookie Buff, Godpot, Heavy Pearls, Crimson Isle Quests"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
 	public boolean todoOverlayHideAtBingo = true;
 
 	@Expose
@@ -90,14 +86,12 @@ public class MiscOverlays {
 			"§3Free Rift Infusion: §e3h38m",
 		}
 	)
-	@ConfigAccordionId(id = 0)
 	public List<Integer> todoText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
 
 	@ConfigOption(
 		name = "Show Only If Soon",
 		desc = ""
 	)
-	@ConfigAccordionId(id = 0)
 	@ConfigEditorAccordion(id = 1)
 	public boolean TodoAccordion = false;
 
@@ -266,7 +260,6 @@ public class MiscOverlays {
 	)
 
 	@ConfigEditorAccordion(id = 2)
-	@ConfigAccordionId(id = 0)
 	public boolean TodoColourAccordion = false;
 
 	@Expose
@@ -455,7 +448,6 @@ public class MiscOverlays {
 	@ConfigEditorDropdown(
 		values = {"Background", "No Shadow", "Shadow", "Full Shadow"}
 	)
-	@ConfigAccordionId(id = 0)
 	public int todoStyle = 0;
 
 	@Expose
@@ -464,6 +456,5 @@ public class MiscOverlays {
 		desc = "Add little item icons next to the lines in the todo overlay"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
 	public boolean todoIcons = true;
 }

@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import lombok.var;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -1225,6 +1226,23 @@ public class Utils {
 		drawStringScaled(str, x - fr.getStringWidth(str) * factor, y, shadow, colour, factor);
 	}
 
+	public static void drawStringScaledFillWidth(
+		String str,
+		float x, float y,
+		boolean shadow,
+		int colour,
+		int availableSpace
+	) {
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x, y, 0);
+		var fr = Minecraft.getMinecraft().fontRendererObj;
+		var width = fr.getStringWidth(str);
+		float scale = ((float) availableSpace) / width;
+		GlStateManager.scale(scale, scale, 1f);
+		fr.drawString(str,  -width / 2F, 0, colour, shadow);
+		GlStateManager.popMatrix();
+	}
+
 	public static void drawStringScaledMax(
 		String str,
 		float x,
@@ -1575,6 +1593,7 @@ public class Utils {
 		if (!prim.isNumber()) return def;
 		return prim.getAsInt();
 	}
+
 	public static long getElementAsLong(JsonElement element, long def) {
 		if (element == null) return def;
 		if (!element.isJsonPrimitive()) return def;
@@ -1984,6 +2003,7 @@ public class Utils {
 
 	/**
 	 * Draws a solid color rectangle with the specified coordinates and color (ARGB format). Args: x1, y1, x2, y2, color
+	 *
 	 * @see Gui#drawRect
 	 */
 	public static void drawRect(float left, float top, float right, float bottom, int color) {
@@ -1998,10 +2018,10 @@ public class Utils {
 			top = bottom;
 			bottom = i;
 		}
-		float f = (float)(color >> 24 & 0xFF) / 255.0f;
-		float g = (float)(color >> 16 & 0xFF) / 255.0f;
-		float h = (float)(color >> 8 & 0xFF) / 255.0f;
-		float j = (float)(color & 0xFF) / 255.0f;
+		float f = (float) (color >> 24 & 0xFF) / 255.0f;
+		float g = (float) (color >> 16 & 0xFF) / 255.0f;
+		float h = (float) (color >> 8 & 0xFF) / 255.0f;
+		float j = (float) (color & 0xFF) / 255.0f;
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 		GlStateManager.enableBlend();
@@ -2018,7 +2038,6 @@ public class Utils {
 		GlStateManager.disableBlend();
 	}
 
-
 	/**
 	 * Draws a default-size 16 by 16 item-overlay at <i>x</i> and <i>y</i>.
 	 *
@@ -2032,9 +2051,9 @@ public class Utils {
 	/**
 	 * Draws an item-overlay of given <i>width</i> and <i>height</i> at <i>x</i> and <i>y</i>.
 	 *
-	 * @param x position of the overlay
-	 * @param y position of the overlay
-	 * @param width width of the overlay
+	 * @param x      position of the overlay
+	 * @param y      position of the overlay
+	 * @param width  width of the overlay
 	 * @param height height of the overlay
 	 */
 	public static void drawHoverOverlay(int x, int y, int width, int height) {
@@ -2239,6 +2258,7 @@ public class Utils {
 	}
 
 	private static long lastError = -1;
+
 	public static void showOutdatedRepoNotification(String missingFile) {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(

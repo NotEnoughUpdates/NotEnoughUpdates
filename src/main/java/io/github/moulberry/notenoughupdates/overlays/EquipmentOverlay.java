@@ -45,14 +45,18 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -378,6 +382,65 @@ public class EquipmentOverlay {
 		}
 	}
 
+	private final Map<ItemStack, Integer> itemsToAdd = new HashMap<>();
+
+	@SubscribeEvent
+	public void onClickItem(PlayerInteractEvent event) {
+		if ((event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR) || Minecraft.getMinecraft().thePlayer.getHeldItem() == null) return;
+
+		ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
+		List<String> heldItemLore = ItemUtils.getLore(heldItem);
+
+		String itemType = Objects.requireNonNull(StringUtils.substringAfterLast(heldItemLore.get(heldItemLore.size() - 1), " "), "null");
+		if (!Arrays.asList("NECKLACE", "CLOAK", "BELT", "GLOVES", "BRACELET").contains(itemType)) return;
+
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (profileSpecific == null) return;
+
+		int slot;
+
+		switch (itemType) {
+			case "NECKLACE":
+				slot = 10;
+				break;
+			case "CLOAK":
+				slot = 19;
+				break;
+			case "BELT":
+				slot = 28;
+				break;
+			case "GLOVES": case "BRACELET":
+				slot = 37;
+				break;
+			default:
+				return;
+		}
+
+		JsonObject currentEquipment = profileSpecific.savedEquipment.get(slot);
+		if (currentEquipment == null) return;
+
+		ItemStack itemInSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(currentEquipment.getAsJsonObject(), false);
+		if (itemInSlot != null && itemInSlot.getDisplayName().contains("Empty")) itemsToAdd.put(heldItem, slot);
+	}
+
+	@SubscribeEvent
+	public void onReceiveChatMessage(ClientChatReceivedEvent event) {
+		if (event.type == 2 || !event.message.getUnformattedText().startsWith("You equipped a ") || itemsToAdd.isEmpty()) return;
+
+		for (ItemStack item : itemsToAdd.keySet()) {
+			if (event.message.getUnformattedText().contains(Utils.cleanColour(item.getDisplayName()))) {
+
+				NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+				if (profileSpecific == null) return;
+
+				profileSpecific.savedEquipment.put(itemsToAdd.get(item), enrichItemStack(item));
+				profileCache.get(SBInfo.getInstance().currentProfile).put(itemsToAdd.get(item), item);
+				itemsToAdd.remove(item);
+				return;
+			}
+		}
+	}
+
 	private ItemStack getWardrobeSlot(int armourSlot) {
 		if (SBInfo.getInstance().currentProfile == null) {
 			return null;
@@ -399,12 +462,7 @@ public class EquipmentOverlay {
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
 			if (itemStack != null) {
-				JsonObject itemToSave = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(itemStack);
-				if (!itemToSave.has("internalname")) {
-					//would crash without internalName when trying to construct the ItemStack again
-					itemToSave.add("internalname", new JsonPrimitive("_"));
-				}
-				profileSpecific.savedEquipment.put(armourSlot, itemToSave);
+				profileSpecific.savedEquipment.put(armourSlot, enrichItemStack(itemStack));
 				cache.put(armourSlot, itemStack);
 				return itemStack;
 			}
@@ -423,6 +481,15 @@ public class EquipmentOverlay {
 			}
 		}
 		return null;
+	}
+
+	private JsonObject enrichItemStack(ItemStack itemStack) {
+		JsonObject itemToSave = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(itemStack);
+		if (!itemToSave.has("internalname")) {
+			//would crash without internalName when trying to construct the ItemStack again
+			itemToSave.add("internalname", new JsonPrimitive("_"));
+		}
+		return itemToSave;
 	}
 
 	private boolean wardrobeOpen = false;
