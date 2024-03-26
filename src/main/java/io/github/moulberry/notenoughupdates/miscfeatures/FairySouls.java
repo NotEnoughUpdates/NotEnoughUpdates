@@ -198,7 +198,7 @@ public class FairySouls {
 	}
 
 	public void markClosestSoulFound() {
-		if (!trackSouls) return;
+		if (!trackSouls || allSoulsInCurrentLocation == null || allSoulsInCurrentLocation.isEmpty()) return;
 		int closestIndex = -1;
 		double closestDistSq = 10 * 10;
 		for (int i = 0; i < allSoulsInCurrentLocation.size(); i++) {
@@ -211,7 +211,7 @@ public class FairySouls {
 				closestIndex = i;
 			}
 		}
-		if (closestIndex != -1) {
+		if (closestIndex != -1 && foundSoulsInLocation != null) {
 			foundSoulsInLocation.add(closestIndex);
 			refreshMissingSoulInfo(true);
 		}
