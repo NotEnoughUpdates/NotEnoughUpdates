@@ -23,6 +23,7 @@ import neubs.NEUBuildFlags
 import neubs.applyPublishingInformation
 import neubs.setVersionFromEnvironment
 import org.apache.commons.lang3.SystemUtils
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.net.URL
 
 plugins {
@@ -204,6 +205,9 @@ tasks.named<Test>("test") {
 	useJUnitPlatform()
 	systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
 	this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+	testLogging {
+		exceptionFormat = TestExceptionFormat.FULL
+	}
 }
 val badJars = layout.buildDirectory.dir("badjars")
 
