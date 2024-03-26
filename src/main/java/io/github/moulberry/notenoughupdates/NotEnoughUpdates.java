@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import io.github.moulberry.moulconfig.observer.PropertyTypeAdapterFactory;
 import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
@@ -62,7 +63,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.event.ClickEvent;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
@@ -173,6 +173,7 @@ public class NotEnoughUpdates {
 	}};
 	public static ProfileViewer profileViewer;
 	private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
+																						 .registerTypeAdapterFactory(new PropertyTypeAdapterFactory())
 																						 .registerTypeAdapterFactory(KotlinTypeAdapterFactory.INSTANCE).create();
 	public NEUManager manager;
 	public NEUOverlay overlay;

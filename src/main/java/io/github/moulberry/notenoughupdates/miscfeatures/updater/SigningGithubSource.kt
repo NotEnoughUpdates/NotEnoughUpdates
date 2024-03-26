@@ -43,7 +43,11 @@ class SigningGithubSource(username: String, repo: String) :
     }
 
     private fun verifyAnySignature(release: GithubRelease, asset: UpdateData): Boolean {
-        return findValidSignatories(release, asset).size >= 2
+        val signatories = findValidSignatories(release, asset)
+        for (signatory in signatories) {
+            println("Accepted signature from ${signatory.name}")
+        }
+        return signatories.size >= 2
     }
 
     fun findValidSignatories(release: GithubRelease, asset: UpdateData): List<GithubRelease.Download> {

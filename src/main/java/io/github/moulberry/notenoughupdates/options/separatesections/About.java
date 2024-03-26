@@ -25,6 +25,7 @@ import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorButton;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.observer.Property;
 import io.github.moulberry.notenoughupdates.options.customtypes.ConfigVersionDisplay;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
@@ -41,7 +42,7 @@ public class About {
 	@ConfigOption(name = "Update Stream", desc = "How often do you want to get updates")
 	@Expose
 	@ConfigEditorDropdown
-	public UpdateStream updateStream = UpdateStream.FULL;
+	public Property<UpdateStream> updateStream = Property.of(UpdateStream.FULL);
 
 	@ConfigOption(name = "Used Software", desc = "Information about used software and licenses")
 	@Accordion

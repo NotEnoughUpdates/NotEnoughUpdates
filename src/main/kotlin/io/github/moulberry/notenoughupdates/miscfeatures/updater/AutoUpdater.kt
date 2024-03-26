@@ -78,7 +78,7 @@ object AutoUpdater {
             return
         }
         logger.info("Starting update check")
-        var updateStream = config.updateStream
+        val updateStream = config.updateStream.get()
         activePromise = updateContext.checkUpdate(updateStream.stream)
             .thenAcceptAsync({
                 logger.info("Update check completed")
@@ -118,6 +118,9 @@ object AutoUpdater {
 
     init {
         updateContext.cleanup()
+        config.updateStream.whenChanged { _, _ ->
+            reset()
+        }
     }
 
     fun getCurrentVersion(): String {
