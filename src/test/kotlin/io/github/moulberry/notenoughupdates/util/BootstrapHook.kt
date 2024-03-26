@@ -41,6 +41,7 @@ class BootstrapHook : BeforeAllCallback, Extension {
         try {
             if (!bootstrapped) {
                 bootstrapped = true
+                Launch.blackboard = HashMap()
                 Launch.blackboard.put("fml.deobfuscatedEnvironment", true)
                 Bootstrap::class.java.getDeclaredField("alreadyRegistered").also { it.isAccessible = true }
                     .set(null, true)
