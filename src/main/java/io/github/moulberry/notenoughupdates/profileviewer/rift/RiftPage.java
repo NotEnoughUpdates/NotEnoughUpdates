@@ -175,7 +175,7 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		// Timecharms
 
-		if (rift.gallery != null) {
+		if (rift.gallery != null && rift.gallery.secured_trophies != null) {
 			JsonArray timecharm = rift.gallery.secured_trophies;
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + "Timecharms:",
@@ -258,7 +258,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			}
 		}
 
-		if (rift.enigma != null) {
+		if (rift.enigma != null && rift.enigma.found_souls != null ) {
 			int foundSouls = rift.enigma.found_souls.size();
 
 			Utils.renderAlignedString(

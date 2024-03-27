@@ -165,12 +165,15 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		}
 
 		int sbXpTimeCharm = 0;
-		if (data.rift.gallery != null) {
+		if (data.rift != null && data.rift.gallery != null && data.rift.gallery.secured_trophies != null) {
 			JsonArray timecharms = data.rift.gallery.secured_trophies;
 			sbXpTimeCharm += timecharms.size() * miscellaneousTask.get("timecharm_xp").getAsInt();
 		}
 
-		int sbXpBurger = data.rift.castle.grubber_stacks * miscellaneousTask.get("mcgrubber_burger_xp").getAsInt();
+		int sbXpBurger = 0;
+		if (data.rift != null) {
+			sbXpBurger = data.rift.castle.grubber_stacks * miscellaneousTask.get("mcgrubber_burger_xp").getAsInt();
+		}
 
 		int sbXpSerum = 0;
 		if (miscellaneousTask.has("metaphysical_serum_xp")) {

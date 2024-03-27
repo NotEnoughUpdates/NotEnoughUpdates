@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.github.moulberry.notenoughupdates.profileviewer.rift.RiftPage.readBase64;
@@ -64,7 +65,7 @@ public class APIDataJson {
 	public Player_Stats player_stats;
 
 	public static class Player_Stats {
-		public Pets pets;
+		public Pets pets = new Pets();
 
 		public static class Pets {
 			public Milestone milestone = new Milestone();
@@ -110,9 +111,9 @@ public class APIDataJson {
 	public @Nullable NetherData nether_island_player_data;
 
 	public static class NetherData {
-		public JsonObject dojo;
+		public @Nullable JsonObject dojo;
 
-		public Abiphone abiphone;
+		public @Nullable Abiphone abiphone;
 
 		public static class Abiphone {
 
@@ -124,7 +125,7 @@ public class APIDataJson {
 		}
 	}
 
-	public MiningCore mining_core;
+	public MiningCore mining_core = new MiningCore();
 
 	public static class MiningCore {
 		public float powder_mithril = 0;
@@ -167,30 +168,30 @@ public class APIDataJson {
 		}
 	}
 
-	public Rift rift;
+	public @Nullable Rift rift;
 
 	public static class Rift {
 		public @Nullable RiftDeadCats dead_cats;
 
 		public static class RiftDeadCats {
-			public List<String> found_cats;
-			public Pet montezuma;
+			public List<String> found_cats = new ArrayList<>();
+			public Pet montezuma = new Pet();
 
 			public static class Pet {
-				public String type;
-				public String tier;
-				public Long exp;
-				public int candyUsed;
+				public String type = "UNKNOWN";
+				public String tier = "EPIC";
+				public Long exp = 0L;
+				public int candyUsed = 0;
 			}
 		}
 
-		public RiftInventory inventory;
+		public RiftInventory inventory = new RiftInventory();
 
 		public static class RiftInventory {
-			public Inventory inv_contents;
-			public Inventory inv_armor;
-			public Inventory equipment_contents;
-			public Inventory ender_chest_contents;
+			public @Nullable Inventory inv_contents;
+			public @Nullable Inventory inv_armor;
+			public @Nullable Inventory equipment_contents;
+			public @Nullable Inventory ender_chest_contents;
 
 			public static class Inventory {
 				private String data;
@@ -205,7 +206,7 @@ public class APIDataJson {
 		public @Nullable RiftGallery gallery;
 
 		public static class RiftGallery {
-			public JsonArray secured_trophies;
+			public @Nullable JsonArray secured_trophies;
 		}
 
 		public RiftCastle castle = new RiftCastle();
@@ -214,10 +215,10 @@ public class APIDataJson {
 			public int grubber_stacks = 0;
 		}
 
-		public @Nullable RiftEnigma enigma;
+		public RiftEnigma enigma = new RiftEnigma();
 
 		public static class RiftEnigma {
-			public List<String> found_souls;
+			public List<String> found_souls = new ArrayList<>();
 		}
 	}
 
@@ -232,10 +233,10 @@ public class APIDataJson {
 	public static class AccessoryBagStorage {
 		public int bag_upgrades_purchased = 0;
 		public int highest_magical_power = 0;
-		public List<String> unlocked_powers;
+		public List<String> unlocked_powers = new ArrayList<>();
 	}
 
-	public JacobsContest jacobs_contest;
+	public JacobsContest jacobs_contest = new JacobsContest();
 
 	public static class JacobsContest {
 		public Perks perks = new Perks();
