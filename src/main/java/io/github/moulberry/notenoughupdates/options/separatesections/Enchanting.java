@@ -110,7 +110,7 @@ public class Enchanting {
 	@ConfigAccordionId(id = 0)
 	public boolean enableEnchantingSolvers = true;
 	//In an email from Donpireso (admin) he says not sending a packet at all isn't bannable
-	//https://cdn.discordapp.com/attachments/823769568933576764/906101631861526559/unknown.png
+	//https://i.imgur.com/VTmGSVP.png
 	@Expose
 	@ConfigOption(
 		name = "Prevent Misclicks",
