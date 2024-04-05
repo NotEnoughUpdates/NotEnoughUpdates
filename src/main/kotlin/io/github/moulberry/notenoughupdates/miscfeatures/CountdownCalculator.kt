@@ -63,7 +63,8 @@ class CountdownCalculator {
         EVENTTIMELEFT("Event lasts for", "Ends at", isRelative = true),
         SHENSUCKS("Auction ends in:", "Auction ends at"),
         TAMINGSIXTYWASAMISTAKE("Ends:", "Finishes at"), // There would be a more specific message here seeing as this is for pet XP, but knowing Hypixel it's probably safer to leave it like this in case they use the "Ends:" prefix elsewhere besides the pet training menus.
-        CALENDARDETAILS(" (§e", "Starts at"); // Calendar details
+        CALENDARDETAILS(" (§e", "Starts at"), // calendar details
+        COMMUNITYPROJECTSSUCK("Contribute again", "Come back at"); // nopo i just woke up i really hope this works
     }
 
     @SubscribeEvent

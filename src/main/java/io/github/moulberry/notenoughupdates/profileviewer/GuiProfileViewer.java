@@ -460,7 +460,17 @@ public class GuiProfileViewer extends GuiScreen {
 					long timeDiff = System.currentTimeMillis() - startTime;
 
 					val authState = NotEnoughUpdates.INSTANCE.manager.ursaClient.getAuthenticationState();
-					if (authState == UrsaClient.AuthenticationState.FAILED_TO_JOINSERVER) {
+					if (NotEnoughUpdates.INSTANCE.manager.ursaClient.hasNonStandardUrsa()) {
+						Utils.drawStringCentered(
+							EnumChatFormatting.RED +
+								"Looks like you are using a non standard NEU server.",
+							guiLeft + sizeX / 2f, guiTop + 111, true, 0
+						);
+						Utils.drawStringCentered(
+							"§cPlease change your ursa server to the default (empty value) in §a/neu ursa§c.",
+							guiLeft + sizeX / 2f, guiTop + 121, true, 0
+						);
+					} else if (authState == UrsaClient.AuthenticationState.FAILED_TO_JOINSERVER) {
 						Utils.drawStringCentered(
 							EnumChatFormatting.RED +
 								"Looks like we cannot authenticate with Mojang.",

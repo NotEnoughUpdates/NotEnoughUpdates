@@ -351,7 +351,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			// Random stats
 			float secrets = -1;
 			if (hypixelInfo != null) {
-				secrets = Utils.getElementAsFloat(Utils.getElement(hypixelInfo, "achievements.skyblock_treasure_hunter"), 0);
+				secrets = Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.secrets"), 0);
 			}
 			float totalRunsF = 0;
 			float totalRunsF5 = 0;

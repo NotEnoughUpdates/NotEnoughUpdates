@@ -312,7 +312,7 @@ public class ItemUtils {
 				}
 				for (int i = 0; i < newLore.size(); i++) {
 					String cleaned = Utils.cleanColour(newLore.get(i));
-					if (cleaned.equals("Right-click to add this pet to")) {
+					if (cleaned.startsWith("Right-click to add this pet to")) {
 						if (heldItem == null) newLore.remove(i + 2);
 						newLore.remove(i + 1);
 						newLore.remove(i);
