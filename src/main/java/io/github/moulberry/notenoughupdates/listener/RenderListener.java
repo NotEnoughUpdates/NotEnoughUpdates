@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.HexPriceWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.RepoExporters;
@@ -54,6 +55,7 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.ScreenReplacer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -402,6 +404,8 @@ public class RenderListener {
 
 		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
 			GuiCustomHex.getInstance().render(event.renderPartialTicks, containerName);
+			if (HexPriceWarning.INSTANCE.shouldShow())
+				HexPriceWarning.INSTANCE.render();
 			event.setCanceled(true);
 			return;
 		}
@@ -594,6 +598,12 @@ public class RenderListener {
 		}
 		if (!hoveringButton[0]) buttonHovered = null;
 
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.render();
+			}
+		}
+
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().render();
 		}
@@ -768,7 +778,8 @@ public class RenderListener {
 						}
 					}
 					JsonObject kismetBazaar = neu.manager.auctionManager.getBazaarInfo("KISMET_FEATHER");
-					double kismetPrice = (kismetBazaar != null && kismetBazaar.has("curr_buy")) ? kismetBazaar.get("curr_buy").getAsFloat() : 0;
+					double kismetPrice =
+						(kismetBazaar != null && kismetBazaar.has("curr_buy")) ? kismetBazaar.get("curr_buy").getAsFloat() : 0;
 					String kismetStr = EnumChatFormatting.RED + formatCoins(kismetPrice) + " coins";
 					if (neu.config.dungeons.useKismetOnDungeonProfit)
 						profitLossBIN = kismetUsed ? profitLossBIN - kismetPrice : profitLossBIN;
@@ -871,6 +882,14 @@ public class RenderListener {
 		final int scaledHeight = scaledresolution.getScaledHeight();
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
+
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.mouseInput(mouseX, mouseY);
+				event.setCanceled(true);
+				return;
+			}
+		}
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().mouseInput(mouseX, mouseY);
@@ -1038,6 +1057,14 @@ public class RenderListener {
 			return;
 		}
 
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.keyboardInput();
+				event.setCanceled(true);
+				return;
+			}
+		}
+
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
@@ -1093,12 +1120,12 @@ public class RenderListener {
 		}
 
 		if (tradeWindowActive) {
-				TradeWindow.keyboardInput();
-				if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
-					event.setCanceled(true);
-					Minecraft.getMinecraft().dispatchKeypresses();
-					neu.overlay.keyboardInput(focusInv);
-				}
+			TradeWindow.keyboardInput();
+			if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
+				event.setCanceled(true);
+				Minecraft.getMinecraft().dispatchKeypresses();
+				neu.overlay.keyboardInput(focusInv);
+			}
 			return;
 		}
 
@@ -1220,6 +1247,7 @@ public class RenderListener {
 
 	/**
 	 * Support for switching between different pages in the RecipeView gui via right and left arrow key
+	 *
 	 * @param event
 	 */
 	//Because GuiScreen.keyTyped does not fire the KEY_LEFT and KEY_RIGHT keys. Maybe some event cancelled it?

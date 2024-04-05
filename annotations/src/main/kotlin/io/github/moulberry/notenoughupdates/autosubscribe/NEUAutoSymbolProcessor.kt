@@ -65,7 +65,9 @@ internal class NEUAutoSymbolProcessor(val codeGenerator: CodeGenerator, val logg
                     }
                     if (instanceGetter != null) {
                         val returnType = instanceGetter.returnType
-                        if (returnType == null || !element.asStarProjectedType().isAssignableFrom(returnType.resolve())) {
+                        if (returnType == null || !element.asStarProjectedType()
+                                .isAssignableFrom(returnType.resolve())
+                        ) {
                             logger.error(
                                 "getInstance() does not have the expected return type ${element.asStarProjectedType()}",
                                 instanceGetter
@@ -130,29 +132,43 @@ internal class NEUAutoSymbolProcessor(val codeGenerator: CodeGenerator, val logg
                                     .parameterizedBy(Supplier::class.parameterizedBy(Any::class))
                             )
                             .apply {
-                                subscribers.sortedBy { it.declaration.simpleName.asString() }.forEach { (invocationKind, declaration) ->
-                                    when (invocationKind) {
-                                        InvocationKind.GET_INSTANCE -> addStatement(
-                                            "consumer.accept { %T.getInstance() }",
-                                            declaration.toClassName()
-                                        )
+                                var instanceCounter = 0
+                                subscribers.sortedBy { it.declaration.simpleName.asString() }
+                                    .forEach { (invocationKind, declaration) ->
+                                        when (invocationKind) {
+                                            InvocationKind.GET_INSTANCE -> {
+                                                addStatement(
+                                                    "consumer.accept { %T.getInstance() }",
+                                                    declaration.toClassName()
+                                                )
+                                            }
 
-                                        InvocationKind.OBJECT_INSTANCE -> addStatement(
-                                            "consumer.accept { %T }",
-                                            declaration.toClassName()
-                                        )
+                                            InvocationKind.OBJECT_INSTANCE -> {
+                                                addStatement(
+                                                    "consumer.accept { %T }",
+                                                    declaration.toClassName()
+                                                )
+                                            }
 
-                                        InvocationKind.DEFAULT_CONSTRUCTOR -> addStatement(
-                                            "consumer.accept { %T() }",
-                                            declaration.toClassName()
-                                        )
+                                            InvocationKind.DEFAULT_CONSTRUCTOR -> {
+                                                val name = "instance_${instanceCounter++}"
+                                                addStatement(
+                                                    "val $name by lazy { %T() }",
+                                                    declaration.toClassName()
+                                                )
+                                                addStatement(
+                                                    "consumer.accept { $name }",
+                                                )
+                                            }
 
-                                        InvocationKind.ACCESS_INSTANCE -> addStatement(
-                                            "consumer.accept { %T.INSTANCE }",
-                                            declaration.toClassName()
-                                        )
+                                            InvocationKind.ACCESS_INSTANCE -> {
+                                                addStatement(
+                                                    "consumer.accept { %T.INSTANCE }",
+                                                    declaration.toClassName()
+                                                )
+                                            }
+                                        }
                                     }
-                                }
                             }
                             .build()
                     )

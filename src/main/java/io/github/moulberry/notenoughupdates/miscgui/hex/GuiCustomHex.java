@@ -28,6 +28,8 @@ import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingFloat;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.HexPriceWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.util.OrbDisplay;
@@ -36,6 +38,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -3377,7 +3380,7 @@ public class GuiCustomHex extends Gui {
 							EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 							short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 							ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-							Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+							onClick(new C0EPacketClickWindow(
 								chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 							cancelButtonAnimTime = System.currentTimeMillis();
@@ -3389,7 +3392,7 @@ public class GuiCustomHex extends Gui {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(click);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						onClick(new C0EPacketClickWindow(
 							chest.inventorySlots.windowId, click, 0, 0, stack, transactionID));
 					}
 					return true;
@@ -3414,7 +3417,7 @@ public class GuiCustomHex extends Gui {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						onClick(new C0EPacketClickWindow(
 							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 						if (isInGemstones()) {
 							currentState = EnchantState.HAS_ITEM_IN_GEMSTONE;
@@ -3457,7 +3460,7 @@ public class GuiCustomHex extends Gui {
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 					cancelButtonAnimTime = System.currentTimeMillis();
@@ -3473,7 +3476,7 @@ public class GuiCustomHex extends Gui {
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
 						enchanterCurrentEnch.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId,
 						enchanterCurrentEnch.slotIndex, 0, 0, stack, transactionID
 					));
@@ -3556,7 +3559,7 @@ public class GuiCustomHex extends Gui {
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));*/
 
 					cancelButtonAnimTime = System.currentTimeMillis();
@@ -3574,7 +3577,7 @@ public class GuiCustomHex extends Gui {
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
 						enchanterCurrentItem.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId,
 						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
 					));
@@ -3656,7 +3659,7 @@ public class GuiCustomHex extends Gui {
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 					cancelButtonAnimTime = System.currentTimeMillis();
@@ -3674,7 +3677,7 @@ public class GuiCustomHex extends Gui {
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
 						enchanterCurrentItem.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId,
 						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
 					));
@@ -3757,7 +3760,7 @@ public class GuiCustomHex extends Gui {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						onClick(new C0EPacketClickWindow(
 							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 						cancelButtonAnimTime = System.currentTimeMillis();
@@ -3779,7 +3782,7 @@ public class GuiCustomHex extends Gui {
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
 						enchanterCurrentItem.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId,
 						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
 					));
@@ -3993,7 +3996,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(ench.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										ench.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4001,7 +4004,7 @@ public class GuiCustomHex extends Gui {
 									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 									cancelButtonAnimTime = System.currentTimeMillis();
@@ -4032,7 +4035,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										item.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4064,7 +4067,7 @@ public class GuiCustomHex extends Gui {
 								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 								ItemStack stack =
 									((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-								Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+								onClick(new C0EPacketClickWindow(
 									chest.inventorySlots.windowId,
 									item.slotIndex, 0, 0, stack, transactionID
 								));
@@ -4096,7 +4099,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										item.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4129,7 +4132,7 @@ public class GuiCustomHex extends Gui {
 								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 								ItemStack stack =
 									((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-								Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+								onClick(new C0EPacketClickWindow(
 									chest.inventorySlots.windowId,
 									item.slotIndex, 0, 0, stack, transactionID
 								));
@@ -4166,7 +4169,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(ench.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										ench.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4174,7 +4177,7 @@ public class GuiCustomHex extends Gui {
 									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 									cancelButtonAnimTime = System.currentTimeMillis();
@@ -4205,7 +4208,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										item.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4242,7 +4245,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										item.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4299,7 +4302,7 @@ public class GuiCustomHex extends Gui {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						onClick(new C0EPacketClickWindow(
 							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 						cancelButtonAnimTime = System.currentTimeMillis();
@@ -4320,7 +4323,7 @@ public class GuiCustomHex extends Gui {
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 					cancelButtonAnimTime = System.currentTimeMillis();
@@ -4331,6 +4334,20 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 		return true;
+	}
+
+	public void onClick(C0EPacketClickWindow packet) {
+		var cont = Minecraft.getMinecraft().thePlayer.openContainer;
+		var clickEvent = new SlotClickEvent(
+			(GuiContainer) Minecraft.getMinecraft().currentScreen,
+			cont.getSlot(packet.getSlotId()),
+			packet.getSlotId(),
+			packet.getUsedButton(),
+			packet.getMode()
+		);
+		HexPriceWarning.INSTANCE.onClick(clickEvent);
+		if (!clickEvent.isCanceled())
+			Minecraft.getMinecraft().getNetHandler().addToSendQueue(packet);
 	}
 
 	public boolean keyboardInput() {

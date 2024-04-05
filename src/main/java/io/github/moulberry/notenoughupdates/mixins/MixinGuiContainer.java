@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.DrawSlotReturnEvent;
 import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent;
+import io.github.moulberry.notenoughupdates.events.IsSlotBeingHoveredEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneFavourites;
@@ -37,6 +38,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -53,6 +55,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -203,6 +206,18 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		GuiCustomHex.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AuctionBINWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		PresetWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
+		var event = new IsSlotBeingHoveredEvent();
+		MinecraftForge.EVENT_BUS.post(event);
+		switch (event.getOverride()) {
+			case DEFER_TO_DEFAULT:
+				break;
+			case IS_HOVERED:
+				cir.setReturnValue(true);
+				break;
+			case IS_NOT_HOVERED:
+				cir.setReturnValue(false);
+				break;
+		}
 	}
 
 	@Redirect(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawGradientRect(IIIIII)V"))
