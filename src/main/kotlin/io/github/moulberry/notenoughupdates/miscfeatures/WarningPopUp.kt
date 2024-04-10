@@ -126,11 +126,15 @@ abstract class WarningPopUp : ScreenReplacer() {
         val height = scaledResolution.scaledHeight
 
         if (Mouse.getEventButtonState()) {
-            if (mouseY >= height / 2 + 23 && mouseY <= height / 2 + 23 + 16) {
+            // Yes and No button
+            if ((mouseX >= width / 2 - 43 && mouseX <= width / 2 - 43 + 40) && (mouseY >= height / 2 + 23 && mouseY <= height / 2 + 23 + 16)) {
                 confirmClick()
+                isShowing = false
+            } else if ((mouseX >= width / 2 + 3 && mouseX <= width / 2 + 3 + 40) && (mouseY >= height / 2 + 23 && mouseY <= height / 2 + 23 + 16)) {
                 isShowing = false
             }
 
+            // click outside the popup
             if (mouseX < width / 2 - 90 || mouseX > width / 2 + 90 || mouseY < height / 2 - 45 || mouseY > height / 2 + 45) {
                 isShowing = false
             }
