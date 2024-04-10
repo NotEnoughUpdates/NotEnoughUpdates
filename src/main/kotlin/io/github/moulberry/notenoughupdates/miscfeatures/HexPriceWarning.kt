@@ -35,7 +35,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object HexPriceWarning : WarningPopUp() {
 
     fun shouldCheck(): Boolean {
-        return getLimit() > 0
+        return getLimit() >= 1
     }
 
     fun getLimit(): Double {

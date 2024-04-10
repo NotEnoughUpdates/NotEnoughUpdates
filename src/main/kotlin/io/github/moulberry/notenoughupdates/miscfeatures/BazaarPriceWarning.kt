@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent
 import io.github.moulberry.notenoughupdates.util.ItemUtils
@@ -39,6 +40,7 @@ class BazaarPriceWarning : WarningPopUp() {
     val priceRegx = "§7Price: §6([0-9.,]+) coins".toPattern()
     var price = 0.0
 
+    val limit get() = NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bazaarOverpayWarning
     @SubscribeEvent
     fun onClick(event: SlotClickEvent) {
         if (!Utils.getOpenChestName().contains("Instant Buy"))
@@ -50,7 +52,7 @@ class BazaarPriceWarning : WarningPopUp() {
         val priceMatch = lore.firstNotNullOfOrNull { priceRegx.matcher(it).takeIf { it.matches() } } ?: return
         val price = priceMatch.group(1).replace(",", "").toDouble()
 
-        if (price <= 1000) // TODO: option
+        if (price <= limit || limit < 1)
             return
 
         this.price = price

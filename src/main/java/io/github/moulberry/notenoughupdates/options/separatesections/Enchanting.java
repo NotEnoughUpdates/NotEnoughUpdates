@@ -246,6 +246,6 @@ public class Enchanting {
 		name = "Hex Overpay Warning",
 		desc = "Warns you before you would pay more than this amount of coins for an item in the /hex"
 	)
-	@ConfigEditorSlider(minValue = 0, maxValue = 50_0000_000, minStep = 1)
+	@ConfigEditorSlider(minValue = 0, maxValue = 500_000_000, minStep = 1)
 	public double hexOverpayWarning = 10_000_000;
 }
