@@ -39,6 +39,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -153,13 +154,13 @@ public class MiningOverlay extends TextTabOverlay {
 
 	private void updateCommissions(IInventory lower) {
 		// Get the location (type) of the currently shown commissions
-		ItemStack commTypeStack = lower.getStackInSlot(27);
+		ItemStack commTypeStack = lower.getStackInSlot(32);
 		if (commTypeStack == null || !commTypeStack.hasTagCompound()) {
 			return;
 		}
 
 		String name = Utils.cleanColour(commTypeStack.getDisplayName()).trim();
-		if (!name.equals("Switch Type")) {
+		if (!name.equals("Filter")) {
 			return;
 		}
 
@@ -169,11 +170,14 @@ public class MiningOverlay extends TextTabOverlay {
 			if (line == null) {
 				continue;
 			}
-			String cleanLine = Utils.cleanColour(line).trim();
+			if(!line.contains("▶"))continue;
+			String cleanLine = Utils.cleanColour(line).replace("▶", "").trim();
 			if (cleanLine.equals("Dwarven Mines")) {
 				commLocation = "mining_3";
 			} else if (cleanLine.equals("Crystal Hollows")) {
 				commLocation = "crystal_hollows";
+			} else if (cleanLine.equals("Glacite Tunnels")) {
+				commLocation = "mineshaft";
 			} else {
 				continue;
 			}
@@ -232,6 +236,23 @@ public class MiningOverlay extends TextTabOverlay {
 	@Override
 	public boolean isEnabled() {
 		return NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay;
+	}
+
+	public @Nullable NEUConfig.HiddenLocationSpecific getMiningLocationSpecific() {
+		String location = SBInfo.getInstance().getLocation();
+		if (location == null || location.isEmpty()) {
+			return null;
+		}
+
+		String sideBarLoc = SBInfo.getInstance().getScoreboardLocation();
+		if (location.equals("mining_3")
+			&& (sideBarLoc.equals("Dwarven Base Camp")
+			|| sideBarLoc.equals("Glacite Tunnels")
+			|| sideBarLoc.equals("Glacite Lake"))) {
+			location = "mineshaft";
+		}
+		return NotEnoughUpdates.INSTANCE.config.getLocationSpecific(location);
+
 	}
 
 	@Override
@@ -379,7 +400,7 @@ public class MiningOverlay extends TextTabOverlay {
 							tips = "";
 						}
 					}
-					NEUConfig.HiddenLocationSpecific locationSpecific = NotEnoughUpdates.INSTANCE.config.getLocationSpecific();
+					NEUConfig.HiddenLocationSpecific locationSpecific = getMiningLocationSpecific();
 					int max;
 					if (-1 != (max = locationSpecific.commissionMaxes.getOrDefault(entry.getKey(), -1))) {
 						commissionsStrings.add(
@@ -434,7 +455,7 @@ public class MiningOverlay extends TextTabOverlay {
 							DARK_AQUA + "Star Cult: " + GREEN + StarCultCalculator.getNextStarCult());
 						break;
 					case 6:
-							overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+						overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
 						break;
 					case 7:
 						overlayStrings.add(glacitePowder);
@@ -812,7 +833,7 @@ public class MiningOverlay extends TextTabOverlay {
 			} else if (beforeColon.contains("Titanium")) {
 				icon = miningOverlayCommissionItems.get("Titanium");
 			} else if (beforeColon.contains("Sky Mall")) {
-					icon = SkyMallDisplay.Companion.getDisplayItem();
+				icon = SkyMallDisplay.Companion.getDisplayItem();
 			}
 		}
 
