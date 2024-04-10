@@ -82,7 +82,7 @@ object HexPriceWarning : WarningPopUp() {
             if (price >= getLimit()) {
                 lastClickedSlot = event.slotId
                 cost = priceMatcher.group(1)
-                upgradeName = ItemUtils.getDisplayName(stack.tagCompound)
+                upgradeName = ItemUtils.getDisplayName(stack.tagCompound) ?: "<unnamed upgrade>"
                 show()
                 event.cancel()
             }
