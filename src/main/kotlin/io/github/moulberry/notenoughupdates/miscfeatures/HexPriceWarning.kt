@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils
@@ -46,8 +47,8 @@ object HexPriceWarning : ScreenReplacer() {
         return getLimit() > 0
     }
 
-    fun getLimit(): Long {
-        return 1L
+    fun getLimit(): Double {
+        return NotEnoughUpdates.INSTANCE.config.enchantingSolvers.hexOverpayWarning;
     }
 
     var hasWarning = false
