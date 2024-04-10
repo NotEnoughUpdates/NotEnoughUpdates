@@ -340,11 +340,12 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
-			for (int i = 0; i < 5; i++) {
-				if (foundForges.contains(i)) continue;
-				ForgeItem item = new ForgeItem(i, 0, true);
-				replaceForgeOrAdd(item, profileConfig.forgeItems, true);
-			}
+			if (profileConfig != null)
+				for (int i = 0; i < 5; i++) {
+					if (foundForges.contains(i)) continue;
+					ForgeItem item = new ForgeItem(i, 0, true);
+					replaceForgeOrAdd(item, profileConfig.forgeItems, true);
+				}
 
 			List<String> tabCommissionLines = getTabLinesOrAddWarning(0, TablistAPI.WidgetNames.COMMISSIONS);
 
