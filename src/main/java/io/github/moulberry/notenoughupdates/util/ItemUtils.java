@@ -158,8 +158,7 @@ public class ItemUtils {
 	}
 
 	public static @Nullable String getDisplayName(@Nullable ItemStack itemStack) {
-		if (itemStack == null)
-			return null;
+		if (null == itemStack) return null;
 		return getDisplayName(itemStack.getTagCompound());
 	}
 

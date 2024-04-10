@@ -37,8 +37,8 @@ class IsSlotBeingHoveredEvent : Event() {
 
         fun or(override: Override): Override {
             if (override == DEFER_TO_DEFAULT)
-                return override
-            return this
+                return this
+            return override
         }
     }
 
