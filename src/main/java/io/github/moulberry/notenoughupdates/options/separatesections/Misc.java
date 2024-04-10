@@ -357,7 +357,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Countdown Calculations",
-		desc = "Shows a(n estimated) timestamp for when a countdown in an item's tooltip will end, relative to your timezone. Also applies to §e/neucalendar§r."
+		desc = "Shows an (estimated) timestamp for when a countdown in an item's tooltip will end, relative to your timezone. Also applies to §e/neucalendar§r."
 	)
 	@ConfigEditorDropdown(
 		values = {"Off", "AM/PM [1PM]", "24hr [13:00]"}
