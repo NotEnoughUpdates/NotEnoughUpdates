@@ -546,7 +546,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("2x Mithril Powder Collector")) return "Collect 500 Mithril Powder during §62x Powder event";
 
 			// Slay
-			if (name.equals("Ice Walker Slayer")) return "Kill 50 Ice Walkers §b(Great Ice Wall)";
+			if (name.equals("Glacite Walker Slayer")) return "Kill 50 Glacite Walkers §b(Great Ice Wall)";
 			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Burrows)";
 			if (name.equals("Golden Goblin Slayer")) return "Kill 1 Golden Goblin (anywhere)";
 			if (name.equals("Star Sentry Puncher")) return "Damage Star Sentries 10 times (anywhere)";
@@ -815,7 +815,7 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Star Cult", "FALLEN_STAR_HAT");
 				addItem("Thyst Slayer", "THYST_MONSTER");
 				addItem("Hard Stone Miner", "HARD_STONE");
-				addItem("Ice Walker Slayer", "ENCHANTED_ICE");
+				addItem("Glacite Walker Slayer", "ENCHANTED_ICE");
 				addItem("Goblin Slayer", "GOBLIN_MONSTER");
 				addItem("Star Sentry Puncher", "NETHER_STAR");
 				addItem("Treasure Hoarder Puncher", "TREASURE_HOARDER_MONSTER");
