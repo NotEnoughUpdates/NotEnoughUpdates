@@ -61,6 +61,9 @@ public class ItemPriceInformation {
 	private static final Pattern SACK_STORED_AMOUNT = Pattern.compile(
 		".*Stored: §.(?<amount>[\\d,]+)§.\\/.*");
 
+	private static final Pattern COMPOSTER_STORED_AMOUNT = Pattern.compile(
+		".*Compost Available: §.(?<amount>[\\d,]+)");
+
 	public static void addToTooltip(List<String> tooltip, String internalName, ItemStack stack) {
 		addToTooltip(tooltip, internalName, stack, true);
 	}
@@ -135,17 +138,19 @@ public class ItemPriceInformation {
 			shiftStackMultiplier = stack.getTagCompound().getInteger(STACKSIZE_OVERRIDE);
 		}
 		int stackMultiplier = 1;
-		for (int i = 3; i < tooltip.size(); i++) {
-			val matcher = SACK_STORED_AMOUNT.matcher(tooltip.get(i));
-			if (matcher.matches()) {
-				String amountString = matcher.group("amount").replace(",", "");
-				try {
-					int parsedValue = Integer.parseInt(amountString);
-					if (parsedValue != 0) {
-						shiftStackMultiplier = parsedValue;
+		for (int i = 1; i < tooltip.size(); i++) {
+			for (Pattern pattern : new Pattern[]{SACK_STORED_AMOUNT, COMPOSTER_STORED_AMOUNT}) {
+				val matcher = pattern.matcher(tooltip.get(i));
+				if (matcher.matches()) {
+					String amountString = matcher.group("amount").replace(",", "");
+					try {
+						int parsedValue = Integer.parseInt(amountString);
+						if (parsedValue != 0) {
+							shiftStackMultiplier = parsedValue;
+						}
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
 					}
-				} catch (NumberFormatException e) {
-					e.printStackTrace();
 				}
 			}
 		}

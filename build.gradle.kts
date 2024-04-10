@@ -71,6 +71,7 @@ loom {
 		}
 	}
 	forge {
+		accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 		pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
 		mixinConfig("mixins.notenoughupdates.json")
 	}

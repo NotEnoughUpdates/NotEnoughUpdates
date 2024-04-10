@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.DiscordMarkdownBuilder
 import io.github.moulberry.notenoughupdates.util.SBInfo
+import io.github.moulberry.notenoughupdates.util.TabListUtils
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteralExecute
@@ -61,6 +62,9 @@ class NEUStatsCommand {
                         .toString()
                 )
             }.withHelp("Copy the mod list to your clipboard")
+            thenLiteralExecute("tablist") {
+                clipboardAndSendMessage("```\n${TabListUtils.getTabList()}\n```")
+            }.withHelp("Copy the current tab list to your clipboard")
             thenLiteralExecute("repo") {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
@@ -173,7 +177,6 @@ class NEUStatsCommand {
             Loader.instance().indexedModList[NotEnoughUpdates.MODID]!!.displayVersion
         )
         builder.append("SB Profile", SBInfo.getInstance().currentProfile)
-        builder.append("Has Advanced Tab", if (SBInfo.getInstance().hasNewTab) "TRUE" else "FALSE")
             .also(::appendRepoStats)
     }
 

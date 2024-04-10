@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -39,6 +39,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -139,12 +140,12 @@ public class ItemUtils {
 		is.setTagCompound(tagCompound);
 	}
 
-	public static List<String> getLore(ItemStack is) {
+	public static @NotNull List<@NotNull String> getLore(@Nullable ItemStack is) {
 		if (is == null) return new ArrayList<>();
 		return getLore(is.getTagCompound());
 	}
 
-	public static List<String> getLore(NBTTagCompound tagCompound) {
+	public static @NotNull List<@NotNull String> getLore(@Nullable NBTTagCompound tagCompound) {
 		if (tagCompound == null) {
 			return Collections.emptyList();
 		}
@@ -156,7 +157,13 @@ public class ItemUtils {
 		return list;
 	}
 
-	public static String getDisplayName(NBTTagCompound compound) {
+	public static @Nullable String getDisplayName(@Nullable ItemStack itemStack) {
+		if (itemStack == null)
+			return null;
+		return getDisplayName(itemStack.getTagCompound());
+	}
+
+	public static @Nullable String getDisplayName(@Nullable NBTTagCompound compound) {
 		if (compound == null) return null;
 		String string = compound.getCompoundTag("display").getString("Name");
 		if (string == null || string.isEmpty())
@@ -305,7 +312,7 @@ public class ItemUtils {
 				}
 				for (int i = 0; i < newLore.size(); i++) {
 					String cleaned = Utils.cleanColour(newLore.get(i));
-					if (cleaned.equals("Right-click to add this pet to")) {
+					if (cleaned.startsWith("Right-click to add this pet to")) {
 						if (heldItem == null) newLore.remove(i + 2);
 						newLore.remove(i + 1);
 						newLore.remove(i);
