@@ -62,7 +62,7 @@ public class APIDataJson {
 		public int serums_drank = 0;
 	}
 
-	public Player_Stats player_stats;
+	public Player_Stats player_stats = new Player_Stats();
 
 	public static class Player_Stats {
 		public Pets pets = new Pets();
