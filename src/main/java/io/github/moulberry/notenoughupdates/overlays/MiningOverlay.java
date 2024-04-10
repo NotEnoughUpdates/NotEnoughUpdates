@@ -43,9 +43,11 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -226,8 +228,8 @@ public class MiningOverlay extends TextTabOverlay {
 		"\\xA77Time Remaining: \\xA7a((?<Completed>Completed!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern timeRemainingTab = Pattern.compile(
 		".*[1-5]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
-	private static final Pattern forgesHeaderPattern = Pattern.compile(
-		"\\xa7r\\xa79\\xa7lForges \\xa7r(?:\\xa7f\\(\\+1 more\\)\\xa7r)?");
+	private static final Pattern forgeIntPattern = Pattern.compile(
+		"[^)]*([1-5])\\).*");
 
 	@Override
 	public boolean isEnabled() {
@@ -257,8 +259,6 @@ public class MiningOverlay extends TextTabOverlay {
 			String mithrilPowder = "";
 			String gemstonePowder = "";
 
-			int forgeInt = 0;
-
 			List<String> powderLines = getTabLinesOrAddWarning(1, TablistAPI.WidgetNames.POWDER);
 			getTabLinesOrAddWarning(2, TablistAPI.WidgetNames.POWDER);
 
@@ -273,6 +273,8 @@ public class MiningOverlay extends TextTabOverlay {
 
 			List<String> tabForgeLines = getTabLinesOrAddWarning(3, TablistAPI.WidgetNames.FORGE);
 
+			Set<Integer> foundForges = new HashSet<>();
+
 			for (String name : tabForgeLines) {
 				String cleanName = StringUtils.cleanColour(name);
 				if (cleanName.startsWith(" ") && profileConfig != null) {
@@ -280,7 +282,14 @@ public class MiningOverlay extends TextTabOverlay {
 					if (firstChar < '0' || firstChar > '9') {
 						break;
 					} else {
-
+						int forgeInt;
+						Matcher forgeIntMatcher = forgeIntPattern.matcher(cleanName);
+						if (forgeIntMatcher.matches()) {
+							forgeInt = Integer.parseInt(forgeIntMatcher.group(1)) - 1;
+							foundForges.add(forgeInt);
+						} else {
+							continue;
+						}
 						if (name.contains("LOCKED")) {
 							ForgeItem item = new ForgeItem(forgeInt, 1, true);
 							replaceForgeOrAdd(item, profileConfig.forgeItems, true);
@@ -327,10 +336,16 @@ public class MiningOverlay extends TextTabOverlay {
 								}
 							}
 						}
-						forgeInt++;
 					}
 				}
 			}
+
+			for (int i = 0; i < 5; i++) {
+				if (foundForges.contains(i)) continue;
+				ForgeItem item = new ForgeItem(i, 0, true);
+				replaceForgeOrAdd(item, profileConfig.forgeItems, true);
+			}
+
 			List<String> tabCommissionLines = getTabLinesOrAddWarning(0, TablistAPI.WidgetNames.COMMISSIONS);
 
 			for (String name : tabCommissionLines) {
@@ -429,7 +444,7 @@ public class MiningOverlay extends TextTabOverlay {
 							DARK_AQUA + "Star Cult: " + GREEN + StarCultCalculator.getNextStarCult());
 						break;
 					case 6:
-							overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+						overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
 						break;
 				}
 			}
@@ -782,7 +797,7 @@ public class MiningOverlay extends TextTabOverlay {
 			} else if (beforeColon.contains("Titanium")) {
 				icon = miningOverlayCommissionItems.get("Titanium");
 			} else if (beforeColon.contains("Sky Mall")) {
-					icon = SkyMallDisplay.Companion.getDisplayItem();
+				icon = SkyMallDisplay.Companion.getDisplayItem();
 			}
 		}
 

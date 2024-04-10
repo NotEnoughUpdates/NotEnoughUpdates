@@ -124,7 +124,7 @@ object TablistAPI {
         COMMISSIONS(null),
         SKILLS(null),
         TRAPPER(null),
-        FORGE(Regex.fromLiteral("Forges:")),
+        FORGE(Regex("Forges:( \\(\\d/\\d\\))?")),
         POWDER(Regex.fromLiteral("Powders:")),
         PROFILE(Regex("Profile: ([A-Za-z]+)( .*)?"))
         ;
