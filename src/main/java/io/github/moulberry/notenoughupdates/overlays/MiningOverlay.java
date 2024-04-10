@@ -263,10 +263,10 @@ public class MiningOverlay extends TextTabOverlay {
 			getTabLinesOrAddWarning(2, TablistAPI.WidgetNames.POWDER);
 
 			for (String line : powderLines) {
-				if (line.contains("Mithril Powder:")) {
+				if (line.contains("Mithril:")) {
 					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
-				if (line.contains("Gemstone Powder:")) {
+				if (line.contains("Gemstone:")) {
 					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
 			}
