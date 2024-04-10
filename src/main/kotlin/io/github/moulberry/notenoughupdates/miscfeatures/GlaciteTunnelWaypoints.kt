@@ -62,14 +62,16 @@ class GlaciteTunnelWaypoints {
                 BlockPos(-3, 139, 437),
                 BlockPos(72, 151, 387),
                 BlockPos(86, 150, 323),
+                BlockPos(50, 117, 302),
             )
         ),
         "Peridot Gemstone Collector" to Waypoints(
             "§2Peridot Gemstone Mine",
             listOf(
-                BlockPos(-62, 47, 301),
                 BlockPos(-76, 120, 281),
                 BlockPos(91, 122, 393),
+                BlockPos(-61, 147, 301),
+                BlockPos(-74, 122, 459),
             )
         ),
         "Citrine Gemstone Collector" to Waypoints(
@@ -78,6 +80,7 @@ class GlaciteTunnelWaypoints {
                 BlockPos(-95, 145, 258),
                 BlockPos(-57, 144, 422),
                 BlockPos(37, 119, 387),
+                BlockPos(-46, 127, 411),
             )
         ),
     )
