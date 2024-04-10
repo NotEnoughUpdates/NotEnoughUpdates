@@ -56,7 +56,7 @@ public class FuelBar {
 
 		if (SBInfo.getInstance().getLocation() == null) return;
 		if (!(SBInfo.getInstance().getLocation().startsWith("mining_") || SBInfo.getInstance().getLocation().equals(
-			"crystal_hollows")))
+			"crystal_hollows") || SBInfo.getInstance().getLocation().equals("mineshaft")))
 			return;
 
 		if (Minecraft.getMinecraft().thePlayer == null) return;
