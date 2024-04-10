@@ -156,11 +156,12 @@ public class Mining {
 			"§3Forge 1) §9Diamonite§7: §aReady!",
 			"§3Pickaxe CD: §a78s",
 			"§3Star Cult: §a78s",
-			"§3Sky Mall: §a5x Titanium (78s)"
+			"§3Sky Mall: §a5x Titanium (78s)",
+			"§3Glacite Powder: §b46"
 		}
 	)
 	@ConfigAccordionId(id = 2)
-	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7));
 
 	@Expose
 	public Position overlayPosition = new Position(10, 100);
