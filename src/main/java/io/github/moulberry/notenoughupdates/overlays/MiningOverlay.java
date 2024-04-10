@@ -625,7 +625,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Glacite Collector")) return "Break ice";
 			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
 			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
-			if (name.equals("Peridot Gemstone Collecto")) return "Break dark green glass";
+			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
 			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
 
 		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
@@ -671,7 +671,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Glacite Collector")) return "Break ice";
 			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
 			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
-			if (name.equals("Peridot Gemstone Collecto")) return "Break dark green glass";
+			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
 			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
 		}
 

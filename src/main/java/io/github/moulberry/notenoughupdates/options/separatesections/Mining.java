@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.options.separatesections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
@@ -29,6 +28,8 @@ import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.config.Position;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,6 +94,41 @@ public class Mining {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean fallenStarWaypoint = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Glacite Tunnel Waypoints",
+		desc = "Show waypoints in the Glacite Tunnels to the various gemstone locations, when you have a commission for them."
+	)
+	@ConfigEditorDropdown
+	@ConfigAccordionId(id = 0)
+	public @NotNull GlaciteTunnelWaypointBehaviour tunnelWaypoints = GlaciteTunnelWaypointBehaviour.SHOW_ALL;
+
+	@Expose
+	@ConfigOption(
+		name = "Always show Glacite Tunnel Waypoints",
+		desc = "Always show the Gemstone waypoints in the tunnels, instead of only for your current commissions."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean alwaysShowTunnelWaypoints = false;
+
+	public enum GlaciteTunnelWaypointBehaviour {
+		SHOW_ALL("Show all"),
+		SHOW_NEAREST("Show nearest"),
+		NONE("Show none"),
+		;
+		String text;
+
+		GlaciteTunnelWaypointBehaviour(String text) {
+			this.text = text;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
 
 	@ConfigOption(
 		name = "Drill Fuel Bar",
