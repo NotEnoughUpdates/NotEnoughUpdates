@@ -256,11 +256,13 @@ public class MiningOverlay extends TextTabOverlay {
 			// These strings will be displayed one after the other when the player list is disabled
 			String mithrilPowder = "";
 			String gemstonePowder = "";
+			String glacitePowder = "";
 
 			int forgeInt = 0;
 
 			List<String> powderLines = getTabLinesOrAddWarning(1, TablistAPI.WidgetNames.POWDER);
 			getTabLinesOrAddWarning(2, TablistAPI.WidgetNames.POWDER);
+			getTabLinesOrAddWarning(6, TablistAPI.WidgetNames.POWDER);
 
 			for (String line : powderLines) {
 				if (line.contains("Mithril:")) {
@@ -268,6 +270,9 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 				if (line.contains("Gemstone:")) {
 					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
+				}
+				if (line.contains("Glacite: ")) {
+					glacitePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
 			}
 
@@ -430,6 +435,9 @@ public class MiningOverlay extends TextTabOverlay {
 						break;
 					case 6:
 							overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+						break;
+					case 7:
+						overlayStrings.add(glacitePowder);
 						break;
 				}
 			}
@@ -757,6 +765,10 @@ public class MiningOverlay extends TextTabOverlay {
 				icon = miningOverlayCommissionItems.get("Forge");
 			} else if (beforeColon.contains("Mithril")) {
 				icon = miningOverlayCommissionItems.get("Mithril");
+			} else if (beforeColon.contains("Gemstone")) {
+				icon = miningOverlayCommissionItems.get("Mithril");
+			} else if (beforeColon.contains("Glacite")) {
+				icon = miningOverlayCommissionItems.get("Mithril");
 			} else if (beforeColon.endsWith(" Gemstone Collector")) {
 				String gemName = "ROUGH_"
 					+ beforeColon.replace(" Gemstone Collector", "").toUpperCase() + "_GEM";
@@ -832,6 +844,8 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Chest Looter", "CHEST");
 				addItem("Titanium", "TITANIUM_ORE");
 				addItem("Mithril", "MITHRIL_ORE");
+				addItem("Gemstone", "ROCK_GEMSTONE");
+				addItem("Glacite", "GLACITE");
 				addItem("Forge", "ANVIL");
 				addItem("First Event", "FIREWORK");
 			}
