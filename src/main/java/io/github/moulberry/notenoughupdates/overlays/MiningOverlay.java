@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -26,11 +26,11 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
-import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -51,13 +51,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static io.github.moulberry.notenoughupdates.util.Utils.showOutdatedRepoNotification;
-import static net.minecraft.util.EnumChatFormatting.BLUE;
-import static net.minecraft.util.EnumChatFormatting.BOLD;
 import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 import static net.minecraft.util.EnumChatFormatting.GOLD;
 import static net.minecraft.util.EnumChatFormatting.GREEN;
 import static net.minecraft.util.EnumChatFormatting.RED;
-import static net.minecraft.util.EnumChatFormatting.RESET;
 import static net.minecraft.util.EnumChatFormatting.YELLOW;
 
 public class MiningOverlay extends TextTabOverlay {
@@ -239,7 +236,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 	@Override
 	public void update() {
-		overlayStrings = null;
+		overlayStrings = new ArrayList<>();
 		NEUConfig.HiddenProfileSpecific profileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay &&
@@ -257,43 +254,31 @@ public class MiningOverlay extends TextTabOverlay {
 			commissionProgress.clear();
 
 			// These strings will be displayed one after the other when the player list is disabled
-			String mithrilPowder = RED + "[NEU] Failed to get data from your tablist";
-			String gemstonePowder = RED + "Please enable player list info in your SkyBlock settings";
+			String mithrilPowder = "";
+			String gemstonePowder = "";
 
 			int forgeInt = 0;
-			boolean commissions = false;
-			boolean forges = false;
 
-			for (String name : TabListUtils.getTabList()) {
-				if (name.contains("Mithril Powder:")) {
-					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
-					continue;
+			List<String> powderLines = getTabLinesOrAddWarning(1, TablistAPI.WidgetNames.POWDER);
+			getTabLinesOrAddWarning(2, TablistAPI.WidgetNames.POWDER);
+
+			for (String line : powderLines) {
+				if (line.contains("Mithril:")) {
+					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
-
-				if (name.contains("Gemstone Powder:")) {
-					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
-					continue;
+				if (line.contains("Gemstone:")) {
+					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
+			}
 
-				Matcher forgesMatcher = forgesHeaderPattern.matcher(name);
-				if (forgesMatcher.matches() && profileConfig != null) {
-					commissions = false;
-					forges = true;
-					continue;
-				}
+			List<String> tabForgeLines = getTabLinesOrAddWarning(3, TablistAPI.WidgetNames.FORGE);
 
-				// Commissions appear after Forges, start enumerating Commissions instead of Forges
-				if (name.equals(RESET.toString() + BLUE + BOLD + "Commissions" + RESET) && profileConfig != null) {
-					commissions = true;
-					forges = false;
-					continue;
-				}
-
+			for (String name : tabForgeLines) {
 				String cleanName = StringUtils.cleanColour(name);
-				if (forges && cleanName.startsWith(" ") && profileConfig != null) {
+				if (cleanName.startsWith(" ") && profileConfig != null) {
 					char firstChar = cleanName.trim().charAt(0);
 					if (firstChar < '0' || firstChar > '9') {
-						forges = false;
+						break;
 					} else {
 
 						if (name.contains("LOCKED")) {
@@ -344,7 +329,13 @@ public class MiningOverlay extends TextTabOverlay {
 						}
 						forgeInt++;
 					}
-				} else if (commissions && cleanName.startsWith(" ") && profileConfig != null) {
+				}
+			}
+			List<String> tabCommissionLines = getTabLinesOrAddWarning(0, TablistAPI.WidgetNames.COMMISSIONS);
+
+			for (String name : tabCommissionLines) {
+				String cleanName = StringUtils.cleanColour(name);
+				if (cleanName.startsWith(" ") && profileConfig != null) {
 					String[] split = cleanName.trim().split(": ");
 					if (split.length == 2) {
 						if (split[1].endsWith("%")) {
@@ -358,14 +349,7 @@ public class MiningOverlay extends TextTabOverlay {
 							commissionProgress.put(split[0], 1.0f);
 						}
 					}
-				} else {
-					commissions = false;
-					forges = false;
 				}
-			}
-
-			if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
-				return;
 			}
 
 			List<String> commissionsStrings = new ArrayList<>();
@@ -421,7 +405,6 @@ public class MiningOverlay extends TextTabOverlay {
 					DARK_AQUA + "Pickaxe CD: \u00a7a" + (ItemCooldowns.pickaxeUseCooldownMillisRemaining / 1000) + "s";
 			}
 
-			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2) {
 				switch (index) {
 					case 0:
@@ -521,6 +504,22 @@ public class MiningOverlay extends TextTabOverlay {
 		}
 
 		if (overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
+	}
+
+	private List<String> getTabLinesOrAddWarning(int configIndex, TablistAPI.WidgetNames widgetName) {
+		List<String> lines;
+		if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.contains(configIndex) &&
+			NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
+			lines = TablistAPI.getWidgetLinesWithoutNotification(widgetName);
+			if (lines.isEmpty() && !overlayStrings.contains("§l§4One or more tab widgets missing!")) {
+				overlayStrings.add("§l§4One or more tab widgets missing!");
+				overlayStrings.add("§l§4Enable it in §b/tab§4!");
+			}
+		} else {
+			lines = TablistAPI.getOptionalWidgetLines(widgetName);
+		}
+
+		return lines;
 	}
 
 	private String getTipPart(String name) {
