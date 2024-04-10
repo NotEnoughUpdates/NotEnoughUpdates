@@ -250,7 +250,8 @@ public class MiningOverlay extends TextTabOverlay {
 		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
 		if (SBInfo.getInstance().getLocation() == null) return;
 		if (SBInfo.getInstance().getLocation().equals("mining_3") ||
-			SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
+			SBInfo.getInstance().getLocation().equals("crystal_hollows") || SBInfo.getInstance().getLocation().equals(
+			"mineshaft")) {
 			commissionProgress.clear();
 
 			// These strings will be displayed one after the other when the player list is disabled
