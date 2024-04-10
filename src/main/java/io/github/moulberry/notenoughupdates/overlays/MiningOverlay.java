@@ -39,6 +39,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -155,13 +156,13 @@ public class MiningOverlay extends TextTabOverlay {
 
 	private void updateCommissions(IInventory lower) {
 		// Get the location (type) of the currently shown commissions
-		ItemStack commTypeStack = lower.getStackInSlot(27);
+		ItemStack commTypeStack = lower.getStackInSlot(32);
 		if (commTypeStack == null || !commTypeStack.hasTagCompound()) {
 			return;
 		}
 
 		String name = Utils.cleanColour(commTypeStack.getDisplayName()).trim();
-		if (!name.equals("Switch Type")) {
+		if (!name.equals("Filter")) {
 			return;
 		}
 
@@ -171,11 +172,14 @@ public class MiningOverlay extends TextTabOverlay {
 			if (line == null) {
 				continue;
 			}
-			String cleanLine = Utils.cleanColour(line).trim();
+			if(!line.contains("▶"))continue;
+			String cleanLine = Utils.cleanColour(line).replace("▶", "").trim();
 			if (cleanLine.equals("Dwarven Mines")) {
 				commLocation = "mining_3";
 			} else if (cleanLine.equals("Crystal Hollows")) {
 				commLocation = "crystal_hollows";
+			} else if (cleanLine.equals("Glacite Tunnels")) {
+				commLocation = "mineshaft";
 			} else {
 				continue;
 			}
@@ -236,6 +240,23 @@ public class MiningOverlay extends TextTabOverlay {
 		return NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay;
 	}
 
+	public @Nullable NEUConfig.HiddenLocationSpecific getMiningLocationSpecific() {
+		String location = SBInfo.getInstance().getLocation();
+		if (location == null || location.isEmpty()) {
+			return null;
+		}
+
+		String sideBarLoc = SBInfo.getInstance().getScoreboardLocation();
+		if (location.equals("mining_3")
+			&& (sideBarLoc.equals("Dwarven Base Camp")
+			|| sideBarLoc.equals("Glacite Tunnels")
+			|| sideBarLoc.equals("Glacite Lake"))) {
+			location = "mineshaft";
+		}
+		return NotEnoughUpdates.INSTANCE.config.getLocationSpecific(location);
+
+	}
+
 	@Override
 	public void update() {
 		overlayStrings = new ArrayList<>();
@@ -252,15 +273,18 @@ public class MiningOverlay extends TextTabOverlay {
 		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
 		if (SBInfo.getInstance().getLocation() == null) return;
 		if (SBInfo.getInstance().getLocation().equals("mining_3") ||
-			SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
+			SBInfo.getInstance().getLocation().equals("crystal_hollows") || SBInfo.getInstance().getLocation().equals(
+			"mineshaft")) {
 			commissionProgress.clear();
 
 			// These strings will be displayed one after the other when the player list is disabled
 			String mithrilPowder = "";
 			String gemstonePowder = "";
+			String glacitePowder = "";
 
 			List<String> powderLines = getTabLinesOrAddWarning(1, TablistAPI.WidgetNames.POWDER);
 			getTabLinesOrAddWarning(2, TablistAPI.WidgetNames.POWDER);
+			getTabLinesOrAddWarning(6, TablistAPI.WidgetNames.POWDER);
 
 			for (String line : powderLines) {
 				if (line.contains("Mithril:")) {
@@ -268,6 +292,9 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 				if (line.contains("Gemstone:")) {
 					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
+				}
+				if (line.contains("Glacite: ")) {
+					glacitePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
 				}
 			}
 
@@ -390,7 +417,7 @@ public class MiningOverlay extends TextTabOverlay {
 							tips = "";
 						}
 					}
-					NEUConfig.HiddenLocationSpecific locationSpecific = NotEnoughUpdates.INSTANCE.config.getLocationSpecific();
+					NEUConfig.HiddenLocationSpecific locationSpecific = getMiningLocationSpecific();
 					int max;
 					if (-1 != (max = locationSpecific.commissionMaxes.getOrDefault(entry.getKey(), -1))) {
 						commissionsStrings.add(
@@ -446,6 +473,9 @@ public class MiningOverlay extends TextTabOverlay {
 						break;
 					case 6:
 						overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+						break;
+					case 7:
+						overlayStrings.add(glacitePowder);
 						break;
 				}
 			}
@@ -585,6 +615,19 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Rampart's Quarry Titanium")) return "Break 10 Titanium §b(Rampart's Quarry)";
 			if (name.equals("Upper Mines Titanium")) return "Break 10 Titanium §b(Upper Mines)";
 
+			// Glacite Tunnels
+
+			if (name.equals("Corpse Looter")) return "Find Corpses in a Glacite Mineshaft";
+			if (name.equals("Mineshaft Explorer")) return "Discover a Glacite Mineshaft";
+			if (name.equals("Scrap Collector")) return "Break non-vanilla Ores and not Hard Stone in a Glacite Mineshaft";
+			if (name.equals("Umber Collector")) return "Break red sand/hardened clay";
+			if (name.equals("Tungsten Collector")) return "Break cobblestone/clay";
+			if (name.equals("Glacite Collector")) return "Break ice";
+			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
+			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
+			if (name.equals("Peridot Gemstone Collecto")) return "Break dark green glass";
+			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
+
 		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
 			if (name.equals("Chest Looter")) return "Open 3 chests";
 			if (name.equals("Hard Stone Miner")) return "Break 1,000 Hard Stone";
@@ -619,6 +662,17 @@ public class MiningOverlay extends TextTabOverlay {
 				if (name.startsWith("Ruby")) return "Break red glass (anywhere)";
 				if (name.startsWith("Topaz")) return "Break yellow glass" + magma;
 			}
+		} else if (SBInfo.getInstance().getLocation().equals("mineshaft")) {
+			if (name.equals("Corpse Looter")) return "Find Corpses and click them";
+			if (name.equals("Mineshaft Explorer")) return "Discover a Glacite Mineshaft";
+			if (name.equals("Scrap Collector")) return "Break non-vanilla Ores and not Hard Stone";
+			if (name.equals("Umber Collector")) return "Break red sand/hardened clay";
+			if (name.equals("Tungsten Collector")) return "Break cobblestone/clay";
+			if (name.equals("Glacite Collector")) return "Break ice";
+			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
+			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
+			if (name.equals("Peridot Gemstone Collecto")) return "Break dark green glass";
+			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
 		}
 
 		return null;
@@ -771,8 +825,6 @@ public class MiningOverlay extends TextTabOverlay {
 		} else {
 			if (beforeColon.startsWith("Forge")) {
 				icon = miningOverlayCommissionItems.get("Forge");
-			} else if (beforeColon.contains("Mithril")) {
-				icon = miningOverlayCommissionItems.get("Mithril");
 			} else if (beforeColon.endsWith(" Gemstone Collector")) {
 				String gemName = "ROUGH_"
 					+ beforeColon.replace(" Gemstone Collector", "").toUpperCase() + "_GEM";
@@ -848,8 +900,16 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Chest Looter", "CHEST");
 				addItem("Titanium", "TITANIUM_ORE");
 				addItem("Mithril", "MITHRIL_ORE");
+				addItem("Gemstone", "ROCK_GEMSTONE");
+				addItem("Glacite", "GLACITE");
 				addItem("Forge", "ANVIL");
 				addItem("First Event", "FIREWORK");
+				addItem("Corpse Looter", "MINERAL_HELMET");
+				addItem("Mineshaft Explorer", "STORAGE_MINECART");
+				addItem("Scrap Collector", "SUSPICIOUS_SCRAP");
+				addItem("Umber Collector", "UMBER");
+				addItem("Tungsten Collector", "TUNGSTEN");
+				addItem("Glacite Collector", "GLACITE");
 			}
 
 			private void addItem(String eventName, String internalName) {

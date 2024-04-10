@@ -26,10 +26,12 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -180,6 +182,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 		JsonObject profileInfo = selectedProfile.getProfileJson();
 		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (data == null) {
+			return;
+		}
+		var player_stats = data.player_stats;
+		var auctions = player_stats.auctions;
 
 		float xStart = 22;
 		float xOffset = 103;
@@ -191,7 +199,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 			selectedProfile.getOuterProfileJson(),
 			"banking.balance"
 		), 0);
-		float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "currencies.coin_purse"), 0);
+		float purseBalance = data.currencies.coin_purse;
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Bank Balance",
@@ -275,7 +283,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		));
 
-		float fairySouls = Utils.getElementAsFloat(Utils.getElement(profileInfo, "fairy_soul.total_collected"), 0);
+		int fairySouls = data.fairy_soul.total_collected;
 
 		int fairySoulMax = 227;
 		if (Constants.FAIRYSOULS != null && Constants.FAIRYSOULS.has("Max Souls")) {
@@ -283,7 +291,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		}
 		Utils.renderAlignedString(
 			EnumChatFormatting.LIGHT_PURPLE + "Fairy Souls",
-			EnumChatFormatting.WHITE.toString() + (int) fairySouls + "/" + fairySoulMax,
+			EnumChatFormatting.WHITE.toString() + fairySouls + "/" + fairySoulMax,
 			guiLeft + xStart,
 			guiTop + yStartBottom,
 			76
@@ -350,21 +358,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			);
 		}
 
-		float auctions_bids = Utils.getElementAsFloat(Utils.getElement(profileInfo, "player_stats.auctions.bids"), 0);
-		float auctions_highest_bid = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "player_stats.auctions.highest_bid"),
-			0
-		);
-		float auctions_won = Utils.getElementAsFloat(Utils.getElement(profileInfo, "player_stats.auctions.won"), 0);
-		float auctions_created = Utils.getElementAsFloat(Utils.getElement(profileInfo, "player_stats.auctions.created"), 0);
-		float auctions_gold_spent = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"player_stats.auctions.gold_spent"
-		), 0);
-		float auctions_gold_earned = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "player_stats.auctions.gold_earned"),
-			0
-		);
+		float auctions_bids = auctions.bids;
+		float auctions_highest_bid = auctions.highest_bid;
+		float auctions_won = auctions.won;
+		float auctions_created = auctions.created;
+		float auctions_gold_spent = auctions.gold_spent;
+		float auctions_gold_earned = auctions.gold_earned;
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Auction Bids",
@@ -409,24 +408,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		);
 
-		float pet_milestone_ores_mined = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"player_stats.pets.milestone.ores_mined"
-		), 0);
-		float pet_milestone_sea_creatures_killed = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "player_stats.pets.milestone.sea_creatures_killed"),
-			0
-		);
+		float pet_milestone_ores_mined = player_stats.pets.milestone.ores_mined;
+		float pet_milestone_sea_creatures_killed = player_stats.pets.milestone.sea_creatures_killed;
 
-		float items_fished = Utils.getElementAsFloat(Utils.getElement(profileInfo, "player_stats.items_fished.total"), 0);
-		float items_fished_treasure = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "player_stats.items_fished.treasure"),
-			0
-		);
-		float items_fished_large_treasure = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"player_stats.items_fished.large_treasure"
-		), 0);
+		float items_fished = player_stats.items_fished.total;
+		float items_fished_treasure = player_stats.items_fished.treasure;
+		float items_fished_large_treasure = player_stats.items_fished.large_treasure;
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GREEN + "Ores Mined",

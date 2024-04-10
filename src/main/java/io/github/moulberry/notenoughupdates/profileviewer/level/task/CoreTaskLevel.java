@@ -25,9 +25,9 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -63,6 +63,10 @@ public class CoreTaskLevel extends GuiTaskLevel {
 		if (selectedProfile == null) {
 			return;
 		}
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (data == null) {
+			return;
+		}
 
 		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 		int sbXpGainedSkillLVL = 0;
@@ -90,28 +94,19 @@ public class CoreTaskLevel extends GuiTaskLevel {
 
 		// mp acc
 		int sbXpGainedMp = 0;
-		if (object.has("accessory_bag_storage") &&
-			object.getAsJsonObject("accessory_bag_storage").has("highest_magical_power")) {
-			sbXpGainedMp = object.getAsJsonObject("accessory_bag_storage").get("highest_magical_power").getAsInt();
+		if (data.accessory_bag_storage != null) {
+			sbXpGainedMp = data.accessory_bag_storage.highest_magical_power;
 		}
 
 		// pets
 
-		int petScore = 0;
-		if (object.has("leveling") &&
-			object.getAsJsonObject("leveling").has("highest_pet_score")) {
-			petScore = object.getAsJsonObject("leveling").get("highest_pet_score").getAsInt();
-
-		}
+		int petScore = data.leveling.highest_pet_score;
 		int sbXpPetScore = petScore * coreTask.get("pet_score_xp").getAsInt();
 
 		// museum is not possible
 
 		// fairy soul
-		int sbXpGainedFairy = Utils.getElementAsInt(Utils.getElement(
-			selectedProfile.getProfileJson(),
-			"fairy_soul.total_collected"
-		), 0) / 5 * coreTask.get("fairy_souls_xp").getAsInt();
+		int sbXpGainedFairy = data.fairy_soul.total_collected / 5 * coreTask.get("fairy_souls_xp").getAsInt();
 
 		int sbXpCollection = -1;
 		int sbXpMinionTier = -1; // keeping at -1 here because cobblestone 1 minion XP isn't included for some reason?

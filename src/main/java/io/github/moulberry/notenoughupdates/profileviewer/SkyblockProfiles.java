@@ -24,13 +24,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryData;
-import io.github.moulberry.notenoughupdates.profileviewer.rift.RiftJson;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -518,7 +517,7 @@ public class SkyblockProfiles {
 		private SoopyNetworth soopyNetworth = null;
 		private MuseumData museumData = null;
 		@Getter
-		private @Nullable RiftJson riftJson;
+		private @Nullable APIDataJson APIDataJson;
 		private final AtomicBoolean updatingMuseumData = new AtomicBoolean(false);
 
 		public class MuseumData {
@@ -702,9 +701,9 @@ public class SkyblockProfiles {
 			this.gamemode = Utils.getElementAsString(outerProfileJson.get("game_mode"), null);
 
 			try {
-				riftJson = gson.fromJson(getProfileJson().get("rift"), RiftJson.class);
+				APIDataJson = gson.fromJson(getProfileJson(), APIDataJson.class);
 			} catch (Exception exception) {
-				NotEnoughUpdates.LOGGER.error("Could not read rift data", exception);
+				NotEnoughUpdates.LOGGER.error("Could not read data", exception);
 			}
 		}
 
