@@ -157,7 +157,7 @@ public class Mining {
 			"§3Pickaxe CD: §a78s",
 			"§3Star Cult: §a78s",
 			"§3Sky Mall: §a5x Titanium (78s)",
-			"§3Glacite Powder: §246"
+			"§3Glacite Powder: §b46"
 		}
 	)
 	@ConfigAccordionId(id = 2)
