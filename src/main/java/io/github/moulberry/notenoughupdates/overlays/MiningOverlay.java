@@ -577,6 +577,19 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Rampart's Quarry Titanium")) return "Break 10 Titanium §b(Rampart's Quarry)";
 			if (name.equals("Upper Mines Titanium")) return "Break 10 Titanium §b(Upper Mines)";
 
+			// Glacite Tunnels
+
+			if (name.equals("Corpse Looter")) return "Find Corpses in a Glacite Mineshaft";
+			if (name.equals("Mineshaft Explorer")) return "Discover a Glacite Mineshaft";
+			if (name.equals("Scrap Collector")) return "Break non-vanilla Ores and not Hard Stone in a Glacite Mineshaft";
+			if (name.equals("Umber Collector")) return "Break red sand/hardened clay";
+			if (name.equals("Tungsten Collector")) return "Break cobblestone/clay";
+			if (name.equals("Glacite Collector")) return "Break ice";
+			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
+			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
+			if (name.equals("Peridot Gemstone Collecto")) return "Break dark green glass";
+			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
+
 		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
 			if (name.equals("Chest Looter")) return "Open 3 chests";
 			if (name.equals("Hard Stone Miner")) return "Break 1,000 Hard Stone";
@@ -611,6 +624,17 @@ public class MiningOverlay extends TextTabOverlay {
 				if (name.startsWith("Ruby")) return "Break red glass (anywhere)";
 				if (name.startsWith("Topaz")) return "Break yellow glass" + magma;
 			}
+		} else if (SBInfo.getInstance().getLocation().equals("mineshaft")) {
+			if (name.equals("Corpse Looter")) return "Find Corpses and click them";
+			if (name.equals("Mineshaft Explorer")) return "Discover a Glacite Mineshaft";
+			if (name.equals("Scrap Collector")) return "Break non-vanilla Ores and not Hard Stone";
+			if (name.equals("Umber Collector")) return "Break red sand/hardened clay";
+			if (name.equals("Tungsten Collector")) return "Break cobblestone/clay";
+			if (name.equals("Glacite Collector")) return "Break ice";
+			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
+			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
+			if (name.equals("Peridot Gemstone Collecto")) return "Break dark green glass";
+			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
 		}
 
 		return null;
@@ -842,6 +866,12 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Glacite", "GLACITE");
 				addItem("Forge", "ANVIL");
 				addItem("First Event", "FIREWORK");
+				addItem("Corpse Looter", "MINERAL_HELMET");
+				addItem("Mineshaft Explorer", "STORAGE_MINECART");
+				addItem("Scrap Collector", "SUSPICIOUS_SCRAP");
+				addItem("Umber Collector", "UMBER");
+				addItem("Tungsten Collector", "TUNGSTEN");
+				addItem("Glacite Collector", "GLACITE");
 			}
 
 			private void addItem(String eventName, String internalName) {
