@@ -31,7 +31,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -147,7 +146,10 @@ public class ProfileViewer {
 						"GEMSTONE_COLLECTION",
 						"MYCEL",
 						"SAND:1",
-						"SULPHUR_ORE"
+						"SULPHUR_ORE",
+						"GLACITE",
+						"TUNGSTEN",
+						"UMBER"
 					)
 				);
 				put(
@@ -250,6 +252,9 @@ public class ProfileViewer {
 						null,
 						"MYCELIUM",
 						"RED_SAND",
+						null,
+						null,
+						null,
 						null
 					)
 				);
@@ -360,6 +365,23 @@ public class ProfileViewer {
 					Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Red Sand", 1)
 				);
 				put("SULPHUR_ORE", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Sulphur"));
+				put("GLACITE", Utils.createItemStack(Blocks.packed_ice, EnumChatFormatting.GRAY + "Glacite"));
+				put(
+					"TUNGSTEN",
+					Utils.createSkull(
+						EnumChatFormatting.GRAY + "Tungsten",
+						"b0ac8270-ac1b-325c-9e2c-e679e0f48684",
+						"ewogICJ0aW1lc3RhbXAiIDogMTcwODkxNDY4MjE4MCwKICAicHJvZmlsZUlkIiA6ICJiZDNhNWRmY2ZkZjg0NDczOTViZDJiZmUwNGY0YzAzMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJwcmVja3Jhc25vIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q4MTFmM2U3MjNiYmQ0NjM5M2Y4YWFkODU1NmIxZGY4ZWQzM2Y1NTliZTgyN2Y0N2ZlNzM2ZjcwNGMzNTU4NmUiCiAgICB9CiAgfQp9"
+					)
+				);
+				put(
+					"UMBER",
+					Utils.createSkull(
+						EnumChatFormatting.GRAY + "Umber",
+						"bfb54c8e-93b8-3196-841c-5c8892d59f10",
+						"ewogICJ0aW1lc3RhbXAiIDogMTcwODkxOTkzMjc2MSwKICAicHJvZmlsZUlkIiA6ICJiMmM5ZTUyZjNhODU0YzQ4YmJjMmMwM2JjM2U0NzdiMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJJU05FRVpFREFUWU9VIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2I1NjViNWFhODNkNGFhN2Y3YWYyMmRjMTI3MWIyZjBiMjc0NDFmOWFjMTQ5NWY2YjQ2NTNjZjY4ZGZiMTA1ZWYiCiAgICB9CiAgfQp9"
+					)
+				);
 
 				/* COMBAT COLLECTIONS */
 				put("ROTTEN_FLESH", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.RED + "Rotten Flesh"));
