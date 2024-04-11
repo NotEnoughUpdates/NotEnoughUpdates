@@ -78,5 +78,5 @@ public class BazaarTweaks {
 		desc = "Warns you before you would pay more than this amount of coins for an item in the /bz"
 	)
 	@ConfigEditorSlider(minValue = 0, maxValue = 500_000_000, minStep = 1)
-	public double bazaarOverpayWarning = 1_000_000;
+	public double bazaarOverpayWarning = 10_000_000;
 }
