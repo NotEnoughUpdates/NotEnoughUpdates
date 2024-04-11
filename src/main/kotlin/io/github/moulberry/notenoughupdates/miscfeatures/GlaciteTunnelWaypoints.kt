@@ -19,71 +19,54 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures
 
+import com.google.gson.GsonBuilder
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils
+import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
 import io.github.moulberry.notenoughupdates.options.separatesections.Mining
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay
+import io.github.moulberry.notenoughupdates.util.BlockPosTypeAdapterFactory
 import io.github.moulberry.notenoughupdates.util.SBInfo
+import io.github.moulberry.notenoughupdates.util.kotlin.KSerializable
+import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory
+import io.github.moulberry.notenoughupdates.util.kotlin.fromJson
 import net.minecraft.client.Minecraft
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
-class GlaciteTunnelWaypoints {
+object GlaciteTunnelWaypoints {
     val glaciteTunnelLocations = setOf(
         "Glacite Tunnels",
         "Glacite Lake",
         "Dwarven Base Camp",
+        "Inside the Wall",
+        "Fossil Research Center",
     )
 
 
+    @KSerializable
     data class Waypoints(
         val title: String,
         val waypoints: List<BlockPos>,
     )
 
-    val waypointsForQuest: Map<String, Waypoints> = mapOf(
-        "Onyx Gemstone Collector" to Waypoints(
-            "§0Onyx Gemstone Mine",
-            listOf(
-                BlockPos(-68, 130, 407),
-                BlockPos(9, 137, 412),
-                BlockPos(-17, 133, 393),
-                BlockPos(12, 137, 365),
-                BlockPos(23, 137, 386),
-                BlockPos(79, 119, 412),
-            )
-        ),
-        "Aquamarine Gemstone Collector" to Waypoints(
-            "§3Aquamarine Gemstone Mine",
-            listOf(
-                BlockPos(-3, 139, 437),
-                BlockPos(72, 151, 387),
-                BlockPos(86, 150, 323),
-                BlockPos(50, 117, 302),
-            )
-        ),
-        "Peridot Gemstone Collector" to Waypoints(
-            "§2Peridot Gemstone Mine",
-            listOf(
-                BlockPos(-76, 120, 281),
-                BlockPos(91, 122, 393),
-                BlockPos(-61, 147, 301),
-                BlockPos(-74, 122, 459),
-            )
-        ),
-        "Citrine Gemstone Collector" to Waypoints(
-            "§6Citrine Gemstone Mine",
-            listOf(
-                BlockPos(-95, 145, 258),
-                BlockPos(-57, 144, 422),
-                BlockPos(37, 119, 387),
-                BlockPos(-46, 127, 411),
-            )
-        ),
-    )
+    val gson = GsonBuilder().registerTypeAdapterFactory(KotlinTypeAdapterFactory)
+        .registerTypeAdapterFactory(BlockPosTypeAdapterFactory)
+        .create()
+
+    @SubscribeEvent
+    fun onRepoReload(event: RepositoryReloadEvent) {
+        val text = event.repositoryRoot.resolve("constants/glacite_tunnel_waypoints.json")
+            .takeIf { it.exists() }?.readText()
+        if (text != null) {
+            waypointsForQuest = gson.fromJson(text)
+        }
+    }
+
+    var waypointsForQuest: Map<String, Waypoints> = mapOf()
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
