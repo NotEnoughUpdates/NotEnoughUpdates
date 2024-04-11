@@ -1205,7 +1205,7 @@ public class StorageOverlay extends GuiElement {
 			);
 		}
 
-		if (StorageManager.getInstance().storageConfig.displayToStorageIdMapRender.isEmpty()) {
+		if (StorageManager.getInstance().storageConfig.displayToStorageIdMapRender.isEmpty() && searchBar.getText().isEmpty()) {
 			Utils.drawStringScaledFillWidth(
 				"Please open /storage instead of /ec",
 				sizeX / 2,
