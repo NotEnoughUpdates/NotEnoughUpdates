@@ -24,6 +24,7 @@ import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class Enchanting {
@@ -239,4 +240,12 @@ public class Enchanting {
 	)
 	@ConfigAccordionId(id = 0)
 	public int supPower = 11;
+
+	@Expose
+	@ConfigOption(
+		name = "Hex Overpay Warning",
+		desc = "Warns you before you would pay more than this amount of coins for an item in the /hex"
+	)
+	@ConfigEditorSlider(minValue = 0, maxValue = 500_000_000, minStep = 1)
+	public double hexOverpayWarning = 10_000_000;
 }

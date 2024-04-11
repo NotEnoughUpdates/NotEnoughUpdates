@@ -66,6 +66,7 @@ import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.common.Loader;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -2316,7 +2317,7 @@ public class Utils {
 		return new UUID(most.longValue(), least.longValue());
 	}
 
-	public static String getOpenChestName() {
+	public static @NotNull String getOpenChestName() {
 		return SBInfo.getInstance().currentlyOpenChestName;
 	}
 
