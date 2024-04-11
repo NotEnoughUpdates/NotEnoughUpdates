@@ -201,6 +201,7 @@ public class XPInformation {
 			if (!matcher.matches())
 				continue;
 			var type = matcher.group("type");
+			assert type != null;
 			var level = Integer.parseInt(matcher.group("level"));
 			var percentage = matcher.group("percentage");
 			var percentageAsNumber = percentage != null ? Double.parseDouble(percentage) / 100 : null;
@@ -236,7 +237,7 @@ public class XPInformation {
 
 			SkillInfo oldSkillInfo = skillInfoMap.get(skill.toLowerCase());
 			float inc = increment.getOrDefault(skill.toLowerCase(), 0F);
-			if (oldSkillInfo.totalXp + inc > newSkillInfo.totalXp && oldSkillInfo.totalXp - inc * 5 < newSkillInfo.totalXp) {
+			if (oldSkillInfo != null && oldSkillInfo.totalXp + inc > newSkillInfo.totalXp && oldSkillInfo.totalXp - inc * 5 < newSkillInfo.totalXp) {
 				SkillInfo incrementedSkillInfo = new SkillInfo();
 				incrementedSkillInfo.totalXp = oldSkillInfo.totalXp + inc;
 				boolean isNotLevelUp = oldSkillInfo.currentXp + inc < oldSkillInfo.currentXpMax;
