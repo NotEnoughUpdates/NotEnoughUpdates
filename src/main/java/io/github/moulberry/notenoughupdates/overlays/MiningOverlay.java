@@ -25,9 +25,11 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
+import io.github.moulberry.notenoughupdates.miscfeatures.GlaciteTunnelWaypoints;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.options.separatesections.Mining;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
@@ -172,7 +174,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (line == null) {
 				continue;
 			}
-			if(!line.contains("▶"))continue;
+			if (!line.contains("▶")) continue;
 			String cleanLine = Utils.cleanColour(line).replace("▶", "").trim();
 			if (cleanLine.equals("Dwarven Mines")) {
 				commLocation = "mining_3";
@@ -248,9 +250,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 		String sideBarLoc = SBInfo.getInstance().getScoreboardLocation();
 		if (location.equals("mining_3")
-			&& (sideBarLoc.equals("Dwarven Base Camp")
-			|| sideBarLoc.equals("Glacite Tunnels")
-			|| sideBarLoc.equals("Glacite Lake"))) {
+			&& (GlaciteTunnelWaypoints.INSTANCE.getGlaciteTunnelLocations().contains(sideBarLoc))) {
 			location = "mineshaft";
 		}
 		return NotEnoughUpdates.INSTANCE.config.getLocationSpecific(location);
@@ -265,7 +265,8 @@ public class MiningOverlay extends TextTabOverlay {
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay &&
 			NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints == 0 &&
 			!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert &&
-			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0) {
+			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0
+			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints != Mining.GlaciteTunnelWaypointBehaviour.NONE) {
 			return;
 		}
 
@@ -273,8 +274,8 @@ public class MiningOverlay extends TextTabOverlay {
 		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
 		if (SBInfo.getInstance().getLocation() == null) return;
 		if (SBInfo.getInstance().getLocation().equals("mining_3") ||
-			SBInfo.getInstance().getLocation().equals("crystal_hollows") || SBInfo.getInstance().getLocation().equals(
-			"mineshaft")) {
+			SBInfo.getInstance().getLocation().equals("crystal_hollows")
+			|| SBInfo.getInstance().getLocation().equals("mineshaft")) {
 			commissionProgress.clear();
 
 			// These strings will be displayed one after the other when the player list is disabled
@@ -395,6 +396,18 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
+			if (ItemCooldowns.firstLoadMillis > 0) {
+				//set cooldown on first skyblock load.
+				ItemCooldowns.pickaxeUseCooldownMillisRemaining =
+					60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
+				ItemCooldowns.firstLoadMillis = 0;
+			}
+
+			if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
+				overlayStrings = null;
+				return;
+			}
+
 			List<String> commissionsStrings = new ArrayList<>();
 			for (Map.Entry<String, Float> entry : commissionProgress.entrySet()) {
 				if (entry.getValue() >= 1) {
@@ -431,13 +444,6 @@ public class MiningOverlay extends TextTabOverlay {
 						commissionsStrings.add(newLineTip);
 					}
 				}
-			}
-
-			if (ItemCooldowns.firstLoadMillis > 0) {
-				//set cooldown on first skyblock load.
-				ItemCooldowns.pickaxeUseCooldownMillisRemaining =
-					60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
-				ItemCooldowns.firstLoadMillis = 0;
 			}
 
 			String pickaxeCooldown;
@@ -625,7 +631,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Glacite Collector")) return "Break ice";
 			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
 			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
-			if (name.equals("Peridot Gemstone Collecto")) return "Break dark green glass";
+			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
 			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
 
 		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
@@ -671,7 +677,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Glacite Collector")) return "Break ice";
 			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
 			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
-			if (name.equals("Peridot Gemstone Collecto")) return "Break dark green glass";
+			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
 			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
 		}
 
