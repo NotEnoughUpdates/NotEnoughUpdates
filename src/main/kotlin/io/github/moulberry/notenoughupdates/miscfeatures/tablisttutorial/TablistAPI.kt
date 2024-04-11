@@ -122,7 +122,18 @@ object TablistAPI {
 
     enum class WidgetNames(val regex: Regex?) {
         COMMISSIONS(null),
+        /*
+            '§e§lSkills:'
+            ' Farming 50: §r§a43.3%'
+            ' Mining 60: §r§c§lMAX'
+            ' Combat 46: §r§a21.7%'
+            ' Foraging 23: §r§a43.5%'
+        * */
         SKILLS(null),
+        /*
+        * '§e§lSkills: §r§aCombat 46: §r§321.7%'
+        * */
+        DUNGEON_SKILLS(Regex("Skills: (.*)")),
         TRAPPER(null),
         FORGE(Regex("Forges:( \\(\\d/\\d\\))?")),
         POWDER(Regex.fromLiteral("Powders:")),
@@ -130,7 +141,7 @@ object TablistAPI {
         ;
 
         override fun toString(): String {
-            return this.name.lowercase().split(" ").joinToString(" ") { str ->
+            return this.name.lowercase().split("_").joinToString(" ") { str ->
                 str.replaceFirstChar {
                     if (it.isLowerCase()) {
                         it.titlecase(
