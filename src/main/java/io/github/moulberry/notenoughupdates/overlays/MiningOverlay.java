@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
+import io.github.moulberry.notenoughupdates.miscfeatures.GlaciteTunnelWaypoints;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -249,9 +250,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 		String sideBarLoc = SBInfo.getInstance().getScoreboardLocation();
 		if (location.equals("mining_3")
-			&& (sideBarLoc.equals("Dwarven Base Camp")
-			|| sideBarLoc.equals("Glacite Tunnels")
-			|| sideBarLoc.equals("Glacite Lake"))) {
+			&& (GlaciteTunnelWaypoints.INSTANCE.getGlaciteTunnelLocations().contains(sideBarLoc))) {
 			location = "mineshaft";
 		}
 		return NotEnoughUpdates.INSTANCE.config.getLocationSpecific(location);
