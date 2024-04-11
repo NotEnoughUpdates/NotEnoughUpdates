@@ -24,15 +24,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
-import io.github.moulberry.notenoughupdates.events.TabListChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import lombok.var;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,9 +49,9 @@ public class XPInformation {
 
 	public static class SkillInfo {
 		public int level;
-		public float totalXp;
-		public float currentXp;
-		public float currentXpMax;
+		public double totalXp;
+		public double currentXp;
+		public double currentXpMax;
 		public boolean fromApi = false;
 	}
 
@@ -68,8 +71,14 @@ public class XPInformation {
 		return skillInfoMap;
 	}
 
-	public SkillInfo getSkillInfo(String skillName) {
-		return skillInfoMap.get(skillName.toLowerCase());
+	private Set<String> failedSkills = new HashSet<>();
+
+	public @Nullable SkillInfo getSkillInfo(String skillName, boolean isHighlyInterested) {
+		var obj = skillInfoMap.get(skillName.toLowerCase());
+		if (isHighlyInterested && failedSkills.contains(skillName.toLowerCase())) {
+			TablistAPI.getWidgetLines(TablistAPI.WidgetNames.SKILLS);
+		}
+		return obj;
 	}
 
 	private String lastActionBar = null;
@@ -126,6 +135,9 @@ public class XPInformation {
 					String xpPercentageS = matcher.group(3).replace(",", "");
 
 					float xpPercentage = Float.parseFloat(xpPercentageS);
+					if (updateWithPercentage.containsKey(skillS.toLowerCase())) {
+						failedSkills.add(skillS.toLowerCase());
+					}
 					updateWithPercentage.put(skillS.toLowerCase(), xpPercentage);
 					increment.put(skillS.toLowerCase(), Float.parseFloat(matcher.group(1).replace(",", "")));
 				} else {
@@ -177,12 +189,13 @@ public class XPInformation {
 
 	private Pattern tablistSkillPattern =
 		Pattern.compile(
-			" (?<type>[^ ]+) (?<level>\\d+): (?:(?<percentage>\\d+(\\.\\d+))%|(?<amount>[0-9,]+(\\.\\d+))/.*|(?<max>MAX))");
+			" (?<type>[^ ]+) (?<level>\\d+): (?:(?<percentage>\\d+(\\.\\d+)?)%|(?<amount>[0-9,]+(\\.\\d+)?)/.*|(?<max>MAX))");
 
 	// Car Pentry
 	@SubscribeEvent
-	public void onTick(TabListChangeEvent event) {
-		var widgetLines = TablistAPI.getWidgetLines(TablistAPI.WidgetNames.SKILLS);
+	public void onTick(TickEvent.ClientTickEvent event) {
+		if (event.phase != TickEvent.Phase.END) return;
+		var widgetLines = TablistAPI.getOptionalWidgetLines(TablistAPI.WidgetNames.SKILLS);
 		for (String widgetLine : widgetLines) {
 			Matcher matcher = tablistSkillPattern.matcher(Utils.cleanColour(widgetLine));
 			if (!matcher.matches())
@@ -223,7 +236,7 @@ public class XPInformation {
 
 			SkillInfo oldSkillInfo = skillInfoMap.get(skill.toLowerCase());
 			float inc = increment.getOrDefault(skill.toLowerCase(), 0F);
-			if (oldSkillInfo.totalXp + inc > newSkillInfo.totalXp) {
+			if (oldSkillInfo.totalXp + inc > newSkillInfo.totalXp && oldSkillInfo.totalXp - inc * 5 < newSkillInfo.totalXp) {
 				SkillInfo incrementedSkillInfo = new SkillInfo();
 				incrementedSkillInfo.totalXp = oldSkillInfo.totalXp + inc;
 				boolean isNotLevelUp = oldSkillInfo.currentXp + inc < oldSkillInfo.currentXpMax;
@@ -239,6 +252,7 @@ public class XPInformation {
 			} else {
 				skillInfoMap.put(skill.toLowerCase(), newSkillInfo);
 			}
+			failedSkills.remove(skill.toLowerCase());
 		}
 		updateWithPercentage.clear();
 	}
