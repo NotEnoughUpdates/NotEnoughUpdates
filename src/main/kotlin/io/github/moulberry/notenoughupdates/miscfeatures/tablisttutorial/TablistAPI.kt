@@ -129,7 +129,7 @@ object TablistAPI {
             ' Combat 46: §r§a21.7%'
             ' Foraging 23: §r§a43.5%'
         * */
-        SKILLS(null),
+        SKILLS(Regex("Skills:( .*)?")),
         /*
         * '§e§lSkills: §r§aCombat 46: §r§321.7%'
         * */
