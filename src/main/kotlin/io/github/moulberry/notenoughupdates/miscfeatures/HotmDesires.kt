@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.events.SlotClickEvent
 import io.github.moulberry.notenoughupdates.events.TabListChangeEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI
 import io.github.moulberry.notenoughupdates.util.ItemUtils
+import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.KSerializable
 import io.github.moulberry.notenoughupdates.util.kotlin.useMatcher
@@ -60,6 +61,9 @@ object HotmDesires {
         val desireMap = desires ?: return
         if (!isEnabled()) {
             desireMap.clear()
+            return
+        }
+        if (SBInfo.getInstance().getLocation() !in setOf("mining_3", "crystal_hollows", "mineshaft")) {
             return
         }
         for (line in TablistAPI.getWidgetLines(TablistAPI.WidgetNames.POWDER)) {
