@@ -73,6 +73,10 @@ public class XPInformation {
 
 	private Set<String> failedSkills = new HashSet<>();
 
+	public @Nullable SkillInfo getSkillInfo(String skillName) {
+		return getSkillInfo(skillName, false);
+	}
+
 	public @Nullable SkillInfo getSkillInfo(String skillName, boolean isHighlyInterested) {
 		var obj = skillInfoMap.get(skillName.toLowerCase());
 		if (isHighlyInterested && failedSkills.contains(skillName.toLowerCase())) {
