@@ -90,14 +90,14 @@ object TabSkillInfoParser {
                 val nextLevelProgress = nextLevelDiff * progress / 100
 
                 val totalXp = levelXp + nextLevelProgress
-                val existingLevel = XPInformation.getInstance().getSkillInfo(name) ?: XPInformation.SkillInfo()
+                val existingLevel = XPInformation.getInstance().getSkillInfo(name, false) ?: XPInformation.SkillInfo()
 
                 // Only update if the numbers are substantially different
                 if (!isWithinPercentageRange(totalXp, existingLevel.totalXp.toDouble(), 1.0)) {
                     existingLevel.level = level
-                    existingLevel.totalXp = totalXp.toFloat()
-                    existingLevel.currentXp = nextLevelProgress.toFloat()
-                    existingLevel.currentXpMax = nextLevelDiff.toFloat()
+                    existingLevel.totalXp = totalXp
+                    existingLevel.currentXp = nextLevelProgress
+                    existingLevel.currentXpMax = nextLevelDiff
                     XPInformation.getInstance().skillInfoMap[name] = existingLevel
                 }
 
@@ -107,13 +107,13 @@ object TabSkillInfoParser {
                 val name = maxLevelMatcher.group("type")!!.lowercase()
                 val level = maxLevelMatcher.group("level")!!.toInt()
 
-                val existingLevel = XPInformation.getInstance().getSkillInfo(name) ?: XPInformation.SkillInfo()
+                val existingLevel = XPInformation.getInstance().getSkillInfo(name, false) ?: XPInformation.SkillInfo()
                 if (existingLevel.level != level) {
                     existingLevel.level = level
                     val levelingArray = levelArray(name)
 
                     val totalXp = calculateLevelXp(levelingArray, level - 1)
-                    existingLevel.totalXp = totalXp.toFloat()
+                    existingLevel.totalXp = totalXp
                     XPInformation.getInstance().skillInfoMap[name] = existingLevel
                 }
             }

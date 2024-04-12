@@ -879,6 +879,7 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
+	// TODO: Add support for sub menus in /tab, so we can configure "Always show most recently gained skill" in the Skill tab widget
 	public void updatePetLevels() {
 		HashMap<String, XPInformation.SkillInfo> skillInfoMap = XPInformation.getInstance().getSkillInfoMap();
 
@@ -888,7 +889,7 @@ public class PetInfoOverlay extends TextOverlay {
 		for (Map.Entry<String, XPInformation.SkillInfo> entry : skillInfoMap.entrySet()) {
 			if (entry.getValue().level == 50 && entry.getValue().fromApi) continue;
 
-			float skillXp = entry.getValue().totalXp;
+			float skillXp = (float) entry.getValue().totalXp;
 			if (skillInfoMapLast.containsKey(entry.getKey())) {
 				float skillXpLast = skillInfoMapLast.get(entry.getKey());
 

@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
 import lombok.val;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -281,9 +282,17 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private void updateSkillInfo() {
 		skillInfoLast = skillInfo;
-		skillInfo = XPInformation.getInstance().getSkillInfo(skillType);
+		var s = NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingText;
+		skillInfo = XPInformation.getInstance().getSkillInfo(
+			skillType,
+			s.contains(2) ||
+				s.contains(3) ||
+				s.contains(4) ||
+				s.contains(5) ||
+				s.contains(7)
+		);
 		if (skillInfo != null) {
-			float totalXp = skillInfo.totalXp;
+			float totalXp = (float) skillInfo.totalXp;
 
 			if (lastTotalXp > 0) {
 				float delta = totalXp - lastTotalXp;
@@ -556,9 +565,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 							.append(EnumChatFormatting.GRAY)
 							.append(" [");
 
-			float progress = skillInfo.currentXp / skillInfo.currentXpMax;
+			float progress = (float) (skillInfo.currentXp / skillInfo.currentXpMax);
 			if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-				progress = interpolate(progress, skillInfoLast.currentXp / skillInfoLast.currentXpMax);
+				progress = interpolate(progress, (float) (skillInfoLast.currentXp / skillInfoLast.currentXpMax));
 			}
 
 			float lines = 25;
@@ -579,7 +588,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			int current = (int) skillInfo.currentXp;
 			if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-				current = (int) interpolate(current, skillInfoLast.currentXp);
+				current = (int) interpolate(current, (float) skillInfoLast.currentXp);
 			}
 
 			int remaining = (int) (skillInfo.currentXpMax - skillInfo.currentXp);
@@ -613,7 +622,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		if (skillInfo != null && skillInfo.level == 60) {
 			int current = (int) skillInfo.currentXp;
 			if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-				current = (int) interpolate(current, skillInfoLast.currentXp);
+				current = (int) interpolate(current, (float) skillInfoLast.currentXp);
 			}
 
 			if (foraging == 0) {
