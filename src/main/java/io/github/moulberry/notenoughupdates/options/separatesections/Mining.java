@@ -947,4 +947,13 @@ public class Mining {
 	)
 	@ConfigEditorBoolean
 	public boolean mineshaftExitWaypoint = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Powder TODOs",
+		desc = "Click on a perk in your /hotm tree when you can't afford it to get a notification when you can."
+	)
+	@ConfigEditorBoolean
+	public boolean powderTodo = true;
+
 }

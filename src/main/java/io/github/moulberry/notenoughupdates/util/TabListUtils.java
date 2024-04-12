@@ -72,6 +72,7 @@ public class TabListUtils {
 		new TabListChangeEvent(tabList, tabListLastTick).post();
 	}
 
+	@Deprecated
 	public static List<String> getTabList() {
 		return tabList;
 	}

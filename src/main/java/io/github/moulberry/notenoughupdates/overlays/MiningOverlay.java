@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.GlaciteTunnelWaypoints;
+import io.github.moulberry.notenoughupdates.miscfeatures.HotmDesires;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -266,7 +267,8 @@ public class MiningOverlay extends TextTabOverlay {
 			NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints == 0 &&
 			!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert &&
 			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0
-			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints != Mining.GlaciteTunnelWaypointBehaviour.NONE) {
+			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints != Mining.GlaciteTunnelWaypointBehaviour.NONE
+			&& HotmDesires.wantsPowderInfo()) {
 			return;
 		}
 
@@ -289,13 +291,16 @@ public class MiningOverlay extends TextTabOverlay {
 
 			for (String line : powderLines) {
 				if (line.contains("Mithril:")) {
-					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
+					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "")
+						+ HotmDesires.appendDesireForType("Mithril");
 				}
 				if (line.contains("Gemstone:")) {
-					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
+					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "")
+						+ HotmDesires.appendDesireForType("Gemstone");
 				}
 				if (line.contains("Glacite: ")) {
-					glacitePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "");
+					glacitePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "")
+						+ HotmDesires.appendDesireForType("Glacite");
 				}
 			}
 

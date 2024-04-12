@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
+import io.github.moulberry.notenoughupdates.miscfeatures.HotmDesires;
 import io.github.moulberry.notenoughupdates.miscfeatures.IQTest;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
@@ -82,6 +83,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -596,7 +598,7 @@ public class NEUConfig extends Config {
 		}};
 	}
 
-	public HiddenProfileSpecific getProfileSpecific() {
+	public @Nullable HiddenProfileSpecific getProfileSpecific() {
 		if (SBInfo.getInstance().currentProfile == null) {
 			return null;
 		}
@@ -626,6 +628,9 @@ public class NEUConfig extends Config {
 		public long cookieBuffRemaining = 0L;
 		@Expose
 		public List<MiningOverlay.ForgeItem> forgeItems = new ArrayList<>();
+
+		@Expose
+		public Map<String, HotmDesires.Desire> hotmDesires = new HashMap<>();
 
 		@Expose
 		public int commissionMilestone = 0;
