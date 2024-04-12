@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
+import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.Utils
@@ -70,7 +71,7 @@ class BazaarPriceWarning : WarningPopUp() {
     }
 
     override fun getWarningLines(): List<String> {
-        return listOf("will cost you §6${price}§r coins")
+        return listOf("will cost you §6${StringUtils.formatNumber(price)}§r coins")
     }
 
     override fun getWarningPopup(): List<String> {
