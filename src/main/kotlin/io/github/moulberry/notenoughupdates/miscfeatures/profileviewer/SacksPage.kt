@@ -46,7 +46,12 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private val manager get() = NotEnoughUpdates.INSTANCE.manager
     private val pv_sacks = ResourceLocation("notenoughupdates:pv_sacks.png")
     private var sacksJson = Constants.SACKS
-    private var sackTypes = sacksJson.getAsJsonObject("sacks") ?: JsonObject()
+    private var sackTypes = if (sacksJson != null && sacksJson.isJsonObject) {
+        sacksJson.getAsJsonObject("sacks") ?: JsonObject()
+    } else {
+        Utils.showOutdatedRepoNotification("sacks.json")
+        JsonObject()
+    }
     private var tooltipToDisplay = listOf<String>()
     private var currentProfile: SkyblockProfiles.SkyblockProfile? = null
 
@@ -475,7 +480,10 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         sackItems.clear()
         playerRunes.clear()
 
-        if (!sacksJson.has("sacks") || !sacksJson.get("sacks").isJsonObject) return
+        if (!sacksJson.has("sacks") || !sacksJson.get("sacks").isJsonObject) {
+            Utils.showOutdatedRepoNotification("sacks.json")
+            return
+        }
         val selectedProfile = selectedProfile?.profileJson ?: return
 
         val sacksInfo = Utils.getElementOrDefault(selectedProfile, "inventory.sacks_counts", JsonObject()).asJsonObject
