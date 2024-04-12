@@ -831,6 +831,8 @@ public class MiningOverlay extends TextTabOverlay {
 		} else {
 			if (beforeColon.startsWith("Forge")) {
 				icon = miningOverlayCommissionItems.get("Forge");
+			} else if (beforeColon.contains("Mithril")) {
+				icon = miningOverlayCommissionItems.get("Mithril");
 			} else if (beforeColon.endsWith(" Gemstone Collector")) {
 				String gemName = "ROUGH_"
 					+ beforeColon.replace(" Gemstone Collector", "").toUpperCase() + "_GEM";
