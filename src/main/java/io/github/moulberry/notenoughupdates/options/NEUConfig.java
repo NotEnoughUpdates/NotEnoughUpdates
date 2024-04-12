@@ -39,6 +39,7 @@ import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodo;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.options.separatesections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.separatesections.AHTweaks;
+import io.github.moulberry.notenoughupdates.options.separatesections.About;
 import io.github.moulberry.notenoughupdates.options.separatesections.AccessoryBag;
 import io.github.moulberry.notenoughupdates.options.separatesections.ApiData;
 import io.github.moulberry.notenoughupdates.options.separatesections.BazaarTweaks;
@@ -245,6 +246,13 @@ public class NEUConfig extends Config {
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}
 	}
+
+	@Expose
+	@Category(
+		name = "About",
+		desc = ""
+	)
+	public About about = new About();
 
 	@Expose
 	@Category(

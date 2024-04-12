@@ -117,17 +117,6 @@ class MiscCommands {
                 }
             }.withHelp("Look up someones pronouns using their minecraft username")
         }
-        event.command("neuupdate", "neuupdates", "enoughupdates") {
-            thenLiteralExecute("check") {
-                NotEnoughUpdates.INSTANCE.autoUpdater.displayUpdateMessageIfOutOfDate()
-            }.withHelp("Check for updates")
-            thenLiteralExecute("scheduledownload") {
-                NotEnoughUpdates.INSTANCE.autoUpdater.scheduleDownload()
-            }.withHelp("Queue a new version of NEU to be downloaded")
-            thenLiteralExecute("updatemodes") {
-                reply("§bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files")
-            }.withHelp("Display an explanation why you cannot auto update")
-        }
         event.command("neudynamiclights", "neudli", "neudynlights", "neudynamicitems") {
             thenExecute {
                 NotEnoughUpdates.INSTANCE.openGui = DynamicLightItemsEditor()

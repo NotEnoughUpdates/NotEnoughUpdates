@@ -27,3 +27,6 @@ run
 infer-out/
 ciwork/
 .DS_STORE
+*.asc
+secrets/*
+

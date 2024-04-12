@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import io.github.moulberry.moulconfig.observer.PropertyTypeAdapterFactory;
 import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
@@ -46,7 +47,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
-import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -88,6 +88,8 @@ import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NEUAutoSubscribe
 @Mod(
@@ -95,10 +97,29 @@ import java.util.Set;
 	guiFactory = "io.github.moulberry.notenoughupdates.core.config.MoulConfigGuiForgeInterop")
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
-	public static final String VERSION = "2.1.1-PRE";
-	public static final int VERSION_ID = 20106; //2.1.1 only so update notif works
-	public static final int PRE_VERSION_ID = 0;
-	public static final int HOTFIX_VERSION_ID = 0;
+	public static final String VERSION = VersionConst.VERSION;
+	private static final Pattern versionPattern = Pattern.compile("([0-9]+)\\.([0-9]+)\\.([0-9]+)");
+	public static final int VERSION_ID = parseVersion(VERSION);
+
+	private static int parseVersion(String versionName) {
+		Matcher matcher = versionPattern.matcher(versionName);
+		if (!matcher.matches()) {
+			return 0;
+		}
+		int major = Integer.parseInt(matcher.group(1));
+		if (major < 0 || major > 99) {
+			return 0;
+		}
+		int minor = Integer.parseInt(matcher.group(2));
+		if (minor < 0 || minor > 99) {
+			return 0;
+		}
+		int patch = Integer.parseInt(matcher.group(3));
+		if (patch < 0 || patch > 99) {
+			return 0;
+		}
+		return major * 10000 + minor * 100 + patch;
+	}
 
 	public static final Logger LOGGER = LogManager.getLogger("NotEnoughUpdates");
 	/**
@@ -152,6 +173,7 @@ public class NotEnoughUpdates {
 	}};
 	public static ProfileViewer profileViewer;
 	private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
+																						 .registerTypeAdapterFactory(new PropertyTypeAdapterFactory())
 																						 .registerTypeAdapterFactory(KotlinTypeAdapterFactory.INSTANCE).create();
 	public NEUManager manager;
 	public NEUOverlay overlay;
@@ -161,7 +183,6 @@ public class NotEnoughUpdates {
 	public long lastOpenedGui = 0;
 	public boolean packDevEnabled = false;
 	public Color[][] colourMap = null;
-	public AutoUpdater autoUpdater = new AutoUpdater(this);
 	private File configFile;
 	private long lastChatMessage = 0;
 	private long secondLastChatMessage = 0;

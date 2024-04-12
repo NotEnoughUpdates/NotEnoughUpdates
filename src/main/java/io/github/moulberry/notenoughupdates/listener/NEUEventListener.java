@@ -215,10 +215,6 @@ public class NEUEventListener {
 				if (!joinedSB) {
 					joinedSB = true;
 
-					if (NotEnoughUpdates.INSTANCE.config.notifications.updateChannel != 0) {
-						NotEnoughUpdates.INSTANCE.autoUpdater.displayUpdateMessageIfOutOfDate();
-					}
-
 					if (NotEnoughUpdates.INSTANCE.config.notifications.doRamNotif) {
 						long maxMemoryMB = Runtime.getRuntime().maxMemory() / 1024L / 1024L;
 						if (maxMemoryMB > 4100) {

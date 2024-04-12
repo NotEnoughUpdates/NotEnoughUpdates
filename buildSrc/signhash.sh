@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2022 NotEnoughUpdates contributors
+# Copyright (C) 2024 NotEnoughUpdates contributors
 #
 # This file is part of NotEnoughUpdates.
 #
@@ -18,9 +18,17 @@
 # along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
 #
 
-echo use key $1, signing file $2
-openssl dgst -sign "$1" "$2" > "$2.asc"
-echo signature saved to "$2.asc"
+if [[ $# -ne 3 ]]; then
+  echo "Usage: <keypath> <key name> <hash>"
+  exit 1
+fi
+
+echo use key $1, label $2, signing hash $3
+work=$(mktemp)
+echo $work
+echo "$3" | tr '[:lower:]' '[:upper:]' |tr -d '\n ' > "$work"
+openssl dgst -sign "$1" "$work" > "_$2.asc"
+echo signature saved to "_$2.asc"
 
 
 

@@ -18,10 +18,12 @@
  */
 
 
+import neubs.CustomSignTask
 import neubs.NEUBuildFlags
 import neubs.applyPublishingInformation
 import neubs.setVersionFromEnvironment
 import org.apache.commons.lang3.SystemUtils
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.net.URL
 
 plugins {
@@ -35,6 +37,7 @@ plugins {
 	kotlin("jvm") version "1.8.21"
 	id("io.gitlab.arturbosch.detekt") version "1.23.0"
 	id("com.google.devtools.ksp") version "1.8.21-1.0.11"
+	id("net.kyori.blossom") version "2.1.0"
 }
 
 
@@ -44,7 +47,7 @@ apply<NEUBuildFlags>()
 
 group = "io.github.moulberry"
 
-setVersionFromEnvironment("2.1.1")
+val baseVersion = setVersionFromEnvironment()
 
 // Minecraft configuration:
 loom {
@@ -81,17 +84,18 @@ loom {
 
 // Dependencies:
 repositories {
-		mavenCentral()
-		mavenLocal()
-		maven("https://maven.notenoughupdates.org/releases")
-		maven("https://repo.spongepowered.org/maven/")
-		maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
-		maven("https://jitpack.io")
-		maven("https://repo.polyfrost.cc/releases")
+	mavenCentral()
+	mavenLocal()
+	maven("https://maven.notenoughupdates.org/releases")
+	maven("https://repo.spongepowered.org/maven/")
+	maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+	maven("https://jitpack.io")
+	maven("https://repo.nea.moe/releases")
+	maven("https://repo.polyfrost.cc/releases")
 }
 
 val shadowImplementation: Configuration by configurations.creating {
-		configurations.implementation.get().extendsFrom(this)
+	configurations.implementation.get().extendsFrom(this)
 }
 
 val shadowOnly: Configuration by configurations.creating {
@@ -99,138 +103,144 @@ val shadowOnly: Configuration by configurations.creating {
 }
 
 val shadowApi: Configuration by configurations.creating {
-		configurations.api.get().extendsFrom(this)
+	configurations.api.get().extendsFrom(this)
 }
 
 val devEnv: Configuration by configurations.creating {
-		configurations.runtimeClasspath.get().extendsFrom(this)
-		isCanBeResolved = false
-		isCanBeConsumed = false
-		isVisible = false
+	configurations.runtimeClasspath.get().extendsFrom(this)
+	isCanBeResolved = false
+	isCanBeConsumed = false
+	isVisible = false
 }
 
 val kotlinDependencies: Configuration by configurations.creating {
-		configurations.implementation.get().extendsFrom(this)
+	configurations.implementation.get().extendsFrom(this)
 }
 
 val mixinRTDependencies: Configuration by configurations.creating {
-		configurations.implementation.get().extendsFrom(this)
+	configurations.implementation.get().extendsFrom(this)
 }
 
 val oneconfigQuarantineSourceSet: SourceSet = sourceSets.create("oneconfig") {
-		java {
-				srcDir(layout.projectDirectory.dir("src/main/oneconfig"))
-		}
+	java {
+		srcDir(layout.projectDirectory.dir("src/main/oneconfig"))
+	}
 }
 
 configurations {
-		val main = getByName(sourceSets.main.get().compileClasspathConfigurationName)
-		"oneconfigImplementation" {
-				extendsFrom(main)
-		}
+	val main = getByName(sourceSets.main.get().compileClasspathConfigurationName)
+	"oneconfigImplementation" {
+		extendsFrom(main)
+	}
 }
 
 dependencies {
-		minecraft("com.mojang:minecraft:1.8.9")
-		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
-		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+	minecraft("com.mojang:minecraft:1.8.9")
+	mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
+	forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
 
-		if (project.findProperty("neu.buildflags.oneconfig") == "true") {
-				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
-				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
-		}
+	if (project.findProperty("neu.buildflags.oneconfig") == "true") {
+		shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
+		runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
+	}
 
-		"oneconfigCompileOnly"(project(":oneconfigquarantine", configuration = "namedElements"))
-		"oneconfigImplementation"(sourceSets.main.get().output)
-		"runtimeOnly"(oneconfigQuarantineSourceSet.output)
+	"oneconfigCompileOnly"(project(":oneconfigquarantine", configuration = "namedElements"))
+	"oneconfigImplementation"(sourceSets.main.get().output)
+	"runtimeOnly"(oneconfigQuarantineSourceSet.output)
 
-		// Please keep this version in sync with KotlinLoadingTweaker
-		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
-		kotlinDependencies(kotlin("stdlib"))
-		kotlinDependencies(kotlin("reflect"))
+	// Please keep this version in sync with KotlinLoadingTweaker
+	implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+	kotlinDependencies(kotlin("stdlib"))
+	kotlinDependencies(kotlin("reflect"))
 
-		ksp("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
-		implementation("com.google.auto.service:auto-service-annotations:1.0.1")
+	ksp("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
+	implementation("com.google.auto.service:auto-service-annotations:1.0.1")
 
-		compileOnly(ksp(project(":annotations"))!!)
-		compileOnly("org.projectlombok:lombok:1.18.24")
-		annotationProcessor("org.projectlombok:lombok:1.18.24")
-		"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
+	compileOnly(ksp(project(":annotations"))!!)
+	compileOnly("org.projectlombok:lombok:1.18.24")
+	annotationProcessor("org.projectlombok:lombok:1.18.24")
+	"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
 
-		shadowImplementation("com.mojang:brigadier:1.0.18")
+	shadowImplementation("com.mojang:brigadier:1.0.18")
+	shadowImplementation("moe.nea:libautoupdate:1.2.0")
 
-		mixinRTDependencies("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
-				isTransitive = false // Dependencies of mixin are already bundled by minecraft
-		}
-		annotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
-		compileOnly("org.jetbrains:annotations:24.0.1")
+	mixinRTDependencies("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+		isTransitive = false // Dependencies of mixin are already bundled by minecraft
+	}
+	annotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
+	compileOnly("org.jetbrains:annotations:24.0.1")
 
-		modImplementation(libs.moulconfig)
-		shadowOnly(libs.moulconfig)
+	modImplementation(libs.moulconfig)
+	shadowOnly(libs.moulconfig)
 
-		@Suppress("VulnerableLibrariesLocal")
-		shadowApi("info.bliki.wiki:bliki-core:3.1.0")
-		testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-		testAnnotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
-		detektPlugins("org.notenoughupdates:detektrules:1.0.0")
-		devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
+	@Suppress("VulnerableLibrariesLocal")
+	shadowApi("info.bliki.wiki:bliki-core:3.1.0")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+	testAnnotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
+	detektPlugins("org.notenoughupdates:detektrules:1.0.0")
+	devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
 }
 
 
 
 java {
-		withSourcesJar()
-		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+	withSourcesJar()
+	toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 // Tasks:
 
 tasks.withType(JavaCompile::class) {
-		options.encoding = "UTF-8"
-		options.isFork = true
+	options.encoding = "UTF-8"
+	options.isFork = true
 }
 tasks.named("compileOneconfigJava", JavaCompile::class) {
-		doFirst {
-				println("oneconfig args: ${this@named.options.compilerArgs}")
-		}
+	doFirst {
+		println("oneconfig args: ${this@named.options.compilerArgs}")
+	}
 }
 
 
 tasks.named<Test>("test") {
-		useJUnitPlatform()
-		systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
-		this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+	useJUnitPlatform()
+	systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
+	this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+	testLogging {
+		exceptionFormat = TestExceptionFormat.FULL
+	}
 }
+val badJars = layout.buildDirectory.dir("badjars")
 
 tasks.named("jar", Jar::class) {
-		from(oneconfigQuarantineSourceSet.output)
+	from(oneconfigQuarantineSourceSet.output)
+	archiveClassifier.set("named")
+	destinationDirectory.set(badJars)
 }
 
 tasks.withType(Jar::class) {
-		archiveBaseName.set("NotEnoughUpdates")
-		manifest.attributes.run {
-				this["Main-Class"] = "NotSkyblockAddonsInstallerFrame"
-				this["TweakClass"] = "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker"
-				this["MixinConfigs"] = "mixins.notenoughupdates.json"
-				this["FMLCorePluginContainsFMLMod"] = "true"
-				this["ForceLoadAsMod"] = "true"
-				this["Manifest-Version"] = "1.0"
-				this["FMLAT"] = "accesstransformer.cfg"
-		}
+	archiveBaseName.set("NotEnoughUpdates")
+	manifest.attributes.run {
+		this["Main-Class"] = "NotSkyblockAddonsInstallerFrame"
+		this["TweakClass"] = "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker"
+		this["MixinConfigs"] = "mixins.notenoughupdates.json"
+		this["FMLCorePluginContainsFMLMod"] = "true"
+		this["ForceLoadAsMod"] = "true"
+		this["Manifest-Version"] = "1.0"
+	}
 }
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
-		archiveClassifier.set("dep")
-		from(tasks.shadowJar)
-		input.set(tasks.shadowJar.get().archiveFile)
-		doLast {
-				println("Jar name: ${archiveFile.get().asFile}")
-		}
+	archiveClassifier.set("")
+	from(tasks.shadowJar)
+	input.set(tasks.shadowJar.get().archiveFile)
+	doLast {
+		println("Jar name: ${archiveFile.get().asFile}")
+	}
 }
 
 tasks.remapSourcesJar {
-		this.enabled = false
+	this.enabled = false
 }
 
 /* Bypassing https://github.com/johnrengelman/shadow/issues/111 */
@@ -266,6 +276,7 @@ tasks.register("includeBackupRepo") {
 tasks.shadowJar {
 	archiveClassifier.set("dep-dev")
 	configurations = listOf(shadowImplementation, shadowApi, shadowOnly)
+	destinationDirectory.set(badJars)
 	archiveBaseName.set("NotEnoughUpdates")
 	exclude("**/module-info.class", "LICENSE.txt")
 	dependencies {
@@ -282,6 +293,7 @@ tasks.shadowJar {
 	fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
 	relocate("com.mojang.brigadier")
 	relocate("io.github.moulberry.moulconfig")
+	relocate("moe.nea.libautoupdate")
 	mergeServiceFiles()
 }
 
@@ -321,11 +333,18 @@ idea {
 }
 
 sourceSets.main {
-		output.setResourcesDir(file("$buildDir/classes/java/main"))
+	output.setResourcesDir(file("$buildDir/classes/java/main"))
+	this.blossom {
+		this.javaSources {
+			this.property("neuVersion", baseVersion)
+		}
+	}
 }
 
+tasks.register("signRelease", CustomSignTask::class)
+
 applyPublishingInformation(
-		"deobf" to tasks.jar,
-		"all" to tasks.remapJar,
-		"sources" to tasks["sourcesJar"],
+	"deobf" to tasks.jar,
+	"all" to tasks.remapJar,
+	"sources" to tasks["sourcesJar"],
 )
