@@ -940,4 +940,11 @@ public class Mining {
 	@ConfigEditorBoolean
 	public boolean mithrilSounds = false;
 
+	@Expose
+	@ConfigOption(
+		name = "Mineshaft Exit Waypoint",
+		desc = "Show a waypoint towards the exit of a Glacite Mineshaft"
+	)
+	@ConfigEditorBoolean
+	public boolean mineshaftExitWaypoint = true;
 }
