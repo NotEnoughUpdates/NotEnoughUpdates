@@ -3,8 +3,8 @@
 
 <div align="center">
     <!-- release -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases/latest" target="_blank">
-        <img src="https://img.shields.io/github/v/release/Moulberry/NotEnoughUpdates?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/latest" target="_blank">
+        <img src="https://img.shields.io/github/v/release/NotEnoughUpdates/NotEnoughUpdates?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
     </a>
     <!-- lines -->
     <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">
@@ -23,8 +23,8 @@
         <img src="https://img.shields.io/discord/516977525906341928?label=discord&color=informational&logo=Discord&logoColor=FFFFFF" alt="discord">
     </a>
     <!-- downloads -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases" target="_blank">
-        <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases" target="_blank">
+        <img src="https://img.shields.io/github/downloads/NotEnoughUpdates/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
     </a>
 </div>
 
