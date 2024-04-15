@@ -343,7 +343,17 @@ public class ItemResolutionQuery {
 	private String resolvePotionName() {
 		String potion = getExtraAttributes().getString("potion");
 		int potionLvl = getExtraAttributes().getInteger("potion_level");
-		return "POTION_" + potion.toUpperCase(Locale.ROOT) + ";" + potionLvl;
+		String potionName = getExtraAttributes().getString("potion_name");
+		String potionType = getExtraAttributes().getString("potion_type");
+		if (potionName != null && !potionName.isEmpty()) {
+			return "POTION_" + potionName.toUpperCase(Locale.ROOT) + ";" + potionLvl;
+		} else if (potion != null && !potion.isEmpty()) {
+			return "POTION_" + potion.toUpperCase(Locale.ROOT) + ";" + potionLvl;
+		} else if (potionType != null && !potionType.isEmpty()) {
+			return "POTION_" + potionType.toUpperCase(Locale.ROOT);
+		} else {
+			return "WATER_BOTTLE";
+		}
 	}
 
 	private NBTTagCompound getExtraAttributes() {
