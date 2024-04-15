@@ -350,7 +350,7 @@ public class StorageManager {
 			return true;
 		}
 
-		shouldRenderStorageOverlayCached = containerName != null && containerName.trim().startsWith("Storage");
+		shouldRenderStorageOverlayCached = containerName != null && containerName.trim().equals("Storage");
 		isStorageOpen = shouldRenderStorageOverlayCached;
 		return shouldRenderStorageOverlayCached;
 	}
