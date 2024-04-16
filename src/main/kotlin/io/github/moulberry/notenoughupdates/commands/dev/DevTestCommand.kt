@@ -66,7 +66,8 @@ class DevTestCommand {
             "7a9dc802-d401-4d7d-93c0-8dd1bc98c70d",  // efefury
             "bb855349-dfd8-4125-a750-5fc2cf543ad5",  // hannibal2
             "eaa5623c-8413-46b7-a74b-2d74a42b2841",  // calmwolfs
-            "e2c6f077-d45c-43ac-8322-857c7f8df3b9"   // vixid
+            "e2c6f077-d45c-43ac-8322-857c7f8df3b9",  // vixid
+            "503450fc-72c2-4e87-8243-94e264977437"   // thatgravyboat
         )
         val SPECIAL_KICK = "SPECIAL_KICK"
 
