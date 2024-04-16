@@ -267,7 +267,7 @@ class DynamicLightItemsEditor() : GuiScreen() {
                     .resolveInternalName()
             if (internalName == null) {
                 // If resolving internal name failed, the item may be a minecraft item
-                internalName = itemStack.item.registryName
+                internalName = itemStack.item?.registryName
                 if (internalName == null) {
                     // Check if minecraft searching also fails
                     // Leave error handling for caller since this method is also called in MixinOFDynamicLights which
