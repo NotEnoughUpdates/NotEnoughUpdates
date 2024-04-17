@@ -166,7 +166,7 @@ public class NEUConfig extends Config {
 
 	@Override
 	public String getTitle() {
-		return "§7NotEnoughUpdates v" + NotEnoughUpdates.VERSION + " by §5Moulberry";
+		return "§7NotEnoughUpdates " + NotEnoughUpdates.VERSION + " by §5Moulberry";
 	}
 
 	@Override
