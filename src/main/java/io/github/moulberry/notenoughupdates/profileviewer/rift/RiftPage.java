@@ -124,7 +124,7 @@ public class RiftPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft + 35, guiTop + 156, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 
 		APIDataJson.Rift.RiftDeadCats deadCats = rift.dead_cats;
-		if (deadCats != null && deadCats.found_cats != null) {
+		if (deadCats != null && deadCats.found_cats != null && !deadCats.found_cats.isEmpty()) {
 			List<String> foundCats = deadCats.found_cats;
 
 			int size = foundCats.size();
