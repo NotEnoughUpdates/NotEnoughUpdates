@@ -343,7 +343,7 @@ public class ItemResolutionQuery {
 	private String resolvePotionName() {
 		String potion = getExtraAttributes().getString("potion");
 		int potionLvl = getExtraAttributes().getInteger("potion_level");
-		String potionName = getExtraAttributes().getString("potion_name");
+		String potionName = getExtraAttributes().getString("potion_name").replace(" ", "_");
 		String potionType = getExtraAttributes().getString("potion_type");
 		if (potionName != null && !potionName.isEmpty()) {
 			return "POTION_" + potionName.toUpperCase(Locale.ROOT) + ";" + potionLvl;
