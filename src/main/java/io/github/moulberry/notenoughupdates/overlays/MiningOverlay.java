@@ -259,7 +259,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 	@Override
 	public void update() {
-		overlayStrings = new ArrayList<>();
+		overlayStrings = null;
 		NEUConfig.HiddenProfileSpecific profileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay &&
@@ -453,7 +453,7 @@ public class MiningOverlay extends TextTabOverlay {
 				pickaxeCooldown =
 					DARK_AQUA + "Pickaxe CD: \u00a7a" + (ItemCooldowns.pickaxeUseCooldownMillisRemaining / 1000) + "s";
 			}
-
+			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2) {
 				switch (index) {
 					case 0:
