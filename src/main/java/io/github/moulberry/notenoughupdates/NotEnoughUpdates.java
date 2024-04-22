@@ -253,6 +253,12 @@ public class NotEnoughUpdates {
 				config.profileViewer.pageLayout.add(12);
 			}
 
+			if ((config.apiData.repoUser.isEmpty() || config.apiData.repoName.isEmpty() || config.apiData.repoBranch.isEmpty()) && config.apiData.autoupdate_new) {
+				config.apiData.repoUser = "NotEnoughUpdates";
+				config.apiData.repoName = "NotEnoughUpdates-REPO";
+				config.apiData.repoBranch = "master";
+			}
+
 			// Remove after 2.1 ig
 			if ("dangerous".equals(config.apiData.repoBranch)) {
 				config.apiData.repoBranch = "prerelease";
