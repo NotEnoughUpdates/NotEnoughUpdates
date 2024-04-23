@@ -460,10 +460,10 @@ public class MiningOverlay extends TextTabOverlay {
 						overlayStrings.addAll(commissionsStrings);
 						break;
 					case 1:
-						overlayStrings.add(mithrilPowder);
+						if (!mithrilPowder.isEmpty()) overlayStrings.add(mithrilPowder);
 						break;
 					case 2:
-						overlayStrings.add(gemstonePowder);
+						if (!gemstonePowder.isEmpty()) overlayStrings.add(gemstonePowder);
 						break;
 					case 3:
 						if (profileConfig != null) {
@@ -481,7 +481,7 @@ public class MiningOverlay extends TextTabOverlay {
 						overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
 						break;
 					case 7:
-						overlayStrings.add(glacitePowder);
+						if (!glacitePowder.isEmpty()) overlayStrings.add(glacitePowder);
 						break;
 				}
 			}
