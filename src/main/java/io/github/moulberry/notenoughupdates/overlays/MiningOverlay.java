@@ -563,7 +563,8 @@ public class MiningOverlay extends TextTabOverlay {
 		if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.contains(configIndex) &&
 			NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
 			lines = TablistAPI.getWidgetLinesWithoutNotification(widgetName);
-			if (lines.isEmpty() && !overlayStrings.contains("§l§4One or more tab widgets missing!")) {
+			if (lines.isEmpty() && (overlayStrings == null || !overlayStrings.contains("§l§4One or more tab widgets missing!"))) {
+				if (overlayStrings == null) overlayStrings = new ArrayList<>();
 				overlayStrings.add("§l§4One or more tab widgets missing!");
 				overlayStrings.add("§l§4Enable it in §b/tab§4!");
 			}
