@@ -57,10 +57,16 @@ object TablistAPI {
             }
 
             if (list.isNotEmpty()) {
-                // New tab section, or empty line indicate a new section
-                if (entry == "§r               §r§3§lInfo§r" || entry == "§r") {
+                // Empty line, the widget ends here.
+                if (entry == "§r") {
                     break
                 }
+
+                // New tab column, ignore it and continue with the same widget
+                if (entry == "§r               §r§3§lInfo§r") {
+                    continue
+                }
+
                 list.add(entry)
             } else if (entry.stripControlCodes().matches(regex)) {
                 list.add(entry)
