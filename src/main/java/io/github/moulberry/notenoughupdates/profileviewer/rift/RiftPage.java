@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 public class RiftPage extends GuiProfileViewerPage {
 
@@ -132,7 +133,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			int manaRegen = size * 2;
 
 			APIDataJson.Rift.RiftDeadCats.Pet montezuma = deadCats.montezuma;
-			if (montezuma != null) {
+			if (montezuma != null && !"UNKNOWN".equals(montezuma.type)) {
 
 				PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
 				pet.petLevel = new PetLeveling.PetLevel(100, 100, 0, 0, 0, montezuma.exp);
@@ -145,9 +146,17 @@ public class RiftPage extends GuiProfileViewerPage {
 				if ((mouseX > guiLeft + 37 && mouseX < guiLeft + 37 + 20) &&
 					(mouseY > guiTop + 158 && mouseY < guiTop + 158 + 20)) {
 					List<String> tooltip = petItemStackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-					tooltip.set(3, "§7Found: §9" + size + "/9 Soul Pieces");
-					tooltip.set(5, "§7Rift Time: §a+" + riftTime + "s");
-					if (pet.rarity == PetInfoOverlay.Rarity.EPIC) tooltip.set(6, "§7Mana Regen: §a+" + manaRegen + "%");
+					ListIterator<String> iterator = tooltip.listIterator();
+					while (iterator.hasNext()) {
+						String next = iterator.next();
+						if (next.startsWith("§7Found: §9")) {
+							iterator.set("§7Found: §9" + size + "/9 Soul Pieces");
+						} else if (next.startsWith("§7Rift Time: §a+")) {
+							iterator.set("§7Rift Time: §a+" + riftTime + "s");
+						} else if (next.startsWith("§7Mana Regen: §a") && pet.rarity == PetInfoOverlay.Rarity.EPIC) {
+							iterator.set("§7Mana Regen: §a+" + manaRegen + "%");
+						}
+					}
 					getInstance().tooltipToDisplay = tooltip;
 				}
 			} else if (size > 0) {
@@ -209,7 +218,6 @@ public class RiftPage extends GuiProfileViewerPage {
 			renderItem("GLASS", 316, 36, guiLeft, guiTop);
 		}
 
-
 		int grubberStacks = rift.castle.grubber_stacks;
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Burger:",
@@ -258,7 +266,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			}
 		}
 
-		if (rift.enigma != null && rift.enigma.found_souls != null ) {
+		if (rift.enigma != null && rift.enigma.found_souls != null) {
 			int foundSouls = rift.enigma.found_souls.size();
 
 			Utils.renderAlignedString(
@@ -537,19 +545,19 @@ public class RiftPage extends GuiProfileViewerPage {
 					);
 			}
 		}
-		}
+	}
 
-		public static List<JsonObject> readBase64 (String data){
-			List<JsonObject> itemStacks = new ArrayList<>();
-			try {
-				NBTTagList items = CompressedStreamTools.readCompressed(
-					new ByteArrayInputStream(Base64.getDecoder().decode(data))
-				).getTagList("i", 10);
-				for (int j = 0; j < items.tagCount(); j++) {
-					JsonObject item = NotEnoughUpdates.INSTANCE.manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
-					itemStacks.add(item);
-				}
-			} catch (IOException ignored) {
+	public static List<JsonObject> readBase64(String data) {
+		List<JsonObject> itemStacks = new ArrayList<>();
+		try {
+			NBTTagList items = CompressedStreamTools.readCompressed(
+				new ByteArrayInputStream(Base64.getDecoder().decode(data))
+			).getTagList("i", 10);
+			for (int j = 0; j < items.tagCount(); j++) {
+				JsonObject item = NotEnoughUpdates.INSTANCE.manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
+				itemStacks.add(item);
+			}
+		} catch (IOException ignored) {
 		}
 		return itemStacks;
 	}
