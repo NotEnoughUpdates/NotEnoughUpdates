@@ -26,11 +26,14 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -384,5 +387,18 @@ public class CapeManager {
 
 	public CapeData[] getCapes() {
 		return capes;
+	}
+
+	@SubscribeEvent
+	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
+		if (!(event.entity instanceof EntityOtherPlayerMP)) return;
+		EntityOtherPlayerMP player = (EntityOtherPlayerMP) event.entity;
+		Pair<NEUCape, String> neuCapeStringPair = capeMap.get(player.getGameProfile().getId().toString());
+		if (neuCapeStringPair == null) return;
+		if (neuCapeStringPair.getLeft() == null) {
+			return;
+		}
+		neuCapeStringPair.getLeft().resetNodes();
+
 	}
 }

@@ -580,6 +580,10 @@ public class NEUCape {
 		return x * m + b;
 	}
 
+	public void resetNodes() {
+		nodes = null;
+	}
+
 	private void updateCape(EntityPlayer player) {
 		Vector3f capeTranslation = updateFixedCapeNodes(player);
 
