@@ -230,8 +230,7 @@ class DynamicLightItemsEditor() : GuiScreen() {
             try {
                 Class.forName("net.optifine.DynamicLights")
                 println("Loaded dynamic lights successfully.")
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } catch (_: Exception) {
             }
             hasAttemptedToLoadOptifine = true
             if (!didApplyMixin) {
