@@ -43,7 +43,6 @@ import net.minecraft.util.EnumParticleTypes
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.function.Predicate
-import kotlin.io.path.absolutePathString
 import kotlin.math.floor
 
 @NEUAutoSubscribe

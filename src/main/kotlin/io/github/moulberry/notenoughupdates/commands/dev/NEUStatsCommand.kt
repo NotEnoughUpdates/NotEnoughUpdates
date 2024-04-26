@@ -176,6 +176,10 @@ class NEUStatsCommand {
             "Mod Version",
             Loader.instance().indexedModList[NotEnoughUpdates.MODID]!!.displayVersion
         )
+        builder.append(
+            "Version Id",
+            NotEnoughUpdates.VERSION_ID
+        )
         builder.append("SB Profile", SBInfo.getInstance().currentProfile)
             .also(::appendRepoStats)
     }
