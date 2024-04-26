@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -308,7 +309,7 @@ public class PetInfoOverlay extends TextOverlay {
 		pet.petType = petType;
 		JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
 		pet.petXpType =
-			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
+			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase(Locale.ROOT)).getAsString().toLowerCase(Locale.ROOT) : "unknown";
 		pet.skin = skin;
 
 		return pet;
@@ -328,7 +329,7 @@ public class PetInfoOverlay extends TextOverlay {
 				"alchemy",
 				"all"
 			);
-		if (!validXpTypes.contains(xpType.toLowerCase())) return 0;
+		if (!validXpTypes.contains(xpType.toLowerCase(Locale.ROOT))) return 0;
 
 		float tamingPercent = 1.0f + (config.tamingLevel / 100f);
 		xp = xp * tamingPercent;
@@ -354,10 +355,10 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 		JsonObject pets = Constants.PETS;
 		if (pets != null && pets.has("custom_pet_leveling") &&
-			pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase()) &&
-			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().has(
+			pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase(Locale.ROOT)) &&
+			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase(Locale.ROOT)).getAsJsonObject().has(
 				"xp_multiplier")) {
-			xp *= pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().get(
+			xp *= pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase(Locale.ROOT)).getAsJsonObject().get(
 				"xp_multiplier").getAsFloat();
 		}
 		return xp;
@@ -660,7 +661,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 	public static float getBoostMultiplier(String boostName) {
 		if (boostName == null) return 1;
-		boostName = boostName.toLowerCase();
+		boostName = boostName.toLowerCase(Locale.ROOT);
 		if (boostName.equalsIgnoreCase("PET_ITEM_ALL_SKILLS_BOOST_COMMON")) {
 			return 1.1f;
 		} else if (boostName.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
@@ -859,7 +860,7 @@ public class PetInfoOverlay extends TextOverlay {
 								String rarityString = Utils.getRarityFromInt(rarity);
 
 								String name = StringUtils.cleanColour(petStack.getDisplayName());
-								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase();
+								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase(Locale.ROOT);
 
 								float petXp = petInfoObject.get("exp").getAsFloat();
 
@@ -998,7 +999,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 					String pet = Utils.cleanColour(petName)
 														.replaceAll("[^\\w ]", "").trim()
-														.replace(" ", "_").toUpperCase();
+														.replace(" ", "_").toUpperCase(Locale.ROOT);
 
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
@@ -1010,9 +1011,9 @@ public class PetInfoOverlay extends TextOverlay {
 									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
 						}
 					}
-				} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(
+				} else if ((chatMessage.toLowerCase(Locale.ROOT).startsWith("you despawned your")) || (chatMessage.toLowerCase(Locale.ROOT).contains(
 					"switching to profile"))
-					|| (chatMessage.toLowerCase().contains("transferring you to a new island..."))) {
+					|| (chatMessage.toLowerCase(Locale.ROOT).contains("transferring you to a new island..."))) {
 					clearPet();
 				}
 			}

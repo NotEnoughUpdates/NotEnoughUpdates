@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -224,8 +225,8 @@ public class ProfileViewerUtils {
 
 	public static void saveSearch(String username) {
 		if (username == null) return;
-		String nameLower = username.toLowerCase();
-		if (nameLower.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) return;
+		String nameLower = username.toLowerCase(Locale.ROOT);
+		if (nameLower.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase(Locale.ROOT))) return;
 		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
 		previousProfileSearches.remove(nameLower);
 		previousProfileSearches.add(0, nameLower);
@@ -244,7 +245,7 @@ public class ProfileViewerUtils {
 
 	public static ItemStack getPlayerData(String username) {
 		if (username == null) return new ItemStack(Blocks.stone);
-		String nameLower = username.toLowerCase();
+		String nameLower = username.toLowerCase(Locale.ROOT);
 		if (!playerSkullCache.containsKey(nameLower)) {
 			playerSkullCache.put(nameLower, fallBackSkull());
 

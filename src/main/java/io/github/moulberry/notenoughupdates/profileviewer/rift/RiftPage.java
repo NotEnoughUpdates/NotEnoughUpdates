@@ -55,6 +55,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 
 public class RiftPage extends GuiProfileViewerPage {
 
@@ -199,7 +200,7 @@ public class RiftPage extends GuiProfileViewerPage {
 
 				List<String> displayNames = new ArrayList<>();
 				for (JsonElement jsonElement : timecharm) {
-					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString().toUpperCase();
+					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString().toUpperCase(Locale.ROOT);
 					ItemStack timecharmItem = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
 						"RIFT_TROPHY_" + timecharmType).resolveToItemStack();
 					if (timecharmItem != null) {

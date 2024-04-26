@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -191,7 +192,7 @@ public class DungeonWin {
 				if (matcher.find()) {
 					lastDungeonFinish = currentTime;
 					String score = matcher.group(1);
-					switch (score.toUpperCase()) {
+					switch (score.toUpperCase(Locale.ROOT)) {
 						case "S+":
 							TEAM_SCORE = SPLUS;
 							break;

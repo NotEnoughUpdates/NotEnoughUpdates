@@ -97,6 +97,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -673,7 +674,7 @@ public class Utils {
 	}
 
 	public static String prettyCase(String str) {
-		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+		return str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT);
 	}
 
 	public static String getRarityFromInt(int rarity) {

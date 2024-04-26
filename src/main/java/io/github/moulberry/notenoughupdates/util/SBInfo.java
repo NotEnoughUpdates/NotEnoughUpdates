@@ -351,7 +351,7 @@ public class SBInfo {
 //				if (matcher.find()) {
 //					try {
 //						int level = Integer.parseInt(matcher.group(2).trim());
-//						XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
+//						XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase(Locale.ROOT).trim(), level);
 //					} catch (Exception ignored) {
 //					}
 //				}

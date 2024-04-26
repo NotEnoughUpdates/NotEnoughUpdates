@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.util.StringUtils;
 
 import java.util.List;
+import java.util.Locale;
 
 public class HexItem {
 	public int slotIndex;
@@ -255,8 +256,8 @@ public class HexItem {
 
 	public String getReforge() {
 		JsonObject reforgeStones = Constants.REFORGESTONES;
-		if (reforgeStones != null && reforgeStones.has(this.itemId.toUpperCase())) {
-			JsonObject reforgeInfo = reforgeStones.get(this.itemId.toUpperCase()).getAsJsonObject();
+		if (reforgeStones != null && reforgeStones.has(this.itemId.toUpperCase(Locale.ROOT))) {
+			JsonObject reforgeInfo = reforgeStones.get(this.itemId.toUpperCase(Locale.ROOT)).getAsJsonObject();
 			if (reforgeInfo != null) {
 				return Utils.getElementAsString(reforgeInfo.get("reforgeName"), "");
 			}

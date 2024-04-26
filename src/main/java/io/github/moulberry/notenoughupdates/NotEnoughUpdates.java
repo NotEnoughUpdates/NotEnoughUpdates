@@ -87,6 +87,7 @@ import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -470,7 +471,7 @@ public class NotEnoughUpdates {
 
 		if (mc != null && mc.theWorld != null && mc.thePlayer != null) {
 			if (mc.isSingleplayer() || mc.thePlayer.getClientBrand() == null ||
-				!mc.thePlayer.getClientBrand().toLowerCase().contains("hypixel")) {
+				!mc.thePlayer.getClientBrand().toLowerCase(Locale.ROOT).contains("hypixel")) {
 				hasSkyblockScoreboard = false;
 				return;
 			}

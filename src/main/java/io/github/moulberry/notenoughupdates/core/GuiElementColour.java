@@ -34,6 +34,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -274,7 +275,7 @@ public class GuiElementColour extends GuiElement {
 		}
 
 		hexField.setSize(48, 10);
-		if (!hexField.getFocus()) hexField.setText(Integer.toHexString(c.getRGB() & 0xFFFFFF).toUpperCase());
+		if (!hexField.getFocus()) hexField.setText(Integer.toHexString(c.getRGB() & 0xFFFFFF).toUpperCase(Locale.ROOT));
 
 		StringBuilder sb = new StringBuilder(EnumChatFormatting.GRAY + "#");
 		for (int i = 0; i < 6 - hexField.getText().length(); i++) {
@@ -421,7 +422,7 @@ public class GuiElementColour extends GuiElement {
 				hexField.setText(old);
 			} else {
 				try {
-					String text = hexField.getText().toLowerCase();
+					String text = hexField.getText().toLowerCase(Locale.ROOT);
 
 					int rgb = Integer.parseInt(text, 16);
 					int alpha = (ChromaColour.specialToSimpleRGB(colour.get()) >> 24) & 0xFF;

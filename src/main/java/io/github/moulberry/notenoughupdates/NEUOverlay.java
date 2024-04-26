@@ -97,6 +97,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -568,14 +569,14 @@ public class NEUOverlay extends Gui {
 				} else if (manager.getItemInformation().containsKey(display)) {
 					render = manager.jsonToStack(manager.getItemInformation().get(display), true, true);
 				} else {
-					Item item = Item.itemRegistry.getObject(new ResourceLocation(display.toLowerCase()));
+					Item item = Item.itemRegistry.getObject(new ResourceLocation(display.toLowerCase(Locale.ROOT)));
 					if (item != null) {
 						render = new ItemStack(item);
 					}
 				}
 				if (render != null) {
 					NBTTagCompound tag = render.getTagCompound() != null ? render.getTagCompound() : new NBTTagCompound();
-					tag.setString("qc_id", quickCommandStrSplit[0].toLowerCase().trim());
+					tag.setString("qc_id", quickCommandStrSplit[0].toLowerCase(Locale.ROOT).trim());
 					render.setTagCompound(tag);
 
 					Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.quickcommand_background);
@@ -1485,7 +1486,7 @@ public class NEUOverlay extends Gui {
 					if (item != null) searchedItems.add(item);
 				}
 			}
-			switch (textField.getText().toLowerCase().trim()) {
+			switch (textField.getText().toLowerCase(Locale.ROOT).trim()) {
 				case "nullzee":
 					searchedItems.add(CustomItems.NULLZEE);
 					break;
@@ -1918,14 +1919,14 @@ public class NEUOverlay extends Gui {
 			updateSearch();
 		}
 
-		if (textField.getText().toLowerCase().contains("bald")) {
+		if (textField.getText().toLowerCase(Locale.ROOT).contains("bald")) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(SUPERGEHEIMNISVERMOGEN);
 			GlStateManager.color(1, 1, 1, 1);
 			Utils.drawTexturedRect((width - 64) / 2f, (height - 64) / 2f - 114, 64, 64, GL11.GL_LINEAR);
 			GlStateManager.bindTexture(0);
 		}
 
-		if (textField.getText().toLowerCase().contains("lunar")) {
+		if (textField.getText().toLowerCase(Locale.ROOT).contains("lunar")) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(ATMOULBERRYWHYISMYLUNARCLIENTBUGGING);
 			GlStateManager.color(1, 1, 1, 1);
 			GlStateManager.translate(0, 0, 100);
@@ -1933,7 +1934,7 @@ public class NEUOverlay extends Gui {
 			GlStateManager.bindTexture(0);
 		}
 
-		SunTzu.setEnabled(textField.getText().toLowerCase().startsWith("potato"));
+		SunTzu.setEnabled(textField.getText().toLowerCase(Locale.ROOT).startsWith("potato"));
 
 		updateGuiGroupSize();
 

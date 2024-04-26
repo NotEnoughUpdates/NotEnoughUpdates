@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class CrystalMetalDetectorSolver {
@@ -378,7 +379,7 @@ public class CrystalMetalDetectorSolver {
 		NEUDebugLogger.log(NEUDebugFlag.METAL, "Locating center using Keeper: " +
 			EnumChatFormatting.WHITE + keeperEntity);
 		String keeperType = keeperName.substring(keeperName.indexOf(KEEPER_OF_STRING) + KEEPER_OF_STRING.length());
-		minesCenter = keeperEntity.getPosition().add(keeperOffsets.get(keeperType.toLowerCase()));
+		minesCenter = keeperEntity.getPosition().add(keeperOffsets.get(keeperType.toLowerCase(Locale.ROOT)));
 		NEUDebugLogger.log(NEUDebugFlag.METAL, "Mines center: " +
 			EnumChatFormatting.WHITE + minesCenter.toString());
 		Utils.addChatMessage(
