@@ -234,7 +234,7 @@ public class ItemUtils {
 			return stack;
 		}
 		String petname = currentPet.petType;
-		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase();
+		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).ToUpperCase(Locale.ROOT);
 		String heldItem = currentPet.petItem;
 		String skin = currentPet.skin;
 		JsonObject heldItemJson = heldItem == null ? null : NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
@@ -410,13 +410,13 @@ public class ItemUtils {
 					NBTTagList newLore = new NBTTagList();
 					int maxLvl = 100;
 					if (Constants.PETS != null && Constants.PETS.has("custom_pet_leveling") &&
-						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.toUpperCase()) &&
-						Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet.petType.toUpperCase()).has(
+						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.ToUpperCase(Locale.ROOT)) &&
+						Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet.petType.ToUpperCase(Locale.ROOT)).has(
 							"max_level")) {
 						maxLvl =
 							Constants.PETS
 								.getAsJsonObject("custom_pet_leveling")
-								.getAsJsonObject(pet.petType.toUpperCase())
+								.getAsJsonObject(pet.petType.ToUpperCase(Locale.ROOT))
 								.get("max_level")
 								.getAsInt();
 					}

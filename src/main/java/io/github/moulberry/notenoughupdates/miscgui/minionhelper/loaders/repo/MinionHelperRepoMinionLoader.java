@@ -97,7 +97,7 @@ public class MinionHelperRepoMinionLoader {
 						}
 						case "slayer_req": {
 							String[] split = value.split("_");
-							String slayerType = split[0].toLowerCase();
+							String slayerType = split[0].toLowerCase(Locale.ROOT);
 							int tier = Integer.parseInt(split[1]);
 							minion.getRequirements().add(new SlayerRequirement(slayerType, tier));
 							break;

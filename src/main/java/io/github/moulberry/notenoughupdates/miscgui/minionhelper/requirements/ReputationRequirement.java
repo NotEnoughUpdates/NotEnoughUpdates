@@ -32,7 +32,7 @@ public class ReputationRequirement extends MinionRequirement {
 		this.reputationType = reputationType;
 		this.reputation = reputation;
 
-		String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
+		String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase(Locale.ROOT));
 		description = Utils.formatNumberWithDots(reputation) + " §7" + reputationName + " Reputation";
 	}
 

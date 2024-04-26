@@ -227,7 +227,7 @@ public class MinionHelperOverlayHover {
 				int need = reputationRequirement.getReputation();
 				if (having < 0) having = 0;
 
-				String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
+				String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase(Locale.ROOT));
 				String havingFormat = Utils.formatNumberWithDots(having);
 				String needFormat = Utils.formatNumberWithDots(need);
 				description = "Reputation: §c" + havingFormat + "§8/§c" + needFormat + " §7" + reputationName + " Reputation";

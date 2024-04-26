@@ -695,7 +695,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						String totalXpS = StringUtils.formatNumber((long) level.totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
 							EnumChatFormatting.DARK_GRAY + " (" +
-							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
+							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(Locale.ROOT), level)) +
 							"% to " + level.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
 							// double drops + pelts
@@ -715,7 +715,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							tooltipToDisplay.add(" ");
 							for (String medalName : medalNames) {
 								String textWithoutFormattingCodes =
-									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase());
+									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase(Locale.ROOT));
 								if (medals_inv.has(textWithoutFormattingCodes)) {
 									int medalAmount = medals_inv.get(textWithoutFormattingCodes).getAsInt();
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
@@ -727,7 +727,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							}
 						}
 
-						String slayerNameLower = entry.getKey().toLowerCase();
+						String slayerNameLower = entry.getKey().toLowerCase(Locale.ROOT);
 						if (Weight.SLAYER_NAMES.contains(slayerNameLower)) {
 							JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
 							if (slayerToTier == null) {

@@ -22,10 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import info.bliki.api.Template;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
@@ -48,9 +45,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -154,8 +149,8 @@ public class GuiEnchantColour extends GuiScreen {
 			String modifier = getColourOpIndex(colourOps, 4);
 			modifiers.put(yIndex, modifier);
 
-			if (colourCode.length() > 1) colourCode = String.valueOf(colourCode.toLowerCase().charAt(0));
-			if (comparator.length() > 1) comparator = String.valueOf(comparator.toLowerCase().charAt(0));
+			if (colourCode.length() > 1) colourCode = String.valueOf(colourCode.toLowerCase(Locale.ROOT).charAt(0));
+			if (comparator.length() > 1) comparator = String.valueOf(comparator.toLowerCase(Locale.ROOT).charAt(0));
 
 			Utils.drawStringCentered(comparator, guiLeft + 96, guiTop + 33 + 25 * yIndex, false, 4210752);
 

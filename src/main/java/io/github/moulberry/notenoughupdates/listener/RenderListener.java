@@ -656,7 +656,7 @@ public class RenderListener {
 						String displayName = item.getDisplayName();
 						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
 						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
-							String type = matcher.group(1).toUpperCase();
+							String type = matcher.group(1).ToUpperCase(Locale.ROOT);
 							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type);
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
 								float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();

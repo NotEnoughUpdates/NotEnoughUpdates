@@ -59,7 +59,7 @@ public class MBAnchorPoint implements Serializable {
 
 		try {
 			String[] split = str.split(":");
-			AnchorPoint point = AnchorPoint.valueOf(split[0].toUpperCase());
+			AnchorPoint point = AnchorPoint.valueOf(split[0].ToUpperCase(Locale.ROOT));
 			Vector2f pos = new Vector2f(Float.parseFloat(split[1]), Float.parseFloat(split[2]));
 			return new MBAnchorPoint(point, pos, Boolean.parseBoolean(split[3]));
 		} catch (Exception e) {

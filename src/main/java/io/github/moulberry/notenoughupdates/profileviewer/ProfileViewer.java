@@ -513,7 +513,7 @@ public class ProfileViewer {
 	}
 
 	public void getPlayerUUID(String name, Consumer<String> uuidCallback) {
-		String nameLower = name.toLowerCase();
+		String nameLower = name.toLowerCase(Locale.ROOT);
 		if (nameToUuid.containsKey(nameLower)) {
 			uuidCallback.accept(nameToUuid.get(nameLower));
 			return;
@@ -536,7 +536,7 @@ public class ProfileViewer {
 	}
 
 	public void loadPlayerByName(String name, Consumer<SkyblockProfiles> callback) {
-		String nameLower = name.toLowerCase();
+		String nameLower = name.toLowerCase(Locale.ROOT);
 
 		if (nameToUuid.containsKey(nameLower) && nameToUuid.get(nameLower) == null) {
 			callback.accept(null);

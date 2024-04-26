@@ -495,8 +495,8 @@ public class NEUManager {
 		int lastStringMatch = -1;
 		ArrayList<DebugMatch> debugMatches = new ArrayList<>();
 
-		toSearch = cleanForTitleMapSearch(toSearch).toLowerCase();
-		query = cleanForTitleMapSearch(query).toLowerCase();
+		toSearch = cleanForTitleMapSearch(toSearch).toLowerCase(Locale.ROOT);
+		query = cleanForTitleMapSearch(query).toLowerCase(Locale.ROOT);
 		String[] splitToSearch = toSearch.split(" ");
 		String[] queryArray = query.split(" ");
 
@@ -683,7 +683,7 @@ public class NEUManager {
 			results.addAll(new TreeSet<>(search(query, loreWordMap)));
 		} else if (query.startsWith("id:")) {
 			query = query.substring(3);
-			results.addAll(new TreeSet<>(subMapWithKeysThatAreSuffixes(query.toUpperCase(), itemMap).keySet()));
+			results.addAll(new TreeSet<>(subMapWithKeysThatAreSuffixes(query.ToUpperCase(Locale.ROOT), itemMap).keySet()));
 		} else {
 			if (!query.trim().contains(" ")) {
 				StringBuilder sb = new StringBuilder();
@@ -716,7 +716,7 @@ public class NEUManager {
 	public Set<String> search(String query, TreeMap<String, HashMap<String, List<Integer>>> wordMap) {
 		HashMap<String, List<Integer>> matches = null;
 
-		query = cleanForTitleMapSearch(query).toLowerCase();
+		query = cleanForTitleMapSearch(query).toLowerCase(Locale.ROOT);
 		for (String queryWord : query.split(" ")) {
 			HashMap<String, List<Integer>> matchesToKeep = new HashMap<>();
 			for (HashMap<String, List<Integer>> wordMatches : subMapWithKeysThatAreSuffixes(queryWord, wordMap).values()) {
@@ -871,7 +871,7 @@ public class NEUManager {
 	}
 
 	public static String cleanForTitleMapSearch(String str) {
-		return str.replaceAll("(\u00a7.)|[^#0-9a-zA-Z ]", "").toLowerCase().trim();
+		return str.replaceAll("(\u00a7.)|[^#0-9a-zA-Z ]", "").toLowerCase(Locale.ROOT).trim();
 	}
 
 	public void showRecipe(JsonObject item) {

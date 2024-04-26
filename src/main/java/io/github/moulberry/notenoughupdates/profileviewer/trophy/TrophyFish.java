@@ -59,7 +59,7 @@ public class TrophyFish {
 	}
 
 	public String getInternalName() {
-		return name.toLowerCase().replace(" ", "_");
+		return name.toLowerCase(Locale.ROOT).replace(" ", "_");
 	}
 
 	public enum TrophyFishRarity {

@@ -971,7 +971,7 @@ public class CalendarOverlay {
 
 	private static String getIdForDisplayName(String displayName) {
 		return Utils.cleanColour(displayName)
-								.toLowerCase()
+								.toLowerCase(Locale.ROOT)
 								.replaceAll("[0-9]+th", "")
 								.replaceAll("[0-9]+nd", "")
 								.replaceAll("[0-9]+rd", "")

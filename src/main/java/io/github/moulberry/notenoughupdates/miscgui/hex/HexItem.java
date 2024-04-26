@@ -255,8 +255,8 @@ public class HexItem {
 
 	public String getReforge() {
 		JsonObject reforgeStones = Constants.REFORGESTONES;
-		if (reforgeStones != null && reforgeStones.has(this.itemId.toUpperCase())) {
-			JsonObject reforgeInfo = reforgeStones.get(this.itemId.toUpperCase()).getAsJsonObject();
+		if (reforgeStones != null && reforgeStones.has(this.itemId.ToUpperCase(Locale.ROOT))) {
+			JsonObject reforgeInfo = reforgeStones.get(this.itemId.ToUpperCase(Locale.ROOT)).getAsJsonObject();
 			if (reforgeInfo != null) {
 				return Utils.getElementAsString(reforgeInfo.get("reforgeName"), "");
 			}

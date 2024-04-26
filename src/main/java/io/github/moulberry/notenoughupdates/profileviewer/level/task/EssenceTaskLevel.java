@@ -31,6 +31,7 @@ import net.minecraft.util.EnumChatFormatting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class EssenceTaskLevel extends GuiTaskLevel {
@@ -78,7 +79,7 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : essenceShopTask.entrySet()) {
 			String key = stringJsonElementEntry.getKey();
 			if (!key.endsWith("_shop")) continue;
-			String name = key.split("_shop")[0].toUpperCase();
+			String name = key.split("_shop")[0].toUpperCase(Locale.ROOT);
 			if (!loreMap.containsKey(name)) {
 				loreMap.put(name, new EssenceShop().setName(name).setCurrent(0));
 			}
@@ -99,7 +100,7 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 			value.name = jsonObject
 				.get("displayname")
 				.getAsString();
-			String name = key.toLowerCase() + "_shop";
+			String name = key.toLowerCase(Locale.ROOT) + "_shop";
 			if (!essenceShopTask.has(name)) continue;
 			value.max = essenceShopTask.get(name).getAsInt();
 			lore.add(levelPage.buildLore(

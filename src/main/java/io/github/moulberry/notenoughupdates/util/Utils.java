@@ -673,7 +673,7 @@ public class Utils {
 	}
 
 	public static String prettyCase(String str) {
-		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+		return str.substring(0, 1).ToUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT);
 	}
 
 	public static String getRarityFromInt(int rarity) {

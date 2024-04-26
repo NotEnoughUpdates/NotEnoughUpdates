@@ -190,7 +190,7 @@ public class RiftPage extends GuiProfileViewerPage {
 
 				List<String> displayNames = new ArrayList<>();
 				for (JsonElement jsonElement : timecharm) {
-					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString().toUpperCase();
+					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString().ToUpperCase(Locale.ROOT);
 					ItemStack timecharmItem = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
 						"RIFT_TROPHY_" + timecharmType).resolveToItemStack();
 					if (timecharmItem != null) {

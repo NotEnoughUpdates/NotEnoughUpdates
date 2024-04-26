@@ -719,13 +719,13 @@ public class GuiProfileViewer extends GuiScreen {
 
 		boolean selected = Objects.equals(Minecraft.getMinecraft().thePlayer.getName(), playerName);
 		if (selected == renderCurrent) {
-			renderRecentPlayer(Minecraft.getMinecraft().thePlayer.getName().toLowerCase(), 0, selected);
+			renderRecentPlayer(Minecraft.getMinecraft().thePlayer.getName().toLowerCase(Locale.ROOT), 0, selected);
 		}
 
 		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
 
 		for (int i = 0; i < previousProfileSearches.size(); i++) {
-			selected = Objects.equals(previousProfileSearches.get(i), playerName.toLowerCase());
+			selected = Objects.equals(previousProfileSearches.get(i), playerName.toLowerCase(Locale.ROOT));
 			if (selected == renderCurrent) {
 				renderRecentPlayer(previousProfileSearches.get(i), i + 1, selected);
 			}
@@ -827,7 +827,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 		if (mouseX > x && mouseX < x + 29) {
 			if (mouseY > y && mouseY < y + 28) {
-				if (!playerName.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) {
+				if (!playerName.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase(Locale.ROOT))) {
 					NotEnoughUpdates.profileViewer.loadPlayerByName(Minecraft.getMinecraft().thePlayer.getName(), profile -> {
 						profile.resetCache();
 						NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
@@ -988,7 +988,7 @@ public class GuiProfileViewer extends GuiScreen {
 			renderGoldBar(x, y + 6, xSize);
 		} else {
 			if ((skillName.contains("Catacombs") || Weight.DUNGEON_CLASS_NAMES.stream().anyMatch(e -> skillName
-				.toLowerCase()
+				.toLowerCase(Locale.ROOT)
 				.contains(e))) && levelObj.level >= 50) {
 				renderGoldBar(x, y + 6, xSize);
 			} else {
@@ -1003,7 +1003,7 @@ public class GuiProfileViewer extends GuiScreen {
 				if (skillName.contains("Catacombs")) {
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
 						StringUtils.formatNumber(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
-						StringUtils.formatToTenths(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
+						StringUtils.formatToTenths(getPercentage(skillName.toLowerCase(Locale.ROOT), levelObj)) + "% to 50)";
 				}
 				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {

@@ -191,7 +191,7 @@ public class DungeonWin {
 				if (matcher.find()) {
 					lastDungeonFinish = currentTime;
 					String score = matcher.group(1);
-					switch (score.toUpperCase()) {
+					switch (score.ToUpperCase(Locale.ROOT)) {
 						case "S+":
 							TEAM_SCORE = SPLUS;
 							break;

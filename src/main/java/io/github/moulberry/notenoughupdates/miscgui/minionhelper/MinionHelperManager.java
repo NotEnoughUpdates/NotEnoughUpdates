@@ -123,7 +123,7 @@ public class MinionHelperManager {
 	}
 
 	public String formatInternalName(String minionName) {
-		return minionName.toUpperCase().replace(" ", "_");
+		return minionName.ToUpperCase(Locale.ROOT).replace(" ", "_");
 	}
 
 	private List<Minion> getChildren(Minion minion) {

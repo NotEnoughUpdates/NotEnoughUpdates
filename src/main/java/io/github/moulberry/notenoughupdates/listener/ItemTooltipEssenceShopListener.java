@@ -59,7 +59,7 @@ public class ItemTooltipEssenceShopListener {
 					int amount = Integer.parseInt(rawNumber);
 					String type = matcher.group(2);
 
-					String essenceName = "ESSENCE_" + type.toUpperCase();
+					String essenceName = "ESSENCE_" + type.ToUpperCase(Locale.ROOT);
 					JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo(essenceName);
 
 					if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {

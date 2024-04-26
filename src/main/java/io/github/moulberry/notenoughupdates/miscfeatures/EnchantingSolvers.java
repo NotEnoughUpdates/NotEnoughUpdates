@@ -498,7 +498,7 @@ public class EnchantingSolvers {
 							if (display.hasKey("Lore", 9)) {
 								NBTTagList list = display.getTagList("Lore", 8);
 								for (int i = 0; i < list.tagCount(); i++) {
-									if (list.getStringTagAt(i).toLowerCase().contains("powerup")) {
+									if (list.getStringTagAt(i).toLowerCase(Locale.ROOT).contains("powerup")) {
 										powerupMatches.add(index);
 										continue out;
 									}
