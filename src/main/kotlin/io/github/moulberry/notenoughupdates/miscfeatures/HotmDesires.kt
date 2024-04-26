@@ -39,6 +39,8 @@ object HotmDesires {
     val powderRequirementText = "§.([0-9,]+) .* Powder".toPattern()
     val youArePoorText = "§cYou don't have enough (.*) Powder!".toPattern()
 
+    val lastPowder = mutableMapOf<String, Int>()
+
     @KSerializable
     data class Desire(
         val name: String,
@@ -72,6 +74,8 @@ object HotmDesires {
                 val powderCount = group(2).replace(",", "").toInt()
                 powderKind to powderCount
             } ?: continue
+            if (lastPowder[powderKind] == powderCount) continue
+            lastPowder[powderKind] = powderCount
             val goal = desireMap[powderKind] ?: continue
             if (goal.powderRequirement > powderCount) continue
             desireMap.remove(powderKind)
