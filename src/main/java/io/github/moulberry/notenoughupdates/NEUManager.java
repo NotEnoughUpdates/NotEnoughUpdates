@@ -683,7 +683,7 @@ public class NEUManager {
 			results.addAll(new TreeSet<>(search(query, loreWordMap)));
 		} else if (query.startsWith("id:")) {
 			query = query.substring(3);
-			results.addAll(new TreeSet<>(subMapWithKeysThatAreSuffixes(query.ToUpperCase(Locale.ROOT), itemMap).keySet()));
+			results.addAll(new TreeSet<>(subMapWithKeysThatAreSuffixes(query.toUpperCase(Locale.ROOT), itemMap).keySet()));
 		} else {
 			if (!query.trim().contains(" ")) {
 				StringBuilder sb = new StringBuilder();

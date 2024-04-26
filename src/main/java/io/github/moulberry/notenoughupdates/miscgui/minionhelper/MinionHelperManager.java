@@ -40,6 +40,7 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @NEUAutoSubscribe
@@ -123,7 +124,7 @@ public class MinionHelperManager {
 	}
 
 	public String formatInternalName(String minionName) {
-		return minionName.ToUpperCase(Locale.ROOT).replace(" ", "_");
+		return minionName.toUpperCase(Locale.ROOT).replace(" ", "_");
 	}
 
 	private List<Minion> getChildren(Minion minion) {

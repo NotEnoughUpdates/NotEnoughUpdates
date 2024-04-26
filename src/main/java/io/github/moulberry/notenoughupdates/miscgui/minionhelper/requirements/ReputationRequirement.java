@@ -22,6 +22,8 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
+import java.util.Locale;
+
 public class ReputationRequirement extends MinionRequirement {
 
 	private final String reputationType;

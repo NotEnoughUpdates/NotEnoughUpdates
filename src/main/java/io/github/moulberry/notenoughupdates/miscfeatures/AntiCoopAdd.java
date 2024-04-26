@@ -33,6 +33,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.Locale;
+
 @NEUAutoSubscribe
 public class AntiCoopAdd {
 

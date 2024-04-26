@@ -40,6 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -182,7 +183,7 @@ public class PlayerStats {
 
 		int petScore = 0;
 		for (String value : highestRarityMap.values()) {
-			petScore += Utils.getElementAsFloat(Utils.getElement(bonuses, "pet_value." + value.ToUpperCase(Locale.ROOT)), 0);
+			petScore += Utils.getElementAsFloat(Utils.getElement(bonuses, "pet_value." + value.toUpperCase(Locale.ROOT)), 0);
 		}
 		return petScore;
 	}
@@ -664,7 +665,7 @@ public class PlayerStats {
 			return null;
 		}
 		String selectedPower = profileInfo.get(abs).getAsJsonObject().get("selected_power").getAsString();
-		return selectedPower.substring(0, 1).ToUpperCase(Locale.ROOT) + selectedPower.substring(1);
+		return selectedPower.substring(0, 1).toUpperCase(Locale.ROOT) + selectedPower.substring(1);
 	}
 
 	public static @Nullable QuiverInfo getQuiverInfo(Map<String, JsonArray> inventoryInfo, JsonObject profileInfo) {

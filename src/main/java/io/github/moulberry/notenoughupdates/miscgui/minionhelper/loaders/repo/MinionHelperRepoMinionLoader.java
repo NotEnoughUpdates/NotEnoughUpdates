@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.Sl
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;

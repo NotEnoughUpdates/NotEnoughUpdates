@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -396,7 +397,7 @@ public class GuiCustomEnchant extends Gui {
 									}
 									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
 									if (levelMatcher.matches()) {
-										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).ToUpperCase(Locale.ROOT));
+										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase(Locale.ROOT));
 										enchId = levelMatcher.group(1);
 									}
 									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,

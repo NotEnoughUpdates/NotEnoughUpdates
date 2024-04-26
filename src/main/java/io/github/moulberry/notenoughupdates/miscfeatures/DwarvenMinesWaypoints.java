@@ -43,6 +43,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

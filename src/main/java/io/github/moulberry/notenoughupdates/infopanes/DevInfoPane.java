@@ -670,7 +670,7 @@ public class DevInfoPane extends TextInfoPane {
 			for (String bukkit : bukkitList) {
 				String internalname = bukkit.split("@")[0];
 				if (true || !manager.getItemInformation().containsKey(internalname)) {
-					String vanilla = internalname.toLowerCase(Locale.ROOT).replace("_item", "");
+					String vanilla = internalname.toLowerCase().replace("_item", "");
 					if (bukkit.contains("@")) {
 						vanilla = bukkit.split("@")[1];
 					}

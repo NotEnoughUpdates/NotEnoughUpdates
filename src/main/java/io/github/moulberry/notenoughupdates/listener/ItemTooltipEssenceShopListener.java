@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,7 +60,7 @@ public class ItemTooltipEssenceShopListener {
 					int amount = Integer.parseInt(rawNumber);
 					String type = matcher.group(2);
 
-					String essenceName = "ESSENCE_" + type.ToUpperCase(Locale.ROOT);
+					String essenceName = "ESSENCE_" + type.toUpperCase(Locale.ROOT);
 					JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo(essenceName);
 
 					if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {

@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.mbgui;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 public class MBAnchorPoint implements Serializable {
 	public enum AnchorPoint {
@@ -59,7 +60,7 @@ public class MBAnchorPoint implements Serializable {
 
 		try {
 			String[] split = str.split(":");
-			AnchorPoint point = AnchorPoint.valueOf(split[0].ToUpperCase(Locale.ROOT));
+			AnchorPoint point = AnchorPoint.valueOf(split[0].toUpperCase(Locale.ROOT));
 			Vector2f pos = new Vector2f(Float.parseFloat(split[1]), Float.parseFloat(split[2]));
 			return new MBAnchorPoint(point, pos, Boolean.parseBoolean(split[3]));
 		} catch (Exception e) {

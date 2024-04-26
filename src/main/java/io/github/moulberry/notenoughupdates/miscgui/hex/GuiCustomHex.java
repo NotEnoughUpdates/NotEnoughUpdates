@@ -72,6 +72,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -116,7 +117,7 @@ public class GuiCustomHex extends Gui {
 				}
 			}
 			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(
-				(isUlt ? "ULTIMATE_" : "") + enchId.ToUpperCase(Locale.ROOT) + ";" + level);
+				(isUlt ? "ULTIMATE_" : "") + enchId.toUpperCase(Locale.ROOT) + ";" + level);
 			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
 			}
@@ -493,7 +494,7 @@ public class GuiCustomHex extends Gui {
 									}
 									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
 									if (levelMatcher.matches()) {
-										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).ToUpperCase(Locale.ROOT));
+										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase(Locale.ROOT));
 										enchId = levelMatcher.group(1);
 									}
 									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
@@ -798,7 +799,7 @@ public class GuiCustomHex extends Gui {
 						if (ea != null) {
 							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 							if (enchantments != null) {
-								String itemId = Utils.cleanColour(book.getDisplayName()).ToUpperCase(Locale.ROOT).replace(" ", "_").replace(
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase(Locale.ROOT).replace(" ", "_").replace(
 									"-",
 									"_"
 								);
@@ -1040,7 +1041,7 @@ public class GuiCustomHex extends Gui {
 						if (ea != null) {
 							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 							if (enchantments != null) {
-								String itemId = Utils.cleanColour(book.getDisplayName()).ToUpperCase(Locale.ROOT).replace(" ", "_").replace(
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase(Locale.ROOT).replace(" ", "_").replace(
 									"-",
 									"_"
 								);
@@ -1187,7 +1188,7 @@ public class GuiCustomHex extends Gui {
 						if (ea != null) {
 							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 							if (enchantments != null) {
-								String itemId = Utils.cleanColour(book.getDisplayName()).ToUpperCase(Locale.ROOT).replace(" ", "_").replace(
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase(Locale.ROOT).replace(" ", "_").replace(
 									"-",
 									"_"
 								);

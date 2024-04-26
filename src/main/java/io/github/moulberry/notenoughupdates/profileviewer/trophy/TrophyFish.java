@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.trophy;
 
+import java.util.Locale;
 import java.util.Map;
 
 public class TrophyFish {
