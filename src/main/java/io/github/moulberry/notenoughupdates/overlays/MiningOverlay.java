@@ -926,7 +926,7 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Umber Collector", "UMBER");
 				addItem("Tungsten Collector", "TUNGSTEN");
 				addItem("Glacite Collector", "GLACITE");
-				addItem("Maniac Slayer", "GLACITE");
+				addItem("Maniac Slayer", "GLACITE_MUTT_MONSTER");
 			}
 
 			private void addItem(String eventName, String internalName) {
