@@ -67,6 +67,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.common.Loader;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -1241,7 +1242,7 @@ public class Utils {
 		var width = fr.getStringWidth(str);
 		float scale = ((float) availableSpace) / width;
 		GlStateManager.scale(scale, scale, 1f);
-		fr.drawString(str,  -width / 2F, 0, colour, shadow);
+		fr.drawString(str, -width / 2F, 0, colour, shadow);
 		GlStateManager.popMatrix();
 	}
 
@@ -2342,10 +2343,27 @@ public class Utils {
 		return username;
 	}
 
-	public static void addChatMessage(String message) {
+	public static void addChatMessage(@NotNull String message) {
+		addChatMessage(new ChatComponentText(message));
+	}
+
+	public static void addClickableChatMessage(
+		@NotNull String message,
+		@NotNull String command,
+		@Nullable String hoverText
+	) {
+		if (hoverText == null)
+			hoverText = "§eClick to run §a" + command;
+		addChatMessage(new ChatComponentText(message)
+			.setChatStyle(new ChatStyle()
+				.setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverText)))));
+	}
+
+	public static void addChatMessage(@NotNull IChatComponent message) {
 		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
 		if (thePlayer != null) {
-			thePlayer.addChatMessage(new ChatComponentText(message));
+			thePlayer.addChatMessage(message);
 		} else {
 			System.out.println(message);
 		}
