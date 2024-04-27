@@ -296,8 +296,12 @@ public class GuiCustomHex extends Gui {
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
+		ItemStack bookStack = cc.getLowerChestInventory().getStackInSlot(32);
 		CalendarOverlay.ableToClickCalendar =
 			!(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
+		if (bookStack != null && bookStack.getItem() == Items.book) {
+			shouldOverrideGemstones = false;
+		}
 		if (hexStack != null && hexStack.getItem() == Items.experience_bottle)
 			return (shouldOverrideET || shouldOverrideFast);
 		if (!shouldOverrideFast && !shouldOverrideET && !shouldOverrideGemstones && !shouldOverrideXp) {
@@ -3076,6 +3080,14 @@ public class GuiCustomHex extends Gui {
 
 			} else if (item.itemType == ItemType.OPAL_GEMSTONE) {
 				levelStr = "❂";
+			} else if (item.itemType == ItemType.ONYX_GEMSTONE) {
+				levelStr = "☠";
+			} else if (item.itemType == ItemType.AQUAMARINE_GEMSTONE) {
+				levelStr = "α";
+			} else if (item.itemType == ItemType.CITRINE_GEMSTONE) {
+				levelStr = "☘";
+			} else if (item.itemType == ItemType.PERIDOT_GEMSTONE) {
+				levelStr = "☘";
 			}
 		} else {
 			levelStr = "?";
