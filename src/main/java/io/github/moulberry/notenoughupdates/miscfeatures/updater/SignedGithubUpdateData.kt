@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures.updater
 import com.google.gson.JsonElement
 import moe.nea.libautoupdate.GithubReleaseUpdateSource.GithubRelease
 import moe.nea.libautoupdate.UpdateData
+import moe.nea.libautoupdate.UpdateUtils
 import java.io.ByteArrayInputStream
 import java.net.URL
 
@@ -61,7 +62,7 @@ class SignedGithubUpdateData(
 
     private fun verifySignature(signatureDownload: GithubRelease.Download): Boolean {
         val name = signatureDownload.name.substringBeforeLast('.').substringAfterLast("_")
-        val signatureBytes = URL(signatureDownload.browserDownloadUrl).openStream().readBytes()
+        val signatureBytes = UpdateUtils.openUrlConnection(URL(signatureDownload.browserDownloadUrl)).readBytes()
         val hashBytes = ByteArrayInputStream(sha256.uppercase().encodeToByteArray())
         return SigningPool.verifySignature(name, hashBytes, signatureBytes)
     }
