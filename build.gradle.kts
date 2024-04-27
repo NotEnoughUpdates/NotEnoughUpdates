@@ -227,6 +227,7 @@ tasks.withType(Jar::class) {
 		this["FMLCorePluginContainsFMLMod"] = "true"
 		this["ForceLoadAsMod"] = "true"
 		this["Manifest-Version"] = "1.0"
+		this["FMLAT"] = "accesstransformer.cfg"
 	}
 }
 
