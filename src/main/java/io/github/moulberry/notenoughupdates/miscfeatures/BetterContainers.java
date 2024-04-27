@@ -47,6 +47,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 
 @NEUAutoSubscribe
 public class BetterContainers {
@@ -132,7 +133,7 @@ public class BetterContainers {
 		GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 		ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 		String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-		return containerName.toLowerCase().trim().startsWith("navigate the maze");
+		return containerName.toLowerCase(Locale.ROOT).trim().startsWith("navigate the maze");
 	}
 
 	public static boolean isOverriding() {

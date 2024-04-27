@@ -43,6 +43,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -226,17 +227,17 @@ public class DwarvenMinesWaypoints {
 				}
 			}
 		}
-		String skyblockLocation = SBInfo.getInstance().location.toLowerCase();
+		String skyblockLocation = SBInfo.getInstance().location.toLowerCase(Locale.ROOT);
 		if (locWaypoint >= 1) {
 			for (Map.Entry<String, Vector3f> entry : waypointsMap.entrySet()) {
 				if (locWaypoint >= 2) {
 					RenderUtils.renderWayPoint(EnumChatFormatting.AQUA + entry.getKey(), entry.getValue(), event.partialTicks);
 				} else {
-					String commissionLocation = entry.getKey().toLowerCase();
+					String commissionLocation = entry.getKey().toLowerCase(Locale.ROOT);
 					for (String commissionName : MiningOverlay.commissionProgress.keySet()) {
 						if (NotEnoughUpdates.INSTANCE.config.mining.hideWaypointIfAtLocation)
 							if (commissionLocation.replace("'", "").equals(skyblockLocation)) continue;
-						if (commissionName.toLowerCase().contains(commissionLocation)) {
+						if (commissionName.toLowerCase(Locale.ROOT).contains(commissionLocation)) {
 							if (commissionName.contains("Titanium")) {
 								RenderUtils.renderWayPoint(
 									EnumChatFormatting.WHITE + entry.getKey(),

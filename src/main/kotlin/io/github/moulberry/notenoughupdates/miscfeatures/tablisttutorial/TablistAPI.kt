@@ -75,7 +75,7 @@ object TablistAPI {
         if (addToQueue &&
             list.isEmpty() &&
             sawReset &&
-            (System.nanoTime() - lastWorldSwitch > 10_000_000L) &&
+            (System.nanoTime() - lastWorldSwitch > 10_000_000_000L) &&
             widget.widgetName != lastWidgetEnabled
         ) {
             TablistTaskQueue.addToQueue(widget, showNotification)

@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -836,7 +837,7 @@ public class MiningOverlay extends TextTabOverlay {
 				icon = miningOverlayCommissionItems.get("Mithril");
 			} else if (beforeColon.endsWith(" Gemstone Collector")) {
 				String gemName = "ROUGH_"
-					+ beforeColon.replace(" Gemstone Collector", "").toUpperCase() + "_GEM";
+					+ beforeColon.replace(" Gemstone Collector", "").toUpperCase(Locale.ROOT) + "_GEM";
 				if (miningOverlayRoughGems.containsKey(gemName)) {
 					icon = miningOverlayRoughGems.get(gemName);
 				} else {
@@ -847,7 +848,7 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			} else if (beforeColon.endsWith(" Crystal Hunter")) {
 				String gemName = "PERFECT_"
-					+ beforeColon.replace(" Crystal Hunter", "").toUpperCase() + "_GEM";
+					+ beforeColon.replace(" Crystal Hunter", "").toUpperCase(Locale.ROOT) + "_GEM";
 				if (miningOverlayPerfectGems.containsKey(gemName)) {
 					icon = miningOverlayPerfectGems.get(gemName);
 				} else {

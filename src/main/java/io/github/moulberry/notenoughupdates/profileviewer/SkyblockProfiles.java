@@ -58,6 +58,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -925,7 +926,7 @@ public class SkyblockProfiles {
 					}
 				} else {
 					skillExperience += Utils.getElementAsFloat(
-						Utils.getElement(profileJson, "player_data.experience.SKILL_" + skillName.toUpperCase()),
+						Utils.getElement(profileJson, "player_data.experience.SKILL_" + skillName.toUpperCase(Locale.ROOT)),
 						0
 					);
 				}

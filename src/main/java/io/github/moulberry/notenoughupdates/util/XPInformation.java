@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,8 +79,8 @@ public class XPInformation {
 	}
 
 	public @Nullable SkillInfo getSkillInfo(String skillName, boolean isHighlyInterested) {
-		var obj = skillInfoMap.get(skillName.toLowerCase());
-		if (isHighlyInterested && failedSkills.contains(skillName.toLowerCase())) {
+		var obj = skillInfoMap.get(skillName.toLowerCase(Locale.ROOT));
+		if (isHighlyInterested && failedSkills.contains(skillName.toLowerCase(Locale.ROOT))) {
 			TablistAPI.getWidgetLines(TablistAPI.WidgetNames.SKILLS);
 		}
 		return obj;
@@ -130,7 +131,7 @@ public class XPInformation {
 					skillInfo.level++;
 				}
 
-				skillInfoMap.put(skillS.toLowerCase(), skillInfo);
+				skillInfoMap.put(skillS.toLowerCase(Locale.ROOT), skillInfo);
 				return;
 			} else {
 				matcher = SKILL_PATTERN_PERCENTAGE.matcher(component);
@@ -139,11 +140,11 @@ public class XPInformation {
 					String xpPercentageS = matcher.group(3).replace(",", "");
 
 					float xpPercentage = Float.parseFloat(xpPercentageS);
-					if (updateWithPercentage.containsKey(skillS.toLowerCase())) {
-						failedSkills.add(skillS.toLowerCase());
+					if (updateWithPercentage.containsKey(skillS.toLowerCase(Locale.ROOT))) {
+						failedSkills.add(skillS.toLowerCase(Locale.ROOT));
 					}
-					updateWithPercentage.put(skillS.toLowerCase(), xpPercentage);
-					increment.put(skillS.toLowerCase(), Float.parseFloat(matcher.group(1).replace(",", "")));
+					updateWithPercentage.put(skillS.toLowerCase(Locale.ROOT), xpPercentage);
+					increment.put(skillS.toLowerCase(Locale.ROOT), Float.parseFloat(matcher.group(1).replace(",", "")));
 				} else {
 					matcher = SKILL_PATTERN_MULTIPLIER.matcher(component);
 
@@ -183,7 +184,7 @@ public class XPInformation {
 							skillInfo.level++;
 						}
 
-						skillInfoMap.put(skillS.toLowerCase(), skillInfo);
+						skillInfoMap.put(skillS.toLowerCase(Locale.ROOT), skillInfo);
 						return;
 					}
 				}
@@ -213,7 +214,7 @@ public class XPInformation {
 			var amountAsNumber = amount != null ? Double.parseDouble(amount.replace(",", "")) : null;
 			var isMax = matcher.group("max") != null;
 			// TODO: use this extra information for good (not evil)
-			updateLevel(type.toLowerCase(), level);
+			updateLevel(type.toLowerCase(Locale.ROOT), level);
 		}
 	}
 
@@ -239,8 +240,8 @@ public class XPInformation {
 				}
 			}
 
-			SkillInfo oldSkillInfo = skillInfoMap.get(skill.toLowerCase());
-			float inc = increment.getOrDefault(skill.toLowerCase(), 0F);
+			SkillInfo oldSkillInfo = skillInfoMap.get(skill.toLowerCase(Locale.ROOT));
+			float inc = increment.getOrDefault(skill.toLowerCase(Locale.ROOT), 0F);
 			if (oldSkillInfo != null && oldSkillInfo.totalXp + inc > newSkillInfo.totalXp && oldSkillInfo.totalXp - inc * 5 < newSkillInfo.totalXp) {
 				SkillInfo incrementedSkillInfo = new SkillInfo();
 				incrementedSkillInfo.totalXp = oldSkillInfo.totalXp + inc;
@@ -253,11 +254,11 @@ public class XPInformation {
 					incrementedSkillInfo.level < levelingArray.size() && incrementedSkillInfo.level >= 0
 						? levelingArray.get(incrementedSkillInfo.level).getAsFloat()
 						: 0F;
-				skillInfoMap.put(skill.toLowerCase(), incrementedSkillInfo);
+				skillInfoMap.put(skill.toLowerCase(Locale.ROOT), incrementedSkillInfo);
 			} else {
-				skillInfoMap.put(skill.toLowerCase(), newSkillInfo);
+				skillInfoMap.put(skill.toLowerCase(Locale.ROOT), newSkillInfo);
 			}
-			failedSkills.remove(skill.toLowerCase());
+			failedSkills.remove(skill.toLowerCase(Locale.ROOT));
 		}
 		updateWithPercentage.clear();
 	}
