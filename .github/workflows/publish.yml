@@ -23,7 +23,10 @@ jobs:
       - name: Set up gradle cache
         uses: gradle/gradle-build-action@v2
       - name: Build with Gradle
-        run: ./gradlew clean test includeBackupRepo remapJar --no-daemon
+        run: |
+          ./gradlew clean
+          ./gradlew includeBackupRepo
+          ./gradlew test remapJar
         env:
           NEU_RELEASE: true
       - uses: actions/upload-artifact@v3
