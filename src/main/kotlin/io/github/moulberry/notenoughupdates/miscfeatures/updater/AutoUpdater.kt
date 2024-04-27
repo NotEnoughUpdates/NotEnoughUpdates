@@ -30,6 +30,7 @@ import moe.nea.libautoupdate.UpdateContext
 import moe.nea.libautoupdate.UpdateTarget
 import net.minecraft.client.Minecraft
 import net.minecraft.event.ClickEvent
+import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -89,14 +90,16 @@ object AutoUpdater {
                 potentialUpdate = it
                 if (it.isUpdateAvailable) {
                     updateState = UpdateState.AVAILABLE
-                    Minecraft.getMinecraft().thePlayer?.addChatMessage(ChatComponentText("§e[NEU] §aNEU found a new update: ${it.update.versionName}. Click here to automatically install this update.").apply {
-                        this.chatStyle = this.chatStyle.setChatClickEvent(
-                            ClickEvent(
-                                ClickEvent.Action.RUN_COMMAND,
-                                "/neuinternalupdatenow"
+                    if (Launch.blackboard["fml.deobfuscatedEnvironment"] != true) {
+                        Minecraft.getMinecraft().thePlayer?.addChatMessage(ChatComponentText("§e[NEU] §aNEU found a new update: ${it.update.versionName}. Click here to automatically install this update.").apply {
+                            this.chatStyle = this.chatStyle.setChatClickEvent(
+                                ClickEvent(
+                                    ClickEvent.Action.RUN_COMMAND,
+                                    "/neuinternalupdatenow"
+                                )
                             )
-                        )
-                    })
+                        })
+                    }
                 }
             }, MinecraftExecutor.OnThread)
     }
