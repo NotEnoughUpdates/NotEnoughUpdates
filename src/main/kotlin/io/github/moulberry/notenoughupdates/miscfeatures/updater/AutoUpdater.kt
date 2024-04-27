@@ -22,12 +22,10 @@ package io.github.moulberry.notenoughupdates.miscfeatures.updater
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
+import io.github.moulberry.notenoughupdates.util.ApiUtil
 import io.github.moulberry.notenoughupdates.util.MinecraftExecutor
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
-import moe.nea.libautoupdate.CurrentVersion
-import moe.nea.libautoupdate.PotentialUpdate
-import moe.nea.libautoupdate.UpdateContext
-import moe.nea.libautoupdate.UpdateTarget
+import moe.nea.libautoupdate.*
 import net.minecraft.client.Minecraft
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
@@ -36,6 +34,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.apache.logging.log4j.LogManager
 import java.util.concurrent.CompletableFuture
+import javax.net.ssl.HttpsURLConnection
 
 @NEUAutoSubscribe
 object AutoUpdater {
@@ -45,6 +44,15 @@ object AutoUpdater {
         CurrentVersion.ofTag(NotEnoughUpdates.VERSION.substringBefore("+")),
         "notenoughupdates"
     )
+
+    init {
+        UpdateUtils.patchConnection {
+            if (it is HttpsURLConnection) {
+                ApiUtil.patchHttpsRequest(it)
+            }
+        }
+    }
+
     val logger = LogManager.getLogger("NEUUpdater")
     private var activePromise: CompletableFuture<*>? = null
         set(value) {
@@ -80,6 +88,11 @@ object AutoUpdater {
         logger.info("Starting update check")
         val updateStream = config.updateStream.get()
         activePromise = updateContext.checkUpdate(updateStream.stream)
+            .thenApplyAsync({
+                if (it.isUpdateAvailable)
+                    (it.update as? SignedGithubUpdateData)?.verifyAnySignature()
+                it
+            }, MinecraftExecutor.OffThread)
             .thenAcceptAsync({
                 logger.info("Update check completed")
                 if (updateState != UpdateState.NONE) {
@@ -88,6 +101,10 @@ object AutoUpdater {
                 }
                 potentialUpdate = it
                 if (it.isUpdateAvailable) {
+                    if ((it.update as? SignedGithubUpdateData)?.verifyAnySignature() != true) {
+                        logger.error("Found unsigned github update: ${it.update}")
+                        return@thenAcceptAsync
+                    }
                     updateState = UpdateState.AVAILABLE
                     Minecraft.getMinecraft().thePlayer?.addChatMessage(ChatComponentText("§e[NEU] §aNEU found a new update: ${it.update.versionName}. Click here to automatically install this update.").apply {
                         this.chatStyle = this.chatStyle.setChatClickEvent(

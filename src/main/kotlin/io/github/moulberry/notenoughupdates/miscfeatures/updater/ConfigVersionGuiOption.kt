@@ -62,7 +62,7 @@ class ConfigVersionGuiOption(option: ProcessedOption) : GuiOptionEditor(option) 
         GlStateManager.scale(2F, 2F, 1F)
         TextRenderUtils.drawStringCenteredScaledMaxWidth(
             "${if (AutoUpdater.updateState == AutoUpdater.UpdateState.NONE) GREEN else RED}${AutoUpdater.getCurrentVersion()}" +
-                    if (nextVersion != null) "➜ ${GREEN}${nextVersion}" else "",
+                    if (nextVersion != null && AutoUpdater.updateState != AutoUpdater.UpdateState.NONE) "➜ ${GREEN}${nextVersion}" else "",
             widthRemaining / 4F,
             10F,
             true,

@@ -163,7 +163,7 @@ dependencies {
 	"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
 
 	shadowImplementation("com.mojang:brigadier:1.0.18")
-	shadowImplementation("moe.nea:libautoupdate:1.2.0")
+	shadowImplementation("moe.nea:libautoupdate:1.3.1")
 
 	mixinRTDependencies("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 		isTransitive = false // Dependencies of mixin are already bundled by minecraft
@@ -227,6 +227,7 @@ tasks.withType(Jar::class) {
 		this["FMLCorePluginContainsFMLMod"] = "true"
 		this["ForceLoadAsMod"] = "true"
 		this["Manifest-Version"] = "1.0"
+		this["FMLAT"] = "accesstransformer.cfg"
 	}
 }
 
