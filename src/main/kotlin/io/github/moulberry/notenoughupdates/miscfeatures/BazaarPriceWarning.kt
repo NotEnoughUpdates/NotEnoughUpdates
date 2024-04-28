@@ -70,7 +70,7 @@ class BazaarPriceWarning : WarningPopUp() {
         return getLore().firstOrNull() ?: "<unknown>"
     }
 
-    override fun getWarningLines(): List<String> {
+    override fun getWarningLines(): List<§1String> {
         return listOf("will cost you §6${StringUtils.formatNumber(price)}§r coins")
     }
 
