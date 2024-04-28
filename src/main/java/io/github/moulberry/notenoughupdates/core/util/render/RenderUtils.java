@@ -26,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -417,7 +418,14 @@ public class RenderUtils {
 		renderWayPoint(Arrays.asList(""), new Vector3f(loc.getX(), loc.getY(), loc.getZ()), partialTicks, true);
 	}
 
-	public static void drawFilledQuadWithTexture(Vec3 p1, Vec3 p2, Vec3 p3, Vec3 p4, float alpha, ResourceLocation texture) {
+	public static void drawFilledQuadWithTexture(
+		Vec3 p1,
+		Vec3 p2,
+		Vec3 p3,
+		Vec3 p4,
+		float alpha,
+		ResourceLocation texture
+	) {
 		GlStateManager.pushMatrix();
 		Entity v = Minecraft.getMinecraft().getRenderViewEntity();
 		double vX = v.lastTickPosX + (v.posX - v.lastTickPosX);
@@ -433,10 +441,10 @@ public class RenderUtils {
 		GlStateManager.color(1.0f, 1.0f, 1.0f, alpha);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		worldrenderer.pos(p1.xCoord-vX, p1.yCoord-vY, p1.zCoord-vZ).tex(0, 0).endVertex(); //Top Left
-		worldrenderer.pos(p2.xCoord-vX, p2.yCoord-vY, p2.zCoord-vZ).tex(1, 0).endVertex(); //Top Right
-		worldrenderer.pos(p3.xCoord-vX, p3.yCoord-vY, p3.zCoord-vZ).tex(1, 1).endVertex(); //Bottom Right
-		worldrenderer.pos(p4.xCoord-vX, p4.yCoord-vY, p4.zCoord-vZ).tex(0, 1).endVertex(); //Bottom Left
+		worldrenderer.pos(p1.xCoord - vX, p1.yCoord - vY, p1.zCoord - vZ).tex(0, 0).endVertex(); //Top Left
+		worldrenderer.pos(p2.xCoord - vX, p2.yCoord - vY, p2.zCoord - vZ).tex(1, 0).endVertex(); //Top Right
+		worldrenderer.pos(p3.xCoord - vX, p3.yCoord - vY, p3.zCoord - vZ).tex(1, 1).endVertex(); //Bottom Right
+		worldrenderer.pos(p4.xCoord - vX, p4.yCoord - vY, p4.zCoord - vZ).tex(0, 1).endVertex(); //Bottom Left
 		tessellator.draw();
 		GlStateManager.enableCull();
 		GlStateManager.popMatrix();
@@ -539,4 +547,44 @@ public class RenderUtils {
 
 		if (lightingState) GlStateManager.enableLighting();
 	}
+
+	public static void renderLineToBlock(BlockPos block, int rgb, float partialTicks) {
+		Minecraft mc = Minecraft.getMinecraft();
+		Entity renderViewEntity = mc.getRenderViewEntity();
+
+		double cameraX = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX);
+		double cameraY = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY);
+		double cameraZ = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ);
+
+		GlStateManager.disableTexture2D();
+		GlStateManager.disableDepth();
+		GlStateManager.disableLighting();
+		GlStateManager.disableCull();
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_LINE_SMOOTH);
+		GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+		GL11.glLineWidth(3.0F);
+
+		GlStateManager.color(
+			((rgb >> 16) & 0xFF) / 255.0f,
+			((rgb >> 8) & 0xFF) / 255.0f,
+			(rgb & 0xFF) / 255.0f,
+			1.0f
+		);
+
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+		worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+		worldRenderer.pos(0, renderViewEntity.getEyeHeight(), 0).endVertex();
+		worldRenderer.pos(block.getX() + 0.5 - cameraX, block.getY() - cameraY, block.getZ() + 0.5 - cameraZ).endVertex();
+		tessellator.draw();
+
+		GlStateManager.enableTexture2D();
+		GlStateManager.enableDepth();
+		GlStateManager.enableCull();
+		GlStateManager.disableBlend();
+		GlStateManager.enableLighting();
+	}
+
 }
