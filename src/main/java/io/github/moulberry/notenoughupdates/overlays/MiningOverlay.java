@@ -640,6 +640,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
 			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
 			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
+			if (name.equals("Maniac Slayer")) return "Kill mobs in a Glacite Mineshaft";
 
 		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
 			if (name.equals("Chest Looter")) return "Open 3 chests";
@@ -925,6 +926,7 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Umber Collector", "UMBER");
 				addItem("Tungsten Collector", "TUNGSTEN");
 				addItem("Glacite Collector", "GLACITE");
+				addItem("Maniac Slayer", "GLACITE_MUTT_MONSTER");
 			}
 
 			private void addItem(String eventName, String internalName) {
