@@ -26,7 +26,10 @@ import moe.nea.lisp.LispAst
 import moe.nea.lisp.LispParser
 
 @KSerializable
-data class HotmTreeLayoutFile(val hotm: HotmTreeLayout)
+data class HotmTreeLayoutFile(
+    val hotm: HotmTreeLayout,
+    val prelude: List<String> = listOf()
+)
 
 @KSerializable
 data class HotmTreeLayout(

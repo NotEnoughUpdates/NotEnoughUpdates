@@ -40,7 +40,7 @@ class HotmTreeTest {
                 val hotmLayoutFile = NotEnoughUpdates.INSTANCE.manager.repoLocation
                     .resolve("constants/hotmlayout.json")
                 val hotmLayout = gson.fromJson(hotmLayoutFile.readText(), HotmTreeLayoutFile::class.java)
-                NotEnoughUpdates.INSTANCE.openGui = HotmTreeScreen(hotmLayout.hotm)
+                NotEnoughUpdates.INSTANCE.openGui = HotmTreeScreen(hotmLayout.hotm, hotmLayout.prelude)
             }
         }
     }

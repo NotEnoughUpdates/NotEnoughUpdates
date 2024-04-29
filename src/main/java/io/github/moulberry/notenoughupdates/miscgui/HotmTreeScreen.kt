@@ -23,11 +23,12 @@ import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils
 import io.github.moulberry.notenoughupdates.util.Utils
 import moe.nea.lisp.LispData
 import moe.nea.lisp.LispExecutionContext
+import moe.nea.lisp.LispParser
 import moe.nea.lisp.bind.AutoBinder
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
 
-class HotmTreeScreen(val hotmLayout: HotmTreeLayout) : GuiScreen() {
+class HotmTreeScreen(val hotmLayout: HotmTreeLayout, val prelude: List<String>) : GuiScreen() {
     val levels = mutableMapOf<String, Int>()
     var lastMouse = false
     val lec = LispExecutionContext()
@@ -35,6 +36,9 @@ class HotmTreeScreen(val hotmLayout: HotmTreeLayout) : GuiScreen() {
     init {
         lec.setupStandardBindings()
         AutoBinder().bindTo(ExtraLispMethods(), lec.rootStackFrame)
+        prelude.forEachIndexed { index, it ->
+            lec.executeProgram(lec.rootStackFrame, LispParser.parse("hotmlayout.json:prelude[$index]", it))
+        }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
