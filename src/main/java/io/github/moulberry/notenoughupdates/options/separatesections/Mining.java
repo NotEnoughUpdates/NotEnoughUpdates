@@ -186,7 +186,7 @@ public class Mining {
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"§3Goblin Slayer: §626.5%\n§3Lucky Raffle: §c0.0%",
+			"§3Goblin Slayer: §626.5% §8(Commission)\n§3Lucky Raffle: §c0.0% §8(Commission)",
 			"§3Mithril Powder: §26,243",
 			"§3Gemstone Powder: §d6,243",
 			"§3Forge 1) §9Diamonite§7: §aReady!",
