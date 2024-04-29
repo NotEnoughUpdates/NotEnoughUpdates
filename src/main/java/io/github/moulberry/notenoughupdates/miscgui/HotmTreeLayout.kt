@@ -22,12 +22,22 @@ package io.github.moulberry.notenoughupdates.miscgui
 import com.google.gson.JsonElement
 import io.github.moulberry.notenoughupdates.util.kotlin.ExtraData
 import io.github.moulberry.notenoughupdates.util.kotlin.KSerializable
+import moe.nea.lisp.LispAst
+import moe.nea.lisp.LispParser
 
 @KSerializable
 data class HotmTreeLayoutFile(val hotm: HotmTreeLayout)
 
 @KSerializable
-data class HotmTreeLayout(val perks: Map<String, LayoutedHotmPerk>)
+data class HotmTreeLayout(
+    val perks: Map<String, LayoutedHotmPerk>,
+    val powders: Map<String, PowderType>,
+)
+
+@KSerializable
+data class PowderType(
+    val costLine: String,
+)
 
 @KSerializable
 data class LayoutedHotmPerk(
@@ -35,9 +45,16 @@ data class LayoutedHotmPerk(
     val x: Int,
     val y: Int,
     val maxLevel: Int,
+    val powder: String,
+    val cost: String,
     val lore: List<String>,
     @ExtraData
     val extras: Map<String, JsonElement>
 ) {
-//TODO:     val compiledFunctions = mutableMapOf<String, ()
+
+    val compiledFunctions: Map<String, LispAst.Program> = extras.mapValues {
+        LispParser.parse("hotmlayout.json:perk:$name:${it.key}", it.value.asString)
+    } + mapOf(
+        "cost" to LispParser.parse("hotmlayout.json:perk:$name:cost", "(format-int $cost)")
+    )
 }

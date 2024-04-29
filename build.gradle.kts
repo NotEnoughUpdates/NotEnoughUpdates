@@ -164,6 +164,9 @@ dependencies {
 
 	shadowImplementation("com.mojang:brigadier:1.0.18")
 	shadowImplementation("moe.nea:libautoupdate:1.3.1")
+	shadowImplementation(libs.nealisp) {
+		exclude("org.jetbrains.kotlin")
+	}
 
 	mixinRTDependencies("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 		isTransitive = false // Dependencies of mixin are already bundled by minecraft
@@ -295,6 +298,7 @@ tasks.shadowJar {
 	relocate("com.mojang.brigadier")
 	relocate("io.github.moulberry.moulconfig")
 	relocate("moe.nea.libautoupdate")
+	relocate("moe.nea.lisp")
 	mergeServiceFiles()
 }
 

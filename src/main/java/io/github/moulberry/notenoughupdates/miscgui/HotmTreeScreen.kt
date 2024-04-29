@@ -21,12 +21,22 @@ package io.github.moulberry.notenoughupdates.miscgui
 
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils
 import io.github.moulberry.notenoughupdates.util.Utils
+import moe.nea.lisp.LispData
+import moe.nea.lisp.LispExecutionContext
+import moe.nea.lisp.bind.AutoBinder
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
 
 class HotmTreeScreen(val hotmLayout: HotmTreeLayout) : GuiScreen() {
     val levels = mutableMapOf<String, Int>()
     var lastMouse = false
+    val lec = LispExecutionContext()
+
+    init {
+        lec.setupStandardBindings()
+        AutoBinder().bindTo(ExtraLispMethods(), lec.rootStackFrame)
+    }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
         RenderUtils.drawFloatingRectDark(10, 10, width - 20, height - 20)
@@ -47,17 +57,31 @@ class HotmTreeScreen(val hotmLayout: HotmTreeLayout) : GuiScreen() {
                     mouseX, mouseY, width, height, -1
                 )
                 if (isClicking) {
-                    levels[key] = (level + 1) % perk.maxLevel
+                    levels[key] = (level + 1) % (perk.maxLevel + 1)
                 }
             }
         }
     }
 
     private fun processList(perk: LayoutedHotmPerk, level: Int): List<String> {
-        return listOf(
+        val bindings = lec.genBindings()
+        bindings.setValueLocal("level", LispData.LispNumber(level.toDouble()))
+        val values = perk.compiledFunctions.mapValues {
+            lec.executeProgram(bindings.fork(), it.value)
+        }
+        val begin = listOf(
             perk.name,
             "§7Level $level/${perk.maxLevel}",
             ""
-        ) + perk.lore
+        )
+        val end: List<String> = if (level == 0 || level == perk.maxLevel) listOf() else listOf("", hotmLayout.powders[perk.powder]!!.costLine)
+        return (begin + perk.lore + end).map {
+            it.replace("\\{([a-z\\-]+)\\}".toRegex()) {
+                (when (val value = values[it.groupValues[1]]) {
+                    is LispData.LispString -> value.string
+                    else -> "<lisp-error>"
+                })
+            }
+        }
     }
 }

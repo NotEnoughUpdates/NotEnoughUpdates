@@ -1,5 +1,7 @@
 [versions]
 moulconfig = "2.4.3"
+nealisp = "1.0.0"
 
 [libraries]
+nealisp = { module = "moe.nea:nealisp", version.ref = "nealisp" }
 moulconfig = { module = "org.notenoughupdates.moulconfig:legacy", version.ref = "moulconfig" }
