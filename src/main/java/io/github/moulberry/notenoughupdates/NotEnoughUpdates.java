@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -23,9 +23,11 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import io.github.moulberry.moulconfig.observer.PropertyTypeAdapterFactory;
 import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
+import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipEssenceShopListener;
@@ -45,7 +47,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
-import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -55,6 +56,7 @@ import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.brigadier.BrigadierRoot;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
+import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -83,16 +85,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NEUAutoSubscribe
 @Mod(
@@ -100,10 +98,29 @@ import java.util.Set;
 	guiFactory = "io.github.moulberry.notenoughupdates.core.config.MoulConfigGuiForgeInterop")
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
-	public static final String VERSION = "2.1.1-PRE";
-	public static final int VERSION_ID = 20101; //2.1.1 only so update notif works
-	public static final int PRE_VERSION_ID = 0;
-	public static final int HOTFIX_VERSION_ID = 0;
+	public static final String VERSION = VersionConst.VERSION;
+	private static final Pattern versionPattern = Pattern.compile("([0-9]+)\\.([0-9]+)\\.([0-9]+)");
+	public static final int VERSION_ID = parseVersion(VERSION);
+
+	private static int parseVersion(String versionName) {
+		Matcher matcher = versionPattern.matcher(versionName);
+		if (!matcher.matches()) {
+			return 0;
+		}
+		int major = Integer.parseInt(matcher.group(1));
+		if (major < 0 || major > 99) {
+			return 0;
+		}
+		int minor = Integer.parseInt(matcher.group(2));
+		if (minor < 0 || minor > 99) {
+			return 0;
+		}
+		int patch = Integer.parseInt(matcher.group(3));
+		if (patch < 0 || patch > 99) {
+			return 0;
+		}
+		return major * 10000 + minor * 100 + patch;
+	}
 
 	public static final Logger LOGGER = LogManager.getLogger("NotEnoughUpdates");
 	/**
@@ -156,7 +173,9 @@ public class NotEnoughUpdates {
 		put("MYTHIC", EnumChatFormatting.LIGHT_PURPLE.toString());
 	}};
 	public static ProfileViewer profileViewer;
-	private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
+	private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
+																						 .registerTypeAdapterFactory(new PropertyTypeAdapterFactory())
+																						 .registerTypeAdapterFactory(KotlinTypeAdapterFactory.INSTANCE).create();
 	public NEUManager manager;
 	public NEUOverlay overlay;
 	public NEUConfig config;
@@ -165,7 +184,6 @@ public class NotEnoughUpdates {
 	public long lastOpenedGui = 0;
 	public boolean packDevEnabled = false;
 	public Color[][] colourMap = null;
-	public AutoUpdater autoUpdater = new AutoUpdater(this);
 	private File configFile;
 	private long lastChatMessage = 0;
 	private long secondLastChatMessage = 0;
@@ -205,16 +223,7 @@ public class NotEnoughUpdates {
 		configFile = new File(neuDir, "configNew.json");
 
 		if (configFile.exists()) {
-			try (
-				BufferedReader reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(configFile),
-					StandardCharsets.UTF_8
-				))
-			) {
-				config = gson.fromJson(reader, NEUConfig.class);
-			} catch (Exception exc) {
-				new RuntimeException("Invalid config file. This will reset the config to default", exc).printStackTrace();
-			}
+			config = ConfigUtil.loadConfig(NEUConfig.class, configFile, gson);
 		}
 
 		ItemCustomizeManager.loadCustomization(new File(neuDir, "itemCustomization.json"));
@@ -228,11 +237,6 @@ public class NotEnoughUpdates {
 			config = new NEUConfig();
 			saveConfig();
 		} else {
-			if (config.apiKey != null && config.apiKey.apiKey != null) {
-				config.apiData.apiKey = config.apiKey.apiKey;
-				config.apiKey = null;
-			}
-
 			//add the trophy fishing tab to the config
 			if (config.profileViewer.pageLayout.size() == 8) {
 				config.profileViewer.pageLayout.add(8);
@@ -242,6 +246,18 @@ public class NotEnoughUpdates {
 			}
 			if (config.profileViewer.pageLayout.size() == 10) {
 				config.profileViewer.pageLayout.add(10);
+			}
+			if (config.profileViewer.pageLayout.size() == 11) {
+				config.profileViewer.pageLayout.add(11);
+			}
+			if (config.profileViewer.pageLayout.size() == 12) {
+				config.profileViewer.pageLayout.add(12);
+			}
+
+			if ((config.apiData.repoUser.isEmpty() || config.apiData.repoName.isEmpty() || config.apiData.repoBranch.isEmpty()) && config.apiData.autoupdate_new) {
+				config.apiData.repoUser = "NotEnoughUpdates";
+				config.apiData.repoName = "NotEnoughUpdates-REPO";
+				config.apiData.repoBranch = "master";
 			}
 
 			// Remove after 2.1 ig
@@ -268,7 +284,7 @@ public class NotEnoughUpdates {
 			if (config.mining.powderGrindingTrackerResetMode == 2)
 				OverlayManager.powderGrindingOverlay.load();
 
-		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config, this::saveConfig));
+		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config));
 
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
 		MinecraftForge.EVENT_BUS.register(new RecipeGenerator(this));
@@ -325,40 +341,13 @@ public class NotEnoughUpdates {
 		} catch (Exception ignored) {
 		}
 
-		try {
-			configFile.createNewFile();
+		ConfigUtil.saveConfig(config, configFile, gson);
 
-			try (
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(configFile),
-					StandardCharsets.UTF_8
-				))
-			) {
-				writer.write(gson.toJson(config));
-			}
-		} catch (Exception ignored) {
-		}
-
-		try {
-			ItemCustomizeManager.saveCustomization(new File(neuDir, "itemCustomization.json"));
-		} catch (Exception ignored) {
-		}
-		try {
-			StorageManager.getInstance().saveConfig(new File(neuDir, "storageItems.json"));
-		} catch (Exception ignored) {
-		}
-		try {
-			FairySouls.getInstance().saveFoundSoulsForAllProfiles(new File(neuDir, "collected_fairy_souls.json"), gson);
-		} catch (Exception ignored) {
-		}
-		try {
-			PetInfoOverlay.saveConfig(new File(neuDir, "petCache.json"));
-		} catch (Exception ignored) {
-		}
-		try {
-			SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
-		} catch (Exception ignored) {
-		}
+		ItemCustomizeManager.saveCustomization(new File(neuDir, "itemCustomization.json"));
+		StorageManager.getInstance().saveConfig(new File(neuDir, "storageItems.json"));
+		FairySouls.getInstance().saveFoundSoulsForAllProfiles(new File(neuDir, "collected_fairy_souls.json"), gson);
+		PetInfoOverlay.saveConfig(new File(neuDir, "petCache.json"));
+		SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
 	}
 
 	/**
@@ -482,7 +471,7 @@ public class NotEnoughUpdates {
 
 		if (mc != null && mc.theWorld != null && mc.thePlayer != null) {
 			if (mc.isSingleplayer() || mc.thePlayer.getClientBrand() == null ||
-				!mc.thePlayer.getClientBrand().toLowerCase().contains("hypixel")) {
+				!mc.thePlayer.getClientBrand().toLowerCase(Locale.ROOT).contains("hypixel")) {
 				hasSkyblockScoreboard = false;
 				return;
 			}

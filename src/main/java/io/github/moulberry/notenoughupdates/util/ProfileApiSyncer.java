@@ -19,9 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
-import net.minecraft.client.Minecraft;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -63,35 +61,5 @@ public class ProfileApiSyncer {
 			if (l > 0 && (l < time || time == -1)) time = l;
 		}
 		return time;
-	}
-
-	public void tick() {
-		if (Minecraft.getMinecraft().thePlayer == null) return;
-
-		long resyncTime = getCurrentResyncTime();
-
-		if (resyncTime < 0) return;
-
-		long currentTime = System.currentTimeMillis();
-
-		if (currentTime - lastResync > resyncTime) {
-			lastResync = currentTime;
-			resyncTimes.clear();
-
-			for (Runnable r : syncingCallbacks.values()) r.run();
-			syncingCallbacks.clear();
-
-			forceResync();
-		}
-	}
-
-	private void forceResync() {
-		if (Minecraft.getMinecraft().thePlayer == null) return;
-
-		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
-		NotEnoughUpdates.profileViewer.getOrLoadSkyblockProfiles(uuid, (profile) -> {
-			for (Consumer<SkyblockProfiles> c : finishSyncCallbacks.values()) c.accept(profile);
-			finishSyncCallbacks.clear();
-		});
 	}
 }

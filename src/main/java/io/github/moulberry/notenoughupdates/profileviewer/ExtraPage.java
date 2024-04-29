@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,9 +25,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -36,10 +40,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeMap;
 
 public class ExtraPage extends GuiProfileViewerPage {
@@ -68,6 +67,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 	private TreeMap<Integer, Set<String>> topDeaths = null;
 	private int deathScroll = 0;
 	private int killScroll = 0;
+	private boolean clickedLoadGuildInfoButton = false;
 
 	public ExtraPage(GuiProfileViewer instance) {
 		super(instance);
@@ -112,7 +112,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float mouseY
 	) {
 		if (Constants.PARENTS == null || !Constants.PARENTS.has("ESSENCE_WITHER")) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("parents.json or missing ESSENCE_WITHER");
 			return;
 		}
 
@@ -131,12 +131,14 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 			TreeMap<String, JsonObject> itemInformation = NotEnoughUpdates.INSTANCE.manager.getItemInformation();
 			if (!itemInformation.containsKey(essenceName)) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification(essenceName);
 				return;
 			}
 			String displayName = itemInformation.get(essenceName).getAsJsonObject().get("displayname").getAsString();
-			int essenceNumber =
-				profileInfo.has(essenceName.toLowerCase()) ? profileInfo.get(essenceName.toLowerCase()).getAsInt() : 0;
+			int essenceNumber = Utils.getElementAsInt(Utils.getElement(
+				profileInfo,
+				"currencies.essence." + essenceName.replace("ESSENCE_", "") + ".current"
+			), 0);
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.GOLD + displayName,
@@ -155,12 +157,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				if (essenceShops.get(essenceName) == null) continue;
 
 				for (Map.Entry<String, JsonElement> entry : essenceShops.get(essenceName).getAsJsonObject().entrySet()) {
-					int perkTier =
-						(profileInfo.has("perks") && profileInfo.get("perks").getAsJsonObject().has(entry.getKey()) ? profileInfo
-							.get("perks")
-							.getAsJsonObject()
-							.get(entry.getKey())
-							.getAsInt() : 0);
+					int perkTier = Utils.getElementAsInt(Utils.getElement(profileInfo, "player_data.perks." + entry.getKey()), 0);
 					int max = entry.getValue().getAsJsonObject().get("costs").getAsJsonArray().size();
 					EnumChatFormatting formatting = perkTier == max ? EnumChatFormatting.GREEN : EnumChatFormatting.AQUA;
 					String name = entry.getValue().getAsJsonObject().get("name").getAsString();
@@ -185,6 +182,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 		JsonObject profileInfo = selectedProfile.getProfileJson();
 		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (data == null) {
+			return;
+		}
+		var player_stats = data.player_stats;
+		var auctions = player_stats.auctions;
 
 		float xStart = 22;
 		float xOffset = 103;
@@ -192,8 +195,11 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float yStartBottom = 105;
 		float yOffset = 10;
 
-		float bankBalance = Utils.getElementAsFloat(Utils.getElement(selectedProfile.getOuterProfileJson(), "banking.balance"), 0);
-		float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
+		float bankBalance = Utils.getElementAsFloat(Utils.getElement(
+			selectedProfile.getOuterProfileJson(),
+			"banking.balance"
+		), 0);
+		float purseBalance = data.currencies.coin_purse;
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Bank Balance",
@@ -211,7 +217,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		);
 
 		{
-			String first_join = getTimeSinceString(profileInfo, "first_join");
+			String first_join = getTimeSinceString(profileInfo, "profile.first_join");
 			if (first_join != null) {
 				Utils.renderAlignedString(
 					EnumChatFormatting.AQUA + "Joined",
@@ -222,30 +228,62 @@ public class ExtraPage extends GuiProfileViewerPage {
 				);
 			}
 		}
-		JsonObject guildInfo = GuiProfileViewer.getProfile().getOrLoadGuildInformation(null);
-		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
-		{
-			if (shouldRenderGuild) {
-				Utils.renderAlignedString(
-					EnumChatFormatting.AQUA + "Guild",
-					EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
-					guiLeft + xStart,
-					guiTop + yStartTop + yOffset * 3,
-					76
-				);
-			}
-		}
-		{
-			GuiProfileViewer.pronouns.peekValue().flatMap(it -> it).ifPresent(choice -> Utils.renderAlignedString(
-				EnumChatFormatting.GREEN + "Pronouns",
-				EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
-				guiLeft + xStart,
-				guiTop + yStartTop + yOffset * (shouldRenderGuild ? 4 : 3),
-				76
-			));
+
+		JsonObject guildInfo;
+		if (GuiProfileViewer.getProfile().isPlayerInGuild()) {
+			guildInfo =
+				clickedLoadGuildInfoButton ? GuiProfileViewer.getProfile().getOrLoadGuildInformation(null) : null;
+		} else {
+			guildInfo = new JsonObject();
+			guildInfo.add("name", new JsonPrimitive("N/A"));
 		}
 
-		float fairySouls = Utils.getElementAsFloat(Utils.getElement(profileInfo, "fairy_souls_collected"), 0);
+		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
+
+		// Render the info when the button has been clicked
+		if (shouldRenderGuild) {
+			Utils.renderAlignedString(
+				EnumChatFormatting.AQUA + "Guild",
+				EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
+				guiLeft + xStart,
+				guiTop + yStartTop + yOffset * 3,
+				76
+			);
+		} else {
+			// Render a button to click to load the guild info
+			Rectangle buttonRect = new Rectangle(
+				(int) (guiLeft + xStart - 1),
+				(int) (guiTop + yStartTop + yOffset * 3),
+				78,
+				12
+			);
+
+			RenderUtils.drawFloatingRectWithAlpha(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(),
+				buttonRect.getHeight(), 100, true
+			);
+			Utils.renderShadowedString(
+				clickedLoadGuildInfoButton
+					? EnumChatFormatting.AQUA + "Loading..."
+					: EnumChatFormatting.WHITE + "Load Guild Info",
+				guiLeft + xStart + 38,
+				guiTop + yStartTop + yOffset * 3 + 2,
+				70
+			);
+
+			if (Mouse.getEventButtonState() && Utils.isWithinRect(mouseX, mouseY, buttonRect)) {
+				clickedLoadGuildInfoButton = true;
+			}
+		}
+
+		GuiProfileViewer.pronouns.peekValue().flatMap(it -> it).ifPresent(choice -> Utils.renderAlignedString(
+			EnumChatFormatting.GREEN + "Pronouns",
+			EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
+			guiLeft + xStart,
+			guiTop + yStartTop + yOffset * 4 + (shouldRenderGuild ? 0 : 5),
+			76
+		));
+
+		int fairySouls = data.fairy_soul.total_collected;
 
 		int fairySoulMax = 227;
 		if (Constants.FAIRYSOULS != null && Constants.FAIRYSOULS.has("Max Souls")) {
@@ -253,7 +291,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		}
 		Utils.renderAlignedString(
 			EnumChatFormatting.LIGHT_PURPLE + "Fairy Souls",
-			EnumChatFormatting.WHITE.toString() + (int) fairySouls + "/" + fairySoulMax,
+			EnumChatFormatting.WHITE.toString() + fairySouls + "/" + fairySoulMax,
 			guiLeft + xStart,
 			guiTop + yStartBottom,
 			76
@@ -284,27 +322,27 @@ public class ExtraPage extends GuiProfileViewerPage {
 			float avgSlayerLVL = totalSlayerLVL / totalSlayerCount;
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "AVG Skill Level",
+				EnumChatFormatting.RED + "AVG Skill LVL",
 				selectedProfile.skillsApiEnabled() ?
 					EnumChatFormatting.WHITE.toString() + Math.floor(avgSkillLVL * 10) / 10 :
-					EnumChatFormatting.RED + "Skills API not enabled!",
+					EnumChatFormatting.RED + "API OFF!",
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset,
 				76
 			);
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "True AVG Skill Level",
+				EnumChatFormatting.RED + "True AVG Skill LVL",
 				selectedProfile.skillsApiEnabled() ?
 					EnumChatFormatting.WHITE.toString() + Math.floor(avgTrueSkillLVL * 10) / 10 :
-					EnumChatFormatting.RED + "Skills API not enabled!",
+					EnumChatFormatting.RED + "API OFF!",
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset * 2,
 				76
 			);
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "AVG Slayer Level",
+				EnumChatFormatting.RED + "AVG Slayer LVL",
 				EnumChatFormatting.WHITE.toString() + Math.floor(avgSlayerLVL * 10) / 10,
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset * 3,
@@ -320,18 +358,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			);
 		}
 
-		float auctions_bids = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_bids"), 0);
-		float auctions_highest_bid = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "stats.auctions_highest_bid"),
-			0
-		);
-		float auctions_won = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_won"), 0);
-		float auctions_created = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_created"), 0);
-		float auctions_gold_spent = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_gold_spent"), 0);
-		float auctions_gold_earned = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "stats.auctions_gold_earned"),
-			0
-		);
+		float auctions_bids = auctions.bids;
+		float auctions_highest_bid = auctions.highest_bid;
+		float auctions_won = auctions.won;
+		float auctions_created = auctions.created;
+		float auctions_gold_spent = auctions.gold_spent;
+		float auctions_gold_earned = auctions.gold_earned;
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Auction Bids",
@@ -376,24 +408,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		);
 
-		float pet_milestone_ores_mined = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"stats.pet_milestone_ores_mined"
-		), 0);
-		float pet_milestone_sea_creatures_killed = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "stats.pet_milestone_sea_creatures_killed"),
-			0
-		);
+		float pet_milestone_ores_mined = player_stats.pets.milestone.ores_mined;
+		float pet_milestone_sea_creatures_killed = player_stats.pets.milestone.sea_creatures_killed;
 
-		float items_fished = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished"), 0);
-		float items_fished_treasure = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "stats.items_fished_treasure"),
-			0
-		);
-		float items_fished_large_treasure = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"stats.items_fished_large_treasure"
-		), 0);
+		float items_fished = player_stats.items_fished.total;
+		float items_fished_treasure = player_stats.items_fished.treasure;
+		float items_fished_large_treasure = player_stats.items_fished.large_treasure;
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GREEN + "Ores Mined",
@@ -432,36 +452,36 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		);
 
-		drawEssence(profileInfo, xStart, yStartTop, xOffset, yOffset, mouseX, mouseY);
+		drawEssence(selectedProfile.getProfileJson(), xStart, yStartTop, xOffset, yOffset, mouseX, mouseY);
 
 		if (topKills == null) {
 			topKills = new TreeMap<>();
-			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
+			JsonObject stats = Utils
+				.getElementOrDefault(profileInfo, "player_stats.kills", new JsonObject())
+				.getAsJsonObject();
 			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
-				if (entry.getKey().startsWith("kills_")) {
-					if (entry.getValue().isJsonPrimitive()) {
-						JsonPrimitive prim = (JsonPrimitive) entry.getValue();
-						if (prim.isNumber()) {
-							String name = WordUtils.capitalizeFully(entry.getKey().substring("kills_".length()).replace("_", " "));
-							Set<String> kills = topKills.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
-							kills.add(name);
-						}
+				if (entry.getValue().isJsonPrimitive()) {
+					JsonPrimitive prim = (JsonPrimitive) entry.getValue();
+					if (prim.isNumber()) {
+						String name = WordUtils.capitalizeFully(entry.getKey().replace("_", " "));
+						Set<String> kills = topKills.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
+						kills.add(name);
 					}
 				}
 			}
 		}
 		if (topDeaths == null) {
 			topDeaths = new TreeMap<>();
-			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
+			JsonObject stats = Utils
+				.getElementOrDefault(profileInfo, "player_stats.deaths", new JsonObject())
+				.getAsJsonObject();
 			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
-				if (entry.getKey().startsWith("deaths_")) {
-					if (entry.getValue().isJsonPrimitive()) {
-						JsonPrimitive prim = (JsonPrimitive) entry.getValue();
-						if (prim.isNumber()) {
-							String name = WordUtils.capitalizeFully(entry.getKey().substring("deaths_".length()).replace("_", " "));
-							Set<String> deaths = topDeaths.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
-							deaths.add(name);
-						}
+				if (entry.getValue().isJsonPrimitive()) {
+					JsonPrimitive prim = (JsonPrimitive) entry.getValue();
+					if (prim.isNumber()) {
+						String name = WordUtils.capitalizeFully(entry.getKey().replace("_", " "));
+						Set<String> deaths = topDeaths.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
+						deaths.add(name);
 					}
 				}
 			}
@@ -562,24 +582,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		JsonElement lastSaveElement = Utils.getElement(profileInfo, path);
 
 		if (lastSaveElement != null && lastSaveElement.isJsonPrimitive()) {
-			Instant lastSave = Instant.ofEpochMilli(lastSaveElement.getAsLong());
-			LocalDateTime lastSaveTime = LocalDateTime.ofInstant(lastSave, TimeZone.getDefault().toZoneId());
-			long timeDiff = System.currentTimeMillis() - lastSave.toEpochMilli();
-			LocalDateTime sinceOnline = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeDiff), ZoneId.of("UTC"));
-			String renderText;
-
-			if (timeDiff < 60000L) {
-				renderText = sinceOnline.getSecond() + " seconds ago.";
-			} else if (timeDiff < 3600000L) {
-				renderText = sinceOnline.getMinute() + " minutes ago.";
-			} else if (timeDiff < 86400000L) {
-				renderText = sinceOnline.getHour() + " hours ago.";
-			} else if (timeDiff < 31556952000L) {
-				renderText = sinceOnline.getDayOfYear() + " days ago.";
-			} else {
-				renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-			}
-			return renderText;
+			return Utils.timeSinceMillisecond(lastSaveElement.getAsLong());
 		}
 		return null;
 	}

@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -381,7 +382,7 @@ public class GuiCustomEnchant extends Gui {
 								if (enchantments != null) {
 									String enchId = Utils
 										.cleanColour(book.getDisplayName())
-										.toLowerCase()
+										.toLowerCase(Locale.ROOT)
 										.replace(" ", "_")
 										.replace("-", "_")
 										.replaceAll("[^a-z_]", "");
@@ -396,7 +397,7 @@ public class GuiCustomEnchant extends Gui {
 									}
 									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
 									if (levelMatcher.matches()) {
-										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
+										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase(Locale.ROOT));
 										enchId = levelMatcher.group(1);
 									}
 									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
@@ -457,7 +458,7 @@ public class GuiCustomEnchant extends Gui {
 									if (enchantments != null) {
 										String enchId = Utils
 											.cleanColour(book.getDisplayName())
-											.toLowerCase()
+											.toLowerCase(Locale.ROOT)
 											.replace(" ", "_")
 											.replace("-", "_")
 											.replaceAll("[^a-z_]", "");
@@ -466,7 +467,7 @@ public class GuiCustomEnchant extends Gui {
 										String name = Utils.cleanColour(book.getDisplayName());
 
 										if (searchField.getText().trim().isEmpty() ||
-											name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+											name.toLowerCase(Locale.ROOT).contains(searchField.getText().trim().toLowerCase(Locale.ROOT))) {
 											if (name.equalsIgnoreCase("Bane of Arthropods")) {
 												name = "Bane of Arth.";
 											} else if (name.equalsIgnoreCase("Projectile Protection")) {
@@ -512,7 +513,7 @@ public class GuiCustomEnchant extends Gui {
 					Comparator<Enchantment> comparator = cfg.enchantingSolvers.enchantSorting == 0 ?
 						Comparator.comparingInt(e -> mult * e.xpCost) :
 						(c1, c2) -> mult *
-							c1.enchId.toLowerCase().compareTo(c2.enchId.toLowerCase());
+							c1.enchId.toLowerCase(Locale.ROOT).compareTo(c2.enchId.toLowerCase(Locale.ROOT));
 					removable.sort(comparator);
 					applicable.sort(comparator);
 				}

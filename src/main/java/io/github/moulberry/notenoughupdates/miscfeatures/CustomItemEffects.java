@@ -94,7 +94,7 @@ public class CustomItemEffects {
 
 	public long lastUsedHyperion = 0;
 
-	private final Pattern etherwarpDistancePattern = Pattern.compile("up to (?<distance>\\d{2}) blocks away\\.");
+	private final Pattern etherwarpDistancePattern = Pattern.compile("(?:up )?to (?<distance>\\d{2}) blocks away\\.");
 
 	private final List<String> aoteNames = Arrays.asList(
 		"ASPECT_OF_THE_END",
@@ -344,7 +344,7 @@ public class CustomItemEffects {
 				}
 			}
 
-			boolean onPrivateIsland = Arrays.asList("dynamic","garden").contains(SBInfo.getInstance().getLocation());
+			boolean onPrivateIsland = Arrays.asList("dynamic", "garden").contains(SBInfo.getInstance().getLocation());
 
 			if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableWandOverlay &&
 				Minecraft.getMinecraft().objectMouseOver != null &&
@@ -782,507 +782,569 @@ public class CustomItemEffects {
 
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
-		if (heldInternal != null) {
-			boolean onPrivateIsland = Arrays.asList("dynamic","garden").contains(SBInfo.getInstance().getLocation());
-			EntityPlayer player = event.player;
-			double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) event.partialTicks;
-			double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) event.partialTicks;
-			double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) event.partialTicks;
+		if (heldInternal == null) {
+			return;
+		}
+		boolean onPrivateIsland = Arrays.asList("dynamic", "garden").contains(SBInfo.getInstance().getLocation());
+		EntityPlayer player = event.player;
+		double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) event.partialTicks;
+		double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) event.partialTicks;
+		double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) event.partialTicks;
 
-			//Don't need to wait 10 ticks when zoom is disabled
-			if (tick - lastEtherwarpUse > 10 || !NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
-				boolean aotv = Minecraft.getMinecraft().thePlayer.isSneaking() &&
-					(heldInternal.equals("ASPECT_OF_THE_VOID") || heldInternal.equals("ASPECT_OF_THE_END"));
-				if (aotv || heldInternal.equals("ETHERWARP_CONDUIT")) {
-					usingEtherwarp = !aotv;
+		//Don't need to wait 10 ticks when zoom is disabled
+		if (tick - lastEtherwarpUse > 10 || !NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom)
+			if (onRenderBlockEtherwarp(
+				heldInternal,
+				held,
+				d0,
+				d1,
+				d2,
+				lastFOVMult
+			)) {
+				return;
+			}
 
-					if (aotv) {
-						NBTTagCompound tag = held.getTagCompound();
-						if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
-							NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
-							usingEtherwarp = ea.hasKey("ethermerge");
-						}
-					}
+		if (heldInternal.equals("BLOCK_ZAPPER")) {
+			onRenderBlockBlockZapper(event, onPrivateIsland, d0, d1, d2);
+		} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableTreecapOverlay &&
+			(heldInternal.equals("JUNGLE_AXE") || heldInternal.equals("TREECAPITATOR_AXE")) &&
+			ItemCooldowns.getDurabilityOverride(held) < 0) {
+			onRenderBlockTreecap(event, heldInternal, d0, d1, d2);
+		} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableWandOverlay) {
+			onRenderBlockWandOverlay(
+				event,
+				heldInternal,
+				onPrivateIsland,
+				d0,
+				d1,
+				d2,
+				player
+			);
+		}
+	}
 
-					if (usingEtherwarp) {
-						int dist = 0;
-						for (String line : NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(held.getTagCompound())) {
-							String cleaned = Utils.cleanColour(line);
-							Matcher matcher = etherwarpDistancePattern.matcher(cleaned);
-							if (matcher.matches()) {
-								dist = Integer.parseInt(matcher.group("distance"));
-								break;
-							}
-						}
-						if (dist != 0) {
-							etherwarpRaycast = raycast(Minecraft.getMinecraft().thePlayer, 1f, dist, 0.1f);
+	private boolean onRenderBlockEtherwarp(
+		String heldInternal,
+		ItemStack held,
+		double d0,
+		double d1,
+		double d2,
+		float lastFOVMult
+	) {
+		boolean aotv = Minecraft.getMinecraft().thePlayer.isSneaking() &&
+			(heldInternal.equals("ASPECT_OF_THE_VOID") || heldInternal.equals("ASPECT_OF_THE_END"));
+		if (!aotv && !heldInternal.equals("ETHERWARP_CONDUIT")) {
+			return false;
+		}
+		usingEtherwarp = !aotv;
 
-							if (etherwarpRaycast != null &&
-								NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpBlockOverlay) {
-								if (denyTpReason == null || !NotEnoughUpdates.INSTANCE.config.itemOverlays.disableOverlayWhenFailed) {
-									AxisAlignedBB box = etherwarpRaycast.state.getBlock().getSelectedBoundingBox(
-										Minecraft.getMinecraft().theWorld,
-										etherwarpRaycast.pos
-									);
-									AxisAlignedBB bb = box.expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
-									drawFilledBoundingBox(
-										bb,
-										1f,
-										NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
-									);
+		if (aotv) {
+			NBTTagCompound tag = held.getTagCompound();
+			if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
+				NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
+				usingEtherwarp = ea.hasKey("ethermerge");
+			}
+		}
 
-									GlStateManager.disableDepth();
-									drawOutlineBoundingBox(
-										bb,
-										2f,
-										NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
-									);
-									GlStateManager.enableDepth();
+		if (!usingEtherwarp) {
+			return false;
+		}
+		int dist = 0;
+		for (String line : NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(held.getTagCompound())) {
+			String cleaned = Utils.cleanColour(line);
+			Matcher matcher = etherwarpDistancePattern.matcher(cleaned);
+			if (matcher.matches()) {
+				dist = Integer.parseInt(matcher.group("distance"));
+				break;
+			}
+		}
+		if(dist == 0)return false;
+		etherwarpRaycast = raycast(Minecraft.getMinecraft().thePlayer, 1f, dist, 0.1f);
 
-									GlStateManager.depthMask(true);
-									GlStateManager.enableTexture2D();
-									GlStateManager.disableBlend();
+		if (etherwarpRaycast != null &&
+			NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpBlockOverlay) {
+			if (denyTpReason == null || !NotEnoughUpdates.INSTANCE.config.itemOverlays.disableOverlayWhenFailed) {
+				AxisAlignedBB box = etherwarpRaycast.state.getBlock().getSelectedBoundingBox(
+					Minecraft.getMinecraft().theWorld,
+					etherwarpRaycast.pos
+				);
+				AxisAlignedBB bb = box.expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
+				drawFilledBoundingBox(
+					bb,
+					1f,
+					NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+				);
+
+				GlStateManager.disableDepth();
+				drawOutlineBoundingBox(
+					bb,
+					2f,
+					NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+				);
+				GlStateManager.enableDepth();
+
+				GlStateManager.depthMask(true);
+				GlStateManager.enableTexture2D();
+				GlStateManager.disableBlend();
+			}
+
+			if (NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
+				float distFactor = 1 -
+					(float) Math.sqrt(etherwarpRaycast.pos.distanceSq(Minecraft.getMinecraft().thePlayer.getPosition())) /
+						60;
+
+				targetFOVMult = distFactor * distFactor * distFactor * 0.75f + 0.25f;
+				if (targetFOVMult < 0.25f) targetFOVMult = 0.25f;
+
+				targetSensMult = distFactor * 0.76f + 0.25f;
+			}
+		} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
+			targetFOVMult = lastFOVMult;
+		}
+		return true;
+	}
+
+	private void onRenderBlockWandOverlay(
+		DrawBlockHighlightEvent event,
+		String heldInternal,
+		boolean onPrivateIsland,
+		double d0,
+		double d1,
+		double d2,
+		EntityPlayer player
+	) {
+		if (heldInternal.equals("BUILDERS_WAND") && onPrivateIsland) {
+			buildersWandOverlay(event, d0, d1, d2);
+		} else if (heldInternal.equals("BUILDERS_RULER") && onPrivateIsland) {
+			buildersRulerOverlay(event, d0, d1, d2);
+		} else if (heldInternal.equals("INFINIDIRT_WAND") &&
+			event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+			NotEnoughUpdates.INSTANCE.config.itemOverlays.enableDirtWandOverlay) {
+			BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
+			if ("garden".equals(SBInfo.getInstance().getLocation()) &&
+				(hover.getX() > 239 || hover.getX() < -240 || hover.getZ() > 239 || hover.getZ() < -240 ||
+					hover.getY() <= 66 || hover.getY() > 76)) {
+				return;
+			}
+			IBlockState hoverState = Minecraft.getMinecraft().theWorld.getBlockState(event.target
+				.getBlockPos()
+				.offset(event.target.sideHit, 1));
+			if (hoverState.getBlock() == Blocks.air) {
+				GlStateManager.enableBlend();
+				GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+				GlStateManager.disableTexture2D();
+				GlStateManager.depthMask(false);
+
+				String special = NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour;
+
+				AxisAlignedBB bb = Blocks.dirt.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, hover);
+				drawBlock((int) bb.minX, (int) bb.minY, (int) bb.minZ + 1, Blocks.dirt.getDefaultState(),
+					event.partialTicks, 0.75f
+				);
+
+				AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, hover)
+																							.expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2);
+				drawOutlineBoundingBox(bbExpanded, 1f, special);
+
+				GlStateManager.depthMask(true);
+				GlStateManager.enableTexture2D();
+				GlStateManager.disableBlend();
+			}
+		} else if ((heldInternal.equals("WATER_BUCKET") || heldInternal.equals("MAGICAL_WATER_BUCKET") &&
+			NotEnoughUpdates.INSTANCE.config.itemOverlays.enablePrismapumpOverlay && onPrivateIsland) &&
+			event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
+
+			HashSet<BlockPos> verticalSources = new HashSet<>();
+			TreeMap<Float, HashMap<BlockPos, EnumFacing>> watersSorted = new TreeMap<>();
+
+			for (int xOff = -1; xOff <= 1; xOff++) {
+				for (int yOff = 0; yOff <= 1; yOff++) {
+					for (int zOff = -1; zOff <= 1; zOff++) {
+						if ((xOff == 0 && yOff == 0) ||
+							(xOff == 0 && zOff == 0) ||
+							(zOff == 0 && yOff == 0)) {
+
+							BlockPos checkPos = hover.add(-xOff, -yOff, -zOff);
+							IBlockState check = Minecraft.getMinecraft().theWorld.getBlockState(checkPos);
+							if (check.getBlock() == Blocks.prismarine && check.getBlock().getMetaFromState(check) == 2) {
+								for (int i = 0; i < 300; i++) {
+									BlockPos renderPos = hover.add(xOff * i, yOff * i, zOff * i);
+
+									if (Math.abs(renderPos.getX()) > 128) {
+										break;
+									}
+									if (Math.abs(renderPos.getY()) > 255) {
+										break;
+									}
+									if (Math.abs(renderPos.getZ()) > 128) {
+										break;
+									}
+
+									IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
+
+									if (renderState.getBlock() != Blocks.air && renderState.getBlock() != Blocks.water &&
+										renderState.getBlock() != Blocks.flowing_water) {
+										break;
+									}
+
+									if (yOff != 0) {
+										verticalSources.add(renderPos);
+									} else {
+										IBlockState belowState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos.add(
+											0,
+											-1,
+											0
+										));
+										if (belowState.getBlock() == Blocks.air) {
+											break;
+										}
+									}
+
+									for (EnumFacing facing : EnumFacing.values()) {
+										float xDist = (float) (renderPos.getX() + 0.5f + 0.5f * facing.getFrontOffsetX() - d0);
+										float yDist = (float) (renderPos.getY() + 0.5f + 0.5f * facing.getFrontOffsetY() - d1 -
+											player.getEyeHeight());
+										float zDist = (float) (renderPos.getZ() + 0.5f + 0.5f * facing.getFrontOffsetZ() - d2);
+
+										float distSq = xDist * xDist + yDist * yDist + zDist * zDist;
+
+										watersSorted.computeIfAbsent(distSq, k -> new HashMap<>()).put(renderPos, facing);
+									}
+
 								}
-
-								if (NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
-									float distFactor = 1 -
-										(float) Math.sqrt(etherwarpRaycast.pos.distanceSq(Minecraft.getMinecraft().thePlayer.getPosition())) /
-											60;
-
-									targetFOVMult = distFactor * distFactor * distFactor * 0.75f + 0.25f;
-									if (targetFOVMult < 0.25f) targetFOVMult = 0.25f;
-
-									targetSensMult = distFactor * 0.76f + 0.25f;
-								}
-							} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
-								targetFOVMult = lastFOVMult;
 							}
-
-							return;
 						}
 					}
 				}
 			}
 
-			if (heldInternal.equals("BLOCK_ZAPPER")) {
+			GlStateManager.enableDepth();
+			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+			GlStateManager.disableTexture2D();
+			GlStateManager.depthMask(true);
 
-				if (!onPrivateIsland || !NotEnoughUpdates.INSTANCE.config.itemOverlays.enableZapperOverlay ||
-					event.target.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
-					zapperBlocks.clear();
-					return;
+			for (HashMap<BlockPos, EnumFacing> blockPoses : watersSorted.values()) {
+				for (Map.Entry<BlockPos, EnumFacing> entry : blockPoses.entrySet()) {
+					boolean vertical = verticalSources.contains(entry.getKey());
+					AxisAlignedBB bbExpanded = Blocks.water.getSelectedBoundingBox(
+																						 Minecraft.getMinecraft().theWorld,
+																						 entry.getKey()
+																					 )
+																								 .expand(-0.001D, -0.001D - (vertical ? 0 : 0.0625D), -0.001D)
+																								 .offset(-d0, -d1 - (vertical ? 0 : 0.0625), -d2);
+					drawFilledBoundingBoxSide(bbExpanded, entry.getValue(), 1f, "0:100:20:50:160");
 				}
-				if (zapperDirty) {
-					zapperDirty = false;
+			}
 
-					zapperBlocks.clear();
+			GlStateManager.depthMask(true);
+			GlStateManager.enableTexture2D();
+			GlStateManager.disableBlend();
+		} else if ((heldInternal.equals("HOE_OF_GREAT_TILLING") || heldInternal.equals("HOE_OF_GREATER_TILLING") &&
+			NotEnoughUpdates.INSTANCE.config.itemOverlays.enableHoeOverlay && onPrivateIsland) &&
+			event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			BlockPos target = event.target.getBlockPos();
+			IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);
 
-					LinkedList<BlockPos> returnablePositions = new LinkedList<>();
+			int radius = heldInternal.equals("HOE_OF_GREAT_TILLING") ? 1 : 2;
 
-					BlockPos pos = event.target.getBlockPos();
-					IBlockState firstBlockState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
-					Block block = firstBlockState.getBlock();
+			if (targetState.getBlock() == Blocks.dirt || targetState.getBlock() == Blocks.grass) {
+				GlStateManager.enableDepth();
+				GlStateManager.enableBlend();
+				GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+				GlStateManager.disableTexture2D();
+				GlStateManager.depthMask(true);
 
-					BlockPos above = pos.add(0, 1, 0);
-					Block aboveBlock = Minecraft.getMinecraft().theWorld.getBlockState(above).getBlock();
-
-					if (!cropBlocksZapper.contains(aboveBlock) && !cropBlocksZapper.contains(block) &&
-						!otherBannedBlocksZapper.contains(block) && !block.hasTileEntity(firstBlockState) &&
-						block.getBlockHardness(Minecraft.getMinecraft().theWorld, pos) >= 0) {
-						for (int i = 0; i < 164; i++) {
-							zapperBlocks.add(pos);
-							returnablePositions.remove(pos);
-
-							List<BlockPos> availableNeighbors = new ArrayList<>();
-
-							for (BlockPos offset : zapperOffsets) {
-								BlockPos newPos = pos.add(offset);
-
-								if (zapperBlocks.contains(newPos)) continue;
-
-								IBlockState state = Minecraft.getMinecraft().theWorld.getBlockState(newPos);
-								if (state != null && state.getBlock() == block) {
-									above = newPos.add(0, 1, 0);
-									aboveBlock = Minecraft.getMinecraft().theWorld.getBlockState(above).getBlock();
-									if (!cropBlocksZapper.contains(aboveBlock)) {
-										availableNeighbors.add(newPos);
-									}
-								}
-							}
-
-							if (availableNeighbors.size() >= 2) {
-								returnablePositions.add(pos);
-								pos = availableNeighbors.get(0);
-							} else if (availableNeighbors.size() == 1) {
-								pos = availableNeighbors.get(0);
-							} else if (returnablePositions.isEmpty()) {
-								break;
-							} else {
-								i--;
-								pos = returnablePositions.getLast();
-							}
+				for (int xOff = -radius; xOff <= radius; xOff++) {
+					for (int zOff = -radius; zOff <= radius; zOff++) {
+						BlockPos renderPos = target.add(xOff, 0, zOff);
+						BlockPos airPos = renderPos.add(0, 1, 0);
+						IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
+						IBlockState airState = Minecraft.getMinecraft().theWorld.getBlockState(airPos);
+						if (renderState.getBlock() == Blocks.dirt ||
+							renderState.getBlock() == Blocks.grass && airState.getBlock() == Blocks.air) {
+							AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
+																								 Minecraft.getMinecraft().theWorld,
+																								 renderPos
+																							 )
+																										.expand(0.001D, 0.001D, 0.001D)
+																										.offset(-d0, -d1, -d2);
+							drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
 						}
 					}
 				}
-				for (BlockPos pos : zapperBlocks) {
-					Block block = Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock();
-					drawFilledBoundingBox(block.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, pos)
-																		 .expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2),
-						1f, NotEnoughUpdates.INSTANCE.config.itemOverlays.zapperOverlayColour
-					);
-				}
+
 				GlStateManager.depthMask(true);
 				GlStateManager.enableTexture2D();
 				GlStateManager.disableBlend();
-			} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableTreecapOverlay &&
-				(heldInternal.equals("JUNGLE_AXE") || heldInternal.equals("TREECAPITATOR_AXE"))) {
-				int maxWood = 10;
-				if (heldInternal.equals("TREECAPITATOR_AXE")) maxWood = 35;
+			}
+		} else if ((heldInternal.equals("HOE_OF_GREATEST_TILLING") &&
+			NotEnoughUpdates.INSTANCE.config.itemOverlays.enableHoeOverlay && onPrivateIsland) &&
+			event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			BlockPos target = event.target.getBlockPos();
+			IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);
 
-				if (event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-					GlStateManager.enableBlend();
-					GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-					GlStateManager.color(0.0F, 0.0F, 0.0F, 0.4F);
-					GlStateManager.disableTexture2D();
-					GlStateManager.depthMask(false);
+			if (targetState.getBlock() == Blocks.dirt || targetState.getBlock() == Blocks.grass) {
+				GlStateManager.enableDepth();
+				GlStateManager.enableBlend();
+				GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+				GlStateManager.disableTexture2D();
+				GlStateManager.depthMask(true);
 
-					if (Minecraft.getMinecraft().theWorld.getBlockState(event.target.getBlockPos()).getBlock() == Blocks.log ||
-						Minecraft.getMinecraft().theWorld.getBlockState(event.target.getBlockPos()).getBlock() == Blocks.log2) {
+				LinkedList<BlockPos> candidates = new LinkedList<>();
+				LinkedList<BlockPos> candidatesOld = new LinkedList<>();
+				LinkedList<BlockPos> candidatesNew = new LinkedList<>();
+				candidatesNew.add(target);
 
-						int woods = 0;
+				while (candidatesOld.size() <= 100) {
+					if (candidatesNew.isEmpty()) {
+						break;
+					}
 
-						HashSet<BlockPos> candidatesOld = new HashSet<>();
-						LinkedList<BlockPos> candidates = new LinkedList<>();
-						LinkedList<BlockPos> candidatesNew = new LinkedList<>();
+					candidates.addAll(candidatesNew);
+					candidatesNew.clear();
 
-						candidatesNew.add(event.target.getBlockPos());
+					while (!candidates.isEmpty()) {
 
-						while (woods < maxWood) {
-							if (candidatesNew.isEmpty()) {
+						BlockPos candidate = candidates.pop();
+						candidatesOld.add(candidate);
+
+						float yaw = Minecraft.getMinecraft().thePlayer.getRotationYawHead();
+						Facing facing = Facing.forDirection(yaw);
+						int xOff = facing == Facing.WEST ? -1 : facing == Facing.EAST ? 1 : 0;
+						int zOff = facing == Facing.NORTH ? -1 : facing == Facing.SOUTH ? 1 : 0;
+
+						BlockPos renderPos = candidate.add(xOff, 0, zOff);
+						BlockPos airPos = renderPos.add(0, 1, 0);
+						IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
+						IBlockState airState = Minecraft.getMinecraft().theWorld.getBlockState(airPos);
+						if (!candidatesOld.contains(renderPos) && !candidates.contains(renderPos) && !candidatesNew.contains(
+							renderPos)) {
+							if (renderState.getBlock() == Blocks.dirt ||
+								renderState.getBlock() == Blocks.grass && airState.getBlock() == Blocks.air) {
+								candidatesNew.add(renderPos);
+							} else {
 								break;
-							}
-
-							candidates.addAll(candidatesNew);
-							candidatesNew.clear();
-
-							woods += candidates.size();
-							boolean random = woods > maxWood;
-
-							while (!candidates.isEmpty()) {
-								BlockPos candidate = candidates.pop();
-								Block block = Minecraft.getMinecraft().theWorld.getBlockState(candidate).getBlock();
-
-								candidatesOld.add(candidate);
-
-								for (int x = -1; x <= 1; x++) {
-									for (int y = -1; y <= 1; y++) {
-										for (int z = -1; z <= 1; z++) {
-											if (x != 0 || y != 0 || z != 0) {
-												BlockPos posNew = candidate.add(x, y, z);
-												if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(
-													posNew)) {
-													Block blockNew = Minecraft.getMinecraft().theWorld.getBlockState(posNew).getBlock();
-													if (blockNew == Blocks.log || blockNew == Blocks.log2) {
-														candidatesNew.add(posNew);
-													}
-												}
-											}
-										}
-									}
-								}
-
-								block.setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
-
-								drawFilledBoundingBox(block.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, candidate)
-																					 .expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2),
-									random ? 0.5f : 1f, NotEnoughUpdates.INSTANCE.config.itemOverlays.treecapOverlayColour
-								);
 							}
 						}
 					}
 
-					GlStateManager.depthMask(true);
-					GlStateManager.enableTexture2D();
-					GlStateManager.disableBlend();
+					for (BlockPos renderPos : candidatesNew) {
+						AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
+																							 Minecraft.getMinecraft().theWorld,
+																							 renderPos
+																						 )
+																									.expand(0.001D, 0.001D, 0.001D)
+																									.offset(-d0, -d1, -d2);
+						drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
+					}
 				}
-			} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableWandOverlay) {
-				if (heldInternal.equals("BUILDERS_WAND") && onPrivateIsland) {
-					buildersWandOverlay(event, d0, d1, d2);
-				} else if (heldInternal.equals("BUILDERS_RULER") && onPrivateIsland) {
-					buildersRulerOverlay(event, d0, d1, d2);
-				}else if (heldInternal.equals("INFINIDIRT_WAND") &&
-					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableDirtWandOverlay) {
-					BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
-					if ("garden".equals(SBInfo.getInstance().getLocation()) &&
-						(hover.getX() > 239 || hover.getX() < -240 || hover.getZ() > 239 || hover.getZ() < -240 ||
-							hover.getY() <= 66 || hover.getY() > 76)) {
-						return;
-					}
-					IBlockState hoverState = Minecraft.getMinecraft().theWorld.getBlockState(event.target
-						.getBlockPos()
-						.offset(event.target.sideHit, 1));
-					if (hoverState.getBlock() == Blocks.air) {
-						GlStateManager.enableBlend();
-						GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-						GlStateManager.disableTexture2D();
-						GlStateManager.depthMask(false);
 
-						String special = NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour;
+				AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
+																					 Minecraft.getMinecraft().theWorld,
+																					 target
+																				 )
+																							.expand(0.001D, 0.001D, 0.001D)
+																							.offset(-d0, -d1, -d2);
+				drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
 
-						AxisAlignedBB bb = Blocks.dirt.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, hover);
-						drawBlock((int) bb.minX, (int) bb.minY, (int) bb.minZ + 1, Blocks.dirt.getDefaultState(),
-							event.partialTicks, 0.75f
-						);
+				GlStateManager.depthMask(true);
+				GlStateManager.enableTexture2D();
+				GlStateManager.disableBlend();
+			}
+		} else if ((heldInternal.equals("SAM_SCYTHE") || heldInternal.equals("GARDEN_SCYTHE") &&
+			NotEnoughUpdates.INSTANCE.config.itemOverlays.enableScytheOverlay && onPrivateIsland) &&
+			event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			BlockPos target = event.target.getBlockPos();
+			IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);
 
-						AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, hover)
-																									.expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2);
-						drawOutlineBoundingBox(bbExpanded, 1f, special);
+			int radius = heldInternal.equals("SAM_SCYTHE") ? 1 : 2;
 
-						GlStateManager.depthMask(true);
-						GlStateManager.enableTexture2D();
-						GlStateManager.disableBlend();
-					}
-				} else if ((heldInternal.equals("WATER_BUCKET") || heldInternal.equals("MAGICAL_WATER_BUCKET") &&
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.enablePrismapumpOverlay && onPrivateIsland) &&
-					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-					BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
+			if (scytheBlocks.contains(targetState.getBlock())) {
+				GlStateManager.enableDepth();
+				GlStateManager.enableBlend();
+				GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+				GlStateManager.disableTexture2D();
+				GlStateManager.depthMask(true);
 
-					HashSet<BlockPos> verticalSources = new HashSet<>();
-					TreeMap<Float, HashMap<BlockPos, EnumFacing>> watersSorted = new TreeMap<>();
-
-					for (int xOff = -1; xOff <= 1; xOff++) {
-						for (int yOff = 0; yOff <= 1; yOff++) {
-							for (int zOff = -1; zOff <= 1; zOff++) {
-								if ((xOff == 0 && yOff == 0) ||
-									(xOff == 0 && zOff == 0) ||
-									(zOff == 0 && yOff == 0)) {
-
-									BlockPos checkPos = hover.add(-xOff, -yOff, -zOff);
-									IBlockState check = Minecraft.getMinecraft().theWorld.getBlockState(checkPos);
-									if (check.getBlock() == Blocks.prismarine && check.getBlock().getMetaFromState(check) == 2) {
-										for (int i = 0; i < 300; i++) {
-											BlockPos renderPos = hover.add(xOff * i, yOff * i, zOff * i);
-
-											if (Math.abs(renderPos.getX()) > 128) {
-												break;
-											}
-											if (Math.abs(renderPos.getY()) > 255) {
-												break;
-											}
-											if (Math.abs(renderPos.getZ()) > 128) {
-												break;
-											}
-
-											IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
-
-											if (renderState.getBlock() != Blocks.air && renderState.getBlock() != Blocks.water &&
-												renderState.getBlock() != Blocks.flowing_water) {
-												break;
-											}
-
-											if (yOff != 0) {
-												verticalSources.add(renderPos);
-											} else {
-												IBlockState belowState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos.add(
-													0,
-													-1,
-													0
-												));
-												if (belowState.getBlock() == Blocks.air) {
-													break;
-												}
-											}
-
-											for (EnumFacing facing : EnumFacing.values()) {
-												float xDist = (float) (renderPos.getX() + 0.5f + 0.5f * facing.getFrontOffsetX() - d0);
-												float yDist = (float) (renderPos.getY() + 0.5f + 0.5f * facing.getFrontOffsetY() - d1 -
-													player.getEyeHeight());
-												float zDist = (float) (renderPos.getZ() + 0.5f + 0.5f * facing.getFrontOffsetZ() - d2);
-
-												float distSq = xDist * xDist + yDist * yDist + zDist * zDist;
-
-												watersSorted.computeIfAbsent(distSq, k -> new HashMap<>()).put(renderPos, facing);
-											}
-
-										}
-									}
-								}
-							}
-						}
-					}
-
-					GlStateManager.enableDepth();
-					GlStateManager.enableBlend();
-					GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-					GlStateManager.disableTexture2D();
-					GlStateManager.depthMask(true);
-
-					for (HashMap<BlockPos, EnumFacing> blockPoses : watersSorted.values()) {
-						for (Map.Entry<BlockPos, EnumFacing> entry : blockPoses.entrySet()) {
-							boolean vertical = verticalSources.contains(entry.getKey());
-							AxisAlignedBB bbExpanded = Blocks.water.getSelectedBoundingBox(
-																								 Minecraft.getMinecraft().theWorld,
-																								 entry.getKey()
-																							 )
-																										 .expand(-0.001D, -0.001D - (vertical ? 0 : 0.0625D), -0.001D)
-																										 .offset(-d0, -d1 - (vertical ? 0 : 0.0625), -d2);
-							drawFilledBoundingBoxSide(bbExpanded, entry.getValue(), 1f, "0:100:20:50:160");
-						}
-					}
-
-					GlStateManager.depthMask(true);
-					GlStateManager.enableTexture2D();
-					GlStateManager.disableBlend();
-				} else if ((heldInternal.equals("HOE_OF_GREAT_TILLING") || heldInternal.equals("HOE_OF_GREATER_TILLING") &&
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableHoeOverlay && onPrivateIsland) &&
-					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-					BlockPos target = event.target.getBlockPos();
-					IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);
-
-					int radius = heldInternal.equals("HOE_OF_GREAT_TILLING") ? 1 : 2;
-
-					if (targetState.getBlock() == Blocks.dirt || targetState.getBlock() == Blocks.grass) {
-						GlStateManager.enableDepth();
-						GlStateManager.enableBlend();
-						GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-						GlStateManager.disableTexture2D();
-						GlStateManager.depthMask(true);
-
-						for (int xOff = -radius; xOff <= radius; xOff++) {
-							for (int zOff = -radius; zOff <= radius; zOff++) {
-								BlockPos renderPos = target.add(xOff, 0, zOff);
-								BlockPos airPos = renderPos.add(0, 1, 0);
-								IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
-								IBlockState airState = Minecraft.getMinecraft().theWorld.getBlockState(airPos);
-								if (renderState.getBlock() == Blocks.dirt || renderState.getBlock() == Blocks.grass && airState.getBlock() == Blocks.air) {
-									AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
-																										 Minecraft.getMinecraft().theWorld,
-																										 renderPos
-																									 )
-																												.expand(0.001D, 0.001D, 0.001D)
-																												.offset(-d0, -d1, -d2);
-									drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
-								}
-							}
-						}
-
-						GlStateManager.depthMask(true);
-						GlStateManager.enableTexture2D();
-						GlStateManager.disableBlend();
-					}
-				} else if ((heldInternal.equals("HOE_OF_GREATEST_TILLING") &&
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableHoeOverlay && onPrivateIsland) &&
-					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-					BlockPos target = event.target.getBlockPos();
-					IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);
-
-					if (targetState.getBlock() == Blocks.dirt || targetState.getBlock() == Blocks.grass) {
-						GlStateManager.enableDepth();
-						GlStateManager.enableBlend();
-						GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-						GlStateManager.disableTexture2D();
-						GlStateManager.depthMask(true);
-
-						LinkedList<BlockPos> candidates = new LinkedList<>();
-						LinkedList<BlockPos> candidatesOld = new LinkedList<>();
-						LinkedList<BlockPos> candidatesNew = new LinkedList<>();
-						candidatesNew.add(target);
-
-						while (candidatesOld.size() <= 100) {
-							if (candidatesNew.isEmpty()) {
-								break;
-							}
-
-							candidates.addAll(candidatesNew);
-							candidatesNew.clear();
-
-							while (!candidates.isEmpty()) {
-
-								BlockPos candidate = candidates.pop();
-								candidatesOld.add(candidate);
-
-								float yaw = Minecraft.getMinecraft().thePlayer.getRotationYawHead();
-								Facing facing = Facing.forDirection(yaw);
-								int xOff = facing == Facing.WEST ? -1 : facing == Facing.EAST ? 1 : 0;
-								int zOff = facing == Facing.NORTH ? -1 : facing == Facing.SOUTH ? 1 : 0;
-
-								BlockPos renderPos = candidate.add(xOff, 0, zOff);
-								BlockPos airPos = renderPos.add(0, 1, 0);
-								IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
-								IBlockState airState = Minecraft.getMinecraft().theWorld.getBlockState(airPos);
-								if (!candidatesOld.contains(renderPos) && !candidates.contains(renderPos) && !candidatesNew.contains(
-									renderPos)) {
-									if (renderState.getBlock() == Blocks.dirt || renderState.getBlock() == Blocks.grass && airState.getBlock() == Blocks.air) {
-										candidatesNew.add(renderPos);
-									} else {
-										break;
-									}
-								}
-							}
-
-							for (BlockPos renderPos : candidatesNew) {
-								AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
-																									 Minecraft.getMinecraft().theWorld,
-																									 renderPos
-																								 )
+				for (int xOff = -radius; xOff <= radius; xOff++) {
+					for (int yOff = -radius; yOff <= radius; yOff++) {
+						for (int zOff = -radius; zOff <= radius; zOff++) {
+							BlockPos renderPos = target.add(xOff, yOff, zOff);
+							IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
+							if (scytheBlocks.contains(renderState.getBlock())) {
+								AxisAlignedBB bbExpanded = renderState.getBlock().getSelectedBoundingBox(
+																												Minecraft.getMinecraft().theWorld,
+																												renderPos
+																											)
 																											.expand(0.001D, 0.001D, 0.001D)
 																											.offset(-d0, -d1, -d2);
 								drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
 							}
 						}
-
-						AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
-																							 Minecraft.getMinecraft().theWorld,
-																							 target
-																						 )
-																									.expand(0.001D, 0.001D, 0.001D)
-																									.offset(-d0, -d1, -d2);
-						drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
-
-						GlStateManager.depthMask(true);
-						GlStateManager.enableTexture2D();
-						GlStateManager.disableBlend();
 					}
-				} else if ((heldInternal.equals("SAM_SCYTHE") || heldInternal.equals("GARDEN_SCYTHE") &&
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableScytheOverlay && onPrivateIsland) &&
-					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-					BlockPos target = event.target.getBlockPos();
-					IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);
+				}
 
-					int radius = heldInternal.equals("SAM_SCYTHE") ? 1 : 2;
+				GlStateManager.depthMask(true);
+				GlStateManager.enableTexture2D();
+				GlStateManager.disableBlend();
+			}
+		}
+	}
 
-					if (scytheBlocks.contains(targetState.getBlock())) {
-						GlStateManager.enableDepth();
-						GlStateManager.enableBlend();
-						GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-						GlStateManager.disableTexture2D();
-						GlStateManager.depthMask(true);
+	private static void onRenderBlockTreecap(
+		DrawBlockHighlightEvent event,
+		String heldInternal,
+		double d0,
+		double d1,
+		double d2
+	) {
+		int maxWood = 10;
+		if (heldInternal.equals("TREECAPITATOR_AXE")) maxWood = 35;
 
-						for (int xOff = -radius; xOff <= radius; xOff++) {
-							for (int yOff = -radius; yOff <= radius; yOff++) {
-								for (int zOff = -radius; zOff <= radius; zOff++) {
-									BlockPos renderPos = target.add(xOff, yOff, zOff);
-									IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
-									if (scytheBlocks.contains(renderState.getBlock())) {
-										AxisAlignedBB bbExpanded = renderState.getBlock().getSelectedBoundingBox(
-																											 Minecraft.getMinecraft().theWorld,
-																											 renderPos
-																										 )
-																													.expand(0.001D, 0.001D, 0.001D)
-																													.offset(-d0, -d1, -d2);
-										drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
+		if (event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+			GlStateManager.color(0.0F, 0.0F, 0.0F, 0.4F);
+			GlStateManager.disableTexture2D();
+			GlStateManager.depthMask(false);
+
+			if (Minecraft.getMinecraft().theWorld.getBlockState(event.target.getBlockPos()).getBlock() == Blocks.log ||
+				Minecraft.getMinecraft().theWorld.getBlockState(event.target.getBlockPos()).getBlock() == Blocks.log2) {
+
+				int woods = 0;
+
+				HashSet<BlockPos> candidatesOld = new HashSet<>();
+				LinkedList<BlockPos> candidates = new LinkedList<>();
+				LinkedList<BlockPos> candidatesNew = new LinkedList<>();
+
+				candidatesNew.add(event.target.getBlockPos());
+
+				while (woods < maxWood) {
+					if (candidatesNew.isEmpty()) {
+						break;
+					}
+
+					candidates.addAll(candidatesNew);
+					candidatesNew.clear();
+
+					woods += candidates.size();
+					boolean random = woods > maxWood;
+
+					while (!candidates.isEmpty()) {
+						BlockPos candidate = candidates.pop();
+						Block block = Minecraft.getMinecraft().theWorld.getBlockState(candidate).getBlock();
+
+						candidatesOld.add(candidate);
+
+						for (int x = -1; x <= 1; x++) {
+							for (int y = -1; y <= 1; y++) {
+								for (int z = -1; z <= 1; z++) {
+									if (x != 0 || y != 0 || z != 0) {
+										BlockPos posNew = candidate.add(x, y, z);
+										if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(
+											posNew)) {
+											Block blockNew = Minecraft.getMinecraft().theWorld.getBlockState(posNew).getBlock();
+											if (blockNew == Blocks.log || blockNew == Blocks.log2) {
+												candidatesNew.add(posNew);
+											}
+										}
 									}
 								}
 							}
 						}
 
-						GlStateManager.depthMask(true);
-						GlStateManager.enableTexture2D();
-						GlStateManager.disableBlend();
+						block.setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
+
+						drawFilledBoundingBox(block.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, candidate)
+																			 .expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2),
+							random ? 0.5f : 1f, NotEnoughUpdates.INSTANCE.config.itemOverlays.treecapOverlayColour
+						);
+					}
+				}
+			}
+
+			GlStateManager.depthMask(true);
+			GlStateManager.enableTexture2D();
+			GlStateManager.disableBlend();
+		}
+	}
+
+	private void onRenderBlockBlockZapper(
+		DrawBlockHighlightEvent event,
+		boolean onPrivateIsland,
+		double d0,
+		double d1,
+		double d2
+	) {
+		if (!onPrivateIsland || !NotEnoughUpdates.INSTANCE.config.itemOverlays.enableZapperOverlay ||
+			event.target.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
+			zapperBlocks.clear();
+			return;
+		}
+		if (zapperDirty) {
+			zapperDirty = false;
+
+			zapperBlocks.clear();
+
+			LinkedList<BlockPos> returnablePositions = new LinkedList<>();
+
+			BlockPos pos = event.target.getBlockPos();
+			IBlockState firstBlockState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
+			Block block = firstBlockState.getBlock();
+
+			BlockPos above = pos.add(0, 1, 0);
+			Block aboveBlock = Minecraft.getMinecraft().theWorld.getBlockState(above).getBlock();
+
+			if (!cropBlocksZapper.contains(aboveBlock) && !cropBlocksZapper.contains(block) &&
+				!otherBannedBlocksZapper.contains(block) && !block.hasTileEntity(firstBlockState) &&
+				block.getBlockHardness(Minecraft.getMinecraft().theWorld, pos) >= 0) {
+				for (int i = 0; i < 164; i++) {
+					zapperBlocks.add(pos);
+					returnablePositions.remove(pos);
+
+					List<BlockPos> availableNeighbors = new ArrayList<>();
+
+					for (BlockPos offset : zapperOffsets) {
+						BlockPos newPos = pos.add(offset);
+
+						if (zapperBlocks.contains(newPos)) continue;
+
+						IBlockState state = Minecraft.getMinecraft().theWorld.getBlockState(newPos);
+						if (state != null && state.getBlock() == block) {
+							above = newPos.add(0, 1, 0);
+							aboveBlock = Minecraft.getMinecraft().theWorld.getBlockState(above).getBlock();
+							if (!cropBlocksZapper.contains(aboveBlock)) {
+								availableNeighbors.add(newPos);
+							}
+						}
+					}
+
+					if (availableNeighbors.size() >= 2) {
+						returnablePositions.add(pos);
+						pos = availableNeighbors.get(0);
+					} else if (availableNeighbors.size() == 1) {
+						pos = availableNeighbors.get(0);
+					} else if (returnablePositions.isEmpty()) {
+						break;
+					} else {
+						i--;
+						pos = returnablePositions.getLast();
 					}
 				}
 			}
 		}
+		for (BlockPos pos : zapperBlocks) {
+			Block block = Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock();
+			drawFilledBoundingBox(block.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, pos)
+																 .expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2),
+				1f, NotEnoughUpdates.INSTANCE.config.itemOverlays.zapperOverlayColour
+			);
+		}
+		GlStateManager.depthMask(true);
+		GlStateManager.enableTexture2D();
+		GlStateManager.disableBlend();
 	}
 
 	public void buildersWandOverlay(DrawBlockHighlightEvent event, double d0, double d1, double d2) {
@@ -1313,7 +1375,8 @@ public class CustomItemEffects {
 
 			ItemStack matchStack;
 
-			matchStack = new ItemStack(matchItem,
+			matchStack = new ItemStack(
+				matchItem,
 				1,
 				match.getBlock().getDamageValue(Minecraft.getMinecraft().theWorld, event.target.getBlockPos())
 			);
@@ -1334,9 +1397,11 @@ public class CustomItemEffects {
 					for (BlockPos candidate : candidatesSorted) {
 						match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
 						Minecraft.getMinecraft().thePlayer.isSneaking();
-						AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
+						AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(
+							Minecraft.getMinecraft().theWorld,
 							candidate.add(0, 0, 0)
-						).offset(event.target.sideHit.getFrontOffsetX(),
+						).offset(
+							event.target.sideHit.getFrontOffsetX(),
 							event.target.sideHit.getFrontOffsetY(),
 							event.target.sideHit.getFrontOffsetZ()
 						);
@@ -1348,9 +1413,11 @@ public class CustomItemEffects {
 				for (BlockPos candidate : candidatesOld) {
 					match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
 					Minecraft.getMinecraft().thePlayer.isSneaking();
-					AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
+					AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(
+						Minecraft.getMinecraft().theWorld,
 						candidate.add(0, 0, 0)
-					).expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2).offset(event.target.sideHit.getFrontOffsetX(),
+					).expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2).offset(
+						event.target.sideHit.getFrontOffsetX(),
 						event.target.sideHit.getFrontOffsetY(),
 						event.target.sideHit.getFrontOffsetZ()
 					);
@@ -1384,7 +1451,8 @@ public class CustomItemEffects {
 			HashSet<BlockPos> candidatesOld = new HashSet<>();
 			TreeMap<Float, Set<BlockPos>> candidatesOldSorted = new TreeMap<>();
 
-			getBuildersRulerCandidates(Minecraft.getMinecraft().thePlayer,
+			getBuildersRulerCandidates(
+				Minecraft.getMinecraft().thePlayer,
 				event.target,
 				event.partialTicks,
 				candidatesOld,
@@ -1426,9 +1494,11 @@ public class CustomItemEffects {
 
 			for (Set<BlockPos> candidatesSorted : candidatesOldSorted.values()) {
 				for (BlockPos candidate : candidatesSorted) {
-					AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
+					AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(
+						Minecraft.getMinecraft().theWorld,
 						candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() ? -1 : 0, 0)
-					).offset(event.target.sideHit.getFrontOffsetX(),
+					).offset(
+						event.target.sideHit.getFrontOffsetX(),
 						event.target.sideHit.getFrontOffsetY(),
 						event.target.sideHit.getFrontOffsetZ()
 					);
@@ -1438,14 +1508,17 @@ public class CustomItemEffects {
 			}
 
 			for (BlockPos candidate : candidatesOld) {
-				AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
+				AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(
+					Minecraft.getMinecraft().theWorld,
 					candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() ? -1 : 0, 0)
-				).expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2).offset(event.target.sideHit.getFrontOffsetX(),
+				).expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2).offset(
+					event.target.sideHit.getFrontOffsetX(),
 					event.target.sideHit.getFrontOffsetY(),
 					event.target.sideHit.getFrontOffsetZ()
 				);
 
-				drawOutlineBoundingBox(bb,
+				drawOutlineBoundingBox(
+					bb,
 					1f,
 					(Minecraft.getMinecraft().thePlayer.isSneaking())
 						? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour

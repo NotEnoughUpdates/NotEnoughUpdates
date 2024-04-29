@@ -22,7 +22,11 @@ package io.github.moulberry.notenoughupdates.profileviewer.level.task;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
@@ -39,6 +43,15 @@ public class EventTaskLevel extends GuiTaskLevel {
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		List<String> lore = new ArrayList<>();
 
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (data == null) {
+			return;
+		}
+
 		int sbXpMiningFiesta = 0;
 		int sbXpFishingFestival = 0;
 		int sbXpSpookyFestival = 0;
@@ -47,12 +60,8 @@ public class EventTaskLevel extends GuiTaskLevel {
 
 		if (object.has("leveling")) {
 			JsonObject leveling = object.getAsJsonObject("leveling");
-			int miningFiestaOresMined = 0;
-			int fishingFestivalSharksKilled = 0;
-			if (leveling.has("mining_fiesta_ores_mined"))
-				miningFiestaOresMined = leveling.get("mining_fiesta_ores_mined").getAsInt();
-			if (leveling.has("fishing_festival_sharks_killed")) fishingFestivalSharksKilled = leveling.get(
-				"fishing_festival_sharks_killed").getAsInt();
+			int miningFiestaOresMined = data.leveling.mining_fiesta_ores_mined;
+			int fishingFestivalSharksKilled = data.leveling.fishing_festival_sharks_killed;
 
 			sbXpMiningFiesta = getCapOrAmount(miningFiestaOresMined, 1_000_000, 5_000);
 			sbXpFishingFestival = getCapOrAmount(fishingFestivalSharksKilled, 5_000, 50);
@@ -69,11 +78,22 @@ public class EventTaskLevel extends GuiTaskLevel {
 			}
 		}
 
+		int sbXpUniqueMedals = Utils
+			.getElementOrDefault(object, "jacobs_contest.unique_brackets.gold", new JsonArray())
+			.getAsJsonArray()
+			.size() * eventTask.get("jacob_farming_contest_xp").getAsInt();
+
 		lore.add(levelPage.buildLore("Mining Fiesta", sbXpMiningFiesta, eventTask.get("mining_fiesta").getAsInt(), false));
 		lore.add(levelPage.buildLore(
 			"Fishing Festival",
 			sbXpFishingFestival,
 			eventTask.get("fishing_festival").getAsInt(),
+			false
+		));
+		lore.add(levelPage.buildLore(
+			"Jacob's Farming Contest",
+			sbXpUniqueMedals,
+			eventTask.get("jacob_farming_contest").getAsInt(),
 			false
 		));
 		lore.add(levelPage.buildLore(
@@ -84,7 +104,7 @@ public class EventTaskLevel extends GuiTaskLevel {
 		));
 
 		int totalXp = sbXpMiningFiesta + sbXpSpookyFestival +
-			sbXpFishingFestival;
+			sbXpFishingFestival + sbXpUniqueMedals;
 		levelPage.renderLevelBar(
 			"Event Task",
 			new ItemStack(Items.clock),

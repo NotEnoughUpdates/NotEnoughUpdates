@@ -23,7 +23,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.Utils
-import io.github.moulberry.notenoughupdates.util.brigadier.reply
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -37,14 +36,14 @@ class LinksCommand {
                 val manager = NotEnoughUpdates.INSTANCE.manager
                 val updateJsonFile = manager.repoLocation.resolve("update.json")
                 if (!updateJsonFile.exists()) {
-                    Utils.showOutdatedRepoNotification()
+                    Utils.showOutdatedRepoNotification("update.json")
                     return@thenExecute
                 }
                 try {
                     val updateJson = manager.getJsonFromFile(updateJsonFile)
                     NotEnoughUpdates.INSTANCE.displayLinks(updateJson, 0)
                 } catch (_: Exception) {
-                    Utils.showOutdatedRepoNotification()
+                    Utils.showOutdatedRepoNotification("some error with update.json")
                 }
             }
         }.withHelp("Display links for Moulberry and NEU")

@@ -21,7 +21,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
+import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.List;
@@ -49,6 +49,6 @@ public class FuelBarDummy extends TextOverlay {
 
 	@Override
 	public Vector2f getDummySize() {
-		return new Vector2f(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, 12);
+		return new Vector2f(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth + 2, 12);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -26,6 +26,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.KatSitterOverlay;
@@ -39,6 +40,7 @@ import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -72,6 +74,9 @@ import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -127,6 +132,7 @@ public class NEUManager {
 	public long viewItemAttemptTime = 0;
 
 	public final ApiUtil apiUtils = new ApiUtil();
+	public final UrsaClient ursaClient = new UrsaClient(apiUtils);
 
 	private final Map<String, ItemStack> itemstackCache = new HashMap<>();
 
@@ -144,6 +150,9 @@ public class NEUManager {
 	public KatSitterOverlay katSitterOverlay;
 
 	public CraftingOverlay craftingOverlay;
+
+	private static boolean repoDownloadFailed = false;
+	public boolean onBackupRepo = false;
 
 	public NEUManager(NotEnoughUpdates neu, File configLocation) {
 		this.neu = neu;
@@ -198,16 +207,18 @@ public class NEUManager {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				if (latestRepoCommit == null || latestRepoCommit.isEmpty()) return false;
+				if (latestRepoCommit == null || latestRepoCommit.isEmpty()) {
+					repoDownloadFailed = true;
+					return false;
+				}
 
 				if (new File(configLocation, "repo").exists() && new File(configLocation, "repo/items").exists()) {
 					if (currentCommitJSON != null && currentCommitJSON.get("sha").getAsString().equals(latestRepoCommit)) {
 						return false;
 					}
 				}
-				Utils.recursiveDelete(repoLocation);
-				repoLocation.mkdirs();
 
+				repoLocation.mkdirs();
 				File itemsZip = new File(repoLocation, "neu-items-master.zip");
 				try {
 					itemsZip.createNewFile();
@@ -220,11 +231,14 @@ public class NEUManager {
 				urlConnection.setConnectTimeout(15000);
 				urlConnection.setReadTimeout(30000);
 
+				Utils.recursiveDelete(repoLocation);
+				repoLocation.mkdirs();
 				try (InputStream is = urlConnection.getInputStream()) {
 					FileUtils.copyInputStreamToFile(is, itemsZip);
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.err.println("Failed to download NEU Repo! Please report this issue to the mod creator");
+					repoDownloadFailed = true;
 					return false;
 				}
 
@@ -250,10 +264,46 @@ public class NEUManager {
 	 * downloading of new/updated files. This then calls the "loadItem" method for every item in the local repository.
 	 */
 	public void loadItemInformation() {
-		if (NotEnoughUpdates.INSTANCE.config.apiData.autoupdate) {
-			fetchRepository().thenRun(this::reloadRepository);
+		if (NotEnoughUpdates.INSTANCE.config.apiData.autoupdate_new) {
+			fetchRepository().thenRun(() -> {
+				if (repoDownloadFailed) {
+					System.out.println("switching over to the backup repo");
+					switchToBackupRepo();
+				}
+			}).thenRun(this::reloadRepository);
 		} else {
 			reloadRepository();
+		}
+	}
+
+	/**
+	 * Copies the included backup repo to the location of the download, then pretends that the download worked and continues as normal
+	 */
+	public void switchToBackupRepo() {
+		Path destination = new File(repoLocation, "neu-items-master.zip").toPath();
+		onBackupRepo = true;
+
+		try (
+			InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(
+				"assets/notenoughupdates/repo.zip")
+		) {
+			if (inputStream == null) {
+				System.out.println("Failed to copy backup repo");
+				return;
+			}
+			Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
+
+			unzipIgnoreFirstFolder(destination.toAbsolutePath().toString(), repoLocation.getAbsolutePath());
+			JsonObject newCurrentCommitJSON = new JsonObject();
+			newCurrentCommitJSON.addProperty("sha", "backuprepo");
+			try {
+				writeJson(newCurrentCommitJSON, new File(configLocation, "currentCommit.json"));
+			} catch (IOException ignored) {
+			}
+			System.out.println("Successfully switched to backup repo");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Failed to load backup repo");
 		}
 	}
 
@@ -445,8 +495,8 @@ public class NEUManager {
 		int lastStringMatch = -1;
 		ArrayList<DebugMatch> debugMatches = new ArrayList<>();
 
-		toSearch = cleanForTitleMapSearch(toSearch).toLowerCase();
-		query = cleanForTitleMapSearch(query).toLowerCase();
+		toSearch = cleanForTitleMapSearch(toSearch).toLowerCase(Locale.ROOT);
+		query = cleanForTitleMapSearch(query).toLowerCase(Locale.ROOT);
 		String[] splitToSearch = toSearch.split(" ");
 		String[] queryArray = query.split(" ");
 
@@ -633,7 +683,7 @@ public class NEUManager {
 			results.addAll(new TreeSet<>(search(query, loreWordMap)));
 		} else if (query.startsWith("id:")) {
 			query = query.substring(3);
-			results.addAll(new TreeSet<>(subMapWithKeysThatAreSuffixes(query.toUpperCase(), itemMap).keySet()));
+			results.addAll(new TreeSet<>(subMapWithKeysThatAreSuffixes(query.toUpperCase(Locale.ROOT), itemMap).keySet()));
 		} else {
 			if (!query.trim().contains(" ")) {
 				StringBuilder sb = new StringBuilder();
@@ -666,7 +716,7 @@ public class NEUManager {
 	public Set<String> search(String query, TreeMap<String, HashMap<String, List<Integer>>> wordMap) {
 		HashMap<String, List<Integer>> matches = null;
 
-		query = cleanForTitleMapSearch(query).toLowerCase();
+		query = cleanForTitleMapSearch(query).toLowerCase(Locale.ROOT);
 		for (String queryWord : query.split(" ")) {
 			HashMap<String, List<Integer>> matchesToKeep = new HashMap<>();
 			for (HashMap<String, List<Integer>> wordMatches : subMapWithKeysThatAreSuffixes(queryWord, wordMap).values()) {
@@ -821,7 +871,7 @@ public class NEUManager {
 	}
 
 	public static String cleanForTitleMapSearch(String str) {
-		return str.replaceAll("(\u00a7.)|[^0-9a-zA-Z ]", "").toLowerCase().trim();
+		return str.replaceAll("(\u00a7.)|[^#0-9a-zA-Z ]", "").toLowerCase(Locale.ROOT).trim();
 	}
 
 	public void showRecipe(JsonObject item) {
@@ -845,7 +895,9 @@ public class NEUManager {
 				displayGuiItemRecipe(internalName);
 				break;
 			case "viewpotion":
-				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
+				String potionName = internalName.split(";")[0];
+				potionName = potionName.replace("POTION_", "");
+				neu.sendChatMessage("/viewpotion " + potionName.toLowerCase(Locale.ROOT));
 				break;
 			default:
 				displayGuiItemRecipe(internalName);
@@ -1308,16 +1360,18 @@ public class NEUManager {
 						for (int i = 0; i < otherNumsMax.size(); i++) {
 							replacements.put(
 								"" + i,
-								(addZero ? "0\u27A1" : "") +
-									removeUnusedDecimal(Math.floor(otherNumsMin.get(i).getAsFloat() * 10) / 10f) +
-									"\u27A1" + removeUnusedDecimal(Math.floor(otherNumsMax.get(i).getAsFloat() * 10) / 10f)
+								(addZero ? "0\u27A1" : "") + StringUtils.formatNumber(otherNumsMin.get(i).getAsDouble()) +
+									"\u27A1" + StringUtils.formatNumber(otherNumsMax.get(i).getAsDouble())
 							);
 						}
 
 						for (Map.Entry<String, JsonElement> entry : max.get("statNums").getAsJsonObject().entrySet()) {
-							int statMax = (int) Math.floor(entry.getValue().getAsFloat());
-							int statMin = (int) Math.floor(min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat());
-							String statStr = (statMin > 0 ? "+" : "") + statMin + "\u27A1" + statMax;
+							double statMax = entry.getValue().getAsDouble();
+							double statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsDouble();
+
+							String statStr =
+								(statMin > 0 ? "+" : "") + StringUtils.formatNumber(statMin) + "\u27A1" + StringUtils.formatNumber(
+									statMax);
 							statStr = (addZero ? "0\u27A1" : "") + statStr;
 							replacements.put(entry.getKey(), statStr);
 						}
@@ -1538,6 +1592,8 @@ public class NEUManager {
 			})
 			.exceptionally(ex -> {
 				ex.printStackTrace();
+				System.out.println("switching over to the backup repo");
+				switchToBackupRepo();
 				return Arrays.asList(
 					"§cRepository not fully reloaded.",
 					"§cThere was an error reloading your repository.",
@@ -1606,7 +1662,7 @@ public class NEUManager {
 
 		if (displayName == null) {
 			displayName = internalName;
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification(internalName);
 			if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				Utils.addChatMessage("§c[NEU] Found no display name in repo for '" + internalName + "'!");
 			}

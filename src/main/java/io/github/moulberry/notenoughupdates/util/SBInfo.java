@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -21,17 +21,18 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
-import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
+import io.github.moulberry.notenoughupdates.events.SidebarChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
@@ -107,7 +108,6 @@ public class SBInfo {
 	public long unloadedWorld = -1;
 	private JsonObject locraw = null;
 	public boolean isInDungeon = false;
-	public boolean hasNewTab = false;
 
 	public enum Gamemode {
 		NORMAL("", ""), IRONMAN("Ironman", "♲"), STRANDED("Stranded", "☀");
@@ -228,6 +228,8 @@ public class SBInfo {
 			areGamemodesLoaded = true;
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (JsonSyntaxException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -239,7 +241,6 @@ public class SBInfo {
 		joinedWorld = System.currentTimeMillis();
 		currentlyOpenChestName = "";
 		lastOpenChestName = "";
-		hasNewTab = false;
 	}
 
 	@SubscribeEvent
@@ -304,13 +305,13 @@ public class SBInfo {
 		return lastLocation;
 	}
 
-	private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
 	private static final String skillsPrefix = "\u00a7r\u00a7e\u00a7lSkills: \u00a7r\u00a7a";
 	private static final String completedFactionQuests =
 		"\u00a7r \u00a7r\u00a7a(?!(Paul|Finnegan|Aatrox|Cole|Diana|Diaz|Foxy|Marina)).*";
 	public ArrayList<String> completedQuests = new ArrayList<>();
 
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
+	private static List<String> lastLines = new ArrayList<>();
 
 	public void tick() {
 
@@ -328,43 +329,48 @@ public class SBInfo {
 			updateMayor();
 			lastMayorUpdate = currentTime;
 		}
-		try {
-			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
-				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
-				if (name.startsWith(profilePrefix)) {
-					String newProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
-					setCurrentProfile(newProfile);
-					if (!Objects.equals(currentProfile, newProfile)) {
-						currentProfile = newProfile;
-						if (NotEnoughUpdates.INSTANCE.config != null)
-							if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
-								OverlayManager.powderGrindingOverlay.load();
-					}
-					hasNewTab = true;
-				} else if (name.startsWith(skillsPrefix)) {
-					String levelInfo = name.substring(skillsPrefix.length()).trim();
-					Matcher matcher = SKILL_LEVEL_PATTERN.matcher(Utils.cleanColour(levelInfo).split(":")[0]);
-					if (matcher.find()) {
-						try {
-							int level = Integer.parseInt(matcher.group(2).trim());
-							XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
-						} catch (Exception ignored) {
-						}
-					}
-				} else if (name.matches(completedFactionQuests) && "crimson_isle".equals(mode)) {
-					if (completedQuests.isEmpty()) {
-						completedQuests.add(name);
-					} else if (!completedQuests.contains(name)) {
-						completedQuests.add(name);
-					}
+		List<String> profileData = TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PROFILE);
+		if (!profileData.isEmpty()) {
+			String newProfile = Utils.cleanColour(profileData.get(0)).split(" ")[1];
+			if (Character.isLowerCase(newProfile.charAt(0)))
+				newProfile = new StringBuilder(newProfile).reverse().toString();
+			setCurrentProfile(newProfile);
+		}
+		// todo convert to api
+		for (String s : TabListUtils.getTabList()) {
+			if (s.matches(completedFactionQuests) && "crimson_isle".equals(mode)) {
+				if (completedQuests.isEmpty()) {
+					completedQuests.add(s);
+				} else if (!completedQuests.contains(s)) {
+					completedQuests.add(s);
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+//			else if (s.startsWith(skillsPrefix)) {
+//				String levelInfo = s.substring(skillsPrefix.length()).trim();
+//				Matcher matcher = SKILL_LEVEL_PATTERN.matcher(Utils.cleanColour(levelInfo).split(":")[0]);
+//				if (matcher.find()) {
+//					try {
+//						int level = Integer.parseInt(matcher.group(2).trim());
+//						XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase(Locale.ROOT).trim(), level);
+//					} catch (Exception ignored) {
+//					}
+//				}
+//			}
 		}
+//		for (String line : TablistAPI.getWidgetLines(new TablistTutorial.TabListWidget(
+//			"ALL",
+//			TablistAPI.WidgetNames.SKILLS
+//		))) {
+//
+//		}
 
 		try {
 			List<String> lines = SidebarUtil.readSidebarLines(true, false);
+
+			if (lines.equals(lastLines)) return;
+			new SidebarChangeEvent(lines, lastLines).post();
+			lastLines = lines;
+
 			boolean tempIsInDungeon = false;
 			for (String line : lines) {
 				if (line.contains("Cleared:") && line.contains("%")) {
@@ -434,7 +440,6 @@ public class SBInfo {
 					if (line.contains("⏣")) {
 						String l = Utils.cleanColour(line).replaceAll("[^A-Za-z0-9() ]", "").trim();
 						if (!l.equals(location)) {
-							new ScoreboardLocationChangeListener(location, l);
 							lastLocation = location;
 							location = l;
 						}
@@ -459,7 +464,7 @@ public class SBInfo {
 
 	public void updateMayor() {
 		NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.newHypixelApiRequest("resources/skyblock/election")
+			.newAnonymousHypixelApiRequest("resources/skyblock/election")
 			.requestJson()
 			.thenAccept(newJson -> mayorJson = newJson);
 	}
@@ -473,6 +478,9 @@ public class SBInfo {
 			currentProfile = newProfile;
 			MinionHelperManager.getInstance().onProfileSwitch();
 			CookieWarning.onProfileSwitch();
+			if (NotEnoughUpdates.INSTANCE.config != null)
+				if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
+					OverlayManager.powderGrindingOverlay.load();
 		}
 	}
 }

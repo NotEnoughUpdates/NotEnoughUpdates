@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,12 +25,14 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -60,8 +62,10 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -81,7 +85,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0="
 	);
 
-	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
 		{
 			put(
 				"first_page",
@@ -121,6 +125,7 @@ public class BasicPage extends GuiProfileViewerPage {
 	private boolean onSecondPage;
 
 	private final LevelPage levelPage;
+	private boolean clickedLoadStatusButton = false;
 
 	public BasicPage(GuiProfileViewer instance) {
 		super(instance);
@@ -141,7 +146,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		String location = null;
-		JsonObject status = profile.getPlayerStatus();
+		JsonObject status = clickedLoadStatusButton ? profile.getPlayerStatus() : null;
 		if (status != null && status.has("mode")) {
 			location = status.get("mode").getAsString();
 		}
@@ -194,9 +199,7 @@ public class BasicPage extends GuiProfileViewerPage {
 					.flatMap(it -> it); // Flatten: First optional is whether it loaded, second optional is whether it was successful
 			if (pronounChoice.isPresent()) {
 				PronounDB.PronounChoice pronouns = pronounChoice.get();
-				if (pronouns.isConsciousChoice()) {
-					getInstance().tooltipToDisplay = pronouns.render();
-				}
+				getInstance().tooltipToDisplay = Collections.singletonList(pronouns.render());
 			}
 		}
 
@@ -334,17 +337,19 @@ public class BasicPage extends GuiProfileViewerPage {
 					guiLeft + 68, guiTop + 38, true, 0
 				);
 			}
+			double networthInCookies = -1;
 			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE") != null &&
-				NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE").has("avg_buy")) {
-				double networthInCookies =
-					(
+				NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE").has("avg_buy"))
+
+				networthInCookies = (
 						networth /
 							NotEnoughUpdates.INSTANCE.manager.auctionManager
 								.getBazaarInfo("BOOSTER_COOKIE")
 								.get("avg_buy")
 								.getAsDouble()
 					);
-				String networthIRLMoney = StringUtils.formatNumber(Math.round(
+
+			String networthIRLMoney = StringUtils.formatNumber(Math.round(
 					((networthInCookies * 325) / 675) * 4.99));
 
 				if (mouseX > guiLeft + offset - fontWidth / 2 && mouseX < guiLeft + offset + fontWidth / 2) {
@@ -357,7 +362,7 @@ public class BasicPage extends GuiProfileViewerPage {
 									EnumChatFormatting.DARK_GREEN +
 									"$" +
 									EnumChatFormatting.GOLD +
-									networthIRLMoney
+									(networthInCookies >= 0 ? networthIRLMoney : EnumChatFormatting.RED + "ERROR")
 							);
 
 						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
@@ -373,7 +378,8 @@ public class BasicPage extends GuiProfileViewerPage {
 
 						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 							getInstance().tooltipToDisplay.addAll(nwCategoryHover);
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "This is calculated using the current");
+							getInstance().tooltipToDisplay.add(
+								EnumChatFormatting.RED + "The IRL price is calculated using the current");
 							getInstance().tooltipToDisplay.add(
 								EnumChatFormatting.RED + "price of booster cookies on bazaar and the price");
 							getInstance().tooltipToDisplay.add(
@@ -385,13 +391,10 @@ public class BasicPage extends GuiProfileViewerPage {
 						} else {
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
 						}
-						if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-							getInstance().tooltipToDisplay.add("");
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "THIS IS IN NO WAY ENDORSING IRL TRADING!");
-						}
+						getInstance().tooltipToDisplay.add("");
+						getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "THIS IS IN NO WAY ENDORSING IRL TRADING!");
 					}
 				}
-			}
 		} else {
 			int errFontWidth = fr.getStringWidth("Net Worth: " + stateStr);
 			if (errFontWidth >= 117) {
@@ -438,6 +441,29 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 
 			Utils.drawStringCentered(statusStr, guiLeft + 63, guiTop + 160, true, 0);
+		} else {
+			Rectangle buttonRect = new Rectangle(
+				guiLeft + 24,
+				guiTop + 155,
+				80,
+				12
+			);
+
+			RenderUtils.drawFloatingRectWithAlpha(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(),
+				buttonRect.getHeight(), 100, true
+			);
+			Utils.renderShadowedString(
+				clickedLoadStatusButton
+					? EnumChatFormatting.AQUA + "Loading..."
+					: EnumChatFormatting.WHITE + "Load Status",
+				guiLeft + 63,
+				guiTop + 157,
+				79
+			);
+
+			if (Mouse.getEventButtonState() && Utils.isWithinRect(mouseX, mouseY, buttonRect)) {
+				clickedLoadStatusButton = true;
+			}
 		}
 
 		if (entityPlayer == null) {
@@ -445,6 +471,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				loadingProfile = true;
 				UUID playerUUID = UUID.fromString(niceUuid(profile.getUuid()));
 
+				// Loads the player asynchronously
 				profileLoader.submit(() -> {
 					GameProfile fakeProfile = Minecraft
 						.getMinecraft()
@@ -587,7 +614,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		// sb lvl
 
 		int sbLevelX = guiLeft + 162;
-		int sbLevelY = guiTop + 90;
+		int sbLevelY = guiTop + 74;
 
 		double skyblockLevel = profile.getProfile(profileName).getSkyblockLevel();
 		EnumChatFormatting skyblockLevelColour = profile.getProfile(profileName).getSkyblockLevelColour();
@@ -609,7 +636,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		);
 
 		if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
-			if (mouseY >= guiTop + 69 && mouseY <= guiTop + 131) {
+			if (mouseY >= guiTop + 49 && mouseY <= guiTop + 113) {
 				if (Mouse.isButtonDown(0)) onSecondPage = true;
 			}
 		}
@@ -632,6 +659,12 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				int x = guiLeft + 237 + 86 * xPosition;
 				int y = guiTop + 24 + 21 * yPosition;
+
+				if (entry.getKey().equals("social")) {
+					position--;
+					x = guiLeft + 132;
+					y = guiTop + 124;
+				}
 
 				Utils.renderAlignedString(skillName, EnumChatFormatting.WHITE.toString() + levelFloored, x + 14, y - 4, 60);
 
@@ -663,12 +696,12 @@ public class BasicPage extends GuiProfileViewerPage {
 						String totalXpS = StringUtils.formatNumber((long) level.totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
 							EnumChatFormatting.DARK_GRAY + " (" +
-							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
+							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(Locale.ROOT), level)) +
 							"% to " + level.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
 							// double drops + pelts
-							int doubleDrops = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "jacob2.perks.double_drops"), 0);
-							int peltCount = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "trapper_quest.pelt_count"), 0);
+							int doubleDrops = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "jacobs_contest.perks.double_drops"), 0);
+							int peltCount = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "quests.trapper_quest.pelt_count"), 0);
 
 							if (doubleDrops == 15) {
 								tooltipToDisplay.add("§7Double Drops: §6" + (doubleDrops * 2) + "%");
@@ -677,11 +710,13 @@ public class BasicPage extends GuiProfileViewerPage {
 							tooltipToDisplay.add("§7Pelts: §e" + peltCount);
 
 							// medals
-							JsonObject medals_inv = Utils.getElement(selectedProfile.getProfileJson(), "jacob2.medals_inv").getAsJsonObject();
+							JsonObject medals_inv = Utils
+								.getElementOrDefault(selectedProfile.getProfileJson(), "jacobs_contest.medals_inv", new JsonObject())
+								.getAsJsonObject();
 							tooltipToDisplay.add(" ");
 							for (String medalName : medalNames) {
 								String textWithoutFormattingCodes =
-									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase());
+									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase(Locale.ROOT));
 								if (medals_inv.has(textWithoutFormattingCodes)) {
 									int medalAmount = medals_inv.get(textWithoutFormattingCodes).getAsInt();
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
@@ -693,11 +728,11 @@ public class BasicPage extends GuiProfileViewerPage {
 							}
 						}
 
-						String slayerNameLower = entry.getKey().toLowerCase();
+						String slayerNameLower = entry.getKey().toLowerCase(Locale.ROOT);
 						if (Weight.SLAYER_NAMES.contains(slayerNameLower)) {
 							JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
 							if (slayerToTier == null) {
-								Utils.showOutdatedRepoNotification();
+								Utils.showOutdatedRepoNotification("leveling.json");
 								return;
 							}
 
@@ -705,7 +740,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							for (int i = 0; i < 5; i++) {
 								if (i >= maxLevel) break;
 								float tier = Utils.getElementAsFloat(
-									Utils.getElement(selectedProfile.getProfileJson(), "slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
+									Utils.getElement(selectedProfile.getProfileJson(), "slayer.slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
 									0
 								);
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "T" + (i + 1) + " Kills: " +
@@ -734,6 +769,9 @@ public class BasicPage extends GuiProfileViewerPage {
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) {
 			renderWeight(mouseX, mouseY, selectedProfile);
 		}
+
+		selectedProfile.updateTamingLevel();
+		selectedProfile.updateBeastMasterMultiplier();
 	}
 
 	private String getIcon(String gameModeType) {
@@ -792,7 +830,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null ||
 			!Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("weight.json");
 			return;
 		}
 
@@ -966,7 +1004,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		int i = onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
+		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
 			case 1:
 				onSecondPage = false;
@@ -982,32 +1020,21 @@ public class BasicPage extends GuiProfileViewerPage {
 		return false;
 	}
 
-	public int onSlotToChangePage(int mouseX, int mouseY, int guiLeft, int guiTop) {
-		if (mouseX >= guiLeft - 29 && mouseX <= guiLeft) {
-			if (mouseY >= guiTop && mouseY <= guiTop + 28) {
-				return 1;
-			} else if (mouseY + 28 >= guiTop && mouseY <= guiTop + 28 * 2) {
-				return 2;
-			}
-		}
-		return 0;
-	}
-
 	public void drawSideButtons() {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		if (onSecondPage) {
-			Utils.drawPvSideButton(1, dungeonsModeIcons.get("second_page"), true, guiProfileViewer);
+			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), true, guiProfileViewer);
 		} else {
-			Utils.drawPvSideButton(0, dungeonsModeIcons.get("first_page"), true, guiProfileViewer);
+			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), true, guiProfileViewer);
 		}
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
 		if (!onSecondPage) {
-			Utils.drawPvSideButton(1, dungeonsModeIcons.get("second_page"), false, guiProfileViewer);
+			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), false, guiProfileViewer);
 		} else {
-			Utils.drawPvSideButton(0, dungeonsModeIcons.get("first_page"), false, guiProfileViewer);
+			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), false, guiProfileViewer);
 		}
 		GlStateManager.disableDepth();
 	}

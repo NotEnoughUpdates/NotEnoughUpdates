@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.listener;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUApi;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
@@ -28,11 +27,11 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
-import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.HexPriceWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.RepoExporters;
@@ -49,7 +48,6 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
-import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
@@ -57,6 +55,7 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.ScreenReplacer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -98,6 +97,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -393,11 +393,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-		if (RancherBootOverlay.shouldReplace()) {
-			RancherBootOverlay.render();
-			event.setCanceled(true);
-			return;
-		}
 
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
@@ -409,6 +404,8 @@ public class RenderListener {
 
 		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
 			GuiCustomHex.getInstance().render(event.renderPartialTicks, containerName);
+			if (HexPriceWarning.INSTANCE.shouldShow())
+				HexPriceWarning.INSTANCE.render();
 			event.setCanceled(true);
 			return;
 		}
@@ -601,12 +598,14 @@ public class RenderListener {
 		}
 		if (!hoveringButton[0]) buttonHovered = null;
 
-		if (AuctionBINWarning.getInstance().shouldShow()) {
-			AuctionBINWarning.getInstance().render();
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.render();
+			}
 		}
 
-		if (AbiphoneWarning.getInstance().shouldShow()) {
-			AbiphoneWarning.getInstance().render();
+		if (AuctionBINWarning.getInstance().shouldShow()) {
+			AuctionBINWarning.getInstance().render();
 		}
 
 		if (PresetWarning.getInstance().shouldShow()) {
@@ -657,7 +656,7 @@ public class RenderListener {
 						String displayName = item.getDisplayName();
 						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
 						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
-							String type = matcher.group(1).toUpperCase();
+							String type = matcher.group(1).toUpperCase(Locale.ROOT);
 							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type);
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
 								float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
@@ -760,7 +759,7 @@ public class RenderListener {
 						valueStringBIN1 = EnumChatFormatting.YELLOW + "Value (BIN): ";
 						valueStringBIN2 = EnumChatFormatting.GOLD + formatCoins(totalValue) + " coins";
 					} else {
-						valueStringBIN1 = EnumChatFormatting.YELLOW + "Can't find BIN: ";
+						valueStringBIN1 = EnumChatFormatting.YELLOW + "Can't find Price: ";
 						valueStringBIN2 = missingItem;
 					}
 
@@ -779,7 +778,8 @@ public class RenderListener {
 						}
 					}
 					JsonObject kismetBazaar = neu.manager.auctionManager.getBazaarInfo("KISMET_FEATHER");
-					double kismetPrice = (kismetBazaar != null && kismetBazaar.has("curr_buy")) ? kismetBazaar.get("curr_buy").getAsFloat() : 0;
+					double kismetPrice =
+						(kismetBazaar != null && kismetBazaar.has("curr_buy")) ? kismetBazaar.get("curr_buy").getAsFloat() : 0;
 					String kismetStr = EnumChatFormatting.RED + formatCoins(kismetPrice) + " coins";
 					if (neu.config.dungeons.useKismetOnDungeonProfit)
 						profitLossBIN = kismetUsed ? profitLossBIN - kismetPrice : profitLossBIN;
@@ -845,11 +845,12 @@ public class RenderListener {
 							160
 						);
 					}
-					JsonObject mayorJson = SBInfo.getInstance().getMayorJson();
-					JsonElement mayor = mayorJson.get("mayor");
-					if (mayorJson.has("mayor") && mayor != null && mayor.getAsJsonObject().has("name") &&
-						mayor.getAsJsonObject().get("name").getAsString().equals("Derpy")
-						&& NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
+					String mayorJson = Utils.getElementAsString(
+						Utils.getElement(SBInfo.getInstance().getMayorJson(), "mayor.name"),
+						""
+					);
+					if (Objects.equals(mayorJson, "Derpy") &&
+						NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
 						Utils.drawStringScaled(
 							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Mayor Derpy active!",
 							guiLeft + xSize + 4 + 10,
@@ -876,24 +877,22 @@ public class RenderListener {
 	 */
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onGuiScreenMouse(GuiScreenEvent.MouseInputEvent.Pre event) {
-		if (Mouse.getEventButtonState() && StorageManager.getInstance().onAnyClick()) {
-			event.setCanceled(true);
-			return;
-		}
-
 		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 		final int scaledWidth = scaledresolution.getScaledWidth();
 		final int scaledHeight = scaledresolution.getScaledHeight();
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.mouseInput(mouseX, mouseY);
+				event.setCanceled(true);
+				return;
+			}
+		}
+
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().mouseInput(mouseX, mouseY);
-			event.setCanceled(true);
-			return;
-		}
-		if (AbiphoneWarning.getInstance().shouldShow()) {
-			AbiphoneWarning.getInstance().mouseInput(mouseX, mouseY);
 			event.setCanceled(true);
 			return;
 		}
@@ -913,11 +912,6 @@ public class RenderListener {
 		}
 		if (BazaarSearchOverlay.shouldReplace()) {
 			BazaarSearchOverlay.mouseEvent();
-			event.setCanceled(true);
-			return;
-		}
-		if (RancherBootOverlay.shouldReplace()) {
-			RancherBootOverlay.mouseEvent();
 			event.setCanceled(true);
 			return;
 		}
@@ -944,7 +938,7 @@ public class RenderListener {
 						Utils.playPressSound();
 						NotEnoughUpdates.profileViewer.loadPlayerByName(username, profile -> {
 							if (profile == null) {
-								Utils.addChatMessage("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.");
+								Utils.addChatMessage("${RED}Invalid player name. Maybe the API is down?");
 							} else {
 								profile.resetCache();
 								ProfileViewerUtils.saveSearch(username);
@@ -1063,13 +1057,16 @@ public class RenderListener {
 			return;
 		}
 
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.keyboardInput();
+				event.setCanceled(true);
+				return;
+			}
+		}
+
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().keyboardInput();
-			event.setCanceled(true);
-			return;
-		}
-		if (AbiphoneWarning.getInstance().shouldShow()) {
-			AbiphoneWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
 			return;
 		}
@@ -1086,11 +1083,6 @@ public class RenderListener {
 		}
 		if (BazaarSearchOverlay.shouldReplace()) {
 			BazaarSearchOverlay.keyEvent();
-			event.setCanceled(true);
-			return;
-		}
-		if (RancherBootOverlay.shouldReplace()) {
-			RancherBootOverlay.keyEvent();
 			event.setCanceled(true);
 			return;
 		}
@@ -1128,12 +1120,12 @@ public class RenderListener {
 		}
 
 		if (tradeWindowActive) {
-				TradeWindow.keyboardInput();
-				if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
-					event.setCanceled(true);
-					Minecraft.getMinecraft().dispatchKeypresses();
-					neu.overlay.keyboardInput(focusInv);
-				}
+			TradeWindow.keyboardInput();
+			if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
+				event.setCanceled(true);
+				Minecraft.getMinecraft().dispatchKeypresses();
+				neu.overlay.keyboardInput(focusInv);
+			}
 			return;
 		}
 
@@ -1255,6 +1247,7 @@ public class RenderListener {
 
 	/**
 	 * Support for switching between different pages in the RecipeView gui via right and left arrow key
+	 *
 	 * @param event
 	 */
 	//Because GuiScreen.keyTyped does not fire the KEY_LEFT and KEY_RIGHT keys. Maybe some event cancelled it?

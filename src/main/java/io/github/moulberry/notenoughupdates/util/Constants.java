@@ -82,6 +82,9 @@ public class Constants {
 	public static JsonObject ABIPHONE;
 	public static JsonObject ESSENCESHOPS;
 	public static JsonObject SBLEVELS;
+	public static JsonObject MUSEUM;
+	public static JsonObject BESTIARY;
+	public static JsonObject SACKS;
 
 	private static final ReentrantLock lock = new ReentrantLock();
 
@@ -107,6 +110,9 @@ public class Constants {
 			ABIPHONE = Utils.getConstant("abiphone", gson);
 			ESSENCESHOPS = Utils.getConstant("essenceshops", gson);
 			SBLEVELS = Utils.getConstant("sblevels", gson);
+			MUSEUM = Utils.getConstant("museum", gson);
+			BESTIARY = Utils.getConstant("bestiary", gson);
+			SACKS = Utils.getConstant("sacks", gson);
 
 			parseEssenceCosts();
 		} catch (Exception ex) {

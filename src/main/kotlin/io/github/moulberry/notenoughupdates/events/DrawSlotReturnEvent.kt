@@ -20,10 +20,5 @@
 package io.github.moulberry.notenoughupdates.events
 
 import net.minecraft.inventory.Slot
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompressedStreamTools
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.util.*
 
 data class DrawSlotReturnEvent(val slot: Slot) : NEUEvent()

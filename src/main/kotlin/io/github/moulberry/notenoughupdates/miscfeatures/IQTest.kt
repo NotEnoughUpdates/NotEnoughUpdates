@@ -19,11 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures
 
+import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorButton
+import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorInfoText
+import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorText
+import io.github.moulberry.moulconfig.processor.ProcessedCategory
+import io.github.moulberry.moulconfig.processor.ProcessedOption
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
-import io.github.moulberry.notenoughupdates.core.config.gui.GuiOptionEditorButton
-import io.github.moulberry.notenoughupdates.core.config.gui.GuiOptionEditorFSR
-import io.github.moulberry.notenoughupdates.core.config.gui.GuiOptionEditorText
-import io.github.moulberry.notenoughupdates.core.config.struct.ConfigProcessor.ProcessedOption
+import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand
 import io.github.moulberry.notenoughupdates.util.Calculator
 import io.github.moulberry.notenoughupdates.util.Calculator.CalculatorException
 import java.math.BigDecimal
@@ -40,6 +42,7 @@ object IQTest {
             Calculator.calculate(answer)
         } catch (e: CalculatorException) {
             wrongAnswer()
+            SettingsCommand.lastEditor?.updateSearchResults()
             return
         }
         val realAnswer = Calculator.calculate(question)
@@ -49,6 +52,7 @@ object IQTest {
         } else {
             wrongAnswer()
         }
+        SettingsCommand.lastEditor?.updateSearchResults(true)
     }
 
     private fun wrongAnswer() {
@@ -64,46 +68,51 @@ object IQTest {
     @JvmField
     var answer = ""
 
+    val cat = ProcessedCategory(javaClass.getField("answer"), "IQ Test", "IQ Test")
     val answerOption = ProcessedOption(
         "IQ Test Question",
-        "Please type out the answer to §a$question\n§cIf you just want to set your api key do §6/neusetkey <key>",
-        -1,
+        "Please type out the answer to §a$question",
+        "",
         javaClass.getField("answer"),
+        cat,
         this,
-        arrayOf()
+        NotEnoughUpdates.INSTANCE.config
     ).also {
         it.editor = GuiOptionEditorText(it)
     }
     val warningOption = ProcessedOption(
         "§4§lWARNING",
         "§4§lThis page is dangerous. Please make sure you know what you are doing!",
-        -1,
+        "",
         javaClass.getField("buttonPlaceHolder"),
+        cat,
         this,
-        arrayOf()
+        NotEnoughUpdates.INSTANCE.config
     ).also {
         it.editor = GuiOptionEditorButton(it, 27, "SUBMIT", NotEnoughUpdates.INSTANCE.config)
     }
     val wrongOption = ProcessedOption(
         "§4Wrong Answer",
         "§4Please think twice before accessing it.",
-        -1,
+        "",
         javaClass.getField("buttonPlaceHolder"),
+        cat,
         this,
-        arrayOf()
+        NotEnoughUpdates.INSTANCE.config
     ).also {
-        it.editor = GuiOptionEditorFSR(it, -1, "", NotEnoughUpdates.INSTANCE.config)
+        it.editor = GuiOptionEditorInfoText(it, "")
     }
 
 
     @get:JvmStatic
-    val options
-        get() = LinkedHashMap<String, ProcessedOption>().also {
-            it["iqTestAnswer"] = answerOption
-            it["iqTestSubmit"] = warningOption
-
+    val options: ProcessedCategory
+        get() {
+            cat.options.clear()
             if (System.currentTimeMillis() - lastAnsweredTimestamp < 10_000L) {
-                it["iqTestWrong"] = wrongOption
+                cat.options.addAll(listOf(answerOption, warningOption, wrongOption))
+            } else {
+                cat.options.addAll(listOf(answerOption, warningOption))
             }
+            return cat
         }
 }

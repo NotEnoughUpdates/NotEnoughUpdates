@@ -30,10 +30,8 @@ import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.BlockPos
-import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.function.Consumer
 
 @NEUAutoSubscribe
 class SimpleDevCommands {
@@ -56,11 +54,11 @@ class SimpleDevCommands {
         }.withHelp("Display the dungeon win pop up")
         event.command("neuenablestorage") {
             thenLiteralExecute("disable") {
-                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true
+                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = false
                 NotEnoughUpdates.INSTANCE.saveConfig()
                 reply("Disabled the NEU storage overlay. Click here to enable again") {
                     chatStyle.chatClickEvent = ClickEvent(
-                        ClickEvent.Action.SUGGEST_COMMAND,
+                        ClickEvent.Action.RUN_COMMAND,
                         "/neuenablestorage"
                     )
                 }
@@ -70,7 +68,7 @@ class SimpleDevCommands {
                 NotEnoughUpdates.INSTANCE.saveConfig()
                 reply("Enabled the NEU storage overlay. Click here to disable again") {
                     chatStyle.chatClickEvent = ClickEvent(
-                        ClickEvent.Action.SUGGEST_COMMAND,
+                        ClickEvent.Action.RUN_COMMAND,
                         "/neuenablestorage disable"
                     )
                 }
@@ -101,7 +99,7 @@ class SimpleDevCommands {
             thenExecute {
                 NotEnoughUpdates.INSTANCE.manager
                     .userFacingRepositoryReload()
-                    .thenAccept { it
+                    .thenAccept {
                         it.forEach(::reply)
                     }
             }

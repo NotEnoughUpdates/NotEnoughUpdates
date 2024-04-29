@@ -184,6 +184,9 @@ public abstract class TextOverlay {
 				for (String s2 : s.split("\n")) {
 					Vector2f pos = new Vector2f(x + paddingX, y + paddingY + yOff);
 					renderLine(s2, pos, dummy);
+					if (s2.startsWith("CUSTOM")) {
+						s2 = s2.split(":", 2)[1];
+					}
 
 					int xPad = (int) pos.x;
 					int yPad = (int) pos.y;

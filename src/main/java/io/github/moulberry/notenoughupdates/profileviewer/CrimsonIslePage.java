@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
@@ -48,11 +47,31 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	private static final String[] dojoGrades = {"F", "D", "C", "B", "A", "S"};
 
 	private static final ItemStack[] KUUDRA_KEYS = {
-		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_TIER_KEY"),
-		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_HOT_TIER_KEY"),
-		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_BURNING_TIER_KEY"),
-		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_FIERY_TIER_KEY"),
-		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_INFERNAL_TIER_KEY"),
+		Utils.createSkull(
+			EnumChatFormatting.BLUE + "Kuudra Key",
+			"2a9e4728-b0c5-3f7d-9c45-7ff3fc1eb206",
+			"ewogICJ0aW1lc3RhbXAiIDogMTY0MzY1MjgzNTU0NCwKICAicHJvZmlsZUlkIiA6ICJkYmQ4MDQ2M2EwMzY0Y2FjYjI3OGNhODBhMDBkZGIxMyIsCiAgInByb2ZpbGVOYW1lIiA6ICJ4bG9nMjEiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmZkM2U3MTgzOGMwZTc2Zjg5MDIxMzEyMGI0Y2U3NDQ5NTc3NzM2NjA0MzM4YThkMjhiNGM4NmRiMjU0N2U3MSIKICAgIH0KICB9Cn0"
+		),
+		Utils.createSkull(
+			EnumChatFormatting.DARK_PURPLE + "Hot Kuudra Key",
+			"80a91601-ac87-302b-ac6a-4c635b73c2a2",
+			"ewogICJ0aW1lc3RhbXAiIDogMTY0MzY1Mjg2NTc1MiwKICAicHJvZmlsZUlkIiA6ICJkMGI4MjE1OThmMTE0NzI1ODBmNmNiZTliOGUxYmU3MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJqYmFydHl5IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2MwMjU5ZTg5NjRjM2RlYjk1YjEyMzNiYjJkYzgyYzk4NjE3N2U2M2FlMzZjMTEyNjVjYjM4NTE4MGJiOTFjYzAiCiAgICB9CiAgfQp9"
+		),
+		Utils.createSkull(
+			EnumChatFormatting.DARK_PURPLE + "Burning Kuudra Key",
+			"74ceda89-849d-35b4-b0fb-00083f599c02",
+			"ewogICJ0aW1lc3RhbXAiIDogMTY0MzY1Mjg4MjI5NSwKICAicHJvZmlsZUlkIiA6ICI1YjY2YzNkZWZhYTI0NWMzYTcwNjM3OTA3NTQ0Yjg3MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJSZWFuX1JhaWNvMDgxNiIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zMzBmNmY2ZTYzYjI0NWY4MzllM2NjZGNlNWE1ZjIyMDU2MjAxZDAyNzQ0MTFkZmU1ZDk0YmJlNDQ5YzRlY2UiCiAgICB9CiAgfQp9"
+		),
+		Utils.createSkull(
+			EnumChatFormatting.DARK_PURPLE + "Fiery Kuudra Key",
+			"75c56136-e7cc-3836-a4d5-ed516b7651d6",
+			"ewogICJ0aW1lc3RhbXAiIDogMTY0MzY1Mjg5ODM0MSwKICAicHJvZmlsZUlkIiA6ICI5ZDQyNWFiOGFmZjg0MGU1OWM3NzUzZjc5Mjg5YjMyZSIsCiAgInByb2ZpbGVOYW1lIiA6ICJUb21wa2luNDIiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ4NTQzOTNiYmY5NDQ0NTQyNTAyNTgyZDRiNWEyM2NjNzM4OTY1MDZlMmZjNzM5ZDU0NWJjMzViYzdiMWMwNiIKICAgIH0KICB9Cn0"
+		),
+		Utils.createSkull(
+			EnumChatFormatting.GOLD + "Infernal Kuudra Key",
+			"3877a428-ace8-3faf-9992-4644fbd87f4c",
+			"ewogICJ0aW1lc3RhbXAiIDogMTY0MzY1MjkxMzA5NiwKICAicHJvZmlsZUlkIiA6ICJjNTlkMDFlMDI4MWI0MGNhOTczNjc5ODc4NmRmN2FmNiIsCiAgInByb2ZpbGVOYW1lIiA6ICJvWm9va3hQYXJjY2VyIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzgyZWUyNTQxNGFhN2VmYjRhMmI0OTAxYzZlMzNlNWVhYTcwNWE2YWIyMTJlYmViZmQ2YTRkZTk4NDEyNWM3YTAiCiAgICB9CiAgfQp9"
+		),
 	};
 
 	private static final String[] KUUDRA_TIERS_NAME = {"Basic", "Hot", "Burning", "Fiery", "Infernal"};
@@ -140,6 +159,17 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		Utils.drawStringCentered(EnumChatFormatting.RED + "Kuudra Stats", guiLeft + (431 * 0.18f), guiTop + 14, true, 0);
 
 		JsonObject kuudraCompletedTiers = data.getAsJsonObject("kuudra_completed_tiers");
+
+		if (kuudraCompletedTiers == null) {
+			Utils.renderAlignedString(
+				EnumChatFormatting.RED + "No kuudra stats found!",
+				" ",
+				guiLeft + 15,
+				guiTop + 101,
+				130
+			);
+			return;
+		}
 
 		RenderHelper.enableGUIStandardItemLighting();
 
@@ -282,7 +312,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		JsonObject lastMatriarchAttempt = data.getAsJsonObject("matriarch");
 
-		if (!lastMatriarchAttempt.entrySet().isEmpty()) {
+		if (lastMatriarchAttempt != null && !lastMatriarchAttempt.entrySet().isEmpty()) {
 			Utils.renderAlignedString(
 				EnumChatFormatting.GOLD + "Heavy Pearls Acquired: ",
 				EnumChatFormatting.WHITE + lastMatriarchAttempt.get("pearls_collected").getAsString(),

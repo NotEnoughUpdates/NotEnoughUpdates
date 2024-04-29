@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
@@ -37,15 +38,17 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -138,12 +141,12 @@ public class ItemUtils {
 		is.setTagCompound(tagCompound);
 	}
 
-	public static List<String> getLore(ItemStack is) {
+	public static @NotNull List<@NotNull String> getLore(@Nullable ItemStack is) {
 		if (is == null) return new ArrayList<>();
 		return getLore(is.getTagCompound());
 	}
 
-	public static List<String> getLore(NBTTagCompound tagCompound) {
+	public static @NotNull List<@NotNull String> getLore(@Nullable NBTTagCompound tagCompound) {
 		if (tagCompound == null) {
 			return Collections.emptyList();
 		}
@@ -155,7 +158,12 @@ public class ItemUtils {
 		return list;
 	}
 
-	public static String getDisplayName(NBTTagCompound compound) {
+	public static @Nullable String getDisplayName(@Nullable ItemStack itemStack) {
+		if (null == itemStack) return null;
+		return getDisplayName(itemStack.getTagCompound());
+	}
+
+	public static @Nullable String getDisplayName(@Nullable NBTTagCompound compound) {
 		if (compound == null) return null;
 		String string = compound.getCompoundTag("display").getString("Name");
 		if (string == null || string.isEmpty())
@@ -208,7 +216,7 @@ public class ItemUtils {
 		return text;
 	}
 
-	public static NBTTagCompound getExtraAttributes(ItemStack itemStack) {
+	public static @NotNull NBTTagCompound getExtraAttributes(ItemStack itemStack) {
 		NBTTagCompound tag = getOrCreateTag(itemStack);
 		NBTTagCompound extraAttributes = tag.getCompoundTag("ExtraAttributes");
 		tag.setTag("ExtraAttributes", extraAttributes);
@@ -227,7 +235,7 @@ public class ItemUtils {
 			return stack;
 		}
 		String petname = currentPet.petType;
-		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase();
+		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase(Locale.ROOT);
 		String heldItem = currentPet.petItem;
 		String skin = currentPet.skin;
 		JsonObject heldItemJson = heldItem == null ? null : NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
@@ -304,7 +312,7 @@ public class ItemUtils {
 				}
 				for (int i = 0; i < newLore.size(); i++) {
 					String cleaned = Utils.cleanColour(newLore.get(i));
-					if (cleaned.equals("Right-click to add this pet to")) {
+					if (cleaned.startsWith("Right-click to add this pet to")) {
 						if (heldItem == null) newLore.remove(i + 2);
 						newLore.remove(i + 1);
 						newLore.remove(i);
@@ -403,13 +411,13 @@ public class ItemUtils {
 					NBTTagList newLore = new NBTTagList();
 					int maxLvl = 100;
 					if (Constants.PETS != null && Constants.PETS.has("custom_pet_leveling") &&
-						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.toUpperCase()) &&
-						Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet.petType.toUpperCase()).has(
+						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.toUpperCase(Locale.ROOT)) &&
+						Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT)).has(
 							"max_level")) {
 						maxLvl =
 							Constants.PETS
 								.getAsJsonObject("custom_pet_leveling")
-								.getAsJsonObject(pet.petType.toUpperCase())
+								.getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT))
 								.get("max_level")
 								.getAsInt();
 					}
@@ -467,6 +475,17 @@ public class ItemUtils {
 		if (id.equals("ENDER_LEGGINGS")) return "END_LEGGINGS";
 		if (id.equals("ENDER_BOOTS")) return "END_BOOTS";
 		return id;
+	}
+
+	public static ItemStack createItemStackFromId(String id, String displayname) {
+		Item item = Item.getByNameOrId(id);
+		if (item == null) {
+			return null;
+		}
+
+		ItemStack itemStack = new ItemStack(item);
+		itemStack.setStackDisplayName(displayname);
+		return itemStack;
 	}
 
 }

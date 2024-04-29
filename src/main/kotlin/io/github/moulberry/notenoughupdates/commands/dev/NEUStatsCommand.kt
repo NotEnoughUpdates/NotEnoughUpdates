@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.DiscordMarkdownBuilder
 import io.github.moulberry.notenoughupdates.util.SBInfo
+import io.github.moulberry.notenoughupdates.util.TabListUtils
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteralExecute
@@ -53,7 +54,7 @@ import javax.management.ObjectName
 class NEUStatsCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
-        event.command("stats", "neustats") {
+        event.command( "neustats") {
             thenLiteralExecute("modlist") {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
@@ -61,10 +62,22 @@ class NEUStatsCommand {
                         .toString()
                 )
             }.withHelp("Copy the mod list to your clipboard")
+            thenLiteralExecute("tablist") {
+                clipboardAndSendMessage("```\n${TabListUtils.getTabList()}\n```")
+            }.withHelp("Copy the current tab list to your clipboard")
+            thenLiteralExecute("repo") {
+                clipboardAndSendMessage(
+                    DiscordMarkdownBuilder()
+                        .also(::appendRepoStats)
+                        .also(::appendAdvancedRepoStats)
+                        .toString()
+                )
+            }.withHelp("Copy the repo stats to your clipboard")
             thenLiteralExecute("full") {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
                         .also(::appendStats)
+                        .also(::appendAdvancedRepoStats)
                         .also(::appendModList)
                         .toString()
                 )
@@ -158,23 +171,63 @@ class NEUStatsCommand {
         builder.append("Forge", ForgeVersion.getVersion())
         builder.append("Optifine", if (FMLClientHandler.instance().hasOptifine()) "TRUE" else "FALSE")
         builder.category("Neu Settings")
-        builder.append("API Key", if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey.isEmpty()) "FALSE" else "TRUE")
         builder.append("On SkyBlock", if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) "TRUE" else "FALSE")
         builder.append(
             "Mod Version",
             Loader.instance().indexedModList[NotEnoughUpdates.MODID]!!.displayVersion
         )
+        builder.append(
+            "Version Id",
+            NotEnoughUpdates.VERSION_ID
+        )
         builder.append("SB Profile", SBInfo.getInstance().currentProfile)
-        builder.append("Has Advanced Tab", if (SBInfo.getInstance().hasNewTab) "TRUE" else "FALSE")
-        builder.category("Repo Stats")
-        builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
-        builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
+            .also(::appendRepoStats)
     }
 
     private fun appendModList(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
         builder.category("Mods Loaded")
         Loader.instance().activeModList.forEach {
             builder.append(it.name, "${it.source.name} (${it.displayVersion})")
+        }
+        return builder
+    }
+
+    private fun appendRepoStats(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
+        val apiData = NotEnoughUpdates.INSTANCE.config.apiData
+        if (apiData.repoUser.isEmpty() || apiData.repoName.isEmpty() || apiData.repoBranch.isEmpty()) {
+            apiData.repoUser = "NotEnoughUpdates"
+            apiData.repoName = "NotEnoughUpdates-REPO"
+            apiData.repoBranch = "master"
+            builder.category("Reset Repository location")
+        } else {
+            builder.category("Repo Stats")
+            builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
+            builder.append("Repo Location", "https://github.com/${apiData.repoUser}/${apiData.repoName}/tree/${apiData.repoBranch}")
+        }
+        builder.append("Using Backup", NotEnoughUpdates.INSTANCE.manager.onBackupRepo)
+        builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
+        if (apiData.moulberryCodesApi.isEmpty()) {
+            apiData.moulberryCodesApi = "moulberry.codes"
+            builder.category("Reset API location")
+        } else {
+            builder.append("Lowest Bin API Location", apiData.moulberryCodesApi)
+        }
+        return builder
+    }
+
+    private fun appendAdvancedRepoStats(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
+        if (NotEnoughUpdates.INSTANCE.manager.repoLocation.isDirectory) {
+            val files = NotEnoughUpdates.INSTANCE.manager.repoLocation.listFiles()
+            builder.category("Repo Files")
+            files?.forEach { file ->
+                if (file.isDirectory) {
+                    builder.append(file.name, file.listFiles()?.size)
+                } else if (file.isFile) {
+                    builder.append("", file.name)
+                }
+            }
+        } else {
+            builder.category("Repo folder not found!")
         }
         return builder
     }

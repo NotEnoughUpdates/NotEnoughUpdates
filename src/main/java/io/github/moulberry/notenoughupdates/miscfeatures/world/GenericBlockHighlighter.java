@@ -49,7 +49,7 @@ public abstract class GenericBlockHighlighter {
 		World w = Minecraft.getMinecraft().theWorld;
 		if (w == null) return;
 		for (BlockPos blockPos : highlightedBlocks) {
-			RenderUtils.renderBoundingBox(blockPos, getColor(blockPos), event.partialTicks);
+			RenderUtils.renderBoundingBox(blockPos, getColor(blockPos), event.partialTicks, true);
 		}
 	}
 
@@ -106,8 +106,12 @@ public abstract class GenericBlockHighlighter {
 	}
 
 	@SubscribeEvent
-	public void onWorldChange(WorldEvent.Load event) {
+	public void onWorldChange(WorldEvent.Unload event) {
 		highlightedBlocks.clear();
+	}
+
+	public boolean tryRegisterInterest(BlockPos pos) {
+		return tryRegisterInterest(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public boolean tryRegisterInterest(double x, double y, double z) {

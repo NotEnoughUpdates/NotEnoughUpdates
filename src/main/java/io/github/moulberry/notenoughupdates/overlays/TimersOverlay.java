@@ -21,22 +21,30 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodoHud;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.time.ZoneId;
@@ -63,7 +71,7 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
 		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?([ms])?\u00a7r");
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
-		"\u00a7r\u00a7d\u00a7lYum! \u00a7r\u00a7eYou gain .+ \u00a7r\u00a7efor \u00a7r\u00a7a48 \u00a7r\u00a7ehours!\u00a7r");
+		"§r§d§l(?:Big )?Yum! §r§eYou (?:refresh|gain) §r§.+ §r§efor §r§a48 §r§ehours!§r");
 	private static final Pattern PUZZLER_PATTERN =
 		Pattern.compile("\u00a7r\u00a7dPuzzler\u00a7r\u00a76 gave you .+ \u00a7r\u00a76for solving the puzzle!\u00a7r");
 	private static final Pattern FETCHUR_PATTERN =
@@ -75,7 +83,20 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern DAILY_GEMSTONE_POWDER = Pattern.compile(
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
 	private static final Pattern DAILY_SHOP_LIMIT = Pattern.compile(
-		"\u00a7r\u00a7cYou may only buy up to (640|6400) of this item each day!\u00a7r");
+		"\u00a7r\u00a7cYou may only buy up to 6,?400? of this item each day!\u00a7r");
+
+	@SubscribeEvent
+	public void onClickItem(SlotClickEvent event) {
+		NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (hidden == null) return;
+
+		if (event.slot == null || !event.slot.getHasStack()) return;
+		var itemStack = event.slot.getStack();
+		if (itemStack.getItem() != Item.getItemFromBlock(Blocks.double_plant) || itemStack.getItemDamage() != 1) return;
+		if (ItemUtils.getLore(itemStack).contains("§a§lFREE! §a(Every 4 hours)")) {
+			hidden.lastFreeRiftInfusionApplied = System.currentTimeMillis();
+		}
+	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onChatMessageReceived(ClientChatReceivedEvent event) {
@@ -87,6 +108,10 @@ public class TimersOverlay extends TextTabOverlay {
 			Matcher cakeMatcher = CAKE_PATTERN.matcher(event.message.getFormattedText());
 			if (cakeMatcher.matches()) {
 				hidden.firstCakeAte = currentTime;
+				return;
+			}
+			if ("§r§d§lINFUSED! §r§7Used your free dimensional infusion!§r".equals(event.message.getFormattedText())) {
+				hidden.lastFreeRiftInfusionApplied = currentTime;
 				return;
 			}
 			Matcher puzzlerMatcher = PUZZLER_PATTERN.matcher(event.message.getFormattedText());
@@ -130,14 +155,39 @@ public class TimersOverlay extends TextTabOverlay {
 		return super.getSize(strings);
 	}
 
-	private static final ItemStack CAKES_ICON = new ItemStack(Items.cake);
-	private static final ItemStack PUZZLER_ICON = new ItemStack(Items.book);
 	private static ItemStack[] FETCHUR_ICONS = null;
-	private static final ItemStack COMMISSIONS_ICON = new ItemStack(Items.iron_pickaxe);
-	private static final ItemStack EXPERIMENTS_ICON = new ItemStack(Items.enchanted_book);
-	private static final ItemStack COOKIE_ICON = new ItemStack(Items.cookie);
-	private static final ItemStack QUEST_ICON = new ItemStack(Items.sign);
-	private static final ItemStack SHOP_ICON = new ItemStack(Blocks.hopper);
+
+	private static HashMap<String, ItemStack> todoItems;
+
+	private static void setupTodoItems() {
+		todoItems = new HashMap<String, ItemStack>() {
+			{
+				addItem("Mithril Powder", "INK_SACK-10");
+				addItem("God Potion", "GOD_POTION_2");
+				addItem("Crimson Isle Quest", "SIGN");
+				addItem("Daily Shop Limit", "HOPPER");
+				addItem("Rift", "DOUBLE_PLANT-1");
+				addItem("Cakes", "EPOCH_CAKE_PINK");
+				addItem("Experiments", "ENCHANTED_BOOK");
+				addItem("Puzzler", "BOOK");
+				addItem("Commission", "IRON_PICKAXE");
+				addItem("Heavy Pearls", "HEAVY_PEARL");
+				addItem("Gemstone Powder", "PERFECT_AMETHYST_GEM");
+				addItem("Mithril Powder", "MITHRIL_ORE");
+				addItem("Cookie Buff", "BOOSTER_COOKIE");
+			}
+
+			private void addItem(String eventName, String internalName) {
+				ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager)
+					.withKnownInternalName(internalName).resolveToItemStack();
+				if (itemStack == null) {
+					Utils.showOutdatedRepoNotification(internalName);
+					return;
+				}
+				put(eventName, itemStack.copy());
+			}
+		};
+	}
 
 	@Override
 	protected void renderLine(String line, Vector2f position, boolean dummy) {
@@ -145,88 +195,89 @@ public class TimersOverlay extends TextTabOverlay {
 			return;
 		}
 		GlStateManager.enableDepth();
-
 		ItemStack icon = null;
+
+		if (todoItems == null) {
+			setupTodoItems();
+		}
 
 		String clean = Utils.cleanColour(line);
 		String beforeColon = clean.split(":")[0];
-		switch (beforeColon) {
-			case "Cakes":
-				icon = CAKES_ICON;
-				break;
-			case "Puzzler":
-				icon = PUZZLER_ICON;
-				break;
-			case "Godpot":
-				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("GOD_POTION"));
-				break;
-			case "Fetchur": {
-				if (FETCHUR_ICONS == null) {
-					FETCHUR_ICONS = new ItemStack[]{
-						new ItemStack(Blocks.wool, 50, 14),
-						new ItemStack(Blocks.stained_glass, 20, 4),
-						new ItemStack(Items.compass, 1, 0),
-						new ItemStack(Items.prismarine_crystals, 20, 0),
-						new ItemStack(Items.fireworks, 1, 0),
-						NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-							.getItemInformation()
-							.get("CHEAP_COFFEE")),
-						new ItemStack(Items.oak_door, 1, 0),
-						new ItemStack(Items.rabbit_foot, 3, 0),
-						NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-							.getItemInformation()
-							.get("SUPERBOOM_TNT")),
-						new ItemStack(Blocks.pumpkin, 1, 0),
-						new ItemStack(Items.flint_and_steel, 1, 0),
-						new ItemStack(Blocks.quartz_ore, 50, 0),
-						//new ItemStack(Items.ender_pearl, 16, 0)
-					};
+		if (beforeColon.startsWith("CUSTOM")) {
+			icon = CustomTodoHud.INSTANCE.parseItem(CustomTodoHud.INSTANCE.decodeCustomItem(beforeColon));
+		} else
+			switch (beforeColon) {
+				case "Cakes":
+					icon = todoItems.get("Cakes");
+					break;
+				case "Puzzler":
+					icon = todoItems.get("Puzzler");
+					break;
+				case "Godpot":
+					icon = todoItems.get("God Potion");
+					break;
+				case "Fetchur": {
+					if (FETCHUR_ICONS == null) {
+						FETCHUR_ICONS = new ItemStack[]{
+							new ItemStack(Blocks.wool, 50, 14),
+							new ItemStack(Blocks.stained_glass, 20, 4),
+							new ItemStack(Items.compass, 1, 0),
+							new ItemStack(Items.prismarine_crystals, 20, 0),
+							new ItemStack(Items.fireworks, 1, 0),
+							NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+								.getItemInformation()
+								.get("CHEAP_COFFEE")),
+							new ItemStack(Items.oak_door, 1, 0),
+							new ItemStack(Items.rabbit_foot, 3, 0),
+							NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+								.getItemInformation()
+								.get("SUPERBOOM_TNT")),
+							new ItemStack(Blocks.pumpkin, 1, 0),
+							new ItemStack(Items.flint_and_steel, 1, 0),
+							new ItemStack(Blocks.emerald_ore, 50, 0),
+							//new ItemStack(Items.ender_pearl, 16, 0)
+						};
+					}
+
+					ZonedDateTime currentTimeEST = ZonedDateTime.now(ZoneId.of("America/Atikokan"));
+
+					long fetchurIndex = ((currentTimeEST.getDayOfMonth() + 1) % 12) - 1;
+					//Added because disabled fetchur and enabled it again but it was showing the wrong item
+					//Lets see if this stays correct
+
+					if (fetchurIndex < 0) fetchurIndex += 12;
+
+					icon = FETCHUR_ICONS[(int) fetchurIndex];
+					break;
 				}
-
-				ZonedDateTime currentTimeEST = ZonedDateTime.now(ZoneId.of("America/Atikokan"));
-
-				long fetchurIndex = ((currentTimeEST.getDayOfMonth() + 1) % 12) - 1;
-				//Added because disabled fetchur and enabled it again but it was showing the wrong item
-				//Lets see if this stays correct
-
-				if (fetchurIndex < 0) fetchurIndex += 12;
-
-				icon = FETCHUR_ICONS[(int) fetchurIndex];
-				break;
+				case "Commissions":
+					icon = todoItems.get("Commission");
+					break;
+				case "Experiments":
+					icon = todoItems.get("Experiments");
+					break;
+				case "Cookie Buff":
+					icon = todoItems.get("Cookie Buff");
+					break;
+				case "Mithril Powder":
+					icon = todoItems.get("Mithril Powder");
+					break;
+				case "Gemstone Powder":
+					icon = todoItems.get("Gemstone Powder");
+					break;
+				case "Heavy Pearls":
+					icon = todoItems.get("Heavy Pearls");
+					break;
+				case "Free Rift Infusion":
+					icon = todoItems.get("Rift");
+					break;
+				case "Crimson Isle Quests":
+					icon = todoItems.get("Crimson Isle Quest");
+					break;
+				case "NPC Buy Daily Limit":
+					icon = todoItems.get("Daily Shop Limit");
+					break;
 			}
-			case "Commissions":
-				icon = COMMISSIONS_ICON;
-				break;
-			case "Experiments":
-				icon = EXPERIMENTS_ICON;
-				break;
-			case "Cookie Buff":
-				icon = COOKIE_ICON;
-				break;
-			case "Mithril Powder":
-				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("MITHRIL_ORE"));
-				break;
-			case "Gemstone Powder":
-				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("PERFECT_AMETHYST_GEM"));
-				break;
-			case "Heavy Pearls":
-				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("HEAVY_PEARL"));
-				break;
-			case "Crimson Isle Quests":
-				icon = QUEST_ICON;
-				break;
-			case "NPC Buy Daily Limit":
-				icon = SHOP_ICON;
-				break;
-		}
 
 		if (icon != null) {
 			GlStateManager.pushMatrix();
@@ -269,12 +320,24 @@ public class TimersOverlay extends TextTabOverlay {
 			String containerName = lower.getDisplayName().getUnformattedText();
 			ItemStack stack = lower.getStackInSlot(0);
 			switch (containerName.intern()) {
+				case "Dimensional Infusion":
+					if (lower.getSizeInventory() != 9 * 4) break;
+					var freeInfusionSlot = lower.getStackInSlot(13);
+					if (freeInfusionSlot == null || freeInfusionSlot.stackSize != 1 ||
+						freeInfusionSlot.getItem() != Item.getItemFromBlock(Blocks.double_plant) ||
+						freeInfusionSlot.getItemDamage() != 1) {
+						break;
+					}
+					if (ItemUtils.getLore(freeInfusionSlot).contains("§a§lFREE! §a(Every 4 hours)")) {
+						hidden.lastFreeRiftInfusionApplied = 0L;
+					}
+					break;
 				case "Commissions":
 					if (lower.getSizeInventory() < 18) {
 						break;
 					}
 					if (hidden.commissionsCompleted == 0) {
-						hidden.commissionsCompleted = currentTime + TimeEnums.DAY.time;
+						hidden.commissionsCompleted = currentTime;
 					}
 					for (int i = 9; i < 18; i++) {
 						stack = lower.getStackInSlot(i);
@@ -356,6 +419,7 @@ public class TimersOverlay extends TextTabOverlay {
 										switch (unit) {
 											case "Years":
 											case "Year":
+											case "y":
 												hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
 												break;
 											case "Months":
@@ -597,6 +661,26 @@ public class TimersOverlay extends TextTabOverlay {
 						Utils.prettyTime(hidden.godPotionDuration)
 				);
 			}
+		}
+
+		// Free Rift Infusion
+		var miscOverlay = NotEnoughUpdates.INSTANCE.config.miscOverlays;
+		long riftAvailableAgainIn = hidden.lastFreeRiftInfusionApplied + 1000 * 60 * 60 * 4 - currentTime;
+		if (riftAvailableAgainIn < 0) {
+			map.put(
+				12,
+				DARK_AQUA + "Free Rift Infusion: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
+			);
+		} else if ((miscOverlay.freeRiftInfusionDisplay == 1 && riftAvailableAgainIn < TimeEnums.HALFANHOUR.time) ||
+			(miscOverlay.freeRiftInfusionDisplay == 2)) {
+			map.put(
+				12,
+				DARK_AQUA + "Free Rift Infusion: " +
+					EnumChatFormatting.values()[riftAvailableAgainIn < TimeEnums.HALFANHOUR.time
+						? miscOverlay.verySoonColour
+						: miscOverlay.defaultColour] + Utils.prettyTime(riftAvailableAgainIn)
+			);
 		}
 
 		long puzzlerEnd = hidden.puzzlerCompleted + 1000 * 60 * 60 * 24 - currentTime;
@@ -989,6 +1073,9 @@ public class TimersOverlay extends TextTabOverlay {
 				overlayStrings.add(text);
 			}
 		}
+
+		CustomTodoHud.processInto(overlayStrings);
+
 		if (overlayStrings.isEmpty()) overlayStrings = null;
 	}
 
@@ -1004,40 +1091,32 @@ public class TimersOverlay extends TextTabOverlay {
 		return false;
 	}
 
-	public static int beforePearls = -1;
-	public static int afterPearls = -1;
-	public static int availablePearls = -1;
+	AxisAlignedBB matriarchArea = new AxisAlignedBB(-555, 36, -904, -532, 52, -870);
 
-	public static int heavyPearlCount() {
-		int heavyPearls = 0;
-
-		List<ItemStack> inventory = Minecraft.getMinecraft().thePlayer.inventoryContainer.getInventory();
-		for (ItemStack item : inventory) {
-			if (item == null) {
-				continue;
-			} else if (!item.hasTagCompound()) {
-				continue;
-			}
-			NBTTagCompound itemData = item.getSubCompound("ExtraAttributes", false);
-			if (itemData == null) {
-				continue;
-			}
-			if (itemData.getString("id").equals("HEAVY_PEARL")) {
-				heavyPearls += item.stackSize;
+	@SubscribeEvent
+	public void onMatriarchTick(TickEvent.ClientTickEvent event) {
+		if (event.phase != TickEvent.Phase.END) return;
+		if (!"crimson_isle".equals(SBInfo.getInstance().getLocation())) return;
+		var player = Minecraft.getMinecraft().thePlayer;
+		if (player == null) return;
+		if (!matriarchArea.isVecInside(player.getPositionVector())) return;
+		var matriarchRelevantArmorStands = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(
+			EntityArmorStand.class,
+			matriarchArea
+		);
+		boolean noMorePearlsAvailable = false;
+		for (var entityArmorStand : matriarchRelevantArmorStands) {
+			if (entityArmorStand.hasCustomName() &&
+				entityArmorStand.getCustomNameTag().contains("Heavy Pearls Available: 0")) {
+				noMorePearlsAvailable = true;
+				break;
 			}
 		}
-		return heavyPearls;
-	}
-
-	public static void processActionBar(String msg) {
-		if (SBInfo.getInstance().location.equals("Belly of the Beast") && msg.contains("Pearls Collected")) {
-			try {
-				msg = Utils.cleanColour(msg);
-				msg = msg.substring(msg.indexOf("Pearls Collected: ") + 18);
-				availablePearls = Integer.parseInt(msg.substring(msg.indexOf("/") + 1));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		if (noMorePearlsAvailable) {
+			var profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+			if (profileSpecific != null)
+				profileSpecific.dailyHeavyPearlCompleted
+					= System.currentTimeMillis();
 		}
 	}
 

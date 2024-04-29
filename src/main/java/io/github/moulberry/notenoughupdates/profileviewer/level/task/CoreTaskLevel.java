@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
@@ -62,6 +63,10 @@ public class CoreTaskLevel extends GuiTaskLevel {
 		if (selectedProfile == null) {
 			return;
 		}
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (data == null) {
+			return;
+		}
 
 		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 		int sbXpGainedSkillLVL = 0;
@@ -89,26 +94,19 @@ public class CoreTaskLevel extends GuiTaskLevel {
 
 		// mp acc
 		int sbXpGainedMp = 0;
-		if (object.has("accessory_bag_storage") &&
-			object.getAsJsonObject("accessory_bag_storage").has("highest_magical_power")) {
-			sbXpGainedMp = object.getAsJsonObject("accessory_bag_storage").get("highest_magical_power").getAsInt();
+		if (data.accessory_bag_storage != null) {
+			sbXpGainedMp = data.accessory_bag_storage.highest_magical_power;
 		}
 
 		// pets
 
-		int petScore = 0;
-		if (object.has("leveling") &&
-			object.getAsJsonObject("leveling").has("highest_pet_score")) {
-			petScore = object.getAsJsonObject("leveling").get("highest_pet_score").getAsInt();
-
-		}
+		int petScore = data.leveling.highest_pet_score;
 		int sbXpPetScore = petScore * coreTask.get("pet_score_xp").getAsInt();
 
 		// museum is not possible
 
 		// fairy soul
-		int fairySoulsCollected = object.get("fairy_souls_collected").getAsInt();
-		int sbXpGainedFairy = ((fairySoulsCollected / 5)) * coreTask.get("fairy_souls_xp").getAsInt();
+		int sbXpGainedFairy = data.fairy_soul.total_collected / 5 * coreTask.get("fairy_souls_xp").getAsInt();
 
 		int sbXpCollection = -1;
 		int sbXpMinionTier = -1; // keeping at -1 here because cobblestone 1 minion XP isn't included for some reason?
@@ -133,25 +131,30 @@ public class CoreTaskLevel extends GuiTaskLevel {
 		}
 
 		int sbXpBankUpgrades = 0;
+		int sbXpTravelScroll = 0;
 		if (object.has("leveling") && object.getAsJsonObject("leveling").has("completed_tasks")) {
 			JsonArray completedTasks = object.getAsJsonObject("leveling").get("completed_tasks").getAsJsonArray();
 			JsonObject bankUpgradesXp = coreTask.getAsJsonObject("bank_upgrades_xp");
 			for (JsonElement completedTask : completedTasks) {
 				String name = completedTask.getAsString();
+				if (name.startsWith("FAST_TRAVEL_") && coreTask.has("fast_travel_unlocked_xp")) {
+					sbXpTravelScroll += coreTask.get("fast_travel_unlocked_xp").getAsInt();
+				}
 				if (bankUpgradesXp.has(name)) {
 					sbXpBankUpgrades += bankUpgradesXp.get(name).getAsInt();
 				}
 			}
 		}
 
+
 		List<String> lore = new ArrayList<>();
+
+		int totalXp = sbXpGainedSkillLVL + sbXpGainedFairy +
+			sbXpCollection + sbXpMinionTier + sbXpBankUpgrades + sbXpTravelScroll;
 
 		lore.add(levelPage.buildLore("Skill Level Up",
 			sbXpGainedSkillLVL, coreTask.get("skill_level_up").getAsInt(), false
 		));
-
-		int totalXp = sbXpGainedSkillLVL + sbXpGainedFairy +
-			sbXpCollection + sbXpMinionTier + sbXpBankUpgrades;
 
 		lore.add(levelPage.buildLore(
 			"Museum Progression",
@@ -177,6 +180,9 @@ public class CoreTaskLevel extends GuiTaskLevel {
 		));
 		lore.add(levelPage.buildLore("Bank Upgrade",
 			sbXpBankUpgrades, coreTask.get("bank_upgrades").getAsInt(), false
+		));
+		lore.add(levelPage.buildLore("Fast Travel Scroll",
+			sbXpTravelScroll, coreTask.get("fast_travel_unlocked").getAsInt(), false
 		));
 
 		levelPage.renderLevelBar(

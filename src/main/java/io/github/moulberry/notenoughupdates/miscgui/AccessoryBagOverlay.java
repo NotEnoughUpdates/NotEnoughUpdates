@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
@@ -68,6 +69,7 @@ import java.util.regex.Pattern;
 
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.accessory_bag_overlay;
 
+@NEUAutoSubscribe
 public class AccessoryBagOverlay {
 	private static final int TAB_BASIC = 0;
 	private static final int TAB_TOTAL = 1;
@@ -428,12 +430,21 @@ public class AccessoryBagOverlay {
 			missing = new ArrayList<>();
 
 			List<String> missingInternal = new ArrayList<>();
+
+			List<String> ignoredTalisman = new ArrayList<>();
+			if (misc.has("ignored_talisman")) {
+				for (JsonElement jsonElement : misc.getAsJsonArray("ignored_talisman")) {
+					ignoredTalisman.add(jsonElement.getAsString());
+				}
+			}
+
 			for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager.getItemInformation().entrySet()) {
+				if (ignoredTalisman.contains(entry.getValue().get("internalname").getAsString())) continue;
 				if (entry.getValue().has("lore")) {
 					if (checkItemType(
 						entry.getValue().get("lore").getAsJsonArray(),
 						"ACCESSORY",
-						"HATCCESSORY",
+						"HATCESSORY",
 						"DUNGEON ACCESSORY"
 					) >= 0) {
 						missingInternal.add(entry.getKey());
@@ -1027,7 +1038,7 @@ public class AccessoryBagOverlay {
 	}
 
 	public static boolean isAccessory(ItemStack stack) {
-		return checkItemType(stack, true, "ACCESSORY", "HATCCESSORY") >= 0;
+		return checkItemType(stack, true, "ACCESSORY", "HATCESSORY") >= 0;
 	}
 
 	public static int getRarity(ItemStack stack) {

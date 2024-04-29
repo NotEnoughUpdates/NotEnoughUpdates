@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.KSerializable
 import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.File
@@ -50,8 +51,17 @@ object MuseumTooltipManager {
     private val loadedMuseumDataDelegate = lazy {
         var data = MuseumData()
         if (file.exists()) {
-            val content = file.readText()
-            data = Gson().fromJson(content, MuseumData::class.java)
+            try {
+                val content = file.readText()
+                val loadedData = Gson().fromJson(content, MuseumData::class.java)
+                if (loadedData != null) {
+                    data = loadedData
+                } else {
+                    Utils.addChatMessage("${EnumChatFormatting.RED}${EnumChatFormatting.BOLD}[NEU] Error while reading existing museum data, resetting.")
+                }
+            } catch (ignored: Exception) {
+                Utils.addChatMessage("${EnumChatFormatting.RED}${EnumChatFormatting.BOLD}[NEU] Error while reading existing museum data, resetting.")
+            }
         } else {
             file.createNewFile()
             file.writeText(Gson().toJson(data))

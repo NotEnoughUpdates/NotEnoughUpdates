@@ -23,7 +23,6 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.github.moulberry.notenoughupdates.BuildFlags
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
-import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper
@@ -36,7 +35,6 @@ import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.command.ICommandSender
-import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ChatComponentText
@@ -65,7 +63,10 @@ class DevTestCommand {
             "0ce87d5a-fa5f-4619-ae78-872d9c5e07fe",  // ascynx
             "a049a538-4dd8-43f8-87d5-03f09d48b4dc",  // egirlefe
             "7a9dc802-d401-4d7d-93c0-8dd1bc98c70d",  // efefury
-            "bb855349-dfd8-4125-a750-5fc2cf543ad5" // hannibal2
+            "bb855349-dfd8-4125-a750-5fc2cf543ad5",  // hannibal2
+            "eaa5623c-8413-46b7-a74b-2d74a42b2841",  // calmwolfs
+            "e2c6f077-d45c-43ac-8322-857c7f8df3b9",  // vixid
+            "503450fc-72c2-4e87-8243-94e264977437"   // thatgravyboat
         )
         val SPECIAL_KICK = "SPECIAL_KICK"
 
@@ -189,9 +190,6 @@ class DevTestCommand {
                     )
                 )
             }.withHelp("Display information about the special block zone at your cursor (Custom Texture Regions)")
-            thenLiteralExecute("positiontest") {
-                NotEnoughUpdates.INSTANCE.openGui = GuiPositionEditor()
-            }.withHelp("Open the gui position editor")
             thenLiteral("pt") {
                 thenArgument("particle", EnumArgumentType.enum<EnumParticleTypes>()) { particle ->
                     thenExecute {
@@ -199,6 +197,16 @@ class DevTestCommand {
                         reply("Fishing particles set to ${FishingHelper.type}")
                     }
                 }
+            }
+            thenLiteral("callUrsa") {
+                thenArgument("path", RestArgumentType) { path ->
+                    thenExecute {
+                        NotEnoughUpdates.INSTANCE.manager.ursaClient.getString(this[path])
+                            .thenAccept {
+                                reply(it.toString())
+                            }
+                    }
+                }.withHelp("Send an authenticated request to the current ursa server")
             }
             thenLiteralExecute("dev") {
                 NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev
@@ -210,14 +218,15 @@ class DevTestCommand {
             }.withHelp("Force sync the config to disk")
             thenLiteralExecute("clearapicache") {
                 ApiCache.clear()
-                reply("Cleared API cache")
+                NotEnoughUpdates.INSTANCE.manager.ursaClient.clearToken()
+                reply("Cleared API cache and reset ursa token")
             }.withHelp("Clear the API cache")
             thenLiteralExecute("searchmode") {
                 NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true
                 reply(AQUA.toString() + "I would never search")
             }.withHelp("Reset your search data to redisplay the search tutorial")
             thenLiteralExecute("bluehair") {
-                PronounDB.test()
+                PronounDB.test(MC.thePlayer.uniqueID)
             }.withHelp("Test the pronoundb integration")
             thenLiteral("opengui") {
                 thenArgumentExecute("class", StringArgumentType.string()) { className ->
@@ -257,6 +266,16 @@ class DevTestCommand {
                     NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = null
                 }
             }.withHelp("Reset the custom user agent")
+            thenLiteral("crash") {
+                thenExecute {
+                    throw object : Error("L") {
+                        @Override
+                        fun printStackTrace() {
+                            throw Error("L")
+                        }
+                    }
+                }
+            }.withHelp("Crash the game")
         }
         hook.beforeCommand = Predicate {
             if (!canPlayerExecute(it.context.source)) {

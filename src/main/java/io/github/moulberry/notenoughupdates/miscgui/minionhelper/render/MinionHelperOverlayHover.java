@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MinionHelperOverlayHover {
@@ -196,6 +197,7 @@ public class MinionHelperOverlayHover {
 
 			lines.add("");
 			lines.add("§eClick to view recipe!");
+			lines.add("§eCtrl-Click to open bazaar!");
 		}
 		return lines;
 	}
@@ -226,7 +228,7 @@ public class MinionHelperOverlayHover {
 				int need = reputationRequirement.getReputation();
 				if (having < 0) having = 0;
 
-				String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
+				String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase(Locale.ROOT));
 				String havingFormat = Utils.formatNumberWithDots(having);
 				String needFormat = Utils.formatNumberWithDots(need);
 				description = "Reputation: §c" + havingFormat + "§8/§c" + needFormat + " §7" + reputationName + " Reputation";

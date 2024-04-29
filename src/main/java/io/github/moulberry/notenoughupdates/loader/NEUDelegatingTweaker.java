@@ -57,10 +57,11 @@ public class NEUDelegatingTweaker implements ITweaker {
 	}
 
 	private void discoverTweakers() {
+		delegates.add(MixinLoadingTweaker.class.getName());
 		if (BuildFlags.ENABLE_ONECONFIG_COMPAT_LAYER) {
 			delegates.add("cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker");
 		}
-		delegates.add(MixinTweaker.class.getName());
+		delegates.add("org.spongepowered.asm.launch.MixinTweaker");
 		delegates.add(ModLoadingTweaker.class.getName());
 		delegates.add(KotlinLoadingTweaker.class.getName());
 	}

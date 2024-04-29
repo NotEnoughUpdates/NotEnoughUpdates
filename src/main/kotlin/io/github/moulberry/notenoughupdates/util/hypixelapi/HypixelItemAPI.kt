@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.util.hypixelapi
 
 import com.google.gson.JsonElement
-import com.google.gson.annotations.SerializedName
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.util.kotlin.ExtraData
 import io.github.moulberry.notenoughupdates.util.kotlin.KSerializable

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -43,10 +43,9 @@ import io.github.moulberry.notenoughupdates.overlays.TextTabOverlay;
 import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
-import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.TabSkillInfoParser;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.event.ClickEvent;
@@ -171,8 +170,7 @@ public class NEUEventListener {
 
 			CrystalOverlay.tick();
 			FairySouls.getInstance().tick();
-			XPInformation.getInstance().tick();
-			ProfileApiSyncer.getInstance().tick();
+			TabSkillInfoParser.parseSkillInfo();
 			ItemCustomizeManager.tick();
 			BackgroundBlur.markDirty();
 			NPCRetexturing.getInstance().tick();
@@ -217,10 +215,6 @@ public class NEUEventListener {
 				if (!joinedSB) {
 					joinedSB = true;
 
-					if (NotEnoughUpdates.INSTANCE.config.notifications.updateChannel != 0) {
-						NotEnoughUpdates.INSTANCE.autoUpdater.displayUpdateMessageIfOutOfDate();
-					}
-
 					if (NotEnoughUpdates.INSTANCE.config.notifications.doRamNotif) {
 						long maxMemoryMB = Runtime.getRuntime().maxMemory() / 1024L / 1024L;
 						if (maxMemoryMB > 4100) {
@@ -242,7 +236,7 @@ public class NEUEventListener {
 					if (!NotEnoughUpdates.INSTANCE.config.hidden.loadedModBefore) {
 						NotEnoughUpdates.INSTANCE.config.hidden.loadedModBefore = true;
 						if (Constants.MISC == null || !Constants.MISC.has("featureslist")) {
-							Utils.showOutdatedRepoNotification();
+							Utils.showOutdatedRepoNotification("misc.json");
 							Utils.addChatMessage(
 								"" + EnumChatFormatting.GOLD + "To view the feature list after restarting type /neufeatures");
 						} else {

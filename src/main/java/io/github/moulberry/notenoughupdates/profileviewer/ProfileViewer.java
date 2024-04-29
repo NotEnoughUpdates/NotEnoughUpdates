@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.Getter;
 import net.minecraft.init.Blocks;
@@ -30,10 +31,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -63,12 +64,12 @@ public class ProfileViewer {
 				put("alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
 				put("runecrafting", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting"));
 				put("social", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
-				// put("catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
 				put("zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
 				put("spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
 				put("wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
 				put("enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
 				put("blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"));
+				put("vampire", Utils.createItemStack(Items.redstone, EnumChatFormatting.GOLD + "Vampire Slayer"));
 			}
 		};
 	private static final ItemStack CAT_FARMING = Utils.createItemStack(
@@ -90,6 +91,10 @@ public class ProfileViewer {
 	private static final ItemStack CAT_FISHING = Utils.createItemStack(
 		Items.fishing_rod,
 		EnumChatFormatting.AQUA + "Fishing"
+	);
+	private static final ItemStack CAT_RIFT = Utils.createItemStack(
+		Blocks.mycelium,
+		EnumChatFormatting.DARK_PURPLE + "Rift"
 	);
 	@Getter
 	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap =
@@ -142,7 +147,10 @@ public class ProfileViewer {
 						"GEMSTONE_COLLECTION",
 						"MYCEL",
 						"SAND:1",
-						"SULPHUR_ORE"
+						"SULPHUR_ORE",
+						"GLACITE",
+						"TUNGSTEN",
+						"UMBER"
 					)
 				);
 				put(
@@ -180,6 +188,16 @@ public class ProfileViewer {
 						"INK_SACK",
 						"SPONGE",
 						"MAGMA_FISH"
+					)
+				);
+				put(CAT_RIFT,
+					Utils.createList(
+						"AGARICUS_CAP",
+						"CADUCOUS_STEM",
+						"HALF_EATEN_CARROT",
+						"HEMOVIBE",
+						"METAL_HEART",
+						"WILTED_BERBERIS"
 					)
 				);
 			}
@@ -235,6 +253,9 @@ public class ProfileViewer {
 						null,
 						"MYCELIUM",
 						"RED_SAND",
+						null,
+						null,
+						null,
 						null
 					)
 				);
@@ -259,6 +280,7 @@ public class ProfileViewer {
 				);
 				put(CAT_FORAGING, Utils.createList("OAK", "SPRUCE", "BIRCH", "DARK_OAK", "ACACIA", "JUNGLE", "FLOWER"));
 				put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
+				put(CAT_RIFT, Utils.createList(null, null, null, "VAMPIRE"));
 			}
 		};
 	@Getter
@@ -344,6 +366,23 @@ public class ProfileViewer {
 					Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Red Sand", 1)
 				);
 				put("SULPHUR_ORE", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Sulphur"));
+				put("GLACITE", Utils.createItemStack(Blocks.packed_ice, EnumChatFormatting.GRAY + "Glacite"));
+				put(
+					"TUNGSTEN",
+					Utils.createSkull(
+						EnumChatFormatting.GRAY + "Tungsten",
+						"b0ac8270-ac1b-325c-9e2c-e679e0f48684",
+						"ewogICJ0aW1lc3RhbXAiIDogMTcwODkxNDY4MjE4MCwKICAicHJvZmlsZUlkIiA6ICJiZDNhNWRmY2ZkZjg0NDczOTViZDJiZmUwNGY0YzAzMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJwcmVja3Jhc25vIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q4MTFmM2U3MjNiYmQ0NjM5M2Y4YWFkODU1NmIxZGY4ZWQzM2Y1NTliZTgyN2Y0N2ZlNzM2ZjcwNGMzNTU4NmUiCiAgICB9CiAgfQp9"
+					)
+				);
+				put(
+					"UMBER",
+					Utils.createSkull(
+						EnumChatFormatting.GRAY + "Umber",
+						"bfb54c8e-93b8-3196-841c-5c8892d59f10",
+						"ewogICJ0aW1lc3RhbXAiIDogMTcwODkxOTkzMjc2MSwKICAicHJvZmlsZUlkIiA6ICJiMmM5ZTUyZjNhODU0YzQ4YmJjMmMwM2JjM2U0NzdiMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJJU05FRVpFREFUWU9VIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2I1NjViNWFhODNkNGFhN2Y3YWYyMmRjMTI3MWIyZjBiMjc0NDFmOWFjMTQ5NWY2YjQ2NTNjZjY4ZGZiMTA1ZWYiCiAgICB9CiAgfQp9"
+					)
+				);
 
 				/* COMBAT COLLECTIONS */
 				put("ROTTEN_FLESH", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.RED + "Rotten Flesh"));
@@ -419,6 +458,24 @@ public class ProfileViewer {
 						"ewogICJ0aW1lc3RhbXAiIDogMTY0MjQ4ODA3MDY2NiwKICAicHJvZmlsZUlkIiA6ICIzNDkxZjJiOTdjMDE0MWE2OTM2YjFjMjJhMmEwMGZiNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKZXNzc3N1aGgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU2YjU5NTViMjk1NTIyYzk2ODk0ODE5NjBjMDFhOTkyY2ExYzc3NTRjZjRlZTMxM2M4ZGQwYzM1NmQzMzVmIgogICAgfQogIH0KfQ"
 					)
 				);
+				/* RIFT COLLECTIONS */
+				put("AGARICUS_CAP",
+					Utils.createSkull(
+						EnumChatFormatting.DARK_PURPLE + "Agaricus Cap",
+						"43e884b2-633e-3c87-b601-62d18c11683f",
+						"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNlMGEyMzBhY2Q2NDM2YWJjODZmMTNiZTcyZTliYTk0NTM3ZWU1NGYwMzI1YmI4NjI1NzdhMWUwNjJmMzcifX19"
+					));
+				put("CADUCOUS_STEM", Utils.createItemStack(Item.getItemFromBlock(Blocks.double_plant),
+					EnumChatFormatting.DARK_PURPLE + "Caducous Stem", 4));
+				put("HALF_EATEN_CARROT", Utils.createItemStack(Items.carrot, EnumChatFormatting.DARK_PURPLE + "Half-Eaten Carrot"));
+				put("HEMOVIBE", Utils.createItemStack(Item.getItemFromBlock(Blocks.redstone_ore), EnumChatFormatting.DARK_PURPLE + "Hemovibe"));
+				put("METAL_HEART",
+					Utils.createSkull(
+						EnumChatFormatting.DARK_PURPLE + "Living Metal Heart",
+						"c678b8cc-c130-31d1-baf3-14660f8ef742",
+						"ewogICJ0aW1lc3RhbXAiIDogMTY3NjQ3NjQ1NjcyNywKICAicHJvZmlsZUlkIiA6ICI5MGQ1NDY0OGEzNWE0YmExYTI2Yjg1YTg4NTU4OGJlOSIsCiAgInByb2ZpbGVOYW1lIiA6ICJFdW4wbWlhIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2YwMjc4ZWU1M2E1M2I3NzMzYzdiODQ1MmZjZjc5NGRmYmZiYzNiMDMyZTc1MGE2OTkzNTczYjViZDAyOTkxMzUiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ"
+					));
+				put("WILTED_BERBERIS", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.DARK_PURPLE + "Wilted Berberis"));
 			}
 		};
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
@@ -441,7 +498,7 @@ public class ProfileViewer {
 		updatingResourceCollection.set(true);
 
 		NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.newHypixelApiRequest("resources/skyblock/collections")
+			.newAnonymousHypixelApiRequest("resources/skyblock/collections")
 			.requestJson()
 			.thenAccept(jsonObject -> {
 				updatingResourceCollection.set(false);
@@ -457,7 +514,7 @@ public class ProfileViewer {
 	}
 
 	public void getPlayerUUID(String name, Consumer<String> uuidCallback) {
-		String nameLower = name.toLowerCase();
+		String nameLower = name.toLowerCase(Locale.ROOT);
 		if (nameToUuid.containsKey(nameLower)) {
 			uuidCallback.accept(nameToUuid.get(nameLower));
 			return;
@@ -480,7 +537,7 @@ public class ProfileViewer {
 	}
 
 	public void loadPlayerByName(String name, Consumer<SkyblockProfiles> callback) {
-		String nameLower = name.toLowerCase();
+		String nameLower = name.toLowerCase(Locale.ROOT);
 
 		if (nameToUuid.containsKey(nameLower) && nameToUuid.get(nameLower) == null) {
 			callback.accept(null);
@@ -495,11 +552,8 @@ public class ProfileViewer {
 					callback.accept(null);
 				} else {
 					if (!uuidToHypixelProfile.containsKey(uuid)) {
-						manager.apiUtils
-							.newHypixelApiRequest("player")
-							.queryArgument("uuid", uuid)
-							.maxCacheAge(Duration.ofSeconds(30))
-							.requestJson()
+						manager.ursaClient
+							.get(UrsaClient.player(Utils.parseDashlessUUID(uuid)))
 							.thenAccept(playerJson -> {
 									if (
 										playerJson != null &&

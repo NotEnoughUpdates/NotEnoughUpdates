@@ -95,7 +95,7 @@ data class ProfileCollectionInfo(
 
         val hypixelCollectionInfo: CompletableFuture<CollectionMetadata> by lazy {
             NotEnoughUpdates.INSTANCE.manager.apiUtils
-                .newHypixelApiRequest("resources/skyblock/collections")
+                .newAnonymousHypixelApiRequest("resources/skyblock/collections")
                 .requestJson()
                 .thenApply {
                     NotEnoughUpdates.INSTANCE.manager.gson.fromJson(it, CollectionMetadata::class.java)
@@ -118,7 +118,7 @@ data class ProfileCollectionInfo(
             }
             val generators = members.entrySet().mapNotNull { (uuid, data) ->
                 if (data !is JsonObject) return null
-                data["crafted_generators"] as? JsonArray
+                data.getAsJsonObject("player_data")?.get("crafted_generators") as? JsonArray
             }.flatMap { it.toList() }
             return ProfileCollectionInfo(
                 collectionData.allCollections.mapValues { (name, collection) ->

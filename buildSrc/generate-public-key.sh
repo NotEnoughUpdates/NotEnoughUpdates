@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Copyright (C) 2022 NotEnoughUpdates contributors
 #
@@ -19,7 +19,7 @@
 #
 
 
-output="$(dirname $(dirname $(readlink -f "$0")))/src/main/resources/moulberry.key"
+output="$(dirname $(dirname $(readlink -f "$0")))/src/main/resources/trusted_team_members/$(basename "$2").key"
 
 echo processing rsa input key from $1, and outputting to $output
 

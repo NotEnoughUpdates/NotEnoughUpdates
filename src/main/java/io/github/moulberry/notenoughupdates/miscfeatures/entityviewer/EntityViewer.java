@@ -40,6 +40,7 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.monster.EntityGiantZombie;
 import net.minecraft.entity.monster.EntityGuardian;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntityMagmaCube;
@@ -121,6 +122,7 @@ public class EntityViewer extends GuiScreen {
 			put("Dragon", () -> new EntityDragon(null));
 			put("Player", () -> new GUIClientPlayer());
 			put("Pig", () -> new EntityPig(null));
+			put("Giant", () -> new EntityGiantZombie(null));
 		}};
 
 	public static Map<String, EntityViewerModifier> validModifiers = new HashMap<String, EntityViewerModifier>() {{
@@ -239,6 +241,9 @@ public class EntityViewer extends GuiScreen {
 			} else if (stack instanceof EntityGhast) {
 				scale = 8;
 				bottomOffset = 4F;
+			} else if (stack instanceof EntityGiantZombie) {
+				scale = 8;
+				bottomOffset = -2F;
 			}
 			stack.ticksExisted = Minecraft.getMinecraft().thePlayer.ticksExisted;
 			drawEntityOnScreen(

@@ -94,6 +94,6 @@ public class EnderNodeHighlighter extends GenericBlockHighlighter {
 
 	@Override
 	protected int getColor(BlockPos blockPos) {
-		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.enderNodeColor);
+		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.enderNodeColor2);
 	}
 }

@@ -22,10 +22,9 @@ package io.github.moulberry.notenoughupdates.overlays;
 import com.google.common.base.Splitter;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
-import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -598,8 +597,7 @@ public class AuctionSearchOverlay {
 						searchStringExtra = "";
 						close();
 						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
-						NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(new NEUConfigEditor(
-							NotEnoughUpdates.INSTANCE.config, "AH Tweaks"));
+						NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("AH Tweaks");
 					}
 				}
 			} else if (Mouse.getEventButton() == 0) {

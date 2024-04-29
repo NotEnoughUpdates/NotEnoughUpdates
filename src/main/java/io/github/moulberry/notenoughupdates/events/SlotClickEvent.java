@@ -22,11 +22,12 @@ package io.github.moulberry.notenoughupdates.events;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import org.jetbrains.annotations.NotNull;
 
 @Cancelable
 public class SlotClickEvent extends NEUEvent {
-	public final GuiContainer guiContainer;
-	public final Slot slot;
+	public final @NotNull GuiContainer guiContainer;
+	public final @NotNull Slot slot;
 	public final int slotId;
 	public int clickedButton;
 	public int clickType;

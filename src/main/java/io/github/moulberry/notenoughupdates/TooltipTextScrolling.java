@@ -33,7 +33,7 @@ import java.util.Objects;
 public class TooltipTextScrolling {
 	static List<String> lastRenderedTooltip = null;
 	static int scrollOffset = 0;
-	static boolean didRenderTooltip = false;
+	public static boolean didRenderTooltip = false;
 
 	public static List<String> handleTextLineRendering(List<String> tooltip) {
 		didRenderTooltip = true;

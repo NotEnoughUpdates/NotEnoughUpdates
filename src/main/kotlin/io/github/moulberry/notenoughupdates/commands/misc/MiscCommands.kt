@@ -40,7 +40,6 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.text.DecimalFormat
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -53,7 +52,7 @@ class MiscCommands {
                 val calculation = this[calculation]
                 try {
                     val calculate = Calculator.calculate(calculation, NeuSearchCalculator.PROVIDE_LOWEST_BIN)
-                    val formatter = DecimalFormat("#,##0.##")
+                    val formatter = Calculator.getDecimalFormat()
                     val formatted = formatter.format(calculate)
                     reply("$WHITE$calculation $YELLOW= $GREEN$formatted")
                 } catch (e: CalculatorException) {
@@ -117,17 +116,6 @@ class MiscCommands {
                     fetchPronouns("minecraft", this[user])
                 }
             }.withHelp("Look up someones pronouns using their minecraft username")
-        }
-        event.command("neuupdate", "neuupdates", "enoughupdates") {
-            thenLiteralExecute("check") {
-                NotEnoughUpdates.INSTANCE.autoUpdater.displayUpdateMessageIfOutOfDate()
-            }.withHelp("Check for updates")
-            thenLiteralExecute("scheduledownload") {
-                NotEnoughUpdates.INSTANCE.autoUpdater.scheduleDownload()
-            }.withHelp("Queue a new version of NEU to be downloaded")
-            thenLiteralExecute("updatemodes") {
-                reply("§bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files")
-            }.withHelp("Display an explanation why you cannot auto update")
         }
         event.command("neudynamiclights", "neudli", "neudynlights", "neudynamicitems") {
             thenExecute {

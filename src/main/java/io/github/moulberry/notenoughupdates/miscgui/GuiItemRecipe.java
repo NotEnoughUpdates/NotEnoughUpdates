@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.common.collect.ImmutableList;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
@@ -336,6 +337,16 @@ public class GuiItemRecipe extends GuiScreen {
 		int mouseY = scaledResolution.getScaledHeight() -
 			Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
 		getCurrentRecipe().genericMouseInput(mouseX, mouseY);
+
+		
+		// Allow Paging with Scroll-Wheel
+
+		// Block scrolling while Tooltip is displayed
+		if (TooltipTextScrolling.didRenderTooltip) return;
+
+		if (Mouse.getEventDWheel() != 0) {
+			ArrowPagesUtils.onPageSwitchScroll(currentIndex, getCurrentRecipeList().size(), pageChange -> changeRecipe(currentTab, pageChange));
+		}
 	}
 
 	public void arrowKeyboardInput() {

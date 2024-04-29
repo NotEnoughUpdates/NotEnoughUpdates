@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.SacksPage;
 import io.github.moulberry.notenoughupdates.profileviewer.info.QuiverInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -43,6 +44,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -109,14 +111,69 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	private int greenCandyCount = -1;
 	private int purpleCandyCount = -1;
 
+	public static final HashMap<String, String> apiStatNames = new HashMap<String, String>() {{
+			put("health","§c❤ Health");
+			put("defense","§a❈ Defense");
+			put("walk_speed","§f✦ Speed");
+			put("strength","§c❁ Strength");
+			put("critical_damage","§9☠ Crit Damage");
+			put("critical_chance","§9☣ Crit Chance");
+			put("attack_speed","§e⚔ Bonus Attack Speed");
+			put("intelligence","§b✎ Intelligence");
+	}};
+	public static final HashMap<String, Float> tuningCoefficients = new HashMap<String, Float>() {{
+		put("health",5f);
+		put("defense",1f);
+		put("walk_speed",1.5f);
+		put("strength",1f);
+		put("critical_damage",1f);
+		put("critical_chance",0.2f);
+		put("attack_speed",0.3f);
+		put("intelligence",2f);
+	}};
+
+	private boolean onSacksPage;
+	private final SacksPage sacksPage;
+
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
+		{
+			put(
+				"inventories",
+				Utils.editItemStackInfo(
+					new ItemStack(Items.painting),
+					EnumChatFormatting.GRAY + "Inventories",
+					true
+				)
+			);
+			put(
+				"sacks",
+				Utils.editItemStackInfo(
+					NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("LARGE_ENCHANTED_MINING_SACK")
+					),
+					EnumChatFormatting.GRAY + "Sacks",
+					true
+				)
+			);
+		}
+	};
+
 	public InventoriesPage(GuiProfileViewer instance) {
 		super(instance);
+		this.sacksPage = new SacksPage(getInstance());
 	}
 
 	@Override
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
+
+		drawSideButtons();
+
+		if (onSacksPage) {
+			sacksPage.drawPage(mouseX, mouseY, partialTicks);
+			return;
+		}
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_invs);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
@@ -172,6 +229,21 @@ public class InventoriesPage extends GuiProfileViewerPage {
 									? selectedPowerString.append(EnumChatFormatting.RED).append("None!").toString()
 									: selectedPowerString.append(EnumChatFormatting.GREEN).append(selectedPower).toString()
 							);
+
+						LinkedHashMap<String, Integer> tuningInfo = getSelectedProfile().getTuningInfo();
+						if(tuningInfo != null && tuningInfo.size() > 0) {
+							getInstance().tooltipToDisplay.add("");
+							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "Tuning:");
+							tuningInfo.forEach((statName, statPoints) -> {
+								if(statPoints != 0) {
+									getInstance().tooltipToDisplay.add(
+										"  " + apiStatNames.get(statName) + ": +" +
+											new DecimalFormat("#.#").format(statPoints * tuningCoefficients.getOrDefault(statName, 1.0f)) +
+											EnumChatFormatting.DARK_GRAY + " (" + EnumChatFormatting.YELLOW + statPoints +
+											EnumChatFormatting.DARK_GRAY + " points)");
+								}
+							});
+						}
 					}
 				}
 			}
@@ -211,7 +283,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		if (equipmentItems == null) {
 			equipmentItems = new ItemStack[4];
-			JsonArray equippment = inventoryInfo.get("equippment_contents");
+			JsonArray equippment = inventoryInfo.get("equipment_contents");
 			for (int i = 0; i < equippment.size(); i++) {
 				if (equippment.get(i) != null && equippment.get(i).isJsonObject()) {
 					equipmentItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(equippment.get(i).getAsJsonObject(), false);
@@ -475,15 +547,31 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		getInstance().inventoryTextField.setSize(88, 20);
-		if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88) {
-			if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
-				getInstance().inventoryTextField.mouseClicked(mouseX, mouseY, mouseButton);
-				getInstance().playerNameTextField.otherComponentClick();
-				return true;
+		if (!onSacksPage) {
+			getInstance().inventoryTextField.setSize(88, 20);
+			if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88) {
+				if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
+					getInstance().inventoryTextField.mouseClicked(mouseX, mouseY, mouseButton);
+					getInstance().playerNameTextField.otherComponentClick();
+					return true;
+				}
 			}
 		}
-		return false;
+
+		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
+		switch (i) {
+			case 1:
+				onSacksPage = false;
+				break;
+			case 2:
+				onSacksPage = true;
+				break;
+
+			default:
+				break;
+		}
+
+		return sacksPage.mouseClick(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
@@ -737,7 +825,16 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				if (invName.equals("inv_contents")) {
 					yIndex--;
 					if (yIndex < 0) yIndex = rows - 1;
+				} else if (maxInvSize == 36) {
+					yIndex++;
+					if (yIndex < 0) yIndex = rows - 1;
+					if (yIndex > 3) yIndex = 0;
+				} else if (maxInvSize == 45) {
+					yIndex += 2;
+					if (yIndex < 0) yIndex = rows - 1;
+					if (yIndex > 4) yIndex = 0;
 				}
+
 				if (yIndex >= thisRows) {
 					break;
 				}
@@ -806,5 +903,24 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			default:
 				return 6;
 		}
+	}
+
+	private void drawSideButtons() {
+		GlStateManager.enableDepth();
+		GlStateManager.translate(0, 0, 5);
+		if (onSacksPage) {
+			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), true, getInstance());
+		} else {
+			Utils.drawPvSideButton(0, pageModeIcon.get("inventories"), true, getInstance());
+		}
+		GlStateManager.translate(0, 0, -3);
+
+		GlStateManager.translate(0, 0, -2);
+		if (!onSacksPage) {
+			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), false, getInstance());
+		} else {
+			Utils.drawPvSideButton(0, pageModeIcon.get("inventories"), false, getInstance());
+		}
+		GlStateManager.disableDepth();
 	}
 }

@@ -34,7 +34,7 @@ public abstract class Weight {
 		"fishing",
 		"alchemy"
 	);
-	public static final List<String> SLAYER_NAMES = Arrays.asList("wolf", "zombie", "spider", "enderman", "blaze");
+	public static final List<String> SLAYER_NAMES = Arrays.asList("wolf", "zombie", "spider", "enderman", "blaze", "vampire");
 	public static final List<String> DUNGEON_CLASS_NAMES = Arrays.asList("healer", "mage", "berserk", "archer", "tank");
 	protected final SlayerWeight slayerWeight;
 	protected final SkillsWeight skillsWeight;

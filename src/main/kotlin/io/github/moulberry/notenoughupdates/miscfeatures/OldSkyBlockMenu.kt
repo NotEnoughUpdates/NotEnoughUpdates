@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent
 import io.github.moulberry.notenoughupdates.util.ItemUtils
+import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.player.inventory.ContainerLocalMenu
 import net.minecraft.init.Items
@@ -51,6 +52,7 @@ object OldSkyBlockMenu {
     fun replaceItem(event: ReplaceItemEvent) {
         if (!isRightInventory()) return
         if (event.inventory !is ContainerLocalMenu) return
+        if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("rift")) return
 
         val skyBlockButton = map[event.slotNumber] ?: return
         val showWarning = skyBlockButton.requiresBoosterCookie && !CookieWarning.hasActiveBoosterCookie()
@@ -75,6 +77,7 @@ object OldSkyBlockMenu {
     @SubscribeEvent(priority = EventPriority.HIGH)
     fun onStackClick(event: SlotClickEvent) {
         if (!isRightInventory()) return
+        if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("rift")) return
 
         val skyBlockButton = map[event.slotId] ?: return
         event.isCanceled = true

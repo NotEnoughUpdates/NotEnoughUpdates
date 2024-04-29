@@ -3,12 +3,12 @@
 
 <div align="center">
     <!-- release -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases/latest" target="_blank">
-        <img src="https://img.shields.io/github/v/release/Moulberry/NotEnoughUpdates?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/latest" target="_blank">
+        <img src="https://img.shields.io/github/v/release/NotEnoughUpdates/NotEnoughUpdates?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
     </a>
     <!-- lines -->
     <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">
-        <img src="https://img.shields.io/tokei/lines/github/NotEnoughUpdates/NotEnoughUpdates?label=lines&color=informational&logo=GitHub" alt="lines">
+        <img src="https://tokei.rs/b1/github/NotEnoughUpdates/NotEnoughUpdates" alt="lines">
     </a>
     <!-- license -->
     <a href="./COPYING.LESSER" target="_blank">
@@ -23,8 +23,8 @@
         <img src="https://img.shields.io/discord/516977525906341928?label=discord&color=informational&logo=Discord&logoColor=FFFFFF" alt="discord">
     </a>
     <!-- downloads -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases" target="_blank">
-        <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases" target="_blank">
+        <img src="https://img.shields.io/github/downloads/NotEnoughUpdates/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
     </a>
 </div>
 
@@ -52,8 +52,7 @@ Ever since Moulberry has stopped working on NEU, other contributors have been wo
    - If you have java installed, double click the file, click `install`
    - If not, press the windows key + R; type `%appdata%`; click on the folder called `.minecraft`; click on the folder called `mods` and drag the mods file in here.
 3. Open the Minecraft launcher and run your forge installation you set up earlier.
-4. Then, hop onto Skyblock and run the command `/api new`. Your api key is automatically filled out and all features should work.
-5. Type `/neu`. If you see the NotEnoughUpdates menu, you have done this correctly!
+4. Type `/neu`. If you see the NotEnoughUpdates menu, you have done this correctly!
 
 ## Features
 

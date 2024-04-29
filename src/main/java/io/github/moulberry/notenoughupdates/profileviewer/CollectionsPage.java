@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -75,6 +75,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 	private static ItemStack selectedCollectionCategory = null;
 	private int page = 0;
 	private int maxPage = 0;
+
 
 	public CollectionsPage(GuiProfileViewer instance) {
 		super(instance);
@@ -204,7 +205,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 				}
 				ProfileCollectionInfo.CollectionInfo thisCollection = collectionInfo.getCollections().get(collection);
 				if (thisCollection == null) {
-					Utils.showOutdatedRepoNotification();
+					Utils.showOutdatedRepoNotification("hypixel api collection info");
 					continue;
 				}
 				ItemStack collectionItem = ProfileViewer.getCollectionToCollectionDisplayMap().get(collection);
@@ -402,6 +403,9 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		ItemStack stack = null;
 		Iterator<ItemStack> items = ProfileViewer.getCollectionCatToCollectionMap().keySet().iterator();
 		switch (keyCode) {
+			case Keyboard.KEY_6:
+			case Keyboard.KEY_NUMPAD6:
+				items.next();
 			case Keyboard.KEY_5:
 			case Keyboard.KEY_NUMPAD5:
 				items.next();

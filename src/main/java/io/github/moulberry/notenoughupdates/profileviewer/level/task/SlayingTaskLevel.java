@@ -102,7 +102,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 
 			masterCompMap.forEach((floor, value) -> {
 				if (allComps.containsKey(floor)) {
-					allComps.put(floor, allComps.get(floor) + value);
+					allComps.put(floor, allComps.get(floor) + value * 2);
 				} else {
 					allComps.put(floor, value);
 				}
@@ -139,9 +139,12 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 
 		int kuudraBossCollection = 0;
 		if (object.has("nether_island_player_data")) {
-			JsonObject jsonObject = object.getAsJsonObject("nether_island_player_data").getAsJsonObject(
-				"kuudra_completed_tiers");
-			for (Map.Entry<String, JsonElement> stringJsonElementEntry : jsonObject.entrySet()) {
+			JsonObject kuudraCompletedTiers = Utils.getElementOrDefault(
+				selectedProfile.getProfileJson(),
+				"nether_island_player_data.kuudra_completed_tiers",
+				new JsonObject()
+			).getAsJsonObject();
+			for (Map.Entry<String, JsonElement> stringJsonElementEntry : kuudraCompletedTiers.entrySet()) {
 				String key = stringJsonElementEntry.getKey();
 				int value = stringJsonElementEntry.getValue().getAsInt();
 
@@ -161,16 +164,12 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 			if (kuudraBossCollection >= 5000) bossCollectionXp += 30;
 		}
 
-		int sbXpBestiary = 0;
-		int bestiaryTiers = GuiProfileViewer.getSelectedProfile().getBestiaryLevel();
-		sbXpBestiary += bestiaryTiers;
-		sbXpBestiary = sbXpBestiary + (sbXpBestiary / 10) * 2;
+		int sbXpBestiary = GuiProfileViewer.getSelectedProfile().getBestiaryXp();
 
-		int mythologicalKillsXp = 0;
-		if (object.has("stats")) {
-			JsonObject stats = object.get("stats").getAsJsonObject();
-			if (stats.has("mythos_kills")) mythologicalKillsXp += (stats.get("mythos_kills").getAsLong() / 100);
-		}
+		int mythologicalKillsXp = Utils.getElementAsInt(Utils.getElement(
+			selectedProfile.getProfileJson(),
+			"player_stats.mythos.kills"
+		), 0) / 100;
 
 		int mythologicalKillsMax = slayingTask.get("mythological_kills").getAsInt();
 		if (mythologicalKillsXp > mythologicalKillsMax) mythologicalKillsXp = mythologicalKillsMax;
@@ -179,13 +178,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		int sbXpFromDragonKills = 0;
 		JsonObject slayDragonsXp = slayingTask.getAsJsonObject("slay_dragons_xp");
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : slayDragonsXp.entrySet()) {
-			String key = stringJsonElementEntry.getKey();
-			int value = stringJsonElementEntry.getValue().getAsInt();
-			// kills_superior_dragon_100
-			float element = Utils.getElementAsFloat(Utils.getElement(object, "bestiary.kills_" + key + "_100"), 0);
-			if (element > 0) {
-				sbXpFromDragonKills += value;
-			}
+			sbXpFromDragonKills += stringJsonElementEntry.getValue().getAsInt();
 		}
 
 		// slayer kills
@@ -194,7 +187,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		JsonArray defeatSlayersXp = slayingTask.get("defeat_slayers_xp").getAsJsonArray();
 		JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
 		if (slayerToTier == null) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("slayer_to_highest_tier from leveling.json");
 			return;
 		}
 		for (Map.Entry<String, JsonElement> entry : slayerToTier.entrySet()) {
@@ -202,7 +195,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 			for (int i = 0; i < 5; i++) {
 				if (i >= maxLevel) break;
 				float tier = Utils.getElementAsFloat(
-					Utils.getElement(object, "slayer_bosses." + entry.getKey() + ".boss_kills_tier_" + i),
+					Utils.getElement(object, "slayer.slayer_bosses." + entry.getKey() + ".boss_kills_tier_" + i),
 					0
 				);
 				if (tier != 0) {
@@ -215,21 +208,15 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		// arachne
 		JsonArray defeatArachneXp = slayingTask.get("defeat_arachne_xp").getAsJsonArray();
 		int sbXpGainedArachne = 0;
-
-		JsonElement tier1 = Utils.getElement(object, "bestiary.kills_arachne_300");
-		if (tier1 != null) {
-			sbXpGainedArachne += defeatArachneXp.get(0).getAsInt();
-		}
-
-		JsonElement tier2 = Utils.getElement(object, "bestiary.kills_arachne_500");
-		if (tier2 != null) {
-			sbXpGainedArachne += defeatArachneXp.get(1).getAsInt();
+		for (JsonElement jsonElement : defeatArachneXp) {
+			sbXpGainedArachne += jsonElement.getAsInt();
 		}
 
 		List<String> lore = new ArrayList<>();
 
 		int slayerLevelUpMax = slayingTask.get("slayer_level_up").getAsInt();
 		int bossCollectionsMax = slayingTask.get("boss_collections").getAsInt();
+		int bestiaryXpMax = slayingTask.get("bestiary_progress").getAsInt();
 		int slayDragonsMax = slayingTask.get("slay_dragons").getAsInt();
 		int defeatSlayersMax = slayingTask.get("defeat_slayers").getAsInt();
 		int defeatKuudraMax = slayingTask.get("defeat_kuudra").getAsInt();
@@ -237,7 +224,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 
 		lore.add(levelPage.buildLore("Slayer Level Up", sbXpGainedSlayer, slayerLevelUpMax, false));
 		lore.add(levelPage.buildLore("Boss Collections", bossCollectionXp, bossCollectionsMax, false));
-		lore.add(levelPage.buildLore("Bestiary Progress", sbXpBestiary, 0, true));
+		lore.add(levelPage.buildLore("Bestiary Progress", sbXpBestiary, bestiaryXpMax, false));
 		lore.add(levelPage.buildLore("Mythological Kills", mythologicalKillsXp, mythologicalKillsMax, false));
 		lore.add(levelPage.buildLore("Slay Dragons", sbXpFromDragonKills, slayDragonsMax, false));
 		lore.add(levelPage.buildLore("Defeat Slayers", sbXpFromSlayerDefeat, defeatSlayersMax, false));
@@ -247,7 +234,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		int slayingTaskMax = levelPage.getConstant().getAsJsonObject("category_xp").get("slaying_task").getAsInt();
 
 		int totalXp = sbXpGainedSlayer + bossCollectionXp + mythologicalKillsXp +
-			sbXpFromDragonKills + sbXpFromSlayerDefeat + sbXpDefeatKuudra + sbXpGainedArachne;
+			sbXpFromDragonKills + sbXpFromSlayerDefeat + sbXpDefeatKuudra + sbXpGainedArachne + sbXpBestiary;
 		levelPage.renderLevelBar(
 			"Slaying Task",
 			new ItemStack(Items.golden_sword),

@@ -110,6 +110,7 @@ public class ItemResolutionQuery {
 					resolvedName = resolvePetName();
 					break;
 				case "RUNE":
+				case "UNIQUE_RUNE":
 					resolvedName = resolveRuneName();
 					break;
 				case "ENCHANTED_BOOK":
@@ -124,6 +125,9 @@ public class ItemResolutionQuery {
 					break;
 				case "PARTY_HAT_SLOTH":
 					resolvedName = resolveSlothHatName();
+					break;
+				case "POTION":
+					resolvedName = resolvePotionName();
 					break;
 			}
 		}
@@ -333,6 +337,22 @@ public class ItemResolutionQuery {
 				 I still log this exception, since this case *is* exceptional and cannot easily be recovered from */
 			ex.printStackTrace();
 			return null;
+		}
+	}
+
+	private String resolvePotionName() {
+		String potion = getExtraAttributes().getString("potion");
+		int potionLvl = getExtraAttributes().getInteger("potion_level");
+		String potionName = getExtraAttributes().getString("potion_name").replace(" ", "_");
+		String potionType = getExtraAttributes().getString("potion_type");
+		if (potionName != null && !potionName.isEmpty()) {
+			return "POTION_" + potionName.toUpperCase(Locale.ROOT) + ";" + potionLvl;
+		} else if (potion != null && !potion.isEmpty()) {
+			return "POTION_" + potion.toUpperCase(Locale.ROOT) + ";" + potionLvl;
+		} else if (potionType != null && !potionType.isEmpty()) {
+			return "POTION_" + potionType.toUpperCase(Locale.ROOT);
+		} else {
+			return "WATER_BOTTLE";
 		}
 	}
 

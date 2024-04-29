@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
-import io.github.moulberry.notenoughupdates.overlays.TimersOverlay;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -118,68 +117,60 @@ public class ChatListener {
 
 	private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
 
-		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 &&
-			((chatComponent.getChatStyle() != null &&
-			chatComponent.getChatStyle().getChatClickEvent() != null &&
-			chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
-				// Party and guild chat components are different from global chats, so need to check for them here
-			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND)) &&
-			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 0 || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+			return chatComponent;
+		}
 
-			String startsWith = null;
-			boolean partyOrGuildChat = false;
+		List<IChatComponent> siblings = chatComponent.getSiblings();
+		if (siblings.size() < 2) return chatComponent;
 
-			List<IChatComponent> siblings = chatComponent.getSiblings();
-			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null && siblings.get(0).getChatStyle().getChatClickEvent() != null && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
-				startsWith = "/viewprofile";
-				partyOrGuildChat = true;
-			} else {
-				ClickEvent chatClickEvent = chatComponent.getChatStyle().getChatClickEvent();
-				if (chatClickEvent != null) {
-					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
-						startsWith = "/socialoptions";
-					}
-				}
-			}
+		IChatComponent targetedComponent = siblings.get(siblings.size() - 2);
 
-			if (startsWith != null) {
-				String username = partyOrGuildChat ?
-					Utils.getNameFromChatComponent(chatComponent) :
-					chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
+		String chatClickCommand = getChatClickEvent(siblings.get(0));
 
-				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
+		if (chatClickCommand == null) {
+			chatClickCommand = getChatClickEvent(targetedComponent);
+		}
+		if (chatClickCommand == null) return chatComponent;
 
-					ChatStyle pvClickStyle = getPVChatStyle(username);
-					if (partyOrGuildChat) {
-						chatComponent.getSiblings().get(0).setChatStyle(pvClickStyle);
-					} else {
-						chatComponent.setChatStyle(pvClickStyle);
-					}
-					return chatComponent;
-				} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
+		String username = chatClickCommand.equals("/viewprofile") ?
+			Utils.getNameFromChatComponent(chatComponent) :
+			targetedComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
+		username = username.replaceAll("[^a-zA-Z0-9_]", "");
 
-					ChatStyle ahClickStyle = Utils.createClickStyle(
-						ClickEvent.Action.RUN_COMMAND,
-						"/ah " + username,
-						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
-					);
+		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
 
-					if (partyOrGuildChat) {
-						chatComponent.getSiblings().get(0).setChatStyle(ahClickStyle);
-					} else {
-						chatComponent.setChatStyle(ahClickStyle);
-					}
-					return chatComponent;
-				}
-			} // wanted to add this for guild but guild uses uuid :sad:
+			ChatStyle pvClickStyle = getPVChatStyle(username);
+			targetedComponent.setChatStyle(pvClickStyle);
+
+			return chatComponent;
+		} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
+
+			ChatStyle ahClickStyle = Utils.createClickStyle(
+				ClickEvent.Action.RUN_COMMAND,
+				"/ah " + username,
+				"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
+					username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
+			);
+
+			targetedComponent.setChatStyle(ahClickStyle);
+			return chatComponent;
 		}
 		return chatComponent;
 	}
 
+	private String getChatClickEvent(IChatComponent sibling) {
+		if (sibling.getChatStyle() != null && sibling.getChatStyle().getChatClickEvent() != null) {
+			String clickEvent = sibling.getChatStyle().getChatClickEvent().getValue();
+
+			if (clickEvent.startsWith("/socialoptions")) return "/socialoptions";
+			if (clickEvent.startsWith("/viewprofile")) return "/viewprofile";
+		}
+		return null;
+	}
+
 	private static ChatStyle getPVChatStyle(String username) {
+		username = username.replaceAll("[^a-zA-Z0-9_]", "");
 		return Utils.createClickStyle(
 			ClickEvent.Action.RUN_COMMAND,
 			"/pv " + username,
@@ -199,7 +190,6 @@ public class ChatListener {
 	public void onGuiChat(ClientChatReceivedEvent e) {
 		if (e.type == 2) {
 			CrystalMetalDetectorSolver.process(e.message);
-			TimersOverlay.processActionBar(e.message.getUnformattedText());
 			e.message = processChatComponent(e.message);
 			return;
 		} else if (e.type == 0) {
@@ -222,19 +212,8 @@ public class ChatListener {
 			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("Your profile was changed to: ".length())
 				.split(" ")[0].trim());
-		} else if (unformatted.startsWith("Your new API key is ")) {
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey =
-				unformatted.substring("Your new API key is ".length()).substring(
-					0,
-					36
-				);
-			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured");
-			NotEnoughUpdates.INSTANCE.saveConfig();
-		} else if (unformatted.startsWith("Player List Info is now disabled!")) {
-			SBInfo.getInstance().hasNewTab = false;
-		} else if (unformatted.startsWith("Player List Info is now enabled!")) {
-			SBInfo.getInstance().hasNewTab = true;
 		}
+
 		if (e.message.getFormattedText().equals(
 			EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "You haven't unlocked this recipe!" +
 				EnumChatFormatting.RESET)) {
@@ -242,16 +221,17 @@ public class ChatListener {
 		} else if (e.message.getFormattedText().startsWith(
 			EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "Invalid recipe ")) {
 			r = "";
+		} else if (unformatted.equals("  SLAYER QUEST FAILED!")) {
+			SlayerOverlay.isSlain = false;
+			timeSinceLastBoss = 0;
 		} else if (unformatted.equals("  NICE! SLAYER BOSS SLAIN!")) {
 			SlayerOverlay.isSlain = true;
 		} else if (unformatted.equals("  SLAYER QUEST STARTED!")) {
 			SlayerOverlay.isSlain = false;
-			if (timeSinceLastBoss == 0) {
-				SlayerOverlay.timeSinceLastBoss = System.currentTimeMillis();
-			} else {
+			if (timeSinceLastBoss != 0) {
 				timeSinceLastBoss2 = timeSinceLastBoss;
-				timeSinceLastBoss = System.currentTimeMillis();
 			}
+			timeSinceLastBoss = System.currentTimeMillis();
 		} else if (unformatted.startsWith("   RNG Meter")) {
 			RNGMeter = unformatted.substring("   RNG Meter - ".length());
 		} else if (matcher.matches()) {

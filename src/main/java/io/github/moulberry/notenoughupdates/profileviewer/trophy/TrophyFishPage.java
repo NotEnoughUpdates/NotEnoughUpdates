@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -164,12 +164,10 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		GlStateManager.disableLighting();
 		RenderHelper.enableGUIStandardItemLighting();
 
-		JsonObject stats = profileInformation.getAsJsonObject("stats");
-
-		int thunderKills = 0;
-		if (stats.has("kills_thunder")) {
-			thunderKills = stats.getAsJsonObject().get("kills_thunder").getAsInt();
-		}
+		int thunderKills = Utils.getElementAsInt(Utils.getElement(
+			selectedProfile.getProfileJson(),
+			"bestiary.kills.thunder_400"
+		), 0);
 		ItemStack thunder_sc = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
 			NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("THUNDER_SC")
 		);
@@ -184,10 +182,10 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("LORD_JAWBUS_SC")
 		);
 		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(lord_jawbus_sc, guiLeft + 16, guiTop + 120);
-		int jawbusKills = 0;
-		if (stats.has("kills_lord_jawbus")) {
-			jawbusKills = stats.getAsJsonObject().get("kills_lord_jawbus").getAsInt();
-		}
+		int jawbusKills = Utils.getElementAsInt(Utils.getElement(
+			selectedProfile.getProfileJson(),
+			"bestiary.kills.lord_jawbus_600"
+		), 0);
 
 		Utils.drawStringF(
 			EnumChatFormatting.AQUA + "Lord Jawbus Kills: §f" + jawbusKills,
@@ -260,10 +258,9 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			}
 		}
 
-		if (!trophyObject.has("rewards")) return;
 
 		int[] trophiesPerTier = getTrophiesPerTier(trophyObject);
-		JsonArray rewards = trophyObject.get("rewards").getAsJsonArray();
+		JsonArray rewards = Utils.getElementOrDefault(selectedProfile.getProfileJson(), "trophy_fish.rewards", new JsonArray()).getAsJsonArray();
 		int i = 0;
 		for (ItemStack itemStack : armorHelmets.keySet()) {
 			RenderHelper.enableGUIStandardItemLighting();
@@ -276,7 +273,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 			int hasValue = trophiesPerTier[integer - 1];
 			int neededValue = integer == 1 ? 15 : 18;
-			String neededText = "§c" + hasValue + "/" + neededValue;
+			String neededText = (hasValue == neededValue ? "§a" : "§c") + hasValue + "/" + neededValue;
 
 			try {
 				JsonElement jsonElement = rewards.get(integer - 1);
@@ -308,7 +305,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 	}
 
 	private int[] getTrophiesPerTier(JsonObject trophyFish) {
-		int[] trophiesPerTier = new int[] { 0, 0, 0, 0 };
+		int[] trophiesPerTier = new int[]{0, 0, 0, 0};
 		for (String fishType : internalTrophyFish.keySet()) {
 			int highestTier = 0;
 			if (trophyFish.has((fishType + "_bronze"))) highestTier = 1;
@@ -326,7 +323,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 	private List<String> getTooltip(String name, Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityIntegerMap) {
 		List<String> tooltip = new ArrayList<>();
-		tooltip.add(internalTrophyFish.get(name.toLowerCase(Locale.US).replace(" ", "_")) + WordUtils.capitalize(name.replace("_", " ")));
+		tooltip.add(internalTrophyFish.get(name.toLowerCase(Locale.US).replace(" ", "_")) +
+			WordUtils.capitalize(name.replace("_", " ")));
 
 		List<String> lore = readLoreFromRepo(name.toUpperCase(Locale.US));
 		List<String> description = readDescriptionFromLore(lore);
@@ -385,7 +383,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		totalCount = 0;
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : trophyObject.entrySet()) {
 			String key = stringJsonElementEntry.getKey();
-			if (key.equalsIgnoreCase("rewards") || key.equalsIgnoreCase("total_caught")) {
+			if (key.equalsIgnoreCase("rewards") || key.equalsIgnoreCase("total_caught") ||
+				key.equalsIgnoreCase("last_caught")) {
 				if (key.equalsIgnoreCase("total_caught")) {
 					totalCount = stringJsonElementEntry.getValue().getAsInt();
 				}
@@ -395,7 +394,12 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			String[] s = key.split("_");
 			String type = s[s.length - 1];
 			TrophyFish.TrophyFishRarity trophyFishRarity;
-			int value = stringJsonElementEntry.getValue().getAsInt();
+			int value = 0;
+			try {
+				value = stringJsonElementEntry.getValue().getAsInt();
+			} catch (NumberFormatException e) {
+				value = -1;
+			}
 
 			if (key.startsWith("golden_fish_")) {
 				type = s[2];

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -74,7 +74,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		"fa06cb0c471c1c9bc169af270cd466ea701946776056e472ecdaeb49f0f4a4dc",
 		"a435164c05cea299a3f016bbbed05706ebb720dac912ce4351c2296626aecd9a",
 	};
-	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
 		{
 			put(
 				"catacombs",
@@ -127,6 +127,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 		}
 
 		Map<String, ProfileViewer.Level> levelingInfo = selectedProfile.getLevelingInfo();
+		if (levelingInfo == null) {
+			return;
+		}
 		JsonObject profileInfo = selectedProfile.getProfileJson();
 		JsonObject hypixelInfo = GuiProfileViewer.getProfile().getHypixelProfile();
 
@@ -348,7 +351,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			// Random stats
 			float secrets = -1;
 			if (hypixelInfo != null) {
-				secrets = Utils.getElementAsFloat(Utils.getElement(hypixelInfo, "achievements.skyblock_treasure_hunter"), 0);
+				secrets = Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.secrets"), 0);
 			}
 			float totalRunsF = 0;
 			float totalRunsF5 = 0;
@@ -540,12 +543,22 @@ public class DungeonPage extends GuiProfileViewerPage {
 			}
 
 			float classLevelSum = 0;
+			float classLevelSumOverflow = 0;
+			int numMaxed = 0;
 			for (int i = 0; i < Weight.DUNGEON_CLASS_NAMES.size(); i++) {
 				String className = Weight.DUNGEON_CLASS_NAMES.get(i);
 
-				classLevelSum += levelingInfo.get(className).level;
 				String colour = className.equalsIgnoreCase(activeClass) ? EnumChatFormatting.GREEN.toString() : EnumChatFormatting.WHITE.toString();
 				ProfileViewer.Level levelObj = levelingInfo.get("cosmetic_" + className);
+				// If the class is maxed but not all are, we need to calculate the average level differently.
+				if (levelObj.level >= 50) {
+					levelObj.maxed = true;
+					numMaxed++;
+					classLevelSum += 50;
+					classLevelSumOverflow += levelObj.level;
+				} else {
+					classLevelSum += levelObj.level;
+				}
 
 				getInstance()
 					.renderXpBar(
@@ -561,9 +574,12 @@ public class DungeonPage extends GuiProfileViewerPage {
 			}
 
 			ProfileViewer.Level classAverage = new ProfileViewer.Level();
-			classAverage.level = classLevelSum / Weight.DUNGEON_CLASS_NAMES.size();
-			if (classAverage.level >= 50) {
+			// If all classes maxed, calculate including overflow, otherwise, calculate with cap at 50.
+			if (numMaxed == Weight.DUNGEON_CLASS_NAMES.size()) {
 				classAverage.maxed = true;
+				classAverage.level = classLevelSumOverflow / Weight.DUNGEON_CLASS_NAMES.size();
+			} else {
+				classAverage.level = classLevelSum / Weight.DUNGEON_CLASS_NAMES.size();
 			}
 
 			getInstance().renderXpBar(
@@ -647,17 +663,17 @@ public class DungeonPage extends GuiProfileViewerPage {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		if (onMasterMode) {
-			Utils.drawPvSideButton(1, dungeonsModeIcons.get("master_catacombs"), true, getInstance());
+			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), true, getInstance());
 		} else {
-			Utils.drawPvSideButton(0, dungeonsModeIcons.get("catacombs"), true, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), true, getInstance());
 		}
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
 		if (!onMasterMode) {
-			Utils.drawPvSideButton(1, dungeonsModeIcons.get("master_catacombs"), false, getInstance());
+			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), false, getInstance());
 		} else {
-			Utils.drawPvSideButton(0, dungeonsModeIcons.get("catacombs"), false, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), false, getInstance());
 		}
 		GlStateManager.disableDepth();
 	}

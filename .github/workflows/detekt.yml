@@ -1,0 +1,33 @@
+name: Detekt
+
+on:
+  - pull_request
+  - push
+permissions: {}
+jobs:
+  detektering:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[no infer]')"
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout feature
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: gradle
+      - name: Set up gradle cache
+        uses: gradle/gradle-build-action@v2
+      - name: Run detekt
+        run: |
+          ./gradlew :detektMain --stacktrace
+      - name: Generate report
+        run: |
+          jq -r '.runs[].results[]|select(.level != "error")|{"message":.message.text, "locations":.locations[].physicalLocation}|("::warning file="+(.locations.artifactLocation.uri|sub("^'"$(readlink -f .)"'"; ""))+",line="+(.locations.region.startLine|tostring)+",endLine="+(.locations.region.endLine|tostring)+",col="+(.locations.region.startColumn|tostring)+",endColumn="+(.locations.region.endColumn|tostring)+"::"+.message)' <build/reports/detekt/main.sarif
+          jq -r '.runs[].results[]|select(.level == "error")|{"message":.message.text, "locations":.locations[].physicalLocation}|("::error file="+(.locations.artifactLocation.uri|sub("^'"$(readlink -f .)"'"; ""))+",line="+(.locations.region.startLine|tostring)+",endLine="+(.locations.region.endLine|tostring)+",col="+(.locations.region.startColumn|tostring)+",endColumn="+(.locations.region.endColumn|tostring)+"::"+.message)' <build/reports/detekt/main.sarif
+          bugcount=$(jq -r '[.runs[].results[]] | length ' <build/reports/detekt/main.sarif)
+          echo "> This PR introduces **$bugcount** potential bug(s)." >>$GITHUB_STEP_SUMMARY
+          echo >>$GITHUB_STEP_SUMMARY
+          cat <build/reports/detekt/main.md >>$GITHUB_STEP_SUMMARY
+          [[ $bugcount != 0 ]] && exit 1 || echo ok.

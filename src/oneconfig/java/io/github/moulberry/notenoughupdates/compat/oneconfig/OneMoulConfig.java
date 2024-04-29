@@ -26,21 +26,20 @@ import cc.polyfrost.oneconfig.config.elements.OptionSubcategory;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigButton;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigDropdown;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigInfo;
-import cc.polyfrost.oneconfig.gui.elements.config.ConfigSlider;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigSwitch;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigTextBox;
-import io.github.moulberry.notenoughupdates.core.config.Config;
-import io.github.moulberry.notenoughupdates.core.config.annotations.Category;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorFSR;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorText;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.Config;
+import io.github.moulberry.moulconfig.annotations.Category;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorButton;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorInfoText;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorKeybind;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorText;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -48,25 +47,23 @@ import java.lang.reflect.Field;
 public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 
 	final Config moulConfig;
-	private final Runnable saveCallback;
 
-	public OneMoulConfig(Mod modData, Config moulConfig, Runnable saveCallback) {
+	public OneMoulConfig(Mod modData, Config moulConfig) {
 		super(modData, "_SHOULD_NOT_BE_WRITTEN.json");
 		if (moulConfig == null) throw new IllegalArgumentException("mfw no moulconfig");
 		this.moulConfig = moulConfig;
-		this.saveCallback = saveCallback;
 		initialize();
 	}
 
 	@Override
 	public void initialize() {
-			mod.config = this;
+		mod.config = this;
 
-			try {
-				processMoulConfig();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
+		try {
+			processMoulConfig();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 		cc.polyfrost.oneconfig.config.Config.register(mod);
 	}
 
@@ -86,8 +83,8 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 			if (annotation == null) continue;
 			String cat = category.getName();
 			String subcategory = "";
-			String annotationName = StringUtils.cleanColour( annotation.name());
-			String annotationDesc = StringUtils.cleanColour( annotation.desc());
+			String annotationName = StringUtils.cleanColour(annotation.name());
+			String annotationDesc = StringUtils.cleanColour(annotation.desc());
 			ConfigEditorBoolean configEditorBoolean = optionField.getAnnotation(ConfigEditorBoolean.class);
 			if (configEditorBoolean != null) {
 				category.options.add(new ConfigSwitch(
@@ -174,7 +171,7 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 					cat, subcategory, 2, InfoType.ERROR
 				));
 			}
-			ConfigEditorFSR configEditorFSR = optionField.getAnnotation(ConfigEditorFSR.class);
+			ConfigEditorInfoText configEditorFSR = optionField.getAnnotation(ConfigEditorInfoText.class);
 			if (configEditorFSR != null) {
 				category.options.add(new ConfigInfo(
 					optionField, categoryInstance,
@@ -186,7 +183,7 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 
 	@Override
 	public void save() {
-		saveCallback.run();
+		moulConfig.saveNow();
 	}
 
 	@Override

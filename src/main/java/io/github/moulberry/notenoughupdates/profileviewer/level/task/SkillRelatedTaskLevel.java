@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
@@ -46,6 +47,10 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		if (selectedProfile == null) {
 			return;
 		}
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (data == null) {
+			return;
+		}
 
 		Map<String, ProfileViewer.Level> levelingInfo = selectedProfile.getLevelingInfo();
 		if (levelingInfo == null) {
@@ -63,12 +68,10 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 			hotmXP += hotmXpArray.get(i - 1).getAsInt();
 		}
 
-		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_mithril"), 0);
-		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_gemstone"), 0);
-		float mithril = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_mithril"), 0) +
-			mithrilPowder;
-		float gemstone = (Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_gemstone"), 0)) +
-			gemstonePowder;
+		float mithrilPowder = data.mining_core.powder_mithril;
+		float gemstonePowder = data.mining_core.powder_gemstone;
+		float mithril = data.mining_core.powder_spent_mithril + mithrilPowder;
+		float gemstone = data.mining_core.powder_spent_gemstone + gemstonePowder;
 
 		// PUNKT NULL
 
@@ -93,13 +96,17 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		int sbXpPotmTier = 0;
 		JsonArray potmXpArray = miningObj.get("potm_xp").getAsJsonArray();
 
-		int potm = ((Utils.getElementAsInt(Utils.getElement(object, "mining_core.nodes.special_0"), 0)));
+		int potm = (data.mining_core.nodes.special_0);
 		for (int i = 1; i <= potm; i++) {
 			sbXpPotmTier += potmXpArray.get(i - 1).getAsInt();
 		}
 
 		int sbXpCommissionMilestone = 0;
-		JsonArray tutorialArray = object.get("tutorial").getAsJsonArray();
+		JsonArray tutorialArray = Utils.getElementOrDefault(
+			selectedProfile.getProfileJson(),
+			"objectives.tutorial",
+			new JsonArray()
+		).getAsJsonArray();
 		JsonArray commissionMilestoneXpArray = miningObj.get("commission_milestone_xp").getAsJsonArray();
 		for (JsonElement jsonElement : tutorialArray) {
 			if (jsonElement.getAsJsonPrimitive().isString() && jsonElement.getAsString().startsWith(
@@ -113,10 +120,7 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		}
 
 		// rock mines
-		float pet_milestone_ores_mined = Utils.getElementAsFloat(Utils.getElement(
-			object,
-			"stats.pet_milestone_ores_mined"
-		), 0);
+		float pet_milestone_ores_mined = data.player_stats.pets.milestone.ores_mined;
 
 		int sbXpRockPet = 0;
 		int rockMilestoneXp = miningObj.get("rock_milestone_xp").getAsInt();
@@ -131,8 +135,8 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		// farming
 		JsonObject farmingObj = skillRelatedTask.get("farming").getAsJsonObject();
 		int anitaShopUpgradesXp = farmingObj.get("anita_shop_upgrades_xp").getAsInt();
-		int doubleDrops = Utils.getElementAsInt(Utils.getElement(object, "jacob2.perks.double_drops"), 0);
-		int farmingLevelCap = Utils.getElementAsInt(Utils.getElement(object, "jacob2.perks.farming_level_cap"), 0);
+		int doubleDrops = data.jacobs_contest.perks.double_drops;
+		int farmingLevelCap = data.jacobs_contest.perks.farming_level_cap;
 
 		int sbXpGainedByAnita = (doubleDrops + farmingLevelCap) * anitaShopUpgradesXp;
 
@@ -155,10 +159,7 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 			}
 
 		}
-		float petMilestoneKilled = Utils.getElementAsFloat(
-			Utils.getElement(object, "stats.pet_milestone_sea_creatures_killed"),
-			0
-		);
+		float petMilestoneKilled = data.player_stats.pets.milestone.sea_creatures_killed;
 
 		int sbXpDolphinPet = 0;
 		int dolphinMilestoneXp = fishingObj.get("dolphin_milestone_xp").getAsInt();
@@ -171,16 +172,13 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		}
 
 		int sbXpNucleus = 0;
-		JsonObject leveling = object.getAsJsonObject("leveling");
-		if (leveling != null && leveling.has("completions") && leveling.getAsJsonObject("completions").has("NUCLEUS_RUNS")) {
-			int nucleusRuns = leveling.getAsJsonObject("completions").get("NUCLEUS_RUNS").getAsInt();
-			JsonElement nucleusXp = miningObj.get("crystal_nucleus_xp");
+		int nucleusRuns = data.leveling.completions.NUCLEUS_RUNS;
+		JsonElement nucleusXp = miningObj.get("crystal_nucleus_xp");
 			if (nucleusXp == null) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification("crystal_nucleus_xp from sblevels.json");
 			} else {
 				sbXpNucleus += nucleusRuns * nucleusXp.getAsInt();
 			}
-		}
 
 		List<String> lore = new ArrayList<>();
 		lore.add(levelPage.buildLore("Heart of the Mountain", sbXpHotmTier, miningObj.get("hotm").getAsInt(), false));

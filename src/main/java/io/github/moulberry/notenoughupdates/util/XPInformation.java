@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -24,15 +24,19 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
-import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
+import lombok.var;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,16 +50,15 @@ public class XPInformation {
 
 	public static class SkillInfo {
 		public int level;
-		public float totalXp;
-		public float currentXp;
-		public float currentXpMax;
+		public double totalXp;
+		public double currentXp;
+		public double currentXpMax;
 		public boolean fromApi = false;
 	}
 
 	private final HashMap<String, SkillInfo> skillInfoMap = new HashMap<>();
 	public HashMap<String, Float> updateWithPercentage = new HashMap<>();
-
-	public int correctionCounter = 0;
+	public HashMap<String, Float> increment = new HashMap<>();
 
 	private static final Splitter SPACE_SPLITTER = Splitter.on("  ").omitEmptyStrings().trimResults();
 	private static final Pattern SKILL_PATTERN = Pattern.compile(
@@ -69,108 +72,149 @@ public class XPInformation {
 		return skillInfoMap;
 	}
 
-	public SkillInfo getSkillInfo(String skillName) {
-		return skillInfoMap.get(skillName.toLowerCase());
+	private Set<String> failedSkills = new HashSet<>();
+
+	public @Nullable SkillInfo getSkillInfo(String skillName) {
+		return getSkillInfo(skillName, false);
+	}
+
+	public @Nullable SkillInfo getSkillInfo(String skillName, boolean isHighlyInterested) {
+		var obj = skillInfoMap.get(skillName.toLowerCase(Locale.ROOT));
+		if (isHighlyInterested && failedSkills.contains(skillName.toLowerCase(Locale.ROOT))) {
+			TablistAPI.getWidgetLines(TablistAPI.WidgetNames.SKILLS);
+		}
+		return obj;
 	}
 
 	private String lastActionBar = null;
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onChatReceived(ClientChatReceivedEvent event) {
-		if (event.type == 2) {
-			JsonObject leveling = Constants.LEVELING;
-			if (leveling == null) return;
+		if (event.type != 2) {
+			return;
+		}
+		JsonObject leveling = Constants.LEVELING;
+		if (leveling == null) return;
 
-			String actionBar = StringUtils.cleanColour(event.message.getUnformattedText());
+		String actionBar = StringUtils.cleanColour(event.message.getUnformattedText());
 
-			if (lastActionBar != null && lastActionBar.equalsIgnoreCase(actionBar)) {
-				return;
-			}
-			lastActionBar = actionBar;
+		if (lastActionBar != null && lastActionBar.equalsIgnoreCase(actionBar)) {
+			return;
+		}
+		lastActionBar = actionBar;
 
-			List<String> components = SPACE_SPLITTER.splitToList(actionBar);
+		List<String> components = SPACE_SPLITTER.splitToList(actionBar);
 
-			for (String component : components) {
-				Matcher matcher = SKILL_PATTERN.matcher(component);
-				if (matcher.matches()) {
-					String skillS = matcher.group(2);
-					String currentXpS = matcher.group(3).replace(",", "");
-					String maxXpS = matcher.group(4).replace(",", "");
+		for (String component : components) {
+			Matcher matcher = SKILL_PATTERN.matcher(component);
+			if (matcher.matches()) {
+				String skillS = matcher.group(2);
+				String currentXpS = matcher.group(3).replace(",", "");
+				String maxXpS = matcher.group(4).replace(",", "");
 
-					float currentXp = Float.parseFloat(currentXpS);
-					float maxXp = Float.parseFloat(maxXpS);
+				float currentXp = Float.parseFloat(currentXpS);
+				float maxXp = Float.parseFloat(maxXpS);
 
-					SkillInfo skillInfo = new SkillInfo();
-					skillInfo.currentXp = currentXp;
-					skillInfo.currentXpMax = maxXp;
-					skillInfo.totalXp = currentXp;
+				SkillInfo skillInfo = new SkillInfo();
+				skillInfo.currentXp = currentXp;
+				skillInfo.currentXpMax = maxXp;
+				skillInfo.totalXp = currentXp;
 
-					JsonArray levelingArray = leveling.getAsJsonArray("leveling_xp");
-					for (int i = 0; i < levelingArray.size(); i++) {
-						float cap = levelingArray.get(i).getAsFloat();
-						if (maxXp > 0 && maxXp <= cap) {
-							break;
-						}
-
-						skillInfo.totalXp += cap;
-						skillInfo.level++;
+				JsonArray levelingArray = leveling.getAsJsonArray("leveling_xp");
+				for (int i = 0; i < levelingArray.size(); i++) {
+					float cap = levelingArray.get(i).getAsFloat();
+					if (maxXp > 0 && maxXp <= cap) {
+						break;
 					}
 
-					skillInfoMap.put(skillS.toLowerCase(), skillInfo);
-					return;
+					skillInfo.totalXp += cap;
+					skillInfo.level++;
+				}
+
+				skillInfoMap.put(skillS.toLowerCase(Locale.ROOT), skillInfo);
+				return;
+			} else {
+				matcher = SKILL_PATTERN_PERCENTAGE.matcher(component);
+				if (matcher.matches()) {
+					String skillS = matcher.group(2);
+					String xpPercentageS = matcher.group(3).replace(",", "");
+
+					float xpPercentage = Float.parseFloat(xpPercentageS);
+					if (updateWithPercentage.containsKey(skillS.toLowerCase(Locale.ROOT))) {
+						failedSkills.add(skillS.toLowerCase(Locale.ROOT));
+					}
+					updateWithPercentage.put(skillS.toLowerCase(Locale.ROOT), xpPercentage);
+					increment.put(skillS.toLowerCase(Locale.ROOT), Float.parseFloat(matcher.group(1).replace(",", "")));
 				} else {
-					matcher = SKILL_PATTERN_PERCENTAGE.matcher(component);
+					matcher = SKILL_PATTERN_MULTIPLIER.matcher(component);
+
 					if (matcher.matches()) {
 						String skillS = matcher.group(2);
-						String xpPercentageS = matcher.group(3).replace(",", "");
+						String currentXpS = matcher.group(3).replace(",", "");
+						String maxXpS = matcher.group(4).replace(",", "");
 
-						float xpPercentage = Float.parseFloat(xpPercentageS);
-						updateWithPercentage.put(skillS.toLowerCase(), xpPercentage);
-					} else {
-						matcher = SKILL_PATTERN_MULTIPLIER.matcher(component);
-
-						if (matcher.matches()) {
-							String skillS = matcher.group(2);
-							String currentXpS = matcher.group(3).replace(",", "");
-							String maxXpS = matcher.group(4).replace(",", "");
-
-							float maxMult = 1;
-							if (maxXpS.endsWith("k")) {
-								maxMult = 1000;
-								maxXpS = maxXpS.substring(0, maxXpS.length() - 1);
-							} else if (maxXpS.endsWith("m")) {
-								maxMult = 1000000;
-								maxXpS = maxXpS.substring(0, maxXpS.length() - 1);
-							} else if (maxXpS.endsWith("b")) {
-								maxMult = 1000000000;
-								maxXpS = maxXpS.substring(0, maxXpS.length() - 1);
-							}
-
-							float currentXp = Float.parseFloat(currentXpS);
-							float maxXp = Float.parseFloat(maxXpS) * maxMult;
-
-							SkillInfo skillInfo = new SkillInfo();
-							skillInfo.currentXp = currentXp;
-							skillInfo.currentXpMax = maxXp;
-							skillInfo.totalXp = currentXp;
-
-							JsonArray levelingArray = leveling.getAsJsonArray("leveling_xp");
-							for (int i = 0; i < levelingArray.size(); i++) {
-								float cap = levelingArray.get(i).getAsFloat();
-								if (maxXp > 0 && maxXp <= cap) {
-									break;
-								}
-
-								skillInfo.totalXp += cap;
-								skillInfo.level++;
-							}
-
-							skillInfoMap.put(skillS.toLowerCase(), skillInfo);
-							return;
+						float maxMult = 1;
+						if (maxXpS.endsWith("k")) {
+							maxMult = 1000;
+							maxXpS = maxXpS.substring(0, maxXpS.length() - 1);
+						} else if (maxXpS.endsWith("m")) {
+							maxMult = 1000000;
+							maxXpS = maxXpS.substring(0, maxXpS.length() - 1);
+						} else if (maxXpS.endsWith("b")) {
+							maxMult = 1000000000;
+							maxXpS = maxXpS.substring(0, maxXpS.length() - 1);
 						}
+
+						float currentXp = Float.parseFloat(currentXpS);
+						float maxXp = Float.parseFloat(maxXpS) * maxMult;
+
+						SkillInfo skillInfo = new SkillInfo();
+						skillInfo.currentXp = currentXp;
+						skillInfo.currentXpMax = maxXp;
+						skillInfo.totalXp = currentXp;
+
+						JsonArray levelingArray = leveling.getAsJsonArray("leveling_xp");
+						for (int i = 0; i < levelingArray.size(); i++) {
+							float cap = levelingArray.get(i).getAsFloat();
+							if (maxXp > 0 && maxXp <= cap) {
+								break;
+							}
+
+							skillInfo.totalXp += cap;
+							skillInfo.level++;
+						}
+
+						skillInfoMap.put(skillS.toLowerCase(Locale.ROOT), skillInfo);
+						return;
 					}
 				}
 			}
+		}
+	}
+
+	private Pattern tablistSkillPattern =
+		Pattern.compile(
+			" (?<type>[^ ]+) (?<level>\\d+): (?:(?<percentage>\\d+(\\.\\d+)?)%|(?<amount>[0-9,]+(\\.\\d+)?)/.*|(?<max>MAX))");
+
+	// Car Pentry
+	@SubscribeEvent
+	public void onTick(TickEvent.ClientTickEvent event) {
+		if (event.phase != TickEvent.Phase.END) return;
+		var widgetLines = TablistAPI.getOptionalWidgetLines(TablistAPI.WidgetNames.SKILLS);
+		for (String widgetLine : widgetLines) {
+			Matcher matcher = tablistSkillPattern.matcher(Utils.cleanColour(widgetLine));
+			if (!matcher.matches())
+				continue;
+			var type = matcher.group("type");
+			assert type != null;
+			var level = Integer.parseInt(matcher.group("level"));
+			var percentage = matcher.group("percentage");
+			var percentageAsNumber = percentage != null ? Double.parseDouble(percentage) / 100 : null;
+			var amount = matcher.group("amount");
+			var amountAsNumber = amount != null ? Double.parseDouble(amount.replace(",", "")) : null;
+			var isMax = matcher.group("max") != null;
+			// TODO: use this extra information for good (not evil)
+			updateLevel(type.toLowerCase(Locale.ROOT), level);
 		}
 	}
 
@@ -179,74 +223,43 @@ public class XPInformation {
 			JsonObject leveling = Constants.LEVELING;
 			if (leveling == null) return;
 
-			SkillInfo skillInfo = new SkillInfo();
-			skillInfo.totalXp = 0;
-			skillInfo.level = level;
+			SkillInfo newSkillInfo = new SkillInfo();
+			newSkillInfo.totalXp = 0;
+			newSkillInfo.level = level;
 
 			JsonArray levelingArray = leveling.getAsJsonArray("leveling_xp");
 			for (int i = 0; i < levelingArray.size(); i++) {
 				float cap = levelingArray.get(i).getAsFloat();
 				if (i == level) {
-					skillInfo.currentXp += updateWithPercentage.get(skill) / 100f * cap;
-					skillInfo.totalXp += skillInfo.currentXp;
-					skillInfo.currentXpMax = cap;
+					newSkillInfo.currentXp += updateWithPercentage.get(skill) / 100f * cap;
+					newSkillInfo.totalXp += newSkillInfo.currentXp;
+					newSkillInfo.currentXpMax = cap;
 					break;
 				} else {
-					skillInfo.totalXp += cap;
+					newSkillInfo.totalXp += cap;
 				}
 			}
 
-			SkillInfo old = skillInfoMap.get(skill.toLowerCase());
-
-			if (old.totalXp <= skillInfo.totalXp) {
-				correctionCounter--;
-				if (correctionCounter < 0) correctionCounter = 0;
-
-				skillInfoMap.put(skill.toLowerCase(), skillInfo);
-			} else if (++correctionCounter >= 10) {
-				correctionCounter = 0;
-				skillInfoMap.put(skill.toLowerCase(), skillInfo);
+			SkillInfo oldSkillInfo = skillInfoMap.get(skill.toLowerCase(Locale.ROOT));
+			float inc = increment.getOrDefault(skill.toLowerCase(Locale.ROOT), 0F);
+			if (oldSkillInfo != null && oldSkillInfo.totalXp + inc > newSkillInfo.totalXp && oldSkillInfo.totalXp - inc * 5 < newSkillInfo.totalXp) {
+				SkillInfo incrementedSkillInfo = new SkillInfo();
+				incrementedSkillInfo.totalXp = oldSkillInfo.totalXp + inc;
+				boolean isNotLevelUp = oldSkillInfo.currentXp + inc < oldSkillInfo.currentXpMax;
+				incrementedSkillInfo.level =
+					(isNotLevelUp) ? oldSkillInfo.level : oldSkillInfo.level + 1;
+				incrementedSkillInfo.currentXp =
+					isNotLevelUp ? oldSkillInfo.currentXp + inc : oldSkillInfo.currentXp + inc - oldSkillInfo.currentXpMax;
+				incrementedSkillInfo.currentXpMax =
+					incrementedSkillInfo.level < levelingArray.size() && incrementedSkillInfo.level >= 0
+						? levelingArray.get(incrementedSkillInfo.level).getAsFloat()
+						: 0F;
+				skillInfoMap.put(skill.toLowerCase(Locale.ROOT), incrementedSkillInfo);
+			} else {
+				skillInfoMap.put(skill.toLowerCase(Locale.ROOT), newSkillInfo);
 			}
+			failedSkills.remove(skill.toLowerCase(Locale.ROOT));
 		}
 		updateWithPercentage.clear();
-	}
-
-	public void tick() {
-		ProfileApiSyncer.getInstance().requestResync("xpinformation", 5 * 60 * 1000,
-			() -> {
-			}, this::onApiUpdated
-		);
-	}
-
-	private static final String[] skills = {
-		"taming",
-		"mining",
-		"foraging",
-		"enchanting",
-		"carpentry",
-		"farming",
-		"combat",
-		"fishing",
-		"alchemy",
-		"runecrafting"
-	};
-
-	private void onApiUpdated(SkyblockProfiles profile) {
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getLatestProfile().getLevelingInfo();
-
-		for (String skill : skills) {
-			SkillInfo info = new SkillInfo();
-
-			ProfileViewer.Level levelInfo = skyblockInfo.get(skill);
-			float level = levelInfo.level;
-
-			info.totalXp = levelInfo.totalXp;
-			info.currentXpMax = levelInfo.maxXpForLevel;
-			info.level = (int) level;
-			info.currentXp = (level % 1) * info.currentXpMax;
-			info.fromApi = true;
-
-			skillInfoMap.put(skill.toLowerCase(), info);
-		}
 	}
 }

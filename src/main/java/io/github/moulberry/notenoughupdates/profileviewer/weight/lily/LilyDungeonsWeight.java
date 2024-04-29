@@ -65,9 +65,11 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 	}
 
 	public void getDungeonCompletionWeight(String cataMode) {
+		JsonObject dungeonsCompletionWorth = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_worth").getAsJsonObject();
+		JsonObject dungeonsCompletionBuffs = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_buffs").getAsJsonObject();
+
 		double max1000 = 0;
 		double mMax1000 = 0;
-		JsonObject dungeonsCompletionWorth = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_worth").getAsJsonObject();
 		for (Map.Entry<String, JsonElement> dcwEntry : dungeonsCompletionWorth.entrySet()) {
 			if (dcwEntry.getKey().startsWith("catacombs_")) {
 				max1000 += dcwEntry.getValue().getAsDouble();
@@ -77,33 +79,35 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 		}
 		max1000 *= 1000;
 		mMax1000 *= 1000;
+
 		double upperBound = 1500;
+		double score = 0;
+
 		if (cataMode.equals("normal")) {
 			if (Utils.getElement(profileJson, "dungeons.dungeon_types.catacombs.tier_completions") == null) {
 				return;
 			}
 
-			double score = 0;
 			for (Map.Entry<String, JsonElement> normalFloor : Utils
 				.getElement(profileJson, "dungeons.dungeon_types.catacombs.tier_completions")
 				.getAsJsonObject()
 				.entrySet()) {
-				int amount = normalFloor.getValue().getAsInt();
-				double excess = 0;
-				if (amount > 1000) {
-					excess = amount - 1000;
-					amount = 1000;
-				}
+				if (dungeonsCompletionWorth.has("catacombs_" + normalFloor.getKey())) {
+					int amount = normalFloor.getValue().getAsInt();
+					double excess = 0;
+					if (amount > 1000) {
+						excess = amount - 1000;
+						amount = 1000;
+					}
 
-				double floorScore = amount * dungeonsCompletionWorth.get("catacombs_" + normalFloor.getKey()).getAsDouble();
-				if (excess > 0) floorScore *= Math.log(excess / 1000 + 1) / Math.log(7.5) + 1;
-				score += floorScore;
+					double floorScore = amount * dungeonsCompletionWorth.get("catacombs_" + normalFloor.getKey()).getAsDouble();
+					if (excess > 0) floorScore *= Math.log(excess / 1000 + 1) / Math.log(7.5) + 1;
+					score += floorScore;
+				}
 			}
 
 			weightStruct.add(new WeightStruct(score / max1000 * upperBound * 2));
 		} else {
-			JsonObject dungeonsCompletionBuffs = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_buffs").getAsJsonObject();
-
 			if (Utils.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions") == null) {
 				return;
 			}
@@ -112,7 +116,7 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 				.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions")
 				.getAsJsonObject()
 				.entrySet()) {
-				if (dungeonsCompletionBuffs.get(masterFloor.getKey()) != null) {
+				if (dungeonsCompletionBuffs.has(masterFloor.getKey())) {
 					int amount = masterFloor.getValue().getAsInt();
 					double threshold = 20;
 					if (amount >= threshold) {
@@ -122,28 +126,22 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 							dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt() * Math.pow((amount / threshold), 1.840896416);
 					}
 				}
+
+				if (dungeonsCompletionWorth.has("master_catacombs_" + masterFloor.getKey())) {
+					int amount = masterFloor.getValue().getAsInt();
+					double excess = 0;
+					if (amount > 1000) {
+						excess = amount - 1000;
+						amount = 1000;
+					}
+
+					double floorScore = amount * dungeonsCompletionWorth.get("master_catacombs_" + masterFloor.getKey()).getAsDouble();
+					if (excess > 0) floorScore *= (Math.log((excess / 1000) + 1) / Math.log(6)) + 1;
+					score += floorScore;
+				}
 			}
 
-			double masterScore = 0;
-			for (Map.Entry<String, JsonElement> masterFloor : Utils
-				.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions")
-				.getAsJsonObject()
-				.entrySet()) {
-				int amount = masterFloor.getValue().getAsInt();
-				double excess = 0;
-				if (amount > 1000) {
-					excess = amount - 1000;
-					amount = 1000;
-				}
-
-				double floorScore = amount * dungeonsCompletionWorth.get("master_catacombs_" + masterFloor.getKey()).getAsDouble();
-				if (excess > 0) {
-					floorScore *= (Math.log((excess / 1000) + 1) / Math.log(6)) + 1;
-				}
-				masterScore += floorScore;
-			}
-
-			weightStruct.add(new WeightStruct((masterScore / mMax1000) * upperBound * 2));
+			weightStruct.add(new WeightStruct((score / mMax1000) * upperBound * 2));
 		}
 	}
 }

@@ -24,7 +24,7 @@ import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
-import io.github.moulberry.notenoughupdates.options.seperateSections.Museum
+import io.github.moulberry.notenoughupdates.options.separatesections.Museum
 import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
 import net.minecraft.client.Minecraft
@@ -412,7 +412,10 @@ object MuseumCheapestItemOverlay {
                         tooltip.add("")
                     }
 
-                    if (NotEnoughUpdates.INSTANCE.manager.getRecipesFor(line.internalNames[0]).isNotEmpty()) {
+                    if (line.internalNames.isEmpty()) {
+                        tooltip.add("${EnumChatFormatting.RED}Could not determine item!")
+                    }
+                    else if (NotEnoughUpdates.INSTANCE.manager.getRecipesFor(line.internalNames[0]).isNotEmpty()) {
                         tooltip.add("${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Click to open recipe!")
                     } else {
                         tooltip.add("${EnumChatFormatting.RED}${EnumChatFormatting.BOLD}No recipe available!")

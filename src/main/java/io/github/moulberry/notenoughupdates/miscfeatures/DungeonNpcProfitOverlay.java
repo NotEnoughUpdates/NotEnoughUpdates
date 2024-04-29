@@ -174,32 +174,38 @@ public class DungeonNpcProfitOverlay {
 		}
 		dungeonChest.name = stack.getDisplayName();
 		List<SkyblockItem> items = new ArrayList<>();
+		boolean isInCost = false;
 		for (String s : lore) {
 
-			if ("§7Contents".equals(s) || "".equals(s) || "§7Cost".equals(s) || "§cCan't open another chest!".equals(s) ||
+			if ("§7Contents".equals(s) || "".equals(s) || "§cCan't open another chest!".equals(s) ||
 				"§aAlready opened!".equals(s) ||
 				"§eClick to open!".equals(s)) continue;
-
-			//check if this line is showing the cost of opening the Chest
-			if (s.endsWith(" Coins")) {
-				String coinString = StringUtils.cleanColour(s);
-				int whitespace = coinString.indexOf(' ');
-				if (whitespace != -1) {
-					String amountString = coinString.substring(0, whitespace).replace(",", "");
-					dungeonChest.costToOpen = Integer.parseInt(amountString);
-					continue;
-				}
-			} else if (s.equals("§aFREE")) {
-				dungeonChest.costToOpen = 0;
+			if ("§7Cost".equals(s)) {
+				isInCost = true;
 				continue;
 			}
 
+			//check if this line is showing the cost of opening the Chest
+			if (isInCost) {
+				if (s.endsWith(" Coins")) {
+					String coinString = StringUtils.cleanColour(s);
+					int whitespace = coinString.indexOf(' ');
+					if (whitespace != -1) {
+						String amountString = coinString.substring(0, whitespace).replace(",", "");
+						dungeonChest.costToOpen = Integer.parseInt(amountString);
+					}
+				} else if (s.equals("§aFREE")) {
+					dungeonChest.costToOpen = 0;
+				}
+				continue;
+			}
 			//check if the line can be converted to a SkyblockItem
 			SkyblockItem skyblockItem = SkyblockItem.createFromLoreEntry(s);
 			if (skyblockItem != null) {
 				items.add(skyblockItem);
-			} else
+			} else {
 				System.out.println("Unexpected line " + s + " while analyzing croesus lore");
+			}
 		}
 		dungeonChest.items = items;
 		if (dungeonChest.costToOpen != -1) {
@@ -366,6 +372,7 @@ public class DungeonNpcProfitOverlay {
 					ItemResolutionQuery.filterInternalNameCandidates(ItemResolutionQuery.findInternalNameCandidatesForDisplayName(
 						trimmedLine.replace("Book", "")), trimmedLine, true);
 				if (id == null) return null;
+				if (id.equals("DUNGEON_CHEST_KEY")) return null;
 				return new SkyblockItem(id, 1);
 			}
 		}

@@ -31,6 +31,7 @@ import net.minecraft.util.EnumChatFormatting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class EssenceTaskLevel extends GuiTaskLevel {
@@ -46,19 +47,17 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 		JsonObject categoryXp = levelPage.getConstant().get("category_xp").getAsJsonObject();
 		JsonObject essenceShopTask = levelPage.getConstant().get("essence_shop_task").getAsJsonObject();
 		JsonArray essenceSteps = essenceShopTask.get("essence_shop_xp").getAsJsonArray();
-		JsonObject essencePerks = object.get("perks").getAsJsonObject();
+		JsonObject essencePerks = object.has("perks") ? object.get("perks").getAsJsonObject() : new JsonObject();
 
 		Map<String, EssenceShop> loreMap = new HashMap<>();
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : Constants.ESSENCESHOPS.entrySet()) {
 			String name = stringJsonElementEntry.getKey();
 			JsonObject individualObjects = stringJsonElementEntry.getValue().getAsJsonObject();
 			for (Map.Entry<String, JsonElement> jsonElementEntry : individualObjects.entrySet()) {
-				String key = jsonElementEntry.getKey();
-				if (!essencePerks.has(key)) {
-					continue;
-				}
-
-				int essenceAmount = essencePerks.get(key).getAsInt();
+				int essenceAmount = Utils.getElementAsInt(Utils.getElement(
+					object,
+					"player_data.perks." + jsonElementEntry.getKey()
+				), 0);
 
 				int amountReceivedForEach = 0;
 				for (int i = essenceAmount - 1; i >= 0; i--) {
@@ -80,7 +79,7 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : essenceShopTask.entrySet()) {
 			String key = stringJsonElementEntry.getKey();
 			if (!key.endsWith("_shop")) continue;
-			String name = key.split("_shop")[0].toUpperCase();
+			String name = key.split("_shop")[0].toUpperCase(Locale.ROOT);
 			if (!loreMap.containsKey(name)) {
 				loreMap.put(name, new EssenceShop().setName(name).setCurrent(0));
 			}
@@ -95,13 +94,13 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 				.withKnownInternalName(key)
 				.resolveToItemListJson();
 			if (jsonObject == null){
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification(key);
 				continue;
 			}
 			value.name = jsonObject
 				.get("displayname")
 				.getAsString();
-			String name = key.toLowerCase() + "_shop";
+			String name = key.toLowerCase(Locale.ROOT) + "_shop";
 			if (!essenceShopTask.has(name)) continue;
 			value.max = essenceShopTask.get(name).getAsInt();
 			lore.add(levelPage.buildLore(

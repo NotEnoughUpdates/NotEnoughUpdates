@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.util.BlockPos;
@@ -51,12 +52,16 @@ public class ItemCooldowns {
 	private static final Pattern SPIRIT_ABILITY_ACTIVATION =
 		Pattern.compile("\\u00a7r\\u00a76Second Wind Activated\\u00a7r\\u00a7a! \\u00a7r\\u00a7aYour Spirit Mask saved your life!\\u00a7r");
 
+	private static final Pattern SPRAYONATOR_ACTIVATION =
+		Pattern.compile("§r§a§lSPRAYONATOR! §r§7You sprayed §r§aPlot §r§7- §r§b.* §r§7with §r§a.*§r§7!§r");
+
 	private static final Map<ItemStack, Float> durabilityOverrideMap = new HashMap<>();
 
 	public static long pickaxeUseCooldownMillisRemaining = -1;
 	private static long treecapitatorCooldownMillisRemaining = -1;
 	private static long bonzomaskCooldownMillisRemaining = -1;
 	private static long spiritMaskCooldownMillisRemaining = -1;
+	private static long sprayonatorCooldownMillisRemaining = -1;
 
 	public static boolean firstLoad = true;
 	public static long firstLoadMillis = 0;
@@ -66,15 +71,31 @@ public class ItemCooldowns {
 	public static long pickaxeCooldown = -1;
 	private static long bonzoMaskCooldown = -1;
 	private static long spiritMaskCooldown = -1;
+	private static long sprayonatorCooldown = -1;
 
-	public static TreeMap<Long, BlockPos> blocksClicked = new TreeMap<>();
+	public static TreeMap<Long, BlockData> blocksClicked = new TreeMap<>();
 
 	private static int tickCounter = 0;
+
+	/**
+	 * Class to store the block state at a position, the moment the position is passed
+	 */
+	public static class BlockData {
+
+		public BlockPos blockPos;
+		public IBlockState blockState;
+
+		public BlockData(BlockPos pos) {
+			this.blockPos = pos;
+			this.blockState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
+		}
+	}
 
 	enum Item {
 		PICKAXES,
 		BONZO_MASK,
-		SPIRIT_MASK
+		SPIRIT_MASK,
+		SPRAYONATOR
 	}
 
 	@SubscribeEvent
@@ -85,6 +106,7 @@ public class ItemCooldowns {
 				pickaxeCooldown = -1;
 				bonzoMaskCooldown = -1;
 				spiritMaskCooldown = -1;
+				sprayonatorCooldown = -1;
 			}
 
 			long currentTime = System.currentTimeMillis();
@@ -115,6 +137,9 @@ public class ItemCooldowns {
 			if (spiritMaskCooldownMillisRemaining >= 0) {
 				spiritMaskCooldownMillisRemaining -= millisDelta;
 			}
+			if (sprayonatorCooldownMillisRemaining >= 0) {
+				sprayonatorCooldownMillisRemaining -= millisDelta;
+			}
 		}
 	}
 
@@ -144,18 +169,30 @@ public class ItemCooldowns {
 
 	public static void blockClicked(BlockPos pos) {
 		long currentTime = System.currentTimeMillis();
-		blocksClicked.put(currentTime, pos);
+		blocksClicked.put(currentTime, new BlockData(pos));
 	}
 
 	public static void processBlockChangePacket(S23PacketBlockChange packetIn) {
 		BlockPos pos = packetIn.getBlockPosition();
+		checkForBlockChange(pos, packetIn.blockState);
+	}
 
-		if (blocksClicked.containsValue(pos)) {
-			IBlockState oldState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
-			if (oldState.getBlock() != packetIn.getBlockState().getBlock()) {
-				onBlockMined();
+	public static void checkForBlockChange(BlockPos pos, IBlockState blockState) {
+		Minecraft.getMinecraft().addScheduledTask(() -> {
+			BlockData oldBlockData = null;
+
+			for (BlockData value : blocksClicked.values()) {
+				if (value.blockPos.equals(pos)) oldBlockData = value;
 			}
-		}
+
+			if (oldBlockData != null) {
+				IBlockState oldState = oldBlockData.blockState;
+				if ((oldState.getBlock() == Blocks.log || oldState.getBlock() == Blocks.log2) &&
+					blockState.getBlock() == Blocks.air) {
+					onBlockMined();
+				}
+			}
+		});
 	}
 
 	public static void onBlockMined() {
@@ -177,26 +214,33 @@ public class ItemCooldowns {
 		} else if (internalname.contains("_DRILL_")) {
 			char lastChar = internalname.charAt(internalname.length() - 1);
 			return lastChar >= '0' && lastChar <= '9';
-		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS") || internalname.equals("DIVAN_DRILL");
+		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS") ||
+			internalname.equals("DIVAN_DRILL") || internalname.equals("BINGONIMBUS_2000");
 	}
 
 	@SubscribeEvent
 	public void onChatMessage(ClientChatReceivedEvent event) {
-		if (PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() && pickaxeCooldown != 0) {
+		if (pickaxeCooldown != 0 && PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches()) {
 			findCooldownInTooltip(Item.PICKAXES);
 			pickaxeUseCooldownMillisRemaining = pickaxeCooldown * 1000;
 		}
 
-		if (BONZO_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
-				NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility && bonzoMaskCooldown != 0) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility && bonzoMaskCooldown != 0 &&
+			BONZO_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches()) {
 			findCooldownInTooltip(Item.BONZO_MASK);
 			bonzomaskCooldownMillisRemaining = bonzoMaskCooldown * 1000;
 		}
 
-		if (SPIRIT_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
-				NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && spiritMaskCooldown != 0) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && spiritMaskCooldown != 0 &&
+			SPIRIT_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches()) {
 			findCooldownInTooltip(Item.SPIRIT_MASK);
 			spiritMaskCooldownMillisRemaining = spiritMaskCooldown * 1000;
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.garden.sprayonatorCooldown && sprayonatorCooldown != 0 &&
+			SPRAYONATOR_ACTIVATION.matcher(event.message.getFormattedText()).matches()) {
+			findCooldownInTooltip(Item.SPIRIT_MASK);
+			sprayonatorCooldownMillisRemaining = sprayonatorCooldown * 1000;
 		}
 	}
 
@@ -224,7 +268,10 @@ public class ItemCooldowns {
 						if (internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) bonzoMaskCooldown = setCooldown(stack);
 						break;
 					case SPIRIT_MASK:
-						if (internalname.equals("SPIRIT_MASK")) spiritMaskCooldown = setCooldown(stack);
+						if (internalname.equals("SPIRIT_MASK") || internalname.equals("STARRED_SPIRIT_MASK")) spiritMaskCooldown = setCooldown(stack);
+						break;
+					case SPRAYONATOR:
+						if (internalname.equals("SPRAYONATOR")) sprayonatorCooldown = setCooldown(stack);
 						break;
 				}
 			}
@@ -283,16 +330,23 @@ public class ItemCooldowns {
 			return durability;
 		}
 		// Bonzo Mask
-		if ((internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility &&
+			(internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK"))) {
 			findCooldownInTooltip(Item.BONZO_MASK);
 
 			return durabilityOverride(bonzomaskCooldownMillisRemaining, bonzoMaskCooldown, stack);
 		}
 		// Spirit Mask
-		if (internalname.equals("SPIRIT_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && internalname.equals("SPIRIT_MASK")) {
 			findCooldownInTooltip(Item.SPIRIT_MASK);
 
 			return durabilityOverride(spiritMaskCooldownMillisRemaining, spiritMaskCooldown, stack);
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.garden.sprayonatorCooldown && internalname.equals("SPRAYONATOR")) {
+			findCooldownInTooltip(Item.SPRAYONATOR);
+
+			return durabilityOverride(sprayonatorCooldownMillisRemaining, sprayonatorCooldown, stack);
 		}
 
 		durabilityOverrideMap.put(stack, -1f);

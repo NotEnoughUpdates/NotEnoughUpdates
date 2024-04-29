@@ -19,23 +19,34 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryData;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
+import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -47,7 +58,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SkyblockProfiles {
@@ -65,7 +78,7 @@ public class SkyblockProfiles {
 		"inv_contents",
 		"talisman_bag",
 		"candy_inventory_contents",
-		"equippment_contents"
+		"equipment_contents"
 	);
 	private static final List<String> skills = Arrays.asList(
 		"taming",
@@ -80,7 +93,19 @@ public class SkyblockProfiles {
 		"runecrafting",
 		"social"
 	);
+
+	private static final List<String> tuningStats = Arrays.asList(
+		"health",
+		"defense",
+		"walk_speed",
+		"strength",
+		"critical_damage",
+		"critical_chance",
+		"attack_speed",
+		"intelligence"
+	);
 	private final ProfileViewer profileViewer;
+	// TODO: replace with UUID type
 	private final String uuid;
 	private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
 	private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
@@ -95,6 +120,8 @@ public class SkyblockProfiles {
 	private long soopyNetworthLeaderboardPosition = -1; // -1 = default, -2 = loading, -3 = error
 	private long soopyWeightLeaderboardPosition = -1; // -1 = default, -2 = loading, -3 = error
 	private JsonObject guildInformation = null;
+	// Assume the player is in a guild until proven otherwise
+	private boolean isInGuild = true;
 	private JsonObject playerStatus = null;
 	private JsonObject bingoInformation = null;
 	private long lastPlayerInfoState = 0;
@@ -116,10 +143,8 @@ public class SkyblockProfiles {
 		lastStatusInfoState = currentTime;
 		updatingPlayerStatusState.set(true);
 
-		profileViewer.getManager().apiUtils
-			.newHypixelApiRequest("status")
-			.queryArgument("uuid", uuid)
-			.requestJson()
+		profileViewer.getManager().ursaClient
+			.get(UrsaClient.status(Utils.parseDashlessUUID(uuid)))
 			.handle((jsonObject, ex) -> {
 				updatingPlayerStatusState.set(false);
 
@@ -140,10 +165,8 @@ public class SkyblockProfiles {
 		lastBingoInfoState = currentTime;
 		updatingBingoInfo.set(true);
 
-		NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.newHypixelApiRequest("skyblock/bingo")
-			.queryArgument("uuid", uuid)
-			.requestJson()
+		NotEnoughUpdates.INSTANCE.manager.ursaClient
+			.get(UrsaClient.bingo(Utils.parseDashlessUUID(uuid)))
 			.handle(((jsonObject, throwable) -> {
 				updatingBingoInfo.set(false);
 
@@ -199,6 +222,17 @@ public class SkyblockProfiles {
 		return highestProfileName.equals(profileName);
 	}
 
+	private long handleSoopyApiResponse(JsonObject response) {
+		if (response == null
+			|| !response.has("success")
+			|| !response.get("success").getAsBoolean()
+			|| !response.has("data")) {
+			return -3; // Error
+		} else {
+			return response.get("data").getAsLong();
+		}
+	}
+
 	private void loadSoopyData(Runnable callback) {
 		if (updatingSoopyData.get()) {
 			return;
@@ -209,36 +243,20 @@ public class SkyblockProfiles {
 		soopyNetworthLeaderboardPosition = -2; // Loading
 		profileViewer.getManager().apiUtils
 			.request()
-			.url("https://soopy.dev/api/v2/leaderboard/networth/user/" + this.uuid)
+			.url("https://api.soopy.dev/lb/lbpos/networth/" + this.uuid)
 			.requestJson()
 			.handle((jsonObject, throwable) -> {
-				if (jsonObject == null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
-					|| !jsonObject.has("data")
-					|| !jsonObject.getAsJsonObject("data").has("data")
-					|| !jsonObject.getAsJsonObject("data").getAsJsonObject("data").has("position")) {
-					soopyNetworthLeaderboardPosition = -3; // Error
-				} else {
-					soopyNetworthLeaderboardPosition = jsonObject.getAsJsonObject("data").getAsJsonObject("data").get(
-						"position").getAsLong();
-				}
+				soopyNetworthLeaderboardPosition = handleSoopyApiResponse(jsonObject);
 				return null;
 			});
 
 		soopyWeightLeaderboardPosition = -2; // Loading
 		profileViewer.getManager().apiUtils
 			.request()
-			.url("https://soopy.dev/api/v2/leaderboard/weight/user/" + this.uuid)
+			.url("https://api.soopy.dev/lb/lbpos/weight/" + this.uuid)
 			.requestJson()
 			.handle((jsonObject, throwable) -> {
-				if (jsonObject == null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
-					|| !jsonObject.has("data")
-					|| !jsonObject.getAsJsonObject("data").has("data")
-					|| !jsonObject.getAsJsonObject("data").getAsJsonObject("data").has("position")) {
-					soopyWeightLeaderboardPosition = -3; // Error
-				} else {
-					soopyWeightLeaderboardPosition = jsonObject.getAsJsonObject("data").getAsJsonObject("data").get(
-						"position").getAsLong();
-				}
+				soopyWeightLeaderboardPosition = handleSoopyApiResponse(jsonObject);
 				return null;
 			});
 
@@ -254,7 +272,7 @@ public class SkyblockProfiles {
 			ProfileViewerUtils.lastSoopyRequestTime.put(uuid, currentTime);
 			profileViewer.getManager().apiUtils
 				.request()
-				.url("https://soopy.dev/api/v2/player_networth/" + this.uuid)
+				.url("https://soopy.dev/api/v2/player_networth2/" + this.uuid)
 				.method("POST")
 				.postData("application/json", profilesArray.toString())
 				.requestJson()
@@ -314,11 +332,17 @@ public class SkyblockProfiles {
 		lastPlayerInfoState = currentTime;
 		updatingSkyblockProfilesState.set(true);
 
-		profileViewer.getManager().apiUtils
-			.newHypixelApiRequest("skyblock/profiles")
-			.queryArgument("uuid", uuid)
-			.requestJson()
+		profileViewer.getManager().ursaClient
+			.get(UrsaClient.profiles(Utils.parseDashlessUUID(uuid)))
 			.handle((profilesJson, throwable) -> {
+				try {
+					if (Utils.parseDashlessUUID(uuid).toString().equals(Minecraft.getMinecraft().thePlayer
+						.getUniqueID()
+						.toString())) {
+						new ProfileDataLoadedEvent(uuid, profilesJson).post();
+					}
+				} catch (Exception ignored) {
+				}
 				if (profilesJson != null && profilesJson.has("success")
 					&& profilesJson.get("success").getAsBoolean() && profilesJson.has("profiles")) {
 					Map<String, SkyblockProfile> nameToProfile = new HashMap<>();
@@ -385,15 +409,14 @@ public class SkyblockProfiles {
 		lastGuildInfoState = currentTime;
 		updatingGuildInfoState.set(true);
 
-		profileViewer.getManager().apiUtils
-			.newHypixelApiRequest("guild")
-			.queryArgument("player", uuid)
-			.requestJson()
+		profileViewer.getManager().ursaClient
+			.get(UrsaClient.guild(Utils.parseDashlessUUID(uuid)))
 			.handle((jsonObject, ex) -> {
 				updatingGuildInfoState.set(false);
 
 				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-					if (!jsonObject.has("guild")) {
+					if (jsonObject.get("guild").isJsonNull()) {
+						isInGuild = false;
 						return null;
 					}
 
@@ -407,6 +430,10 @@ public class SkyblockProfiles {
 			});
 
 		return null;
+	}
+
+	public boolean isPlayerInGuild() {
+		return isInGuild;
 	}
 
 	public List<String> getProfileNames() {
@@ -470,11 +497,16 @@ public class SkyblockProfiles {
 		}
 	}
 
+	private static final Gson gson = new GsonBuilder()
+		.registerTypeAdapterFactory(KotlinTypeAdapterFactory.INSTANCE)
+		.create();
+
 	public class SkyblockProfile {
 
 		private final JsonObject outerProfileJson;
 		private final String gamemode;
 		private Integer magicPower = null;
+		private LinkedHashMap<String, Integer> tuningInfo = null;
 		private Double skyblockLevel = null;
 		private EnumChatFormatting skyBlockExperienceColour = null;
 		private Map<String, JsonArray> inventoryNameToInfo = null;
@@ -484,20 +516,206 @@ public class SkyblockProfiles {
 		private PlayerStats.Stats stats;
 		private Long networth = null;
 		private SoopyNetworth soopyNetworth = null;
+		private MuseumData museumData = null;
+		@Getter
+		private @Nullable APIDataJson APIDataJson;
+		private final AtomicBoolean updatingMuseumData = new AtomicBoolean(false);
+
+		public class MuseumData {
+			private long museumValue;
+			private final Map<String, JsonArray> weaponItems = new HashMap<>();
+			private final Map<String, JsonArray> armorItems = new HashMap<>();
+			private final Map<String, JsonArray> raritiesItems = new HashMap<>();
+			private final List<JsonArray> specialItems = new ArrayList<>();
+			private final Map<String, Pair<Long, Boolean>> savedItems = new HashMap<>();
+
+			private MuseumData(JsonObject museumJson) {
+				JsonObject museum = Constants.MUSEUM;
+				if (museum == null) {
+					Utils.showOutdatedRepoNotification("museum.json");
+					museumValue = -3;
+					return;
+				}
+				if (museumJson == null || museumJson.isJsonNull() || museumJson.get("members").isJsonNull()) {
+					museumValue = -2;
+					return;
+				}
+				JsonObject members = museumJson.get("members").getAsJsonObject();
+				if (members == null || members.isJsonNull() || !members.has(uuid)) {
+					museumValue = -2;
+					return;
+				}
+				JsonObject member = members.get(uuid).getAsJsonObject();
+				if (member == null || member.isJsonNull() || !member.has("value")) {
+					museumValue = -2;
+					return;
+				}
+				museumValue = member.get("value").getAsLong();
+				if (member.has("items")) {
+					JsonObject museumItemsData = member.get("items").getAsJsonObject();
+					if (museumItemsData != null) {
+						for (Map.Entry<String, JsonElement> entry : museumItemsData.entrySet()) {
+							JsonObject itemJson = entry.getValue().getAsJsonObject();
+							JsonArray contents = parseNbt(itemJson);
+							String itemName = entry.getKey();
+							Long donationTime = itemJson.get("donated_time").getAsLong();
+							boolean borrowing = false;
+							if (itemJson.has("borrowing")) {
+								borrowing = itemJson.get("borrowing").getAsBoolean();
+							}
+
+							getDataAndChildren(itemName, Pair.of(donationTime, borrowing));
+							processItems(itemName, contents);
+						}
+					}
+				}
+
+				if (member.has("special")) {
+					JsonArray specialItemsData = member.get("special").getAsJsonArray();
+					if (specialItemsData != null) {
+						for (JsonElement element : specialItemsData) {
+							JsonObject itemData = element.getAsJsonObject();
+							JsonArray contents = parseNbt(itemData);
+
+							long donationTime = itemData.get("donated_time").getAsLong();
+							JsonObject firstItem = contents.get(0).getAsJsonObject();
+							String itemID = firstItem.get("internalname").getAsString();
+							getDataAndChildren(itemID, Pair.of(donationTime, false));
+
+							specialItems.add(contents);
+						}
+					}
+				}
+			}
+
+			private JsonArray parseNbt(JsonObject nbt) {
+				JsonArray contents = new JsonArray();
+				JsonObject contentItems = nbt.get("items").getAsJsonObject();
+				String contentBytes = contentItems.get("data").getAsString();
+
+				try {
+					NBTTagList items = CompressedStreamTools.readCompressed(
+						new ByteArrayInputStream(Base64.getDecoder().decode(contentBytes))
+					).getTagList("i", 10);
+					for (int j = 0; j < items.tagCount(); j++) {
+						JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
+						if (item == null) {
+							continue;
+						}
+						contents.add(item);
+					}
+				} catch (IOException ignored) {
+				}
+				return contents;
+			}
+
+			private void processItems(String itemName, JsonArray contents) {
+				JsonObject museum = Constants.MUSEUM;
+				storeItem(itemName, contents, museum.get("weapons").getAsJsonArray(), weaponItems);
+				storeItem(itemName, contents, museum.get("armor").getAsJsonArray(), armorItems);
+				storeItem(itemName, contents, museum.get("rarities").getAsJsonArray(), raritiesItems);
+			}
+
+			private void storeItem(String itemName, JsonArray contents, JsonArray items, Map<String, JsonArray> itemMap) {
+				for (JsonElement item : items) {
+					if (Objects.equals(item.getAsString(), itemName)) {
+						itemMap.put(itemName, contents);
+						return;
+					}
+				}
+			}
+
+			private void getDataAndChildren(String name, Pair<Long, Boolean> itemData) {
+				JsonObject children = Constants.MUSEUM.get("children").getAsJsonObject();
+				if (savedItems.containsKey(name)) return;
+				savedItems.put(name, itemData);
+				if (children.has(name)) {
+					String childId = children.get(name).getAsString();
+					String childName = childId;
+					JsonObject nameMappings = Constants.MUSEUM.get("armor_to_id").getAsJsonObject();
+					if (nameMappings.has(childId)) {
+						childName = nameMappings.get(childId).getAsString();
+					}
+					String displayName = NotEnoughUpdates.INSTANCE.manager.getDisplayName(childName);
+					ItemStack stack = Utils.createItemStack(Items.dye, displayName, 10, "Donated as higher tier");
+					JsonObject item = profileViewer.getManager().getJsonForItem(stack);
+					item.add("internalname", new JsonPrimitive("_"));
+					JsonArray itemArray = new JsonArray();
+					itemArray.add(item);
+					processItems(childId, itemArray);
+
+					getDataAndChildren(childId, itemData);
+				}
+			}
+
+			private MuseumData asLoading() {
+				museumValue = -1;
+				return this;
+			}
+
+			public long getValue() {
+				return museumValue;
+			}
+
+			public Map<String, JsonArray> getWeaponItems() {
+				return weaponItems;
+			}
+
+			public Map<String, JsonArray> getArmorItems() {
+				return armorItems;
+			}
+
+			public Map<String, JsonArray> getRaritiesItems() {
+				return raritiesItems;
+			}
+
+			public List<JsonArray> getSpecialItems() {
+				return specialItems;
+			}
+
+			public Map<String, Pair<Long, Boolean>> getSavedItems() {
+				return savedItems;
+			}
+		}
+
+		private void loadMuseumData() {
+			if (updatingMuseumData.get()) {
+				return;
+			}
+
+			updatingMuseumData.set(true);
+			String profileId = getOuterProfileJson().get("profile_id").getAsString();
+			profileViewer.getManager().ursaClient.get(UrsaClient.museumForProfile(profileId))
+																					 .handle((museumJson, throwable) -> {
+																						 if (museumJson != null && museumJson.has("success")
+																							 && museumJson.get("success").getAsBoolean() &&
+																							 museumJson.has("members")) {
+																							 museumData = new MuseumData(museumJson);
+																							 return null;
+																						 }
+																						 return null;
+																					 });
+		}
 
 		public SkyblockProfile(JsonObject outerProfileJson) {
 			this.outerProfileJson = outerProfileJson;
 			this.gamemode = Utils.getElementAsString(outerProfileJson.get("game_mode"), null);
+
+			try {
+				APIDataJson = gson.fromJson(getProfileJson(), APIDataJson.class);
+			} catch (Exception exception) {
+				NotEnoughUpdates.LOGGER.error("Could not read data", exception);
+			}
 		}
 
-		public JsonObject getOuterProfileJson() {
+		public @NotNull JsonObject getOuterProfileJson() {
 			return outerProfileJson;
 		}
 
 		/**
 		 * @return Profile json with UUID of {@link SkyblockProfiles#uuid}
 		 */
-		public JsonObject getProfileJson() {
+		public @NotNull JsonObject getProfileJson() {
 			return Utils.getElement(outerProfileJson, "members." + SkyblockProfiles.this.uuid).getAsJsonObject();
 		}
 
@@ -523,6 +741,29 @@ public class SkyblockProfiles {
 			return magicPower = ProfileViewerUtils.getMagicalPower(inventoryInfo.get("talisman_bag"), getProfileJson());
 		}
 
+		public LinkedHashMap<String, Integer> getTuningInfo() {
+			if (tuningInfo != null) {
+				return tuningInfo;
+			}
+
+			JsonObject profileJson = getProfileJson();
+			if (Utils.getElement(profileJson, "accessory_bag_storage.tuning") == null) return null;
+			JsonObject tuningData = Utils.getElementOrDefault(
+				profileJson,
+				"accessory_bag_storage.tuning.slot_0",
+				new JsonObject()
+			).getAsJsonObject();
+			if (tuningData.entrySet().isEmpty()) return null;
+			tuningInfo = new LinkedHashMap<>();
+
+			for (String stat : tuningStats) {
+				int statData = tuningData.get(stat).getAsInt();
+				tuningInfo.put(stat, statData);
+			}
+
+			return tuningInfo;
+		}
+
 		public Map<String, JsonArray> getInventoryInfo() {
 			if (inventoryNameToInfo != null) {
 				return inventoryNameToInfo;
@@ -535,12 +776,23 @@ public class SkyblockProfiles {
 				JsonArray contents = new JsonArray();
 
 				if (invName.equals("backpack_contents")) {
-					JsonObject backpackData = getBackpackData(Utils.getElement(profileJson, "backpack_contents"));
+					JsonObject backpackData = getBackpackData(Utils.getElement(profileJson, "inventory.backpack_contents"));
 					inventoryNameToInfo.put("backpack_sizes", backpackData.getAsJsonArray("backpack_sizes"));
 					contents = backpackData.getAsJsonArray("contents");
 				} else {
+					String path = "inventory." + invName + ".data";
+					if (invName.endsWith("bag") || invName.equals("quiver")) {
+						path = "inventory.bag_contents." + invName + ".data";
+					} else if (invName.equals("candy_inventory_contents")) {
+						path =
+							"shared_inventory.candy_inventory_contents"; //the mappings said that this is the new path but i cant verify that because the data doesnt exist.
+					}
+
 					String contentBytes = Utils.getElementAsString(
-						Utils.getElement(profileJson, invName + ".data"),
+						Utils.getElement(
+							profileJson,
+							path
+						),
 						defaultNbtData
 					);
 
@@ -596,7 +848,7 @@ public class SkyblockProfiles {
 
 		public EnumChatFormatting getSkyblockLevelColour() {
 			if (Constants.SBLEVELS == null || !Constants.SBLEVELS.has("sblevel_colours")) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification("sblevels.json or missing sblevel_colours");
 				return EnumChatFormatting.WHITE;
 			}
 
@@ -635,7 +887,8 @@ public class SkyblockProfiles {
 		}
 
 		public boolean skillsApiEnabled() {
-			return getProfileJson().has("experience_skill_combat");
+			return Utils.getElementAsLong(Utils.getElement(getProfileJson(), "player_data.experience.SKILL_COMBAT"), -1) !=
+				-1;
 		}
 
 		/**
@@ -651,7 +904,7 @@ public class SkyblockProfiles {
 
 			JsonObject leveling = Constants.LEVELING;
 			if (leveling == null || !leveling.has("social")) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification("leveling.json or missing social");
 				return null;
 			}
 
@@ -667,13 +920,13 @@ public class SkyblockProfiles {
 						.getAsJsonObject()
 						.entrySet()) {
 						skillExperience += Utils.getElementAsFloat(
-							Utils.getElement(memberProfileJson.getValue(), "experience_skill_social2"),
+							Utils.getElement(memberProfileJson.getValue(), "player_data.experience.SKILL_SOCIAL"),
 							0
 						);
 					}
 				} else {
 					skillExperience += Utils.getElementAsFloat(
-						Utils.getElement(profileJson, "experience_skill_" + skillName),
+						Utils.getElement(profileJson, "player_data.experience.SKILL_" + skillName.toUpperCase(Locale.ROOT)),
 						0
 					);
 				}
@@ -687,9 +940,8 @@ public class SkyblockProfiles {
 
 				int maxLevel = ProfileViewerUtils.getLevelingCap(leveling, skillName);
 				if (skillName.equals("farming")) {
-					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacob2.perks.farming_level_cap"), 0);
+					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacobs_contest.perks.farming_level_cap"), 0);
 				}
-
 				out.put(skillName, ProfileViewerUtils.getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
 
@@ -750,14 +1002,14 @@ public class SkyblockProfiles {
 			for (String slayerName : Weight.SLAYER_NAMES) {
 				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(
 					profileJson,
-					"slayer_bosses." + slayerName + ".xp"
+					"slayer.slayer_bosses." + slayerName + ".xp"
 				), 0);
 				out.put(
 					slayerName,
 					ProfileViewerUtils.getLevel(
 						Utils.getElement(leveling, "slayer_xp." + slayerName).getAsJsonArray(),
 						slayerExperience,
-						9,
+						slayerName.equals("vampire") ? 5 : 9,
 						true
 					)
 				);
@@ -766,38 +1018,13 @@ public class SkyblockProfiles {
 			return levelingInfo = out;
 		}
 
-		public int getBestiaryLevel() {
-			int beLevel = 0;
-			for (ItemStack items : BestiaryData.getBestiaryLocations().keySet()) {
-				List<String> mobs = BestiaryData.getBestiaryLocations().get(items);
-				if (mobs != null) {
-					for (String mob : mobs) {
-						if (mob != null) {
-							float kills = Utils.getElementAsFloat(Utils.getElement(getProfileJson(), "bestiary.kills_" + mob), 0);
-							String type;
-							if (BestiaryData.getMobType().get(mob) != null) {
-								type = BestiaryData.getMobType().get(mob);
-							} else {
-								type = "MOB";
-							}
-							JsonObject leveling = Constants.LEVELING;
-							ProfileViewer.Level level = null;
-							if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
-								JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
-								int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
-								level = ProfileViewerUtils.getLevel(levelingArray, kills, levelCap, false);
-							}
-
-							float levelNum = 0;
-							if (level != null) {
-								levelNum = level.level;
-							}
-							beLevel += (int) Math.floor(levelNum);
-						}
-					}
-				}
-			}
-			return beLevel;
+		/**
+		 * Get the Skyblock XP provided by the bestiary progress for this profile
+		 *
+		 * @return skyblock xp
+		 */
+		public int getBestiaryXp() {
+			return BestiaryData.calculateBestiarySkyblockXp(getProfileJson());
 		}
 
 		public JsonObject getPetsInfo() {
@@ -805,12 +1032,13 @@ public class SkyblockProfiles {
 				return petsInfo;
 			}
 
-			JsonElement petsEle = getProfileJson().get("pets");
-			if (petsEle != null && petsEle.isJsonArray()) {
-				JsonArray petsArr = petsEle.getAsJsonArray();
+			JsonArray petsArray = Utils
+				.getElementOrDefault(getProfileJson(), "pets_data.pets", new JsonArray())
+				.getAsJsonArray();
+			if (petsArray.size() > 0) {
 				JsonObject activePet = null;
 
-				for (JsonElement petEle : petsEle.getAsJsonArray()) {
+				for (JsonElement petEle : petsArray.getAsJsonArray()) {
 					JsonObject petObj = petEle.getAsJsonObject();
 					if (petObj.has("active") && petObj.get("active").getAsBoolean()) {
 						activePet = petObj;
@@ -821,7 +1049,7 @@ public class SkyblockProfiles {
 				// TODO: STOP DOING THIS AAAAA
 				petsInfo = new JsonObject();
 				petsInfo.add("active_pet", activePet);
-				petsInfo.add("pets", petsArr);
+				petsInfo.add("pets", petsArray);
 				return petsInfo;
 			}
 
@@ -972,7 +1200,7 @@ public class SkyblockProfiles {
 			}
 
 			float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), 0);
-			float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
+			float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "currencies.coin_purse"), 0);
 			networth += bankBalance + purseBalance;
 
 			return this.networth = networth;
@@ -985,6 +1213,63 @@ public class SkyblockProfiles {
 
 			loadSoopyData(callback);
 			return new SoopyNetworth(null).asLoading();
+		}
+
+		public MuseumData getMuseumData() {
+			if (museumData != null) {
+				return museumData;
+			}
+
+			loadMuseumData();
+			return new MuseumData(null).asLoading();
+		}
+
+		public void updateBeastMasterMultiplier() {
+			if (!getUuid().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))) return;
+			boolean hasBeastmasterCrest = false;
+			PetInfoOverlay.Rarity currentBeastRarity = PetInfoOverlay.Rarity.COMMON;
+			for (JsonElement talisman : getInventoryInfo().get("talisman_bag")) {
+				if (talisman.isJsonNull()) continue;
+				String internalName = talisman.getAsJsonObject().get("internalname").getAsString();
+				if (internalName.startsWith("BEASTMASTER_CREST")) {
+					hasBeastmasterCrest = true;
+					try {
+						PetInfoOverlay.Rarity talismanRarity = PetInfoOverlay.Rarity.valueOf(internalName.replace(
+							"BEASTMASTER_CREST_",
+							""
+						));
+						if (talismanRarity.beastcreatMultiplyer > currentBeastRarity.beastcreatMultiplyer)
+							currentBeastRarity = talismanRarity;
+					} catch (Exception ignored) {
+					}
+				}
+			}
+			if (hasBeastmasterCrest) {
+				JsonObject stats = getProfileJson().get("player_stats").getAsJsonObject();
+
+				int mk = Utils.getElementAsInt(Utils.getElement(stats, "mythos.kills"), 0);
+				float petXpBoost = mk > 10000 ? 1f : mk > 7500 ? 0.9f : mk > 5000 ? 0.8f : mk > 2500 ? 0.7f :
+					mk > 1000
+						? 0.6f
+						: mk > 500
+							? 0.5f
+							: mk > 250
+								? 0.4f
+								: mk > 100
+									? 0.3f
+									: mk > 25 ? 0.2f : 0.1f;
+				PetInfoOverlay.getConfig().beastMultiplier =
+					(petXpBoost == 0 ? 0.1f : petXpBoost) * currentBeastRarity.beastcreatMultiplyer;
+			}
+		}
+
+		public void updateTamingLevel() {
+			if (!getUuid().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))) return;
+			if (!getLatestProfile().skillsApiEnabled()) return;
+
+			if (getLevelingInfo() != null && getLevelingInfo().get("taming") != null) { //idfk what else could cause an NPE here
+				PetInfoOverlay.getConfig().tamingLevel = (int) getLevelingInfo().get("taming").level;
+			}
 		}
 	}
 }

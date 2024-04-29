@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 - 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,8 +56,9 @@ public class ItemTooltipRngListener {
 	private final Pattern ODDS_PATTERN = Pattern.compile("§5§o§7Odds: (.+) §7\\(§7(.*)%\\)");
 	private final Pattern ODDS_SELECTED_PATTERN = Pattern.compile("§5§o§7Odds: (.+) §7\\(§8§m(.*)%§r §7(.+)%\\)");
 
-	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(Dungeon Score|Slayer XP): §d(.*)§5/§d(.+)");
-	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile("§5§o§d-(.+)- §d(.*)§5/§d(.+)");
+	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(?:Dungeon Score|Slayer XP): §d(.*)§5/§d(.+)");
+	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile(
+		"(?:§5§o)?§d§l§m *(?:§f§l§m *)?§r §d([0-9,]+)§5/§d([0-9kKmM,.]+)");
 
 	private final Pattern SLAYER_INVENTORY_TITLE_PATTERN = Pattern.compile("(.+) RNG Meter");
 
@@ -73,7 +75,9 @@ public class ItemTooltipRngListener {
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!neu.isOnSkyblock()) return;
 		if (event.toolTip == null) return;
-		if (!Utils.getOpenChestName().endsWith(" RNG Meter") && !slayerData.containsKey(Utils.getOpenChestName())) return;
+		if (!Utils.getOpenChestName().endsWith(" RNG Meter")
+			&& !slayerData.containsKey(Utils.getOpenChestName())
+			&& !ItemUtils.getLore(event.itemStack).contains("§dRNG Meter")) return;
 
 		List<String> newToolTip = new ArrayList<>();
 
@@ -100,14 +104,14 @@ public class ItemTooltipRngListener {
 				if (m != null) {
 					int having;
 					try {
-						having = Calculator.calculate(m.group(2).replace(",", "")).intValue();
+						having = Calculator.calculate(m.group(1).replace(",", "").toLowerCase(Locale.ROOT)).intValue();
 					} catch (Calculator.CalculatorException e) {
 						having = -1;
 					}
 
 					int needed;
 					try {
-						needed = Calculator.calculate(m.group(3).replace(",", "")).intValue();
+						needed = Calculator.calculate(m.group(2).replace(",", "").toLowerCase(Locale.ROOT)).intValue();
 					} catch (Calculator.CalculatorException e) {
 						needed = -1;
 					}
@@ -140,7 +144,14 @@ public class ItemTooltipRngListener {
 		event.toolTip.addAll(newToolTip);
 	}
 
-	private String getFormatCoinsPer(ItemStack stack, int needed, int multiplier, int amountPerTier, int cost, String label) {
+	private String getFormatCoinsPer(
+		ItemStack stack,
+		int needed,
+		int multiplier,
+		int amountPerTier,
+		int cost,
+		String label
+	) {
 		String internalName = neu.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 		double profit = neu.manager.auctionManager.getBazaarOrBin(internalName, false) * amountPerTier;
 		if (profit <= 0) return null;
@@ -214,18 +225,22 @@ public class ItemTooltipRngListener {
 		dungeonData.clear();
 
 		JsonObject leveling = Constants.LEVELING;
-		if (leveling == null ||
-			!leveling.has("slayer_boss_xp") ||
+		if (leveling == null) {
+			Utils.showOutdatedRepoNotification("leveling.json");
+			return;
+		} else if (!leveling.has("slayer_boss_xp") ||
 			!leveling.has("slayer_highest_tier") ||
 			!leveling.has("slayer_tier_colors") ||
-			!leveling.has("rng_meter_dungeon_score")) {
-			Utils.showOutdatedRepoNotification();
+			!leveling.has("rng_meter_dungeon_score") ||
+			!leveling.has("fancy_name_to_slayer") ||
+			!leveling.has("slayer_boss_xp_type")) {
+			Utils.showOutdatedRepoNotification("leveling.json (outdated)");
 			return;
 		}
 
-		List<Integer> slayerExp = new ArrayList<>();
+		List<Integer> defaultSlayerExp = new ArrayList<>();
 		for (JsonElement element : leveling.get("slayer_boss_xp").getAsJsonArray()) {
-			slayerExp.add(element.getAsInt());
+			defaultSlayerExp.add(element.getAsInt());
 		}
 
 		List<String> slayerColors = new ArrayList<>();
@@ -234,14 +249,23 @@ public class ItemTooltipRngListener {
 		}
 
 		for (Map.Entry<String, JsonElement> entry : leveling.get("slayer_highest_tier").getAsJsonObject().entrySet()) {
-			String slayerName = entry.getKey();
+			String slayerFancyName = entry.getKey();
+			String slayerName = leveling.get("fancy_name_to_slayer").getAsJsonObject().get(slayerFancyName).getAsString();
+
 			int maxTier = entry.getValue().getAsInt();
 			LinkedHashMap<String, Integer> singleSlayerData = new LinkedHashMap<>();
 			for (int i = 0; i < maxTier; i++) {
 				String name = slayerColors.get(i) + "Tier " + (i + 1);
-				singleSlayerData.put(name, slayerExp.get(i));
+				if (leveling.get("slayer_boss_xp_type").getAsJsonObject().get(slayerName) != null) {
+					singleSlayerData.put(
+						name,
+						leveling.get("slayer_boss_xp_type").getAsJsonObject().get(slayerName).getAsJsonArray().get(i).getAsInt()
+					);
+				} else {
+					singleSlayerData.put(name, defaultSlayerExp.get(i));
+				}
 			}
-			slayerData.put(slayerName, singleSlayerData);
+			slayerData.put(slayerFancyName, singleSlayerData);
 		}
 
 		for (Map.Entry<String, JsonElement> entry : leveling.get("rng_meter_dungeon_score").getAsJsonObject().entrySet()) {
@@ -365,7 +389,7 @@ public class ItemTooltipRngListener {
 
 		JsonObject jsonObject = Constants.RNGSCORE;
 		if (jsonObject == null) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("rngscore.json");
 			return -1;
 		}
 

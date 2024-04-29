@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -81,13 +82,15 @@ public class TrophyRewardOverlay {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onItemTooltipLow(ItemTooltipEvent event) {
 		if (!inTrophyFishingInventory()) return;
+		if (!NotEnoughUpdates.INSTANCE.config.fishing.trophyRewardTooltips) return;
 
 		ItemStack itemStack = event.itemStack;
 		if (itemStack == null) return;
 		if (!"§aFillet Trophy Fish".equals(itemStack.getDisplayName())) return;
+		if (ItemUtils.getLore(itemStack).contains("§8Sacks")) return;
 
-		event.toolTip.add(4, getToolTip());
-		event.toolTip.add(4, "");
+		event.toolTip.add(2, getToolTip());
+		event.toolTip.add(2, "");
 	}
 
 	private String getToolTip() {
@@ -101,12 +104,12 @@ public class TrophyRewardOverlay {
 
 	@SubscribeEvent
 	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
-		if (inTrophyFishingInventory()) {
+		if (inTrophyFishingInventory() && NotEnoughUpdates.INSTANCE.config.fishing.trophyRewardOverlay) {
 			event.blockArea(
 				new Rectangle(
 					event.getGuiBaseRect().getRight(),
 					event.getGuiBaseRect().getTop(),
-					168 /*width*/ + 4 /*space*/,
+					158 /*width*/ + 7 /*space*/,
 					128
 				),
 				ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
@@ -117,6 +120,7 @@ public class TrophyRewardOverlay {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!inTrophyFishingInventory()) return;
+		if (!NotEnoughUpdates.INSTANCE.config.fishing.trophyRewardOverlay) return;
 
 		GuiScreen screen = Minecraft.getMinecraft().currentScreen;
 		if (!(screen instanceof GuiChest)) return;
@@ -292,7 +296,6 @@ public class TrophyRewardOverlay {
 
 	public static boolean inTrophyFishingInventory() {
 		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return false;
-		if (!NotEnoughUpdates.INSTANCE.config.fishing.trophyRewardOverlay) return false;
 
 		Minecraft minecraft = Minecraft.getMinecraft();
 		if (minecraft == null || minecraft.thePlayer == null) return false;

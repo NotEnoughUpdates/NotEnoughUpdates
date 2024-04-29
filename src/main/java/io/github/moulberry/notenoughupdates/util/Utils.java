@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -30,11 +30,13 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import lombok.var;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -64,6 +66,8 @@ import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.common.Loader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -85,11 +89,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -150,8 +160,9 @@ public class Utils {
 	public static Splitter PATH_SPLITTER = Splitter.on(".").omitEmptyStrings().limit(2);
 	private static ScaledResolution lastScale = new ScaledResolution(Minecraft.getMinecraft());
 	private static long startTime = 0;
-	private static DecimalFormat simpleDoubleFormat = new DecimalFormat("0.0");
+	private static final DecimalFormat simpleDoubleFormat = new DecimalFormat("0.0");
 
+	@SafeVarargs
 	public static <T> ArrayList<T> createList(T... values) {
 		ArrayList<T> list = new ArrayList<>();
 		Collections.addAll(list, values);
@@ -167,7 +178,7 @@ public class Utils {
 	}
 
 	public static ScaledResolution pushGuiScale(int scale) {
-		if (guiScales.size() == 0) {
+		if (guiScales.isEmpty()) {
 			if (Loader.isModLoaded("labymod")) {
 				GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projectionMatrixOld);
 				GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelviewMatrixOld);
@@ -175,7 +186,7 @@ public class Utils {
 		}
 
 		if (scale < 0) {
-			if (guiScales.size() > 0) {
+			if (!guiScales.isEmpty()) {
 				guiScales.pop();
 			}
 		} else {
@@ -186,7 +197,7 @@ public class Utils {
 			}
 		}
 
-		int newScale = guiScales.size() > 0
+		int newScale = !guiScales.isEmpty()
 			? Math.max(0, guiScales.peek())
 			: Minecraft.getMinecraft().gameSettings.guiScale;
 		if (newScale == 0) newScale = Minecraft.getMinecraft().gameSettings.guiScale;
@@ -196,7 +207,7 @@ public class Utils {
 		ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 		Minecraft.getMinecraft().gameSettings.guiScale = oldScale;
 
-		if (guiScales.size() > 0) {
+		if (!guiScales.isEmpty()) {
 			GlStateManager.viewport(0, 0, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
 			GlStateManager.matrixMode(GL11.GL_PROJECTION);
 			GlStateManager.loadIdentity();
@@ -342,14 +353,12 @@ public class Utils {
 			return simpleDoubleFormat.format(n);
 		}
 
-		if (n < 1000 && iteration == 0) return "" + (int) n;
+		if (n < 1000 && iteration == 0) return String.valueOf((int) n);
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
-		return (d < 1000 ?
-			((d > 99.9 || isRound || (!isRound && d > 9.99) ?
-				(int) d * 10 / 10 : d + ""
-			) + "" + c[iteration])
-			: shortNumberFormat(d, iteration + 1));
+		return d < 1000 ?
+			(isRound || d > 9.99 ? (int) d * 10 / 10 : String.valueOf(d)) + String.valueOf(c[iteration])
+			: shortNumberFormat(d, iteration + 1);
 	}
 
 	public static String trimIgnoreColour(String str) {
@@ -468,6 +477,7 @@ public class Utils {
 		return list;
 	}
 
+	@SuppressWarnings("MalformedFormatString")
 	public static String floatToString(float f, int decimals) {
 		if (decimals <= 0) {
 			return String.valueOf(Math.round(f));
@@ -490,9 +500,9 @@ public class Utils {
 		Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(true, true);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(770, 771);
+		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		setupGuiTransform(x, y, ibakedmodel.isGui3d());
 		ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(
@@ -584,7 +594,7 @@ public class Utils {
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
 		int x = guiLeft - 28;
 		int y = guiTop + yIndex * 28;
@@ -625,7 +635,7 @@ public class Utils {
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
 
@@ -665,7 +675,7 @@ public class Utils {
 	}
 
 	public static String prettyCase(String str) {
-		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+		return str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT);
 	}
 
 	public static String getRarityFromInt(int rarity) {
@@ -864,7 +874,7 @@ public class Utils {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		worldrenderer
 			.pos(x, y + height, 0.0D)
 			.tex(uMin, vMax).endVertex();
@@ -903,7 +913,7 @@ public class Utils {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		worldrenderer
 			.pos(x, y + height, 0.0D)
 			.tex(uMin, vMax).endVertex();
@@ -935,7 +945,11 @@ public class Utils {
 	}
 
 	public static ItemStack createItemStack(Item item, String displayName, int damage, String... lore) {
-		ItemStack stack = new ItemStack(item, 1, damage);
+		return createItemStack(item, displayName, damage, 1, lore);
+	}
+
+	public static ItemStack createItemStack(Item item, String displayName, int damage, int amount, String... lore) {
+		ItemStack stack = new ItemStack(item, amount, damage);
 		NBTTagCompound tag = new NBTTagCompound();
 		addNameAndLore(tag, displayName, lore);
 		tag.setInteger("HideFlags", 254);
@@ -990,6 +1004,7 @@ public class Utils {
 
 		return itemStack;
 	}
+
 	public static ItemStack createSkull(String displayName, String uuid, String value) {
 		return createSkull(displayName, uuid, value, null);
 	}
@@ -1160,6 +1175,10 @@ public class Utils {
 		drawStringCentered(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
 	}
 
+	public static void drawStringCentered(String str, int x, int y, boolean shadow, int colour) {
+		drawStringCentered(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
+	}
+
 	@Deprecated
 	public static void drawStringCentered(String str, FontRenderer fr, float x, float y, boolean shadow, int colour) {
 		int strLen = fr.getStringWidth(str);
@@ -1208,6 +1227,23 @@ public class Utils {
 		float factor
 	) {
 		drawStringScaled(str, x - fr.getStringWidth(str) * factor, y, shadow, colour, factor);
+	}
+
+	public static void drawStringScaledFillWidth(
+		String str,
+		float x, float y,
+		boolean shadow,
+		int colour,
+		int availableSpace
+	) {
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x, y, 0);
+		var fr = Minecraft.getMinecraft().fontRendererObj;
+		var width = fr.getStringWidth(str);
+		float scale = ((float) availableSpace) / width;
+		GlStateManager.scale(scale, scale, 1f);
+		fr.drawString(str, -width / 2F, 0, colour, shadow);
+		GlStateManager.popMatrix();
 	}
 
 	public static void drawStringScaledMax(
@@ -1460,17 +1496,17 @@ public class Utils {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.shadeModel(7425);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+		GlStateManager.shadeModel(GL11.GL_SMOOTH);
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		worldrenderer.pos(right, top, 0).color(f1, f2, f3, f).endVertex();
 		worldrenderer.pos(left, top, 0).color(f1, f2, f3, f).endVertex();
 		worldrenderer.pos(left, bottom, 0).color(f5, f6, f7, f4).endVertex();
 		worldrenderer.pos(right, bottom, 0).color(f5, f6, f7, f4).endVertex();
 		tessellator.draw();
-		GlStateManager.shadeModel(7424);
+		GlStateManager.shadeModel(GL11.GL_FLAT);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableTexture2D();
@@ -1488,17 +1524,17 @@ public class Utils {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.shadeModel(7425);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+		GlStateManager.shadeModel(GL11.GL_SMOOTH);
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		worldrenderer.pos(right, top, 0).color(f5, f6, f7, f4).endVertex();
 		worldrenderer.pos(left, top, 0).color(f1, f2, f3, f).endVertex();
 		worldrenderer.pos(left, bottom, 0).color(f1, f2, f3, f).endVertex();
 		worldrenderer.pos(right, bottom, 0).color(f5, f6, f7, f4).endVertex();
 		tessellator.draw();
-		GlStateManager.shadeModel(7424);
+		GlStateManager.shadeModel(GL11.GL_FLAT);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableTexture2D();
@@ -1522,6 +1558,7 @@ public class Utils {
 			Minecraft.getMinecraft().fontRendererObj
 		);
 	}
+
 	public static JsonObject getConstant(String constant, Gson gson) {
 		return getConstant(constant, gson, JsonObject.class);
 	}
@@ -1536,8 +1573,7 @@ public class Utils {
 					StandardCharsets.UTF_8
 				))
 			) {
-				T obj = gson.fromJson(reader, clazz);
-				return obj;
+				return gson.fromJson(reader, clazz);
 			} catch (Exception e) {
 				return null;
 			}
@@ -1561,12 +1597,28 @@ public class Utils {
 		return prim.getAsInt();
 	}
 
+	public static long getElementAsLong(JsonElement element, long def) {
+		if (element == null) return def;
+		if (!element.isJsonPrimitive()) return def;
+		JsonPrimitive prim = element.getAsJsonPrimitive();
+		if (!prim.isNumber()) return def;
+		return prim.getAsLong();
+	}
+
 	public static String getElementAsString(JsonElement element, String def) {
 		if (element == null) return def;
 		if (!element.isJsonPrimitive()) return def;
 		JsonPrimitive prim = element.getAsJsonPrimitive();
 		if (!prim.isString()) return def;
 		return prim.getAsString();
+	}
+
+	public static boolean getElementAsBool(JsonElement element, boolean def) {
+		if (element == null) return def;
+		if (!element.isJsonPrimitive()) return def;
+		JsonPrimitive prim = element.getAsJsonPrimitive();
+		if (!prim.isBoolean()) return def;
+		return prim.getAsBoolean();
 	}
 
 	public static JsonElement getElement(JsonElement element, String path) {
@@ -1622,12 +1674,7 @@ public class Utils {
 			if (c == '\u00A7') {
 				lastColourCode = i;
 			} else if (lastColourCode == i - 1) {
-				int colIndex = "0123456789abcdef".indexOf(c);
-				if (colIndex >= 0) {
-					currentColour = colIndex;
-				} else {
-					currentColour = 0;
-				}
+				currentColour = Math.max(0, "0123456789abcdef".indexOf(c));
 			} else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0) {
 				if (currentColour > 0) {
 					mostCommon[currentColour]++;
@@ -1668,7 +1715,7 @@ public class Utils {
 		if (!textLines.isEmpty()) {
 			int borderColorStart = 0x505000FF;
 			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours) {
-				if (textLines.size() > 0) {
+				if (!textLines.isEmpty()) {
 					String first = textLines.get(0);
 					borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
 						((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
@@ -1909,19 +1956,19 @@ public class Utils {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.shadeModel(7425);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+		GlStateManager.shadeModel(GL11.GL_SMOOTH);
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		worldrenderer.pos(right, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
 		worldrenderer.pos(left, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
 		worldrenderer.pos(left, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
 		worldrenderer.pos(right, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
 		tessellator.draw();
 
-		GlStateManager.shadeModel(7424);
+		GlStateManager.shadeModel(GL11.GL_FLAT);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableTexture2D();
@@ -1948,13 +1995,78 @@ public class Utils {
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 		GlStateManager.disableTexture2D();
 		GlStateManager.color(f, f1, f2, f3);
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 		worldrenderer.pos(left, bottom, 0.0D).endVertex();
 		worldrenderer.pos(right, bottom, 0.0D).endVertex();
 		worldrenderer.pos(right, top, 0.0D).endVertex();
 		worldrenderer.pos(left, top, 0.0D).endVertex();
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
+	}
+
+	/**
+	 * Draws a solid color rectangle with the specified coordinates and color (ARGB format). Args: x1, y1, x2, y2, color
+	 *
+	 * @see Gui#drawRect
+	 */
+	public static void drawRect(float left, float top, float right, float bottom, int color) {
+		float i;
+		if (left < right) {
+			i = left;
+			left = right;
+			right = i;
+		}
+		if (top < bottom) {
+			i = top;
+			top = bottom;
+			bottom = i;
+		}
+		float f = (float) (color >> 24 & 0xFF) / 255.0f;
+		float g = (float) (color >> 16 & 0xFF) / 255.0f;
+		float h = (float) (color >> 8 & 0xFF) / 255.0f;
+		float j = (float) (color & 0xFF) / 255.0f;
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+		GlStateManager.enableBlend();
+		GlStateManager.disableTexture2D();
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+		GlStateManager.color(g, h, j, f);
+		worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+		worldRenderer.pos(left, bottom, 0.0).endVertex();
+		worldRenderer.pos(right, bottom, 0.0).endVertex();
+		worldRenderer.pos(right, top, 0.0).endVertex();
+		worldRenderer.pos(left, top, 0.0).endVertex();
+		tessellator.draw();
+		GlStateManager.enableTexture2D();
+		GlStateManager.disableBlend();
+	}
+
+	/**
+	 * Draws a default-size 16 by 16 item-overlay at <i>x</i> and <i>y</i>.
+	 *
+	 * @param x position of the overlay
+	 * @param y position of the overlay
+	 */
+	public static void drawHoverOverlay(int x, int y) {
+		drawHoverOverlay(x, y, 16, 16);
+	}
+
+	/**
+	 * Draws an item-overlay of given <i>width</i> and <i>height</i> at <i>x</i> and <i>y</i>.
+	 *
+	 * @param x      position of the overlay
+	 * @param y      position of the overlay
+	 * @param width  width of the overlay
+	 * @param height height of the overlay
+	 */
+	public static void drawHoverOverlay(int x, int y, int width, int height) {
+		GlStateManager.disableLighting();
+		GlStateManager.disableDepth();
+		GlStateManager.colorMask(true, true, true, false);
+		Utils.drawGradientRect(x, y, x + 16, y + 16, 0x80ffffff, 0x80ffffff);
+		GlStateManager.colorMask(true, true, true, true);
+		GlStateManager.enableLighting();
+		GlStateManager.enableDepth();
 	}
 
 	public static String prettyTime(Duration time) {
@@ -1996,7 +2108,7 @@ public class Utils {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 		GlStateManager.color(f1, f2, f3, f);
 		GL11.glLineWidth(width);
 		GL11.glBegin(GL11.GL_LINES);
@@ -2037,7 +2149,7 @@ public class Utils {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		worldrenderer
 			.pos(x1, y1, 0.0D)
 			.tex(uMin, vMax).endVertex();
@@ -2101,6 +2213,10 @@ public class Utils {
 			top <= y && y < top + height;
 	}
 
+	public static boolean isWithinRect(int x, int y, Rectangle rectangle) {
+		return isWithinRect(x, y, rectangle.getLeft(), rectangle.getTop(), rectangle.getWidth(), rectangle.getHeight());
+	}
+
 	public static int getNumberOfStars(ItemStack stack) {
 		if (stack != null && stack.hasTagCompound()) {
 			NBTTagCompound tag = stack.getTagCompound();
@@ -2144,12 +2260,16 @@ public class Utils {
 		return stringBuilder.toString();
 	}
 
-	public static void showOutdatedRepoNotification() {
+	private static long lastError = -1;
+
+	public static void showOutdatedRepoNotification(String missingFile) {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
 					EnumChatFormatting.RED +
 						"Data used for many NEU features is not up to date, this should normally not be the case.",
+					EnumChatFormatting.RED +
+						"Please make sure you are on the latest version of NEU.",
 					EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
 						EnumChatFormatting.RED + " and restart your game" +
 						" to see if that fixes the issue.",
@@ -2158,8 +2278,12 @@ public class Utils {
 						EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
 						"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
 				),
-				true, true
+				false, true
 			);
+		}
+		if (System.currentTimeMillis() - lastError > 1000) {
+			System.err.println("[NEU] Repo issue: " + missingFile);
+			lastError = System.currentTimeMillis();
 		}
 	}
 
@@ -2195,7 +2319,7 @@ public class Utils {
 		return new UUID(most.longValue(), least.longValue());
 	}
 
-	public static String getOpenChestName() {
+	public static @NotNull String getOpenChestName() {
 		return SBInfo.getInstance().currentlyOpenChestName;
 	}
 
@@ -2219,10 +2343,27 @@ public class Utils {
 		return username;
 	}
 
-	public static void addChatMessage(String message) {
+	public static void addChatMessage(@NotNull String message) {
+		addChatMessage(new ChatComponentText(message));
+	}
+
+	public static void addClickableChatMessage(
+		@NotNull String message,
+		@NotNull String command,
+		@Nullable String hoverText
+	) {
+		if (hoverText == null)
+			hoverText = "§eClick to run §a" + command;
+		addChatMessage(new ChatComponentText(message)
+			.setChatStyle(new ChatStyle()
+				.setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverText)))));
+	}
+
+	public static void addChatMessage(@NotNull IChatComponent message) {
 		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
 		if (thePlayer != null) {
-			thePlayer.addChatMessage(new ChatComponentText(message));
+			thePlayer.addChatMessage(message);
 		} else {
 			System.out.println(message);
 		}
@@ -2250,5 +2391,26 @@ public class Utils {
 			windowId,
 			slot, 0, 0, Minecraft.getMinecraft().thePlayer
 		);
+	}
+
+	public static String timeSinceMillisecond(long time) {
+		Instant lastSave = Instant.ofEpochMilli(time);
+		LocalDateTime lastSaveTime = LocalDateTime.ofInstant(lastSave, TimeZone.getDefault().toZoneId());
+		long timeDiff = System.currentTimeMillis() - lastSave.toEpochMilli();
+		LocalDateTime sinceOnline = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeDiff), ZoneId.of("UTC"));
+		String renderText;
+
+		if (timeDiff < 60000L) {
+			renderText = sinceOnline.getSecond() + " seconds ago";
+		} else if (timeDiff < 3600000L) {
+			renderText = sinceOnline.getMinute() + " minutes ago";
+		} else if (timeDiff < 86400000L) {
+			renderText = sinceOnline.getHour() + " hours ago";
+		} else if (timeDiff < 31556952000L) {
+			renderText = sinceOnline.getDayOfYear() + " days ago";
+		} else {
+			renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+		}
+		return renderText;
 	}
 }

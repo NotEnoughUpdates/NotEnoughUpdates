@@ -20,13 +20,25 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.auction.APIManager;
+import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
+import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class Minion extends OverviewLine {
 	private final String internalName;
@@ -107,7 +119,34 @@ public class Minion extends OverviewLine {
 
 	@Override
 	public void onClick() {
-		NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(internalName);
+		if (Mouse.getEventButton() != 0 || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(internalName);
+		} else {
+			if (minionSource instanceof CraftingSource) {
+				CraftingSource craftingSource = (CraftingSource) minionSource;
+				Map<String, Integer> counts = new HashMap<>();
+				for (Map.Entry<String, Integer> entry : craftingSource.getItems().entries()) {
+					counts.compute(entry.getKey(), (k, v) -> (v == null ? 0 : v) + entry.getValue());
+				}
+				Optional<Map.Entry<String, Integer>> resource = counts
+					.entrySet()
+					.stream()
+					.filter(it -> !APIManager.hardcodedVanillaItems.contains(it.getKey()))
+					.max(Comparator.comparingInt(Map.Entry::getValue));
+				if (!resource.isPresent()) return;
+
+				String bazaarName = resource.get().getKey();
+				int totalAmount = resource.get().getValue();
+
+				MiscUtils.copyToClipboard(String.valueOf(totalAmount));
+				ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager).withKnownInternalName(
+					bazaarName).resolveToItemStack();
+				if (itemStack != null) {
+					String displayName = Utils.cleanColour(itemStack.getDisplayName());
+					NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + displayName);
+				}
+			}
+		}
 	}
 
 	public void setCustomSource(CustomSource customSource) {
