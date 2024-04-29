@@ -184,7 +184,6 @@ public class NEUEventListener {
 			}
 
 			NotEnoughUpdates.INSTANCE.overlay.redrawItems();
-			CapeManager.onTickSlow();
 
 			NotEnoughUpdates.profileViewer.putNameUuid(
 				Minecraft.getMinecraft().thePlayer.getName(),
