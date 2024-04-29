@@ -84,7 +84,7 @@ class HotmTreeScreen(val hotmLayout: HotmTreeLayout, val prelude: List<String>) 
             hotmLayout.powders[perk.powder]!!.costLine
         )
         return (begin + perk.lore + end).map {
-            it.replace("\\{([a-z\\-]+)\\}".toRegex()) {
+            it.replace("\\{([a-z\\-A-Z_0-9]+)\\}".toRegex()) {
                 (when (val value = values[it.groupValues[1]]) {
                     is LispData.LispString -> value.string
                     is LispData.LispNumber -> value.value.toString()
