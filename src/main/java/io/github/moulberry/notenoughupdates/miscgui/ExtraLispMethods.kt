@@ -20,12 +20,12 @@
 package io.github.moulberry.notenoughupdates.miscgui
 
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
-import io.github.moulberry.notenoughupdates.util.roundToDecimals
 import moe.nea.lisp.LispData
 import moe.nea.lisp.bind.LispBinding
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
-import kotlin.math.roundToInt
 
 class ExtraLispMethods {
     @LispBinding("pow")
@@ -38,9 +38,14 @@ class ExtraLispMethods {
         return LispData.LispNumber(round(value))
     }
 
-    @LispBinding("round-decimals")
-    fun roundDecimalFunc(value: Double, decimals: Double): LispData.LispNumber {
-        return LispData.LispNumber(value.roundToDecimals(decimals.toInt()))
+    @LispBinding("floor")
+    fun ceilFunc(value: Double): LispData.LispNumber {
+        return LispData.LispNumber(ceil(value))
+    }
+
+    @LispBinding("ceil")
+    fun floorFunc(value: Double): LispData.LispNumber {
+        return LispData.LispNumber(floor(value))
     }
 
     @LispBinding("format-int")

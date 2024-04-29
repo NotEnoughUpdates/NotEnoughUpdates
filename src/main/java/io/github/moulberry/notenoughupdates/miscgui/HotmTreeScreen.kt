@@ -19,14 +19,17 @@
 
 package io.github.moulberry.notenoughupdates.miscgui
 
+import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils
 import io.github.moulberry.notenoughupdates.util.Utils
+import moe.nea.lisp.CoreBindings
 import moe.nea.lisp.LispData
 import moe.nea.lisp.LispExecutionContext
 import moe.nea.lisp.LispParser
 import moe.nea.lisp.bind.AutoBinder
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
+import kotlin.math.roundToInt
 
 class HotmTreeScreen(val hotmLayout: HotmTreeLayout, val prelude: List<String>) : GuiScreen() {
     val levels = mutableMapOf<String, Int>()
@@ -69,25 +72,43 @@ class HotmTreeScreen(val hotmLayout: HotmTreeLayout, val prelude: List<String>) 
 
     private fun processList(perk: LayoutedHotmPerk, level: Int): List<String> {
         val bindings = lec.genBindings()
-        bindings.setValueLocal("level", LispData.LispNumber(level.toDouble()))
         bindings.setValueLocal("potm", LispData.LispNumber((levels["special_0"] ?: 0).toDouble()))
+        bindings.setValueLocal("level", LispData.LispNumber(if (level == 0) 1.0 else level.toDouble()))
         val values = perk.compiledFunctions.mapValues {
             lec.executeProgram(bindings.fork(), it.value)
         }
-        val begin = listOf(
-            perk.name,
-            "§7Level $level/${perk.maxLevel}",
-            ""
-        )
+
+        val perkTitle = when (level) {
+            perk.maxLevel -> "§a${perk.name}"
+            0 -> "§c${perk.name}"
+            else -> "§e${perk.name}"
+        }
+        val begin =
+            if (perk.maxLevel == 1) listOf(perkTitle)
+            else listOf(
+                perkTitle,
+                if (level != perk.maxLevel) "§7Level $level§8/${perk.maxLevel}"
+                else "§7Level $level",
+                ""
+            )
         val end: List<String> = if (level == 0 || level == perk.maxLevel) listOf() else listOf(
             "",
-            hotmLayout.powders[perk.powder]!!.costLine
+            hotmLayout.powders[(lec.executeProgram(bindings.fork().also {
+                for (powder in hotmLayout.powders) {
+                    it.setValueLocal(powder.key, LispData.LispString(powder.key))
+                }
+            }, perk.powder) as? LispData.LispString)?.string ?: ""]?.costLine ?: "<lisp-error>"
         )
-        return (begin + perk.lore + end).map {
+        return (begin + perk.lore.filter {
+            if (it.condition != null)
+                CoreBindings.isTruthy(lec.executeProgram(bindings.fork(), it.condition) ?: LispData.LispNil) ?: true
+            else
+                true
+        }.map { it.text } + end).map {
             it.replace("\\{([a-z\\-A-Z_0-9]+)\\}".toRegex()) {
                 (when (val value = values[it.groupValues[1]]) {
                     is LispData.LispString -> value.string
-                    is LispData.LispNumber -> value.value.toString()
+                    is LispData.LispNumber -> StringUtils.formatNumber(if (it.groupValues[1] == "cost") value.value.roundToInt() else value.value)
                     else -> "<lisp-error>"
                 })
             }

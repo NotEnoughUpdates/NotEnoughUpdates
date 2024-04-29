@@ -31,6 +31,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 class HotmTreeTest {
     val gson = GsonBuilder()
         .registerTypeAdapterFactory(KotlinTypeAdapterFactory)
+        .registerTypeAdapterFactory(LoreLineSerializer)
+        .registerTypeAdapterFactory(LispProgramSerializer)
         .create()
 
     @SubscribeEvent

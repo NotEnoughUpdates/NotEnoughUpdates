@@ -1,6 +1,6 @@
 [versions]
 moulconfig = "2.4.3"
-nealisp = "1.0.0"
+nealisp = "1.1.0"
 
 [libraries]
 nealisp = { module = "moe.nea:nealisp", version.ref = "nealisp" }
