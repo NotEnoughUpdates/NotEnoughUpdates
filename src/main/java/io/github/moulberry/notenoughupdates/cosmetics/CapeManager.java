@@ -292,7 +292,7 @@ public class CapeManager {
 		}
 	}
 
-	private static final ExecutorService capeTicker = Executors.newCachedThreadPool();
+	private static final ExecutorService CAPE_TICKER = Executors.newCachedThreadPool();
 
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -311,10 +311,10 @@ public class CapeManager {
 			if (capeName != null && !capeName.equals("null")) {
 				if (event.player == Minecraft.getMinecraft().thePlayer && hasLocalCape) {
 					localCape.getLeft().setCapeTexture(localCape.getValue());
-					capeTicker.submit(() -> localCape.getLeft().onTick(event.player));
+					CAPE_TICKER.submit(() -> localCape.getLeft().onTick(event.player));
 				} else {
 					entry.getLeft().setCapeTexture(capeName);
-					capeTicker.submit(() -> capeMap.get(uuid).getLeft().onTick(event.player));
+					CAPE_TICKER.submit(() -> capeMap.get(uuid).getLeft().onTick(event.player));
 				}
 			} else {
 				capeMap.remove(uuid);
