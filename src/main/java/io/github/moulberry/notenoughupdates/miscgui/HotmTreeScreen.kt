@@ -66,6 +66,7 @@ class HotmTreeScreen(val hotmLayout: HotmTreeLayout) : GuiScreen() {
     private fun processList(perk: LayoutedHotmPerk, level: Int): List<String> {
         val bindings = lec.genBindings()
         bindings.setValueLocal("level", LispData.LispNumber(level.toDouble()))
+        bindings.setValueLocal("potm", LispData.LispNumber((levels["special_0"] ?: 0).toDouble()))
         val values = perk.compiledFunctions.mapValues {
             lec.executeProgram(bindings.fork(), it.value)
         }
@@ -74,11 +75,15 @@ class HotmTreeScreen(val hotmLayout: HotmTreeLayout) : GuiScreen() {
             "§7Level $level/${perk.maxLevel}",
             ""
         )
-        val end: List<String> = if (level == 0 || level == perk.maxLevel) listOf() else listOf("", hotmLayout.powders[perk.powder]!!.costLine)
+        val end: List<String> = if (level == 0 || level == perk.maxLevel) listOf() else listOf(
+            "",
+            hotmLayout.powders[perk.powder]!!.costLine
+        )
         return (begin + perk.lore + end).map {
             it.replace("\\{([a-z\\-]+)\\}".toRegex()) {
                 (when (val value = values[it.groupValues[1]]) {
                     is LispData.LispString -> value.string
+                    is LispData.LispNumber -> value.value.toString()
                     else -> "<lisp-error>"
                 })
             }
