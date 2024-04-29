@@ -29,7 +29,6 @@ pluginManagement {
 				maven(url = "https://repo.spongepowered.org/maven/")
 				maven(url = "https://repo.sk1er.club/repository/maven-releases/")
 				maven(url = "https://maven.architectury.dev/")
-			  maven(url = "https://repo.polyfrost.cc/releases") // keep this at the end to avoid polyfrost's repo mirrors
 		}
 		resolutionStrategy {
 				eachPlugin {
