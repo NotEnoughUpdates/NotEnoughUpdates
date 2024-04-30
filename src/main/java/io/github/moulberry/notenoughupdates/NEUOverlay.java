@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.mbgui.MBAnchorPoint;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiElement;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
+import io.github.moulberry.notenoughupdates.miscfeatures.BazaarAHCtrlF;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
@@ -1063,13 +1064,17 @@ public class NEUOverlay extends Gui {
 				searchBarHasFocus = false;
 			}
 
-			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F) &&
-				NotEnoughUpdates.INSTANCE.config.toolbar.searchBar && NotEnoughUpdates.INSTANCE.config.toolbar.ctrlF) {
-				searchBarHasFocus = !searchBarHasFocus;
-				if (searchBarHasFocus) {
-					itemPaneOpen = true;
+			if (!BazaarAHCtrlF.Companion.getDisableOtherCtrlF()) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F) &&
+					NotEnoughUpdates.INSTANCE.config.toolbar.searchBar && NotEnoughUpdates.INSTANCE.config.toolbar.ctrlF) {
+					searchBarHasFocus = !searchBarHasFocus;
+					if (searchBarHasFocus) {
+						itemPaneOpen = true;
+					}
+					return true;
 				}
-				return true;
+			} else {
+				BazaarAHCtrlF.Companion.setDisableOtherCtrlF(false);
 			}
 
 			if (Keyboard.getEventKey() == Keyboard.KEY_RETURN && searchBarHasFocus) {

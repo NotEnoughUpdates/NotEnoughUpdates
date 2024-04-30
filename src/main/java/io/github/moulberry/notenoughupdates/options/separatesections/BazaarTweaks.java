@@ -79,4 +79,12 @@ public class BazaarTweaks {
 	)
 	@ConfigEditorSlider(minValue = 0, maxValue = 500_000_000, minStep = 1)
 	public double bazaarOverpayWarning = 10_000_000;
+
+	@Expose
+	@ConfigOption(
+		name = "CTRL+F for search",
+		desc = "Open search GUI when pressing CTRL + F in the bazzar"
+	)
+	@ConfigEditorBoolean()
+	public boolean ctrlFSearch = true;
 }
