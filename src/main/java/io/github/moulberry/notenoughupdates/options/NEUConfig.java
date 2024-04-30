@@ -106,6 +106,16 @@ public class NEUConfig extends Config {
 		}, () -> NotEnoughUpdates.INSTANCE.openGui = savedGui));
 	}
 
+	public static GuiScreen editOverlayForCommand() {
+		final LinkedHashMap<TextOverlay, Position> overlayPositions = new LinkedHashMap<TextOverlay, Position>();
+		for (TextOverlay overlay : OverlayManager.textOverlays) {
+			overlayPositions.put(overlay, overlay.getPosition());
+		}
+		return new GuiPositionEditor(overlayPositions, () -> {
+		}, () -> {
+		});
+	}
+
 	@Override
 	public void saveNow() {
 		NotEnoughUpdates.INSTANCE.saveConfig();
