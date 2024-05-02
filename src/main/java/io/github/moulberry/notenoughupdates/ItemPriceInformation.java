@@ -61,6 +61,9 @@ public class ItemPriceInformation {
 	private static final Pattern SACK_STORED_AMOUNT = Pattern.compile(
 		".*Stored: §.(?<amount>[\\d,]+)§.\\/.*");
 
+	private static final Pattern GEMSTONE_STORED_AMOUNT = Pattern.compile(
+		".*Amount: §.(?<amount>[\\d,]+)");
+
 	private static final Pattern COMPOSTER_STORED_AMOUNT = Pattern.compile(
 		".*Compost Available: §.(?<amount>[\\d,]+)");
 
@@ -138,8 +141,10 @@ public class ItemPriceInformation {
 			shiftStackMultiplier = stack.getTagCompound().getInteger(STACKSIZE_OVERRIDE);
 		}
 		int stackMultiplier = 1;
+		boolean foundMulti = false;
 		for (int i = 1; i < tooltip.size(); i++) {
-			for (Pattern pattern : new Pattern[]{SACK_STORED_AMOUNT, COMPOSTER_STORED_AMOUNT}) {
+			if (foundMulti) break;
+			for (Pattern pattern : new Pattern[]{SACK_STORED_AMOUNT, GEMSTONE_STORED_AMOUNT, COMPOSTER_STORED_AMOUNT}) {
 				val matcher = pattern.matcher(tooltip.get(i));
 				if (matcher.matches()) {
 					String amountString = matcher.group("amount").replace(",", "");
@@ -147,6 +152,7 @@ public class ItemPriceInformation {
 						int parsedValue = Integer.parseInt(amountString);
 						if (parsedValue != 0) {
 							shiftStackMultiplier = parsedValue;
+							foundMulti = true;
 						}
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -232,7 +238,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Buys (Hourly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
@@ -245,7 +251,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Sells (Hourly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
@@ -258,7 +264,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Buys (Daily): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
@@ -271,7 +277,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Sells (Daily): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
@@ -284,7 +290,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Buys (Weekly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
@@ -297,7 +303,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							
+
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
 								"Insta-Sells (Weekly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +

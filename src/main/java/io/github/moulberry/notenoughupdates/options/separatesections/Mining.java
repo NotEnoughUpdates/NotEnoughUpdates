@@ -24,6 +24,7 @@ import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorButton;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
@@ -335,12 +336,70 @@ public class Mining {
 
 	@Expose
 	@ConfigOption(
+		name = "Line to Solution",
+		desc = "Draw a line to the solution block."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 3)
+	public boolean metalDetectorLineToSolution = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Show Possible Blocks",
 		desc = "Show waypoints on possible locations when NEU isn't sure about what block the treasure is."
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 3)
 	public boolean metalDetectorShowPossible = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Send Title",
+		desc = "Sends a title for solution found, failed, or additional position needed."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 3)
+	public boolean metalDetectorTitle = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Found Solution Title Color",
+		desc = "The color the alert will be shown"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 3)
+	public String metalDetectorFoundColor = "0:255:255:255:85";
+
+	@Expose
+	@ConfigOption(
+		name = "Failed Solution Color",
+		desc = "The color the alert will be shown"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 3)
+	public String metalDetectorFailedColor = "0:255:255:85:85";
+
+	@Expose
+	@ConfigOption(
+		name = "Need another Position Color",
+		desc = "The color the alert will be shown"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 3)
+	public String metalDetectorMoveColor = "0:255:255:255:85";
+
+	@Expose
+	@ConfigOption(
+		name = "Title Display Time",
+		desc = "How long the display would stay for in ticks"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 200,
+		minStep = 20
+	)
+	@ConfigAccordionId(id = 3)
+	public int metalDetectorTicks = 20;
 
 	@ConfigOption(
 		name = "Crystal Hollows Overlay",

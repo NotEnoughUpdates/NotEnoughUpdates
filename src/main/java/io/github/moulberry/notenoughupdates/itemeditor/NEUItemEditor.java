@@ -117,6 +117,9 @@ public class NEUItemEditor extends GuiScreen {
 
 		options.add(new GuiElementText("Display name: ", Color.WHITE.getRGB()));
 		String displayName = item.has("displayname") ? item.get("displayname").getAsString() : "";
+		if (displayName.startsWith("§f§f")) {
+			displayName = displayName.substring(4);
+		}
 		this.displayName = addTextFieldWithSupplier(displayName, COLOUR);
 
 		options.add(new GuiElementText("Lore: ", Color.WHITE.getRGB()));

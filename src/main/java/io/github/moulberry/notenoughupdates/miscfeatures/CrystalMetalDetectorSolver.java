@@ -25,6 +25,8 @@ import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.util.NEUDebugLogger;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.SpecialColour;
+import io.github.moulberry.notenoughupdates.util.TitleUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -165,6 +167,11 @@ public class CrystalMetalDetectorSolver {
 					// falls through
 				case FOUND:
 					Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Found solution.");
+					metalDetectorTitle(
+						"Found Solution",
+						NotEnoughUpdates.INSTANCE.config.mining.metalDetectorTicks,
+						NotEnoughUpdates.INSTANCE.config.mining.metalDetectorFoundColor
+					);
 					if (NEUDebugFlag.METAL.isSet() &&
 						(previousState == SolutionState.INVALID || previousState == SolutionState.FAILED)) {
 						NEUDebugLogger.log(
@@ -181,6 +188,11 @@ public class CrystalMetalDetectorSolver {
 					break;
 				case FAILED:
 					Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] Failed to find a solution.");
+					metalDetectorTitle(
+						"Failed to find a solution!",
+						NotEnoughUpdates.INSTANCE.config.mining.metalDetectorTicks,
+						NotEnoughUpdates.INSTANCE.config.mining.metalDetectorFailedColor
+					);
 					logDiagnosticData(false);
 					resetSolution(false);
 					break;
@@ -191,10 +203,21 @@ public class CrystalMetalDetectorSolver {
 					Utils.addChatMessage(
 						EnumChatFormatting.YELLOW + "[NEU] Need another position to find solution. Possible blocks: " +
 							possibleBlocks.size());
+					metalDetectorTitle(
+						"Need another position!",
+						NotEnoughUpdates.INSTANCE.config.mining.metalDetectorTicks,
+						NotEnoughUpdates.INSTANCE.config.mining.metalDetectorMoveColor
+					);
 					break;
 				default:
 					throw new IllegalStateException("Metal detector is in invalid state");
 			}
+		}
+	}
+
+	private static void metalDetectorTitle(String title, int ticks, String color) {
+		if (NotEnoughUpdates.INSTANCE.config.mining.metalDetectorTitle) {
+			TitleUtil.getInstance().createTitle(title, ticks, SpecialColour.specialToChromaRGB(color));
 		}
 	}
 
@@ -346,6 +369,9 @@ public class CrystalMetalDetectorSolver {
 
 				RenderUtils.renderBeaconBeam(block.add(0, 1, 0), beaconRGB, 1.0f, partialTicks);
 				RenderUtils.renderWayPoint("Treasure", possibleBlocks.iterator().next().add(0, 2.5, 0), partialTicks);
+				if (NotEnoughUpdates.INSTANCE.config.mining.metalDetectorLineToSolution) {
+					RenderUtils.renderLineToBlock(block.add(0, 1, 0), 0x1fd8f1, partialTicks);
+				}
 			} else if (possibleBlocks.size() > 1 && NotEnoughUpdates.INSTANCE.config.mining.metalDetectorShowPossible) {
 				for (BlockPos block : possibleBlocks) {
 					RenderUtils.renderBeaconBeam(block.add(0, 1, 0), beaconRGB, 1.0f, partialTicks);
