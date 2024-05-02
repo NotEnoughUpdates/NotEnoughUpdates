@@ -336,6 +336,15 @@ public class Mining {
 
 	@Expose
 	@ConfigOption(
+		name = "Line to Solution",
+		desc = "Draw a line to the solution block."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 3)
+	public boolean metalDetectorLineToSolution = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Show Possible Blocks",
 		desc = "Show waypoints on possible locations when NEU isn't sure about what block the treasure is."
 	)
