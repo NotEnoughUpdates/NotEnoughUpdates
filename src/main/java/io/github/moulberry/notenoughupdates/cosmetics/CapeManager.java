@@ -19,22 +19,15 @@
 
 package io.github.moulberry.notenoughupdates.cosmetics;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -44,7 +37,6 @@ import org.lwjgl.opengl.GL30;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -236,18 +228,6 @@ public class CapeManager {
 		return null;
 	}
 
-	private static BiMap<String, EntityPlayer> playerMap = null;
-
-	public EntityPlayer getPlayerForUUID(String uuid) {
-		if (playerMap == null) {
-			return null;
-		}
-		if (playerMap.containsKey(uuid)) {
-			return playerMap.get(uuid);
-		}
-		return null;
-	}
-
 	private static Framebuffer checkFramebufferSizes(Framebuffer framebuffer, int width, int height) {
 		if (framebuffer == null || framebuffer.framebufferWidth != width || framebuffer.framebufferHeight != height) {
 			if (framebuffer == null) {
@@ -285,11 +265,6 @@ public class CapeManager {
 	}
 
 	@SubscribeEvent
-	public void onWorldLoad(WorldEvent.Unload event) {
-		if (playerMap != null) playerMap.clear();
-	}
-
-	@SubscribeEvent
 	public void onRenderPlayer(RenderPlayerEvent.Post e) {
 		if (e.partialRenderTick == 1.0F) return; //rendering in inventory
 
@@ -317,88 +292,38 @@ public class CapeManager {
 		}
 	}
 
-	public static void onTickSlow() {
-		if (Minecraft.getMinecraft().theWorld == null) return;
-
-		if (playerMap == null) {
-			playerMap = HashBiMap.create(Minecraft.getMinecraft().theWorld.playerEntities.size());
-		}
-		playerMap.clear();
-		for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) {
-			String uuid = player.getUniqueID().toString().replace("-", "");
-			try {
-				playerMap.put(uuid, player);
-			} catch (IllegalArgumentException ignored) {
-			}
-		}
-	}
-
-	private static final ExecutorService capeTicker = Executors.newCachedThreadPool();
+	private static final ExecutorService CAPE_TICKER = Executors.newCachedThreadPool();
 
 	@SubscribeEvent
-	public void onTick(TickEvent.ClientTickEvent event) {
+	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
 		if (event.phase != TickEvent.Phase.END) return;
 		if (Minecraft.getMinecraft().theWorld == null) return;
+		if (event.player == null) return;
 
-		if (playerMap == null) {
-			return;
-		}
-
-		String clientUuid = null;
-		if (Minecraft.getMinecraft().thePlayer != null) {
-			clientUuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
-		}
+		String uuid = event.player.getUniqueID().toString().replace("-", "");
+		if (!capeMap.containsKey(uuid)) return;
 
 		boolean hasLocalCape = localCape != null && localCape.getRight() != null && !localCape.getRight().equals("null");
 
-		Set<String> toRemove = new HashSet<>();
 		try {
-			for (String playerUUID : capeMap.keySet()) {
-				EntityPlayer player;
-				if (playerUUID.equals(clientUuid)) {
-					player = Minecraft.getMinecraft().thePlayer;
+			Pair<NEUCape, String> entry = capeMap.get(uuid);
+			String capeName = entry.getRight();
+			if (capeName != null && !capeName.equals("null")) {
+				if (event.player == Minecraft.getMinecraft().thePlayer && hasLocalCape) {
+					localCape.getLeft().setCapeTexture(localCape.getValue());
+					CAPE_TICKER.submit(() -> localCape.getLeft().onTick(event.player));
 				} else {
-					player = getPlayerForUUID(playerUUID);
+					entry.getLeft().setCapeTexture(capeName);
+					CAPE_TICKER.submit(() -> capeMap.get(uuid).getLeft().onTick(event.player));
 				}
-				if (player != null) {
-					String capeName = capeMap.get(playerUUID).getRight();
-					if (capeName != null && !capeName.equals("null")) {
-						if (player == Minecraft.getMinecraft().thePlayer && hasLocalCape) {
-							continue;
-						}
-						capeMap.get(playerUUID).getLeft().setCapeTexture(capeName);
-						capeTicker.submit(() -> capeMap.get(playerUUID).getLeft().onTick(event, player));
-					} else {
-						toRemove.add(playerUUID);
-					}
-				}
+			} else {
+				capeMap.remove(uuid);
 			}
 		} catch (Exception ignored) {
-		}
-
-		if (hasLocalCape) {
-			localCape.getLeft().setCapeTexture(localCape.getValue());
-			capeTicker.submit(() -> localCape.getLeft().onTick(event, Minecraft.getMinecraft().thePlayer));
-		}
-		for (String playerName : toRemove) {
-			capeMap.remove(playerName);
 		}
 	}
 
 	public CapeData[] getCapes() {
 		return capes;
-	}
-
-	@SubscribeEvent
-	public void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
-		if (!(event.entity instanceof EntityOtherPlayerMP)) return;
-		EntityOtherPlayerMP player = (EntityOtherPlayerMP) event.entity;
-		Pair<NEUCape, String> neuCapeStringPair = capeMap.get(player.getGameProfile().getId().toString());
-		if (neuCapeStringPair == null) return;
-		if (neuCapeStringPair.getLeft() == null) {
-			return;
-		}
-		neuCapeStringPair.getLeft().resetNodes();
-
 	}
 }
