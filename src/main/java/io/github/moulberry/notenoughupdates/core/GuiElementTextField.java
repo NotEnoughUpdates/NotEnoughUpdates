@@ -522,12 +522,17 @@ public class GuiElementTextField {
 				Matcher matcher = PATTERN_CONTROL_CODE.matcher(text);
 				if (!matcher.find() || matcher.groupCount() < 1) break;
 				String code = matcher.group(1);
-				if (code.isEmpty()) {
-					text = matcher.replaceFirst("\u00A7r\u00B6");
-				} else {
-					text = matcher.replaceFirst("\u00A7" + code + "\u00B6" + code);
+				try {
+					if (code.isEmpty()) {
+						text = matcher.replaceFirst("\u00A7r\u00B6");
+					} else {
+						text = matcher.replaceFirst("\u00A7" + code + "\u00B6" + code);
+					}
+				} catch (IllegalArgumentException ignored) {
+					Utils.addChatMessage("§e[NEU] Error with your colour codes: " + text);
 				}
 			}
+
 		}
 		while (true) {
 			Matcher matcher = PATTERN_CONTROL_CODE.matcher(textNoColor);
