@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements
+import io.github.moulberry.notenoughupdates.options.NEUConfig
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -48,5 +49,10 @@ class ScreenOpenCommands {
                 NotEnoughUpdates.INSTANCE.openGui = NEUOverlayPlacements()
             }
         }.withHelp("Open the NEU gui overlay editor")
+        event.command("neugui") {
+            thenExecute {
+                NotEnoughUpdates.INSTANCE.openGui = NEUConfig.editOverlayForCommand()
+            }
+        }.withHelp("Open the NEU gui editor")
     }
 }
