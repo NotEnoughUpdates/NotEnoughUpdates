@@ -34,10 +34,6 @@ import org.lwjgl.input.Keyboard
 @NEUAutoSubscribe
 class BazaarAHCtrlF {
 
-    companion object {
-        var disableOtherCtrlF = false
-    }
-
     val config: NEUConfig = NotEnoughUpdates.INSTANCE.config
 
 
@@ -62,7 +58,7 @@ class BazaarAHCtrlF {
         if (signStack.item == Items.sign && signStack.displayName == "§aSearch") {
             if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F)) {
                 Utils.sendMiddleMouseClick(gui.inventorySlots.windowId, slotId)
-                if (config.toolbar.searchBar && config.toolbar.ctrlF) disableOtherCtrlF = true
+                event.isCanceled = true
             }
         }
     }
