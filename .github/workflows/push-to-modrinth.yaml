@@ -9,14 +9,14 @@ jobs:
     steps:
       - uses: dsaltares/fetch-gh-release-asset@master
         with:
-          version: ${{ release.id }}
+          version: ${{ github.event.release.id }}
           regex: true
           file: "*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
           printf %s "$CHANGELOG" > CHANGELOG.md
         env:
-          CHANGELOG: ${{ release.body }}
+          CHANGELOG: ${{ github.event.release.body }}
       - uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: GGamhqbw
@@ -24,5 +24,5 @@ jobs:
           files: "*.jar"
           loaders: forge
           game-versions: 1.8.9
-          version: ${{ release.tag_name }}
+          version: ${{ github.event.release.tag_name }}
           # TODO: version-type: release
