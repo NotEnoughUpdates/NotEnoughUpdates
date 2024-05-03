@@ -27,8 +27,10 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.inventory.Slot
+import net.minecraft.item.Item
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
@@ -43,6 +45,7 @@ class BazaarPriceWarning : WarningPopUp() {
     var price = 0.0
 
     val limit get() = NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bazaarOverpayWarning
+
     @SubscribeEvent
     fun onClick(event: SlotClickEvent) {
         val openSlots = Minecraft.getMinecraft().thePlayer?.openContainer?.inventorySlots ?: return
@@ -51,10 +54,12 @@ class BazaarPriceWarning : WarningPopUp() {
         //we check the name of the buy order page and return if its that
         //however the custom amount insta buy page doesnt have a sign so we also have to check its title
         val signStack = openSlots[16]?.stack ?: return
-        if ((signStack.item != Items.sign ||
-                    ItemUtils.getDisplayName(signStack) != "§aCustom Amount" ||
-                    Utils.getOpenChestName().contains("How many do you want?")) &&
-            !Utils.getOpenChestName().contains("Confirm Instant Buy")) return
+        val hasCustomAmount =
+            (signStack.item == Items.sign || signStack.item == Item.getItemFromBlock(Blocks.redstone_block)) &&
+                    ItemUtils.getDisplayName(signStack) != "§aCustom Amount"
+        val isBuyOrder = Utils.getOpenChestName().contains("How many do you want?")
+        val isConfirmInstantBuy = Utils.getOpenChestName().contains("Confirm Instant Buy")
+        if ((hasCustomAmount && !isBuyOrder) || isConfirmInstantBuy) return
         if (shouldShow()) return
         val stack = event.slot.stack ?: return
         val lore = ItemUtils.getLore(stack)
