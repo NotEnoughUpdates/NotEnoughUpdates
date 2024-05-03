@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.init.Items
 import net.minecraft.inventory.Slot
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -44,8 +45,16 @@ class BazaarPriceWarning : WarningPopUp() {
     val limit get() = NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bazaarOverpayWarning
     @SubscribeEvent
     fun onClick(event: SlotClickEvent) {
-        if (!Utils.getOpenChestName().contains("Instant Buy"))
-            return
+        val openSlots = Minecraft.getMinecraft().thePlayer?.openContainer?.inventorySlots ?: return
+        if (openSlots.size < 17) return
+        //both insta buy and buy order screens have this sign
+        //we check the name of the buy order page and return if its that
+        //however the custom amount insta buy page doesnt have a sign so we also have to check its title
+        val signStack = openSlots[16]?.stack ?: return
+        if ((signStack.item != Items.sign ||
+                    ItemUtils.getDisplayName(signStack) != "§aCustom Amount" ||
+                    Utils.getOpenChestName().contains("How many do you want?")) &&
+            !Utils.getOpenChestName().contains("Confirm Instant Buy")) return
         if (shouldShow()) return
         val stack = event.slot.stack ?: return
         val lore = ItemUtils.getLore(stack)
