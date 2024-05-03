@@ -46,12 +46,13 @@ class BazaarPriceWarning : WarningPopUp() {
     @SubscribeEvent
     fun onClick(event: SlotClickEvent) {
         val openSlots = Minecraft.getMinecraft().thePlayer?.openContainer?.inventorySlots ?: return
+        if (openSlots.size < 17) return
         //both insta buy and buy order screens have this sign
         //we check the name of the buy order page and return if its that
         //however the custom amount insta buy page doesnt have a sign so we also have to check its title
         val signStack = openSlots[16]?.stack ?: return
         if ((signStack.item != Items.sign ||
-                    signStack.displayName != "§aCustom Amount" ||
+                    ItemUtils.getDisplayName(signStack) != "§aCustom Amount" ||
                     Utils.getOpenChestName().contains("How many do you want?")) &&
             !Utils.getOpenChestName().contains("Confirm Instant Buy")) return
         if (shouldShow()) return
