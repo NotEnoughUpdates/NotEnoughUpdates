@@ -2393,6 +2393,13 @@ public class Utils {
 		);
 	}
 
+	public static void sendMiddleMouseClick(int windowId, int slot) {
+		Minecraft.getMinecraft().playerController.windowClick(
+			windowId,
+			slot, 2, 3, Minecraft.getMinecraft().thePlayer
+		);
+	}
+
 	public static String timeSinceMillisecond(long time) {
 		Instant lastSave = Instant.ofEpochMilli(time);
 		LocalDateTime lastSaveTime = LocalDateTime.ofInstant(lastSave, TimeZone.getDefault().toZoneId());
