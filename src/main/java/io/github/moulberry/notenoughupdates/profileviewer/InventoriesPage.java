@@ -825,16 +825,6 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				if (invName.equals("inv_contents")) {
 					yIndex--;
 					if (yIndex < 0) yIndex = rows - 1;
-				} else if (invName.equals("backpack_contents")) {
-					if (maxInvSize == 36) {
-						yIndex++;
-						if (yIndex < 0) yIndex = rows - 1;
-						if (yIndex > 3) yIndex = 0;
-					} else if (maxInvSize == 45) {
-						yIndex += 2;
-						if (yIndex < 0) yIndex = rows - 1;
-						if (yIndex > 4) yIndex = 0;
-					}
 				}
 
 				if (yIndex >= thisRows) {
