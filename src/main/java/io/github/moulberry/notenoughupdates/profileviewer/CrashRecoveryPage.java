@@ -77,7 +77,7 @@ public class CrashRecoveryPage extends GuiProfileViewerPage {
 
 		drawTitle();
 
-		drawString("§cLooked like your profile viewer crashed.");
+		drawString("§cLooks like your profile viewer crashed.");
 		drawString("§cPlease immediately send a screenshot of this screen into #neu-support.");
 		drawString("§cJoin our support server at §adiscord.gg/moulberry§c.");
 
