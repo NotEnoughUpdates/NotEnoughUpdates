@@ -19,9 +19,12 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraftforge.client.GuiIngameForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,5 +36,13 @@ public class MixinGuiIngameForge {
 	@Redirect(method = "renderHelmet", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;", ordinal = 1))
 	public Item renderHelmet(ItemStack stack) {
 		return ItemCustomizeManager.useCustomItem(stack).getItem();
+	}
+
+	@Redirect(method = "renderHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;isPotionActive(Lnet/minecraft/potion/Potion;)Z", ordinal = 0))
+	public boolean renderHealth(EntityPlayer player, Potion potion) {
+		if (!NotEnoughUpdates.INSTANCE.config.misc.hideRegenBounce) {
+			return player.isPotionActive(potion);
+		}
+		return false;
 	}
 }
