@@ -565,8 +565,39 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		GlStateManager.color(1, 1, 1, 1);
-		JsonObject petsInfo = profile.getProfile(profileName).getPetsInfo();
+		SkyblockProfiles.SkyblockProfile currentProfile = profile.getProfile(profileName);
+		JsonObject petsInfo = currentProfile.getPetsInfo();
 		if (petsInfo != null) {
+			if (currentProfile.getGamemode() != null && currentProfile.getGamemode().equals("bingo")) {
+				JsonArray pets = petsInfo.get("pets").getAsJsonArray();
+				for (JsonElement pet : pets) {
+					if (pet.getAsJsonObject().get("type").getAsString().equals("BINGO")) {
+						String tier = pet.getAsJsonObject().get("tier").getAsString();
+						switch (tier) {
+							case "COMMON":
+								bingoRarity = "§7";
+								break;
+							case "UNCOMMON":
+								bingoRarity = "§a";
+								break;
+							case "RARE":
+								bingoRarity = "§9";
+								break;
+							case "EPIC":
+								bingoRarity = "§5";
+								break;
+							case "LEGENDARY":
+								bingoRarity = "§6";
+								break;
+							case "MYTHIC":
+								bingoRarity = "§d";
+								break;
+						}
+						break;
+					}
+					bingoRarity = "§7";
+				}
+			}
 			JsonElement activePetElement = petsInfo.get("active_pet");
 			if (activePetElement != null && activePetElement.isJsonObject()) {
 				JsonObject activePet = activePetElement.getAsJsonObject();
@@ -616,8 +647,8 @@ public class BasicPage extends GuiProfileViewerPage {
 		int sbLevelX = guiLeft + 162;
 		int sbLevelY = guiTop + 74;
 
-		double skyblockLevel = profile.getProfile(profileName).getSkyblockLevel();
-		EnumChatFormatting skyblockLevelColour = profile.getProfile(profileName).getSkyblockLevelColour();
+		double skyblockLevel = currentProfile.getSkyblockLevel();
+		EnumChatFormatting skyblockLevelColour = currentProfile.getSkyblockLevelColour();
 
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(sbLevelX, sbLevelY, 0);
@@ -774,12 +805,14 @@ public class BasicPage extends GuiProfileViewerPage {
 		selectedProfile.updateBeastMasterMultiplier();
 	}
 
+	private String bingoRarity = "§7";
+
 	private String getIcon(String gameModeType) {
 		switch (gameModeType) {
 			case "island":
 				return "§a☀";
 			case "bingo":
-				return "§7Ⓑ";
+				return bingoRarity + "Ⓑ";
 			case "ironman":
 				return "§7♲";
 			default:
