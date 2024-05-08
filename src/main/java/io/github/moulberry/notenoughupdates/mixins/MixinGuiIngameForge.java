@@ -40,7 +40,7 @@ public class MixinGuiIngameForge {
 
 	@Redirect(method = "renderHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;isPotionActive(Lnet/minecraft/potion/Potion;)Z", ordinal = 0))
 	public boolean renderHealth(EntityPlayer player, Potion potion) {
-		if (!NotEnoughUpdates.INSTANCE.config.misc.hideRegenBounce && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+		if (!NotEnoughUpdates.INSTANCE.config.misc.hideRegenBounce || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			return player.isPotionActive(potion);
 		}
 		return false;
