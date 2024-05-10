@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson
 import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.MC
 import io.github.moulberry.notenoughupdates.util.Utils
@@ -72,24 +73,24 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         guiLeft = GuiProfileViewer.getGuiLeft()
         guiTop = GuiProfileViewer.getGuiTop()
 
-        val newProfile = selectedProfile
-        if (newProfile == null) {
-            Utils.drawStringCentered("§cMissing Profile Data", guiLeft + 250, guiTop + 101, true, 0)
+        if (selectedProfile?.APIDataJson?.events?.easter == null) {
+            Utils.drawStringCentered("§cMissing Profile Data", guiLeft + 220, guiTop + 101, true, 0)
             return
         }
 
         if (hoppityJson == null) {
-            Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 250, guiTop + 101, true, 0)
+            Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 220, guiTop + 101, true, 0)
             return
         }
 
+        val newProfile = selectedProfile
         if (newProfile != currentProfile) {
             getData()
             currentProfile = selectedProfile
         }
 
         if (rabbitToRarity.isEmpty()) {
-            Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 250, guiTop + 101, true, 0)
+            Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 220, guiTop + 101, true, 0)
             return
         }
 
@@ -324,7 +325,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             rabbitRarity.maximum = rabbits.size()
         }
 
-        val rabbits = easterData.rabbits ?: return
+        val rabbits = easterData.rabbits ?: JsonObject()
 
         for ((rabbitName, rabbitInfo) in rabbits.entrySet()) {
             if (rabbitInfo.isJsonObject) continue
@@ -362,8 +363,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         factoryModifiersInfo.clear()
         otherModifiersInfo.clear()
 
-        val employeesData = easterData.employees ?: return
-        val timeTowerInfo = easterData.time_tower ?: return
+        val employeesData = easterData.employees ?: APIDataJson.Events.EasterEventData.EmployeeData()
+        val timeTowerInfo = easterData.time_tower ?: APIDataJson.Events.EasterEventData.TimeTowerData()
 
         val coachLevel = easterData.chocolate_multiplier_upgrades
         val barnLevel = easterData.rabbit_barn_capacity_level
