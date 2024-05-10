@@ -370,6 +370,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         barnCapacity = barnLevel * 2 + 20
 
         prestigeLevel = easterData.chocolate_level
+        var timeTowerLevel = timeTowerInfo.level
+        if (prestigeLevel > 1) timeTowerLevel = timeTowerLevel.coerceAtLeast(1)
 
         rabbitFamilyInfo.add(UpgradeInfo(rabbitBro, employeesData.rabbit_bro, 1))
         rabbitFamilyInfo.add(UpgradeInfo(rabbitCousin, employeesData.rabbit_cousin, 2))
@@ -378,7 +380,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         rabbitFamilyInfo.add(UpgradeInfo(rabbitGranny, employeesData.rabbit_grandma, 5))
 
         factoryModifiersInfo.add(UpgradeInfo(handBaked, easterData.click_upgrades + 1))
-        factoryModifiersInfo.add(UpgradeInfo(timeTower, timeTowerInfo.level))
+        factoryModifiersInfo.add(UpgradeInfo(timeTower, timeTowerLevel))
         factoryModifiersInfo.add(UpgradeInfo(rabbitShrine, easterData.rabbit_rarity_upgrades))
         factoryModifiersInfo.add(UpgradeInfo(coachJackrabbit, coachLevel))
 
