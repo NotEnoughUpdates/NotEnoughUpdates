@@ -246,4 +246,37 @@ public class APIDataJson {
 			public int farming_level_cap = 0;
 		}
 	}
+
+	public @Nullable Events events;
+
+	public static class Events {
+		public @Nullable EasterEventData easter;
+
+		public static class EasterEventData {
+			public @Nullable JsonObject rabbits;
+			public @Nullable EmployeeData employees;
+			public @Nullable TimeTowerData time_tower;
+
+			public long chocolate = 0;
+			public long chocolate_since_prestige = 0;
+			public long total_chocolate = 0;
+			public int click_upgrades = 1;
+			public int chocolate_level = 1;
+			public int chocolate_multiplier_upgrades = 0;
+			public int rabbit_barn_capacity_level = 0;
+			public int rabbit_rarity_upgrades = 0;
+
+			public static class EmployeeData {
+				public int rabbit_bro = 0;
+				public int rabbit_cousin = 0;
+				public int rabbit_sis = 0;
+				public int rabbit_father = 0;
+				public int rabbit_grandma = 0;
+			}
+
+			public static class TimeTowerData {
+				public int level = 0;
+			}
+		}
+	}
 }
