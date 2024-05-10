@@ -58,6 +58,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private var rawChocolatePerSecond = 0
     private var multiplier = 0.0
     private var chocolatePerSecond = 0.0
+    private var talisman: String? = null
+    private var talismanChocolate = 0
 
     private val rabbitToRarity = mutableMapOf<String, String>()
 
@@ -298,10 +300,13 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val rabbitRarities = hoppityData.getAsJsonObject("rarities") ?: return
         val specialRabbits = hoppityData.getAsJsonObject("special") ?: return
         val prestigeMultipliers = hoppityData.getAsJsonObject("prestigeMultipliers") ?: return
+        val talismanChocolateData = hoppityData.getAsJsonObject("talisman") ?: return
 
         val foundMythicRabbits = mutableSetOf<String>()
 
         val hoppityInfo = Utils.getElementOrDefault(selectedProfile, "events.easter", JsonObject()).asJsonObject
+
+        getTalismanTier(talismanChocolateData)
 
         for (rarity in rabbitRarities.entrySet()) {
             val rarityName = rarity.key
@@ -371,8 +376,9 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         otherModifiersInfo.add(UpgradeInfo(prestigeItem, hoppityInfo.getIntOrValue("chocolate_level", 0)))
         otherModifiersInfo.add(UpgradeInfo(rabbitBarn, barnLevel))
-        // todo get talisman
-        otherModifiersInfo.add(UpgradeInfo(talisman, 0))
+
+        val shownTalismanItem = talisman?.let { manager.createItem(it) } ?: talismanItem
+        otherModifiersInfo.add(UpgradeInfo(shownTalismanItem, 0))
 
         currentChocolate = hoppityInfo.getLongOrValue("chocolate", 0)
         prestigeChocolate = hoppityInfo.getLongOrValue("chocolate_since_prestige", 0)
@@ -384,13 +390,47 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val rabbitMultiplier = RabbitCollectionRarity.TOTAL.multiplier
         multiplier = baseMultiplier + prestigeMultiplier + coachMultiplier + rabbitMultiplier
 
-        // todo talisman cps
-        val talismanChocolate = 0
         val rabbitChocolate = RabbitCollectionRarity.TOTAL.chocolatePerSecond
         val employeeChocolate = rabbitFamilyInfo.sumOf { it.extraCps * it.level }
         rawChocolatePerSecond = rabbitChocolate + employeeChocolate + talismanChocolate
 
         chocolatePerSecond = rawChocolatePerSecond * multiplier
+    }
+
+    private fun getTalismanTier(talismanChocolateData: JsonObject) {
+        talisman = null
+        var bestTalisman: String? = null
+        var bestTalismanCps = 0
+
+        val playerItems = GuiProfileViewer.getSelectedProfile()?.inventoryInfo ?: return
+        val talismanInventory = playerItems["talisman_bag"] ?: return
+        val playerInventory = playerItems["inv_contents"] ?: return
+
+        for (item in talismanInventory) {
+            if (item.isJsonNull) continue
+            val internalName = item.asJsonObject.get("internalname").asString
+            if (talismanChocolateData.has(internalName)) {
+                val cps = talismanChocolateData.get(internalName).asInt
+                if (cps > bestTalismanCps) {
+                    bestTalisman = internalName
+                    bestTalismanCps = cps
+                }
+            }
+        }
+
+        for (item in playerInventory) {
+            if (item.isJsonNull) continue
+            val internalName = item.asJsonObject.get("internalname").asString
+            if (talismanChocolateData.has(internalName)) {
+                val cps = talismanChocolateData.get(internalName).asInt
+                if (cps > bestTalismanCps) {
+                    bestTalisman = internalName
+                    bestTalismanCps = cps
+                }
+            }
+        }
+        println("best talisman: $bestTalisman, cps: $bestTalismanCps")
+        talisman = bestTalisman
     }
 
     private val rabbitBro: ItemStack = Utils.createSkull(
@@ -430,7 +470,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
     private val prestigeItem = ItemStack(Blocks.dropper)
     private val rabbitBarn = ItemStack(Blocks.oak_fence)
-    private val talisman = ItemStack(Blocks.barrier)
+    private val talismanItem = ItemStack(Items.dye, 1, 8)
 
     data class UpgradeInfo(
         val stack: ItemStack,
