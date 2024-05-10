@@ -388,7 +388,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         otherModifiersInfo.add(UpgradeInfo(rabbitBarn, barnLevel))
 
         val shownTalismanItem = talisman?.let { manager.createItem(it) } ?: talismanItem
-        otherModifiersInfo.add(UpgradeInfo(shownTalismanItem, 0))
+        otherModifiersInfo.add(UpgradeInfo(shownTalismanItem, talismanChocolate / 10))
 
         currentChocolate = easterData.chocolate
         prestigeChocolate = easterData.chocolate_since_prestige
@@ -439,6 +439,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             }
         }
         talisman = bestTalisman
+        talismanChocolate = bestTalismanCps
     }
 
     private val rabbitBro: ItemStack = Utils.createSkull(
