@@ -25,7 +25,10 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
-import io.github.moulberry.notenoughupdates.util.*
+import io.github.moulberry.notenoughupdates.util.Constants
+import io.github.moulberry.notenoughupdates.util.MC
+import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.roundToDecimals
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -291,7 +294,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     }
 
     private fun getData() {
-        val selectedProfile = selectedProfile?.profileJson ?: return
+        val data = selectedProfile?.APIDataJson ?: return
+
+        if (data.events?.easter == null) return
+
+        val easterData = data.events?.easter ?: return
 
         rabbitToRarity.clear()
         RabbitCollectionRarity.resetData()
@@ -303,8 +310,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val talismanChocolateData = hoppityData.getAsJsonObject("talisman") ?: return
 
         val foundMythicRabbits = mutableSetOf<String>()
-
-        val hoppityInfo = Utils.getElementOrDefault(selectedProfile, "events.easter", JsonObject()).asJsonObject
 
         getTalismanTier(talismanChocolateData)
 
@@ -319,7 +324,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             rabbitRarity.maximum = rabbits.size()
         }
 
-        val rabbits = Utils.getElementOrDefault(hoppityInfo, "rabbits", JsonObject()).asJsonObject
+        val rabbits = easterData.rabbits ?: return
+
         for ((rabbitName, rabbitInfo) in rabbits.entrySet()) {
             if (rabbitInfo.isJsonObject) continue
             val rabbitRarity = rabbitToRarity[rabbitName]?.let { RabbitCollectionRarity.fromApiName(it) } ?: continue
@@ -356,34 +362,35 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         factoryModifiersInfo.clear()
         otherModifiersInfo.clear()
 
-        val employeesInfo = Utils.getElementOrDefault(hoppityInfo, "employees", JsonObject()).asJsonObject
-        val timeTowerInfo = Utils.getElementOrDefault(hoppityInfo, "time_tower", JsonObject()).asJsonObject
+        val employeesData = easterData.employees ?: return
+        val timeTowerInfo = easterData.time_tower ?: return
 
-        val coachLevel = hoppityInfo.getIntOrValue("chocolate_multiplier_upgrades", 0)
-        val barnLevel = hoppityInfo.getIntOrValue("rabbit_barn_capacity_level", 0)
+        val coachLevel = easterData.chocolate_multiplier_upgrades
+        val barnLevel = easterData.rabbit_barn_capacity_level
         barnCapacity = barnLevel * 2 + 20
 
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitBro, employeesInfo.getIntOrValue("rabbit_bro", 0), 1))
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitCousin, employeesInfo.getIntOrValue("rabbit_cousin", 0), 2))
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitSis, employeesInfo.getIntOrValue("rabbit_sis", 0), 3))
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitDaddy, employeesInfo.getIntOrValue("rabbit_father", 0), 4))
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitGranny, employeesInfo.getIntOrValue("rabbit_grandma", 0), 5))
+        prestigeLevel = easterData.chocolate_level
 
-        factoryModifiersInfo.add(UpgradeInfo(handBaked, hoppityInfo.getIntOrValue("click_upgrades", 0) + 1))
-        factoryModifiersInfo.add(UpgradeInfo(timeTower, timeTowerInfo.getIntOrValue("level", 0)))
-        factoryModifiersInfo.add(UpgradeInfo(rabbitShrine, hoppityInfo.getIntOrValue("rabbit_rarity_upgrades", 0)))
+        rabbitFamilyInfo.add(UpgradeInfo(rabbitBro, employeesData.rabbit_bro, 1))
+        rabbitFamilyInfo.add(UpgradeInfo(rabbitCousin, employeesData.rabbit_cousin, 2))
+        rabbitFamilyInfo.add(UpgradeInfo(rabbitSis, employeesData.rabbit_sis, 3))
+        rabbitFamilyInfo.add(UpgradeInfo(rabbitDaddy, employeesData.rabbit_father, 4))
+        rabbitFamilyInfo.add(UpgradeInfo(rabbitGranny, employeesData.rabbit_grandma, 5))
+
+        factoryModifiersInfo.add(UpgradeInfo(handBaked, easterData.click_upgrades + 1))
+        factoryModifiersInfo.add(UpgradeInfo(timeTower, timeTowerInfo.level))
+        factoryModifiersInfo.add(UpgradeInfo(rabbitShrine, easterData.rabbit_rarity_upgrades))
         factoryModifiersInfo.add(UpgradeInfo(coachJackrabbit, coachLevel))
 
-        otherModifiersInfo.add(UpgradeInfo(prestigeItem, hoppityInfo.getIntOrValue("chocolate_level", 0)))
+        otherModifiersInfo.add(UpgradeInfo(prestigeItem, prestigeLevel))
         otherModifiersInfo.add(UpgradeInfo(rabbitBarn, barnLevel))
 
         val shownTalismanItem = talisman?.let { manager.createItem(it) } ?: talismanItem
         otherModifiersInfo.add(UpgradeInfo(shownTalismanItem, 0))
 
-        currentChocolate = hoppityInfo.getLongOrValue("chocolate", 0)
-        prestigeChocolate = hoppityInfo.getLongOrValue("chocolate_since_prestige", 0)
-        allTimeChocolate = hoppityInfo.getLongOrValue("total_chocolate", 0)
-        prestigeLevel = hoppityInfo.getIntOrValue("chocolate_level", 1)
+        currentChocolate = easterData.chocolate
+        prestigeChocolate = easterData.chocolate_since_prestige
+        allTimeChocolate = easterData.total_chocolate
 
         val prestigeMultiplier = prestigeMultipliers.get(prestigeLevel.toString()).asDouble
         val coachMultiplier = 0.01 * coachLevel
@@ -429,7 +436,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 }
             }
         }
-        println("best talisman: $bestTalisman, cps: $bestTalismanCps")
         talisman = bestTalisman
     }
 
