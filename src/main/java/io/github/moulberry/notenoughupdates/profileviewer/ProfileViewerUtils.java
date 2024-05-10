@@ -240,13 +240,13 @@ public class ProfileViewerUtils {
 			}
 		}
 
+		while (previousSearches.size() > (alreadySearched ? 6 : 5)) {
+			previousSearches.remove(0);
+		}
+
 		if (!alreadySearched) {
 			// The player head will be saved later when rendering, since it will the fallback to start
 			previousSearches.add(new RecentPVSearches.RecentSearch(nameLower, null));
-		}
-
-		while (previousSearches.size() > 6) {
-			previousSearches.remove(previousSearches.size() - 1);
 		}
 	}
 
