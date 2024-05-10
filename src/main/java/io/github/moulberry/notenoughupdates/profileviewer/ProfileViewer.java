@@ -522,7 +522,7 @@ public class ProfileViewer {
 
 		manager.apiUtils
 			.request()
-			.url("https://api.mojang.com/users/profiles/minecraft/" + nameLower)
+			.url("https://mowojang.matdoes.dev/users/profiles/minecraft/" + nameLower)
 			.requestJson()
 			.thenAccept(jsonObject -> {
 				if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&

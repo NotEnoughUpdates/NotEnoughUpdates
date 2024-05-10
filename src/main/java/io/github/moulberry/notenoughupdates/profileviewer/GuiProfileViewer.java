@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryPage;
+import io.github.moulberry.notenoughupdates.profileviewer.persistent.RecentPVSearches;
 import io.github.moulberry.notenoughupdates.profileviewer.rift.RiftPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
@@ -621,7 +622,7 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 		int x = guiLeft + sizeX;
 		int y = guiTop;
-		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+		List<RecentPVSearches.RecentSearch> previousProfileSearches = RecentPVSearches.INSTANCE.getRecentSearches();
 
 		if (mouseX > x && mouseX < x + 29) {
 			if (mouseY > y && mouseY < y + 28) {
@@ -634,7 +635,7 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseX > x && mouseX < x + 28) {
 				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
 					tooltipToDisplay = new ArrayList<>();
-					tooltipToDisplay.add(previousProfileSearches.get(i));
+					tooltipToDisplay.add(previousProfileSearches.get(i).getPlayername());
 				}
 			}
 		}
@@ -720,20 +721,51 @@ public class GuiProfileViewer extends GuiScreen {
 
 		boolean selected = Objects.equals(Minecraft.getMinecraft().thePlayer.getName(), playerName);
 		if (selected == renderCurrent) {
-			renderRecentPlayer(Minecraft.getMinecraft().thePlayer.getName().toLowerCase(Locale.ROOT), 0, selected);
+			renderRecentPlayer(ProfileViewerUtils.getPlayerData(Minecraft.getMinecraft().thePlayer
+				.getName()
+				.toLowerCase(Locale.ROOT)), 0, selected);
 		}
 
-		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+		List<RecentPVSearches.RecentSearch> previousProfileSearches = RecentPVSearches.INSTANCE.getRecentSearches();
 
 		for (int i = 0; i < previousProfileSearches.size(); i++) {
-			selected = Objects.equals(previousProfileSearches.get(i), playerName.toLowerCase(Locale.ROOT));
+			selected = previousProfileSearches.get(i).getPlayername().equals(playerName.toLowerCase(Locale.ROOT));
 			if (selected == renderCurrent) {
-				renderRecentPlayer(previousProfileSearches.get(i), i + 1, selected);
+				// If the skull is no longer the fallback skull, save it to disk to prevent fetching it again next time
+				if (previousProfileSearches.get(i).getPlayerHead() == null &&
+					!Objects.equals(
+						ProfileViewerUtils
+							.fallBackSkull()
+							.getTagCompound()
+							.getCompoundTag("SkullOwner")
+							.getString("Id"),
+						ProfileViewerUtils
+							.getPlayerData(previousProfileSearches.get(i).getPlayername())
+							.getTagCompound()
+							.getCompoundTag("SkullOwner")
+							.getString("Id")
+					)) {
+					previousProfileSearches.set(
+						i,
+						new RecentPVSearches.RecentSearch(
+							previousProfileSearches.get(i).getPlayername(),
+							ProfileViewerUtils.getPlayerData(previousProfileSearches.get(i).getPlayername())
+						)
+					);
+					RecentPVSearches.INSTANCE.saveRecentSearches();
+				}
+
+				// If the skull is not yet resolved, simply render the fallback skull. Saves us from having to look into the cache once more
+				if (previousProfileSearches.get(i).getPlayerHead() == null) {
+					renderRecentPlayer(ProfileViewerUtils.fallBackSkull(), i + 1, selected);
+				} else {
+					renderRecentPlayer(previousProfileSearches.get(i).getPlayerHead(), i + 1, selected);
+				}
 			}
 		}
 	}
 
-	private void renderRecentPlayer(String name, int yIndex, boolean selected) {
+	private void renderRecentPlayer(ItemStack skull, int yIndex, boolean selected) {
 		GlStateManager.disableLighting();
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -773,9 +805,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 		GlStateManager.enableDepth();
 
-		ItemStack playerHead = ProfileViewerUtils.getPlayerData(name);
-
-		Utils.drawItemStack(playerHead, x + 3, y + 6);
+		Utils.drawItemStack(skull, x + 3, y + 6);
 	}
 
 	@Override
@@ -824,7 +854,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 		int x = guiLeft + sizeX;
 		int y = guiTop;
-		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+		List<RecentPVSearches.RecentSearch> previousProfileSearches = RecentPVSearches.INSTANCE.getRecentSearches();
 
 		if (mouseX > x && mouseX < x + 29) {
 			if (mouseY > y && mouseY < y + 28) {
@@ -840,8 +870,8 @@ public class GuiProfileViewer extends GuiScreen {
 		for (int i = 0; i < previousProfileSearches.size(); i++) {
 			if (mouseX > x && mouseX < x + 28) {
 				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
-					if (!playerName.equals(previousProfileSearches.get(i))) {
-						NotEnoughUpdates.profileViewer.loadPlayerByName(previousProfileSearches.get(i), profile -> {
+					if (!playerName.equals(previousProfileSearches.get(i).getPlayername())) {
+						NotEnoughUpdates.profileViewer.loadPlayerByName(previousProfileSearches.get(i).getPlayername(), profile -> {
 							profile.resetCache();
 							NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
 						});

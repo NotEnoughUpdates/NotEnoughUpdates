@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.profileviewer.persistent.RecentPVSearches;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -227,15 +228,29 @@ public class ProfileViewerUtils {
 		if (username == null) return;
 		String nameLower = username.toLowerCase(Locale.ROOT);
 		if (nameLower.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase(Locale.ROOT))) return;
-		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
-		previousProfileSearches.remove(nameLower);
-		previousProfileSearches.add(0, nameLower);
-		while (previousProfileSearches.size() > 6) {
-			previousProfileSearches.remove(previousProfileSearches.size() - 1);
+		List<RecentPVSearches.RecentSearch> previousSearches = RecentPVSearches.INSTANCE.getRecentSearches();
+
+		boolean alreadySearched = false;
+		for (RecentPVSearches.RecentSearch recentSearch : previousSearches) {
+			if (nameLower.equals(recentSearch.getPlayername())) {
+				previousSearches.remove(recentSearch);
+				previousSearches.add(recentSearch);
+				alreadySearched = true;
+				break;
+			}
+		}
+
+		if (!alreadySearched) {
+			// The player head will be saved later when rendering, since it will the fallback to start
+			previousSearches.add(new RecentPVSearches.RecentSearch(nameLower, null));
+		}
+
+		while (previousSearches.size() > 6) {
+			previousSearches.remove(previousSearches.size() - 1);
 		}
 	}
 
-	private static ItemStack fallBackSkull() {
+	public static ItemStack fallBackSkull() {
 		return Utils.createSkull(
 			"Simon",
 			"f3c4dfb91c7b40ac81fd462538538523",

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -41,6 +42,22 @@ public class ConfigUtil {
 
 	public static <T> @Nullable T loadConfig(Class<T> configClass, File file, Gson gson, boolean useGzip) {
 		return loadConfig(configClass, file, gson, useGzip, true);
+	}
+
+	public static <T> @Nullable T loadConfigWithTypeToken(Type type, File file, Gson gson) {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(
+				Files.newInputStream(file.toPath()),
+				StandardCharsets.UTF_8
+			));
+		} catch (IOException e) {
+			System.out.println("Failed to load config file: " + file.getAbsolutePath());
+		}
+		if (reader == null) {
+			return null;
+		}
+		return gson.fromJson(reader, type);
 	}
 
 	public static <T> @Nullable T loadConfig(
