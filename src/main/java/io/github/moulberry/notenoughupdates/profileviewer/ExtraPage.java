@@ -128,17 +128,15 @@ public class ExtraPage extends GuiProfileViewerPage {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
 		// Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
-		if (!onHoppityPage) {
-			if (mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 &&
-				mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 &&
-				mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
-				getInstance().killDeathSearchTextField.mouseClicked(mouseX, mouseY, mouseButton);
-				getInstance().playerNameTextField.otherComponentClick();
-				return true;
-			}
-
-			getInstance().killDeathSearchTextField.otherComponentClick();
+		if (mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 &&
+			mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 &&
+			mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
+			getInstance().killDeathSearchTextField.mouseClicked(mouseX, mouseY, mouseButton);
+			getInstance().playerNameTextField.otherComponentClick();
+			return true;
 		}
+
+		getInstance().killDeathSearchTextField.otherComponentClick();
 
 		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
