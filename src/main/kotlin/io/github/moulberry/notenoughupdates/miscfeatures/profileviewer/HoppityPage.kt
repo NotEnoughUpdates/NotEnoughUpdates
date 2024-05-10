@@ -58,6 +58,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private var rawChocolatePerSecond = 0
     private var multiplier = 0.0
     private var chocolatePerSecond = 0.0
+    private var talisman: String? = null
+    private var talismanChocolate = 0
 
     private val rabbitToRarity = mutableMapOf<String, String>()
 
@@ -108,26 +110,35 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         GlStateManager.enableDepth()
 
-        Utils.renderAlignedString(
+        drawAlignedStringWithHover(
             "§eChocolate:",
-            "§f${StringUtils.formatNumber(currentChocolate)}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 53).toFloat(),
-            110
+            "§f${StringUtils.shortNumberFormat(currentChocolate.toDouble())}",
+            guiLeft + 160,
+            guiTop + 53,
+            110,
+            mouseX,
+            mouseY,
+            listOf("§eCurrent Chocolate: §f${StringUtils.formatNumber(currentChocolate)}")
         )
-        Utils.renderAlignedString(
-            "§eThis Prestige:",
-            "§f${StringUtils.formatNumber(prestigeChocolate)}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 68).toFloat(),
-            110
+        drawAlignedStringWithHover(
+            "§eChocolate Since Prestige:",
+            "§f${StringUtils.shortNumberFormat(prestigeChocolate.toDouble())}",
+            guiLeft + 160,
+            guiTop + 68,
+            110,
+            mouseX,
+            mouseY,
+            listOf("§eChocolate Since Prestige: §f${StringUtils.formatNumber(prestigeChocolate)}")
         )
-        Utils.renderAlignedString(
+        drawAlignedStringWithHover(
             "§eAll Time:",
-            "§f${StringUtils.formatNumber(allTimeChocolate)}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 83).toFloat(),
-            110
+            "§f${StringUtils.shortNumberFormat(allTimeChocolate.toDouble())}",
+            guiLeft + 160,
+            guiTop + 83,
+            110,
+            mouseX,
+            mouseY,
+            listOf("§eAll Time Chocolate: §f${StringUtils.formatNumber(allTimeChocolate)}")
         )
         Utils.renderAlignedString(
             "§etitle:",
@@ -187,6 +198,22 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             tooltipToDisplay = tooltipToDisplay.map { "§7$it" }
             Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, instance.width, instance.height, -1)
             tooltipToDisplay = listOf()
+        }
+    }
+
+    private fun drawAlignedStringWithHover(
+        first: String,
+        second: String,
+        x: Int,
+        y: Int,
+        length: Int,
+        mouseX: Int,
+        mouseY: Int,
+        hover: List<String>,
+    ) {
+        Utils.renderAlignedString(first, second, x.toFloat(), y.toFloat(), length)
+        if (mouseX in x..(x + length) && mouseY in y..(y + 13)) {
+            tooltipToDisplay = hover
         }
     }
 
@@ -397,10 +424,13 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val rabbitRarities = hoppityData.getAsJsonObject("rarities") ?: return
         val specialRabbits = hoppityData.getAsJsonObject("special") ?: return
         val prestigeMultipliers = hoppityData.getAsJsonObject("prestigeMultipliers") ?: return
+        val talismanChocolateData = hoppityData.getAsJsonObject("talisman") ?: return
 
         val foundMythicRabbits = mutableSetOf<String>()
 
         val hoppityInfo = Utils.getElementOrDefault(selectedProfile, "events.easter", JsonObject()).asJsonObject
+
+        getTalismanTier(talismanChocolateData)
 
         for (rarity in rabbitRarities.entrySet()) {
             val rarityName = rarity.key
@@ -445,8 +475,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         totalRabbit.chocolatePerSecond = RabbitCollectionRarity.values().sumOf { it.chocolatePerSecond }
         totalRabbit.multiplier = RabbitCollectionRarity.values().sumOf { it.multiplier }
         totalRabbit.maximum = RabbitCollectionRarity.values().sumOf { it.maximum }
-
-        RabbitCollectionRarity.printData()
 
         rabbitFamilyInfo.clear()
         factoryModifiersInfo.clear()
@@ -553,11 +581,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 "Rabbit Barn"
             )
         )
+        val shownTalismanItem = talisman?.let { manager.createItem(it) } ?: talismanItem
 
-        // todo get talisman
         otherModifiersInfo.add(
             UpgradeInfo(
-                talisman,
+                shownTalismanItem,
                 0,
                 UpgradeType.TALISMAN,
                 "tempname"
@@ -574,17 +602,47 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val rabbitMultiplier = RabbitCollectionRarity.TOTAL.multiplier
         multiplier = baseMultiplier + prestigeMultiplier + coachMultiplier + rabbitMultiplier
 
-        // todo talisman cps
-        val talismanChocolate = 0
         val rabbitChocolate = RabbitCollectionRarity.TOTAL.chocolatePerSecond
         val employeeChocolate = rabbitFamilyInfo.sumOf { it.extraCps * it.level }
         rawChocolatePerSecond = rabbitChocolate + employeeChocolate + talismanChocolate
 
         chocolatePerSecond = rawChocolatePerSecond * multiplier
+    }
 
-        println("Raw CPS: $rawChocolatePerSecond")
-        println("Multiplier: $multiplier")
-        println("CPS: $chocolatePerSecond")
+    private fun getTalismanTier(talismanChocolateData: JsonObject) {
+        talisman = null
+        var bestTalisman: String? = null
+        var bestTalismanCps = 0
+
+        val playerItems = GuiProfileViewer.getSelectedProfile()?.inventoryInfo ?: return
+        val talismanInventory = playerItems["talisman_bag"] ?: return
+        val playerInventory = playerItems["inv_contents"] ?: return
+
+        for (item in talismanInventory) {
+            if (item.isJsonNull) continue
+            val internalName = item.asJsonObject.get("internalname").asString
+            if (talismanChocolateData.has(internalName)) {
+                val cps = talismanChocolateData.get(internalName).asInt
+                if (cps > bestTalismanCps) {
+                    bestTalisman = internalName
+                    bestTalismanCps = cps
+                }
+            }
+        }
+
+        for (item in playerInventory) {
+            if (item.isJsonNull) continue
+            val internalName = item.asJsonObject.get("internalname").asString
+            if (talismanChocolateData.has(internalName)) {
+                val cps = talismanChocolateData.get(internalName).asInt
+                if (cps > bestTalismanCps) {
+                    bestTalisman = internalName
+                    bestTalismanCps = cps
+                }
+            }
+        }
+        println("best talisman: $bestTalisman, cps: $bestTalismanCps")
+        talisman = bestTalisman
     }
 
     private val rabbitBro: ItemStack = Utils.createSkull(
@@ -624,7 +682,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
     private val prestigeItem = ItemStack(Blocks.dropper)
     private val rabbitBarn = ItemStack(Blocks.oak_fence)
-    private val talisman = ItemStack(Blocks.barrier)
+    private val talismanItem = ItemStack(Items.dye, 1, 8)
 
     data class UpgradeInfo(
         val stack: ItemStack,
@@ -778,7 +836,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         companion object {
             fun fromApiName(apiName: String): RabbitCollectionRarity? {
-                println("apiName: $apiName")
                 return values().firstOrNull { it.apiName.lowercase() == apiName }
             }
 
@@ -789,12 +846,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                     it.chocolatePerSecond = 0
                     it.multiplier = 0.0
                     it.maximum = 0
-                }
-            }
-
-            fun printData() {
-                values().forEach {
-                    println("${it.apiName}: ${it.uniques} ${it.duplicates} ${it.chocolatePerSecond} ${it.multiplier}")
                 }
             }
         }
