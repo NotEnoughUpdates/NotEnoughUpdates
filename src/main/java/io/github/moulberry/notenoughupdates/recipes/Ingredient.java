@@ -23,14 +23,16 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
-import io.github.moulberry.notenoughupdates.util.TwoKeyCache;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import javafx.util.Pair;
 import net.minecraft.item.ItemStack;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class Ingredient {
 
@@ -41,7 +43,7 @@ public class Ingredient {
 
 	private static final Map<String, Ingredient> itemCache = new HashMap<>();
 	private static final Map<Integer, Ingredient> itemCoinCache = new HashMap<>();
-	private static final TwoKeyCache<String, Double, Ingredient> itemAmountCache = new TwoKeyCache<>();
+	private static final Map<Pair<String, Double>, WeakReference<Ingredient>> itemAmountCache = new HashMap<>();
 
 	public static Ingredient ingredient(String ingredientIdentifier) {
 		return Utils.getOrPut(itemCache, ingredientIdentifier,
@@ -62,9 +64,11 @@ public class Ingredient {
 	}
 
 	public static Ingredient ingredient(String ingredientIdentifier, double count) {
-		return itemAmountCache.getOrPut(ingredientIdentifier, count,
-			() -> new Ingredient(ingredientIdentifier, count)
-		);
+		Supplier<WeakReference<Ingredient>> defaultValueSupplier = () ->
+			new WeakReference<>(new Ingredient(ingredientIdentifier, count)
+			);
+		Pair<String, Double> key = new Pair<>(ingredientIdentifier, count);
+		return Utils.getOrPut(itemAmountCache, key, defaultValueSupplier).get();
 	}
 
 	private Ingredient(String internalItemId, double count) {
