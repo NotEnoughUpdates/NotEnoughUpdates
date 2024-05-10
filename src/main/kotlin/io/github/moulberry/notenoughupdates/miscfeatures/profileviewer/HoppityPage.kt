@@ -130,19 +130,24 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110
         )
         Utils.renderAlignedString(
-            "§eFactory Level:",
+            "§etitle:",
             "§f$prestigeLevel",
             (guiLeft + 160).toFloat(),
             (guiTop + 98).toFloat(),
             110
         )
-        Utils.renderAlignedString(
-            "§eBarn Capacity:",
-            "§f${RabbitCollectionRarity.TOTAL.uniques}/$barnCapacity",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 113).toFloat(),
-            110
-        )
+
+        fun chocolateToNextPrestige(): Float {
+            return when (prestigeLevel) {
+                1 -> prestigeChocolate.toFloat() / 150_000_000
+                2 -> prestigeChocolate.toFloat() / 1_000_000_000
+                3 -> prestigeChocolate.toFloat() / 4_000_000_000
+                4 -> prestigeChocolate.toFloat() / 10_000_000_000
+                else -> 1f
+            }
+        }
+        instance.renderBar(guiLeft + 160.toFloat(), guiTop + 109.toFloat(), 110f, chocolateToNextPrestige())
+
         Utils.renderAlignedString(
             "§eMultiplier:",
             "§f${multiplier.roundToDecimals(3)}",
@@ -172,9 +177,9 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110
         )
 
-        rabbitFamilyInfo.displayInfo(22, 34)
-        factoryModifiersInfo.displayInfo(31, 96)
-        otherModifiersInfo.displayInfo(44, 158)
+        rabbitFamilyInfo.displayInfo(20, 34, mouseX, mouseY)
+        factoryModifiersInfo.displayInfo(31, 96, mouseX, mouseY)
+        otherModifiersInfo.displayInfo(42, 158, mouseX, mouseY)
 
         drawRabbitStats(mouseX, mouseY)
 
@@ -185,13 +190,13 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         }
     }
 
-    private fun List<UpgradeInfo>.displayInfo(xPos: Int, yPos: Int) {
+    private fun List<UpgradeInfo>.displayInfo(xPos: Int, yPos: Int, mouseX: Int, mouseY: Int) {
         var x = guiLeft + xPos
         val y = guiTop + yPos
 
         this.forEach { upgradeInfo ->
             Utils.drawStringCentered(
-                "§7${upgradeInfo.level}§f",
+                "${upgradeInfo.colourCode}${upgradeInfo.level}§f",
                 x + 10,
                 y + 26,
                 true,
@@ -213,9 +218,118 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
             Utils.drawItemStack(upgradeInfo.stack, x + 2, y + 2)
 
+            if (mouseX in x..(x + 20) && mouseY in y..(y + 20)) {
+                val tooltip = when (upgradeInfo.upgradeType) {
+
+                    UpgradeType.RABBIT_EMPLOYEES -> {
+                        if (upgradeInfo.level == 0) {
+                            fallbackList
+                        } else {
+                            buildList {
+                                add("${upgradeInfo.colourCode}${upgradeInfo.displayName} §8- §7[${upgradeInfo.level}] ${upgradeInfo.colourCode}${upgradeInfo.suffixName}")
+                                add("")
+                                add("§7Produces §6+${upgradeInfo.level * upgradeInfo.extraCps} Chocolate §7per second.")
+                            }
+                        }
+                    }
+
+                    UpgradeType.HAND_BAKED_CHOCOLATE -> {
+                        if (upgradeInfo.level == 0) {
+                            fallbackList
+                        } else {
+                            buildList {
+                                add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
+                                add("")
+                                add("§7Chocolate Per Click: §6+${upgradeInfo.level} Chocolate")
+                            }
+                        }
+                    }
+
+                    UpgradeType.TIME_TOWER -> {
+                        if (upgradeInfo.level == 0) {
+                            fallbackList
+                        } else {
+                            buildList {
+                                add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
+                                add("")
+                                add("§6+${upgradeInfo.level * 0.1}x Chocolate §7per second for §a1h§7.")
+                            }
+                        }
+                    }
+
+                    UpgradeType.RABBIT_SHRINE -> {
+                        if (upgradeInfo.level == 0) {
+                            fallbackList
+                        } else {
+                            buildList {
+                                add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
+                                add("")
+                                add("§7Increases §dodds §7of finding")
+                                add("§aChocolate Rabbits §7of higher rarity")
+                                add("§7by ${upgradeInfo.level}% §7during §dHoppity's Hunt§7.")
+
+                            }
+                        }
+                    }
+
+                    UpgradeType.COACH_JACKRABBIT -> {
+                        if (upgradeInfo.level == 0) {
+                            fallbackList
+                        } else {
+                            buildList {
+                                add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
+                                add("")
+                                add("§7Chocolate Multiplier increased by")
+                                add("§6+${upgradeInfo.level * 0.01}x Chocolate §7per second.")
+                            }
+                        }
+                    }
+
+                    UpgradeType.CHOCOLATE_FACTORY -> {
+                        buildList {
+                            add("§6${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
+                            upgradeInfo.chocolateFactoryTooltip.lines().forEach {
+                                add(it)
+                            }
+                        }
+                    }
+
+                    UpgradeType.RABBIT_BARN -> {
+                        if (upgradeInfo.level == 0) {
+                            buildList {
+                                add("§a${upgradeInfo.displayName} I")
+                                add("§7Barn: §a${RabbitCollectionRarity.TOTAL.uniques}§7/§a20")
+                                add("")
+                            }
+                        } else {
+                            buildList {
+                                add("§a${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
+                                add("§7Rabbit Barn: §a${RabbitCollectionRarity.TOTAL.uniques}§7/§a${(upgradeInfo.level * 2) + 18}")
+                            }
+                        }
+                    }
+
+                    UpgradeType.TALISMAN -> {
+                        buildList {
+                            add("")
+                        }
+                    }
+
+                    UpgradeType.OTHER -> buildList {
+                        add("§d§l:3")
+                    }
+                }
+                tooltipToDisplay = tooltip
+            }
             x += 22
         }
     }
+
+    private val fallbackList
+        get() = listOf(
+            "§7Not Obtained Yet!",
+            "§8${GuiProfileViewer.getDisplayName()} §8hasn't obtained this yet"
+        )
 
     private fun drawRabbitStats(mouseX: Int, mouseY: Int) {
         val x = guiLeft + 296
@@ -243,16 +357,26 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 GL11.GL_NEAREST
             )
 
-            if (mouseX in x..(x + 110) && mouseY in y..(y + 20)) {
-                val tooltip = buildList {
-                    add("§7${rabbitInfo.displayName} Rabbits")
-                    add("")
-                    add("§7Unique Rabbits: §a${rabbitInfo.uniques}/${rabbitInfo.maximum}")
-                    add("§7Duplicate Rabbits: §a${rabbitInfo.duplicates}")
-                    add("§7Total Rabbits Found: §a${rabbitInfo.uniques + rabbitInfo.duplicates}")
-                    add("")
-                    add("§7Chocolate Per Second: §a${rabbitInfo.chocolatePerSecond}")
-                    add("§7Chocolate Multiplier: §a${rabbitInfo.multiplier.roundToDecimals(3)}")
+            if (mouseX in x..(x + 120) && mouseY in y..(y + 20)) {
+                val tooltip = if (rabbitInfo.uniques < 1) {
+                    buildList {
+                        add("§l${rabbitInfo.displayName} Rabbits")
+                        if (rabbitInfo == RabbitCollectionRarity.TOTAL) {
+                            add("§8${GuiProfileViewer.getDisplayName()} hasn't found any rabbits.")
+                        } else {
+                            add("§8${GuiProfileViewer.getDisplayName()} hasn't found any ${rabbitInfo.apiName} rabbits.")
+                        }
+                    }
+                } else {
+                    buildList {
+                        add("§l${rabbitInfo.displayName} Rabbits")
+                        add("${rabbitInfo.apiName} rabbits found: §a${rabbitInfo.uniques}§7/§a${rabbitInfo.maximum}")
+                        add("Duplicate Rabbits: §a${rabbitInfo.duplicates}")
+                        add("Total Rabbits Found: §a${rabbitInfo.uniques + rabbitInfo.duplicates}")
+                        add("")
+                        add("§6+${rabbitInfo.chocolatePerSecond} Chocolate §7per second.")
+                        add("§6+${rabbitInfo.multiplier.roundToDecimals(3)}x Chocolate §7per second.")
+                    }
                 }
                 tooltipToDisplay = tooltip
             }
@@ -335,26 +459,115 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val barnLevel = hoppityInfo.getIntOrValue("rabbit_barn_capacity_level", 0)
         barnCapacity = barnLevel * 2 + 20
 
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitBro, employeesInfo.getIntOrValue("rabbit_bro", 0), 1))
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitCousin, employeesInfo.getIntOrValue("rabbit_cousin", 0), 2))
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitSis, employeesInfo.getIntOrValue("rabbit_sis", 0), 3))
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitDaddy, employeesInfo.getIntOrValue("rabbit_father", 0), 4))
-        rabbitFamilyInfo.add(UpgradeInfo(rabbitGranny, employeesInfo.getIntOrValue("rabbit_grandma", 0), 5))
+        rabbitFamilyInfo.add(
+            UpgradeInfo(
+                rabbitBro,
+                employeesInfo.getIntOrValue("rabbit_bro", 0),
+                UpgradeType.RABBIT_EMPLOYEES,
+                "Rabbit Bro",
+                1
+            )
+        )
+        rabbitFamilyInfo.add(
+            UpgradeInfo(
+                rabbitCousin,
+                employeesInfo.getIntOrValue("rabbit_cousin", 0),
+                UpgradeType.RABBIT_EMPLOYEES,
+                "Rabbit Cousin",
+                2
+            )
+        )
+        rabbitFamilyInfo.add(
+            UpgradeInfo(
+                rabbitSis,
+                employeesInfo.getIntOrValue("rabbit_sis", 0),
+                UpgradeType.RABBIT_EMPLOYEES,
+                "Rabbit Sis",
+                3
+            )
+        )
+        rabbitFamilyInfo.add(
+            UpgradeInfo(
+                rabbitDaddy,
+                employeesInfo.getIntOrValue("rabbit_father", 0),
+                UpgradeType.RABBIT_EMPLOYEES,
+                "Rabbit Daddy",
+                4
+            )
+        )
+        rabbitFamilyInfo.add(
+            UpgradeInfo(
+                rabbitGranny,
+                employeesInfo.getIntOrValue("rabbit_grandma", 0),
+                UpgradeType.RABBIT_EMPLOYEES,
+                "Rabbit Granny",
+                5,
+            )
+        )
 
-        factoryModifiersInfo.add(UpgradeInfo(handBaked, hoppityInfo.getIntOrValue("click_upgrades", 0) + 1))
-        factoryModifiersInfo.add(UpgradeInfo(timeTower, timeTowerInfo.getIntOrValue("level", 0)))
-        factoryModifiersInfo.add(UpgradeInfo(rabbitShrine, hoppityInfo.getIntOrValue("rabbit_rarity_upgrades", 0)))
-        factoryModifiersInfo.add(UpgradeInfo(coachJackrabbit, coachLevel, extraMultiplier = 0.01))
+        factoryModifiersInfo.add(
+            UpgradeInfo(
+                handBaked,
+                hoppityInfo.getIntOrValue("click_upgrades", 0) + 1,
+                UpgradeType.HAND_BAKED_CHOCOLATE,
+                "Hand-Baked Chocolate"
+            )
+        )
+        factoryModifiersInfo.add(
+            UpgradeInfo(
+                timeTower,
+                timeTowerInfo.getIntOrValue("level", 0),
+                UpgradeType.TIME_TOWER,
+                "Time Tower"
+            )
+        )
+        factoryModifiersInfo.add(
+            UpgradeInfo(
+                rabbitShrine,
+                hoppityInfo.getIntOrValue("rabbit_rarity_upgrades", 0),
+                UpgradeType.RABBIT_SHRINE,
+                "Rabbit Shrine"
+            )
+        )
+        factoryModifiersInfo.add(
+            UpgradeInfo(
+                coachJackrabbit,
+                coachLevel,
+                UpgradeType.COACH_JACKRABBIT,
+                "Coach Jackrabbit"
+            )
+        )
+        otherModifiersInfo.add(
+            UpgradeInfo(
+                prestigeItem,
+                hoppityInfo.getIntOrValue("chocolate_level", 1),
+                UpgradeType.CHOCOLATE_FACTORY,
+                "Chocolate Factory"
+            )
+        )
+        otherModifiersInfo.add(
+            UpgradeInfo(
+                rabbitBarn,
+                barnLevel,
+                UpgradeType.RABBIT_BARN,
+                "Rabbit Barn"
+            )
+        )
 
-        otherModifiersInfo.add(UpgradeInfo(prestigeItem, hoppityInfo.getIntOrValue("chocolate_level", 0)))
-        otherModifiersInfo.add(UpgradeInfo(rabbitBarn, barnLevel))
         // todo get talisman
-        otherModifiersInfo.add(UpgradeInfo(talisman, 0))
+        otherModifiersInfo.add(
+            UpgradeInfo(
+                talisman,
+                0,
+                UpgradeType.TALISMAN,
+                "tempname"
+            )
+        )
 
         currentChocolate = hoppityInfo.getLongOrValue("chocolate", 0)
         prestigeChocolate = hoppityInfo.getLongOrValue("chocolate_since_prestige", 0)
         allTimeChocolate = hoppityInfo.getLongOrValue("total_chocolate", 0)
-        prestigeLevel = hoppityInfo.getIntOrValue("chocolate_level", 0)
+        prestigeLevel = hoppityInfo.getIntOrValue("chocolate_level", 1)
 
         val prestigeMultiplier = prestigeMultipliers.get(prestigeLevel.toString()).asDouble
         val coachMultiplier = 0.01 * coachLevel
@@ -416,9 +629,86 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     data class UpgradeInfo(
         val stack: ItemStack,
         val level: Int,
-        val extraCps: Int = 0,
-        val extraMultiplier: Double = 0.0,
-    )
+        val upgradeType: UpgradeType,
+        var displayName: String,
+        val extraCps: Int = 0
+    ) {
+        val colourCode: String
+            get() {
+                if (upgradeType == UpgradeType.RABBIT_EMPLOYEES) {
+                    return when (level) {
+                        in (0..9) -> "§f"
+                        in (10..74) -> "§a"
+                        in (75..124) -> "§9"
+                        in (125..174) -> "§5"
+                        in (175..199) -> "§6"
+                        200 -> "§d"
+                        else -> "§7"
+                    }
+                }
+                return "§7"
+            }
+        val suffixName: String
+            get() {
+                if (upgradeType == UpgradeType.RABBIT_EMPLOYEES) {
+                    return when (level) {
+                        in (0..9) -> "Intern"
+                        in (10..74) -> "Employee"
+                        in (75..124) -> "Assistant"
+                        in (125..174) -> "Manager"
+                        in (175..199) -> "Director"
+                        200 -> "Executive"
+                        else -> ""
+                    }
+                }
+                return ""
+            }
+        val chocolateFactoryTooltip: String
+            get() {
+                if (upgradeType == UpgradeType.CHOCOLATE_FACTORY) {
+                    return when (level) {
+                        1 -> "§7Chocolate Production Multiplier: §61x\n" +
+                                "§7Max Rabbit Rarity: §a§lUNCOMMON\n" +
+                                "§7Max Chocolate: §6500M\n" +
+                                "§7Max Employee: [120] §9Assistant"
+
+                        2 -> "Chocolate Production Multiplier: §61.1x\n" +
+                                "Max Rabbit Rarity: §9§lRARE\n" +
+                                "Max Chocolate: §61.2B\n" +
+                                "Max Employee: [140] §5Manager"
+
+                        3 -> "Chocolate Production Multiplier: §61.25x\n" +
+                                "Max Rabbit Rarity: §5§lEPIC\n" +
+                                "Max Chocolate: §64B\n" +
+                                "Max Employee: [160] §5Manager"
+
+                        4 -> "Chocolate Production Multiplier: §61.5x\n" +
+                                "Max Rabbit Rarity: §6§lLEGENDARY\n" +
+                                "Max Chocolate: §610B\n" +
+                                "Max Employee: [180] §6Director"
+
+                        5 -> "Chocolate Production Multiplier: §62x\n" +
+                                "Max Rabbit Rarity: §d§lMYTHIC\n" +
+                                "Max Chocolate: §625B\n" +
+                                "Max Employee: [200] §dExecutive"
+                        else -> ""
+                    }
+                }
+                return ""
+            }
+    }
+
+    enum class UpgradeType {
+        RABBIT_EMPLOYEES,
+        HAND_BAKED_CHOCOLATE,
+        TIME_TOWER,
+        RABBIT_SHRINE,
+        COACH_JACKRABBIT,
+        CHOCOLATE_FACTORY,
+        RABBIT_BARN,
+        TALISMAN,
+        OTHER
+    }
 
     companion object {
         private val totalRabbit: ItemStack = Utils.createSkull(

@@ -707,7 +707,7 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawItemStack(stack, x + 6, y + 9);
 	}
 
-	private static String getDisplayName() {
+	public static String getDisplayName() {
 		return Utils.getElementOrDefault(
 			profile.getHypixelProfile(),
 			"displayname",
