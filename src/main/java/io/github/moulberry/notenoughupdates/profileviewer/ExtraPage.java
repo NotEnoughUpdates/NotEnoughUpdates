@@ -151,7 +151,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				break;
 		}
 
-		return hoppityPage.mouseClicked(mouseX, mouseY, mouseButton);
+		return false;
 	}
 
 	public void drawEssence(
