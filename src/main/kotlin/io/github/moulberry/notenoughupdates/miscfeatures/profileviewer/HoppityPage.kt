@@ -121,7 +121,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             listOf("§eCurrent Chocolate: §f${StringUtils.formatNumber(currentChocolate)}")
         )
         drawAlignedStringWithHover(
-            "§eChocolate Since Prestige:",
+            "§eSince Prestige:",
             "§f${StringUtils.shortNumberFormat(prestigeChocolate.toDouble())}",
             guiLeft + 160,
             guiTop + 68,
@@ -140,28 +140,49 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             mouseY,
             listOf("§eAll Time Chocolate: §f${StringUtils.formatNumber(allTimeChocolate)}")
         )
+        fun chocolateForNextPrestige(): Long {
+            return when (prestigeLevel) {
+                1 -> 150_000_000
+                2 -> 1_000_000_000
+                3 -> 4_000_000_000
+                4 -> 10_000_000_000
+                else -> 1
+            }
+        }
+
         Utils.renderAlignedString(
-            "§etitle:",
-            "§f$prestigeLevel",
+            "§eUntil Prestige:",
+            "§f${StringUtils.shortNumberFormat(chocolateForNextPrestige().toDouble() - prestigeChocolate.toDouble())}",
             (guiLeft + 160).toFloat(),
             (guiTop + 98).toFloat(),
             110
         )
-
-        fun chocolateToNextPrestige(): Float {
-            return when (prestigeLevel) {
-                1 -> prestigeChocolate.toFloat() / 150_000_000
-                2 -> prestigeChocolate.toFloat() / 1_000_000_000
-                3 -> prestigeChocolate.toFloat() / 4_000_000_000
-                4 -> prestigeChocolate.toFloat() / 10_000_000_000
-                else -> 1f
-            }
+        val chocolateTilPrestigePercentage = (prestigeChocolate.toFloat() / chocolateForNextPrestige()).coerceIn(0f, 1f)
+        if (chocolateTilPrestigePercentage != 1f) {
+            instance.renderGoldBar(guiLeft + 160.toFloat(), guiTop + 109.toFloat(), 110f)
+        } else {
+            instance.renderBar(guiLeft + 160.toFloat(), guiTop + 109.toFloat(), 110f, chocolateTilPrestigePercentage)
         }
-        instance.renderBar(guiLeft + 160.toFloat(), guiTop + 109.toFloat(), 110f, chocolateToNextPrestige())
+
+        val xBar = guiLeft + 160
+        val yBar = guiTop + 109
+        if (mouseX in xBar..(xBar + 110) && mouseY in yBar..(yBar + 5)) {
+                tooltipToDisplay = buildList {
+                    add("§6${StringUtils.formatNumber(prestigeChocolate)}§7/§6${StringUtils.formatNumber(chocolateForNextPrestige())}")
+                }
+        }
+
+        Utils.renderAlignedString(
+            "§eLast Updated:",
+            "§f${prestigeChocolate} umm uhh  umm uhh  umm uhh ",
+            (guiLeft + 160).toFloat(),
+            (guiTop + 117).toFloat(),
+            110
+        )
 
         Utils.renderAlignedString(
             "§eMultiplier:",
-            "§f${multiplier.roundToDecimals(3)}",
+            "§f${multiplier.roundToDecimals(3)}x",
             (guiLeft + 160).toFloat(),
             (guiTop + 133).toFloat(),
             110
@@ -280,6 +301,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                                 add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
                                 add("")
                                 add("§6+${upgradeInfo.level * 0.1}x Chocolate §7per second for §a1h§7.")
+                                add("Time Tower charges ${TODO()}")
                             }
                         }
                     }
@@ -326,7 +348,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                             buildList {
                                 add("§a${upgradeInfo.displayName} I")
                                 add("§7Barn: §a${RabbitCollectionRarity.TOTAL.uniques}§7/§a20")
-                                add("")
                             }
                         } else {
                             buildList {
