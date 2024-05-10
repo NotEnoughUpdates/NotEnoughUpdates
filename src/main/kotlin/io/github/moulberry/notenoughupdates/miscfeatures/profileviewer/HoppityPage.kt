@@ -108,26 +108,35 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         GlStateManager.enableDepth()
 
-        Utils.renderAlignedString(
+        drawAlignedStringWithHover(
             "§eChocolate:",
-            "§f${StringUtils.formatNumber(currentChocolate)}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 53).toFloat(),
-            110
+            "§f${StringUtils.shortNumberFormat(currentChocolate.toDouble())}",
+            guiLeft + 160,
+            guiTop + 53,
+            110,
+            mouseX,
+            mouseY,
+            listOf("§eCurrent Chocolate: §f${StringUtils.formatNumber(currentChocolate)}")
         )
-        Utils.renderAlignedString(
-            "§eThis Prestige:",
-            "§f${StringUtils.formatNumber(prestigeChocolate)}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 68).toFloat(),
-            110
+        drawAlignedStringWithHover(
+            "§eChocolate Since Prestige:",
+            "§f${StringUtils.shortNumberFormat(prestigeChocolate.toDouble())}",
+            guiLeft + 160,
+            guiTop + 68,
+            110,
+            mouseX,
+            mouseY,
+            listOf("§eChocolate Since Prestige: §f${StringUtils.formatNumber(prestigeChocolate)}")
         )
-        Utils.renderAlignedString(
+        drawAlignedStringWithHover(
             "§eAll Time:",
-            "§f${StringUtils.formatNumber(allTimeChocolate)}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 83).toFloat(),
-            110
+            "§f${StringUtils.shortNumberFormat(allTimeChocolate.toDouble())}",
+            guiLeft + 160,
+            guiTop + 83,
+            110,
+            mouseX,
+            mouseY,
+            listOf("§eAll Time Chocolate: §f${StringUtils.formatNumber(allTimeChocolate)}")
         )
         Utils.renderAlignedString(
             "§eFactory Level:",
@@ -182,6 +191,22 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             tooltipToDisplay = tooltipToDisplay.map { "§7$it" }
             Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, instance.width, instance.height, -1)
             tooltipToDisplay = listOf()
+        }
+    }
+
+    private fun drawAlignedStringWithHover(
+        first: String,
+        second: String,
+        x: Int,
+        y: Int,
+        length: Int,
+        mouseX: Int,
+        mouseY: Int,
+        hover: List<String>,
+    ) {
+        Utils.renderAlignedString(first, second, x.toFloat(), y.toFloat(), length)
+        if (mouseX in x..(x + length) && mouseY in y..(y + 13)) {
+            tooltipToDisplay = hover
         }
     }
 
@@ -243,7 +268,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 GL11.GL_NEAREST
             )
 
-            if (mouseX in x..(x + 110) && mouseY in y..(y + 20)) {
+            if (mouseX in x..(x + 120) && mouseY in y..(y + 20)) {
                 val tooltip = buildList {
                     add("§7${rabbitInfo.displayName} Rabbits")
                     add("")
@@ -322,8 +347,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         totalRabbit.multiplier = RabbitCollectionRarity.values().sumOf { it.multiplier }
         totalRabbit.maximum = RabbitCollectionRarity.values().sumOf { it.maximum }
 
-        RabbitCollectionRarity.printData()
-
         rabbitFamilyInfo.clear()
         factoryModifiersInfo.clear()
         otherModifiersInfo.clear()
@@ -344,7 +367,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         factoryModifiersInfo.add(UpgradeInfo(handBaked, hoppityInfo.getIntOrValue("click_upgrades", 0) + 1))
         factoryModifiersInfo.add(UpgradeInfo(timeTower, timeTowerInfo.getIntOrValue("level", 0)))
         factoryModifiersInfo.add(UpgradeInfo(rabbitShrine, hoppityInfo.getIntOrValue("rabbit_rarity_upgrades", 0)))
-        factoryModifiersInfo.add(UpgradeInfo(coachJackrabbit, coachLevel, extraMultiplier = 0.01))
+        factoryModifiersInfo.add(UpgradeInfo(coachJackrabbit, coachLevel))
 
         otherModifiersInfo.add(UpgradeInfo(prestigeItem, hoppityInfo.getIntOrValue("chocolate_level", 0)))
         otherModifiersInfo.add(UpgradeInfo(rabbitBarn, barnLevel))
@@ -354,7 +377,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         currentChocolate = hoppityInfo.getLongOrValue("chocolate", 0)
         prestigeChocolate = hoppityInfo.getLongOrValue("chocolate_since_prestige", 0)
         allTimeChocolate = hoppityInfo.getLongOrValue("total_chocolate", 0)
-        prestigeLevel = hoppityInfo.getIntOrValue("chocolate_level", 0)
+        prestigeLevel = hoppityInfo.getIntOrValue("chocolate_level", 1)
 
         val prestigeMultiplier = prestigeMultipliers.get(prestigeLevel.toString()).asDouble
         val coachMultiplier = 0.01 * coachLevel
@@ -368,10 +391,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         rawChocolatePerSecond = rabbitChocolate + employeeChocolate + talismanChocolate
 
         chocolatePerSecond = rawChocolatePerSecond * multiplier
-
-        println("Raw CPS: $rawChocolatePerSecond")
-        println("Multiplier: $multiplier")
-        println("CPS: $chocolatePerSecond")
     }
 
     private val rabbitBro: ItemStack = Utils.createSkull(
@@ -417,7 +436,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val stack: ItemStack,
         val level: Int,
         val extraCps: Int = 0,
-        val extraMultiplier: Double = 0.0,
     )
 
     companion object {
@@ -488,7 +506,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         companion object {
             fun fromApiName(apiName: String): RabbitCollectionRarity? {
-                println("apiName: $apiName")
                 return values().firstOrNull { it.apiName.lowercase() == apiName }
             }
 
@@ -499,12 +516,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                     it.chocolatePerSecond = 0
                     it.multiplier = 0.0
                     it.maximum = 0
-                }
-            }
-
-            fun printData() {
-                values().forEach {
-                    println("${it.apiName}: ${it.uniques} ${it.duplicates} ${it.chocolatePerSecond} ${it.multiplier}")
                 }
             }
         }
