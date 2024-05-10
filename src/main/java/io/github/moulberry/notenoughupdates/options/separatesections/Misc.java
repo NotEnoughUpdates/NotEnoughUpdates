@@ -371,4 +371,12 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean hideRegenBounce = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Disable Custom Armor",
+		desc = "When enabled, will help performance but also breaks cusstom item features for armor slots."
+	)
+	@ConfigEditorBoolean
+	public boolean noCustomArmor = false;
 }

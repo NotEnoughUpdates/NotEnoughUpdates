@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
@@ -40,6 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -352,7 +354,7 @@ public class ItemCustomizeManager {
 	public static boolean shouldRenderLeatherColour(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
 		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem() instanceof ItemArmor &&
-			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
+				((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
 		Item item = Item.getByNameOrId(data.customItem);
 		if (item == null) return stack.getItem() instanceof ItemArmor &&
 			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
@@ -374,10 +376,12 @@ public class ItemCustomizeManager {
 
 	public static ItemStack useCustomArmour(LayerArmorBase<?> instance, EntityLivingBase entitylivingbaseIn, int armorSlot) {
 		ItemStack stack = instance.getCurrentArmor(entitylivingbaseIn, armorSlot);
-		if (stack == null) return stack;
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
+		if (NotEnoughUpdates.INSTANCE.config.misc.noCustomArmor) {
+			return stack;
+		}
+		if (stack == null) return null;
+
+		ItemStack newStack = createItemCopy(stack);
 		if (armorSlot != 4) {
 			if (newStack.getItem() instanceof ItemArmor) return newStack;
 			else return stack;
@@ -385,21 +389,22 @@ public class ItemCustomizeManager {
 		return newStack;
 	}
 
-	public static ItemStack useCustomItem(ItemStack stack) {
-		if (stack == null) return stack;
-		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
+	private static @NotNull ItemStack createItemCopy(ItemStack stack) {
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
 		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
 		return newStack;
 	}
 
+	public static ItemStack useCustomItem(ItemStack stack) {
+		if (stack == null) return null;
+		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
+		return createItemCopy(stack);
+	}
+
 	public static ItemStack setHeadArmour(EntityLivingBase instance, int i) {
 		if (instance.getCurrentArmor(3) == null) return null;
-		ItemStack stack = instance.getCurrentArmor(3).copy();
-		stack.setItem(ItemCustomizeManager.getCustomItem(stack));
-		stack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
-		return stack;
+		return createItemCopy(instance.getCurrentArmor(3));
 	}
 
 }
