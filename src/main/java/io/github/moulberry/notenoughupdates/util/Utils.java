@@ -99,6 +99,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -2419,5 +2420,37 @@ public class Utils {
 			renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		}
 		return renderText;
+	}
+
+	private static final Map<String, ItemStack> itemCache = new HashMap<>();
+
+	@Nullable
+	public static ItemStack getItemStackById(String id) {
+		return getItemStackById(id, false);
+	}
+
+	@Nullable
+	public static ItemStack getItemStackById(String id, boolean copy) {
+		ItemStack stack = createItemStackById(id);
+		if (stack == null) return null;
+		if (copy) {
+			return stack.copy();
+		}
+		return stack;
+	}
+
+	@Nullable
+	public static ItemStack createItemStackById(String id) {
+		if (itemCache.containsKey(id)) {
+			return itemCache.get(id);
+		}
+		JsonObject json = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(id);
+		if (json == null) return null;
+
+		ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(json);
+		if (stack == null) return null;
+
+		itemCache.put(id, stack);
+		return stack;
 	}
 }

@@ -371,4 +371,12 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean hideRegenBounce = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Disable Custom Item",
+		desc = "The item list and some other GUI elements will only show on SkyBlock"
+	)
+	@ConfigEditorBoolean
+	public boolean noCustomItem = false;
 }
