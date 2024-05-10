@@ -58,7 +58,7 @@ data class KatRecipe(
     val levelSlider = GuiElementSlider(0, 0, 100, 1F, 100F, 1F, inputLevel.toFloat()) { inputLevel = it.toInt() }
     val coinsAdjustedForLevel: Int
         get() = (coins.toInt() * (1 - 0.003F * (getOutputPetForCurrentLevel()?.petLevel?.currentLevel ?: 0))).toInt()
-    private val basicIngredients = items.toSet() + setOf(inputPet, Ingredient.coinIngredient(manager, coins.toInt()))
+    private val basicIngredients = items.toSet() + setOf(inputPet, Ingredient.coinIngredient(coins.toInt()))
     override fun getIngredients(): Set<Ingredient> = basicIngredients
 
     override fun getOutputs(): Set<Ingredient> {
@@ -111,10 +111,7 @@ data class KatRecipe(
     override fun getSlots(): List<RecipeSlot> {
         val advancedIngredients = items.map { it.itemStack } + listOf(
             ItemUtils.createPetItemstackFromPetInfo(getInputPetForCurrentLevel()),
-            Ingredient.coinIngredient(
-                manager,
-                coinsAdjustedForLevel
-            ).itemStack
+            Ingredient.coinIngredient(coinsAdjustedForLevel).itemStack
         )
         return advancedIngredients.mapIndexed { index, itemStack ->
             val (x, y) = positionOnCircle(index, advancedIngredients.size)
@@ -148,9 +145,9 @@ data class KatRecipe(
         fun parseRecipe(manager: NEUManager, recipe: JsonObject, output: JsonObject): NeuRecipe {
             return KatRecipe(
                 manager,
-                Ingredient(manager, recipe["input"].asString),
-                Ingredient(manager, recipe["output"].asString),
-                recipe["items"]?.asJsonArray?.map { Ingredient(manager, it.asString) } ?: emptyList(),
+                Ingredient.ingredient(recipe["input"].asString),
+                Ingredient.ingredient(recipe["output"].asString),
+                recipe["items"]?.asJsonArray?.map { Ingredient.ingredient(it.asString) } ?: emptyList(),
                 recipe["coins"].asLong,
                 Duration.ofSeconds(recipe["time"].asLong)
             )

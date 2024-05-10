@@ -99,8 +99,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -2419,5 +2421,14 @@ public class Utils {
 			renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		}
 		return renderText;
+	}
+
+	public static <K, V> V getOrPut(Map<K, V> map, K key, Supplier<V> defaultValueSupplier) {
+		V value = map.get(key);
+		if (value == null) {
+			value = defaultValueSupplier.get();
+			map.put(key, value);
+		}
+		return value;
 	}
 }

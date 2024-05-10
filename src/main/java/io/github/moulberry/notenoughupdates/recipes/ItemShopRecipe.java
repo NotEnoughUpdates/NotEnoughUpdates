@@ -196,12 +196,12 @@ public class ItemShopRecipe implements NeuRecipe {
 
 	public static NeuRecipe parseItemRecipe(NEUManager neuManager, JsonObject recipe, JsonObject outputItemJson) {
 		return new ItemShopRecipe(
-			new Ingredient(neuManager, outputItemJson.get("internalname").getAsString()),
+			Ingredient.ingredient(outputItemJson.get("internalname").getAsString()),
 			JsonUtils.transformJsonArrayToList(
 				recipe.getAsJsonArray("cost"),
-				it -> new Ingredient(neuManager, it.getAsString())
+				it -> Ingredient.ingredient(it.getAsString())
 			),
-			new Ingredient(neuManager, recipe.get("result").getAsString()),
+			Ingredient.ingredient(recipe.get("result").getAsString()),
 			outputItemJson
 		);
 	}

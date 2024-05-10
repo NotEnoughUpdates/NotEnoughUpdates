@@ -149,7 +149,7 @@ public class CraftingRecipe implements NeuRecipe {
 			if (!recipe.has(name)) continue;
 			String item = recipe.get(name).getAsString();
 			if (item == null || item.isEmpty()) continue;
-			craftMatrix[i] = new Ingredient(manager, item);
+			craftMatrix[i] = Ingredient.ingredient(item);
 		}
 		int resultCount = 1;
 		if (recipe.has("count"))
@@ -162,6 +162,6 @@ public class CraftingRecipe implements NeuRecipe {
 		String outputItemId = outputItem.get("internalname").getAsString();
 		if (recipe.has("overrideOutputId"))
 			outputItemId = recipe.get("overrideOutputId").getAsString();
-		return new CraftingRecipe(manager, craftMatrix, new Ingredient(manager, outputItemId, resultCount), extra);
+		return new CraftingRecipe(manager, craftMatrix, Ingredient.ingredient(outputItemId, resultCount), extra);
 	}
 }

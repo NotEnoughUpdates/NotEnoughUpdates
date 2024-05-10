@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -54,6 +55,7 @@ import java.util.function.BiFunction;
 
 public class ItemUtils {
 	private static final Gson smallPrintingGson = new Gson();
+	private static final Map<Double, ItemStack> itemCache = new HashMap<>();
 
 	public static ItemStack createSkullItemStack(String displayName, String uuid, String skinAbsoluteUrl) {
 		JsonObject object = new JsonObject();
@@ -71,6 +73,10 @@ public class ItemUtils {
 	}
 
 	public static ItemStack getCoinItemStack(double coinAmount) {
+		return Utils.getOrPut(itemCache, coinAmount, () -> createCoinItemStack(coinAmount));
+	}
+
+	public static ItemStack createCoinItemStack(double coinAmount) {
 		String uuid = "2070f6cb-f5db-367a-acd0-64d39a7e5d1b";
 		String texture =
 			"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM4MDcxNzIxY2M1YjRjZDQwNmNlNDMxYTEzZjg2MDgzYTg5NzNlMTA2NGQyZjg4OTc4Njk5MzBlZTZlNTIzNyJ9fX0=";
@@ -412,8 +418,11 @@ public class ItemUtils {
 					int maxLvl = 100;
 					if (Constants.PETS != null && Constants.PETS.has("custom_pet_leveling") &&
 						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.toUpperCase(Locale.ROOT)) &&
-						Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT)).has(
-							"max_level")) {
+						Constants.PETS
+							.getAsJsonObject("custom_pet_leveling")
+							.getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT))
+							.has(
+								"max_level")) {
 						maxLvl =
 							Constants.PETS
 								.getAsJsonObject("custom_pet_leveling")

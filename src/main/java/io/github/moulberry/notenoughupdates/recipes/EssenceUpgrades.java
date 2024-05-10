@@ -138,7 +138,7 @@ public class EssenceUpgrades implements NeuRecipe {
 		JsonObject jsonObject = entry.getValue().getAsJsonObject();
 		Gson gson = new Gson();
 
-		Ingredient output = new Ingredient(manager, internalName);
+		Ingredient output = Ingredient.ingredient(internalName);
 
 		if (!jsonObject.has("type")) {
 			System.err.println("Invalid essence entry for: " + internalName);
@@ -278,10 +278,7 @@ public class EssenceUpgrades implements NeuRecipe {
 			for (Map.Entry<String, Integer> requiredItem : tierUpgrade.getItemsRequired().entrySet()) {
 				ItemStack itemStack;
 				if (requiredItem.getKey().equals("SKYBLOCK_COIN")) {
-					Ingredient ingredient = Ingredient.coinIngredient(
-						manager,
-						requiredItem.getValue()
-					);
+					Ingredient ingredient = Ingredient.coinIngredient(requiredItem.getValue());
 					itemStack = ingredient.getItemStack();
 				} else {
 					itemStack = manager.createItemResolutionQuery().withKnownInternalName(

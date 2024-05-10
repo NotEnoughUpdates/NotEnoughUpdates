@@ -206,7 +206,7 @@ public class ForgeRecipe implements NeuRecipe {
 		List<Ingredient> ingredients = new ArrayList<>();
 		for (JsonElement element : recipe.getAsJsonArray("inputs")) {
 			String ingredientString = element.getAsString();
-			ingredients.add(new Ingredient(manager, ingredientString));
+			ingredients.add(Ingredient.ingredient(ingredientString));
 		}
 		String internalItemId = output.get("internalname").getAsString();
 		if (recipe.has("overrideOutputId"))
@@ -226,7 +226,7 @@ public class ForgeRecipe implements NeuRecipe {
 		return new ForgeRecipe(
 			manager,
 			ingredients,
-			new Ingredient(manager, internalItemId, resultCount),
+			Ingredient.ingredient(internalItemId, resultCount),
 			duration,
 			hotmLevel
 		);

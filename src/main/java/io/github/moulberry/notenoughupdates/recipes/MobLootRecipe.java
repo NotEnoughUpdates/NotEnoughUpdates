@@ -329,7 +329,7 @@ public class MobLootRecipe implements NeuRecipe {
 	private static MobDrop parseMobDrop(NEUManager manager, JsonElement jsonElement) {
 		if (jsonElement.isJsonPrimitive()) {
 			return (new MobDrop(
-				new Ingredient(manager, jsonElement.getAsString()),
+				Ingredient.ingredient(jsonElement.getAsString()),
 				null,
 				Collections.emptyList(),
 				Collections.emptyList()
@@ -338,7 +338,7 @@ public class MobLootRecipe implements NeuRecipe {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			return (
 				new MobDrop(
-					new Ingredient(manager, jsonObject.get("id").getAsString()),
+					Ingredient.ingredient(jsonObject.get("id").getAsString()),
 					jsonObject.has("chance") ? jsonObject.get("chance").getAsString() : null,
 					JsonUtils.getJsonArrayOrEmpty(jsonObject, "extra", JsonElement::getAsString),
 					JsonUtils.getJsonArrayOrEmpty(jsonObject, "alternatives", element -> parseMobDrop(manager, element))
@@ -349,7 +349,7 @@ public class MobLootRecipe implements NeuRecipe {
 	public static MobLootRecipe parseRecipe(NEUManager manager, JsonObject recipe, JsonObject outputItemJson) {
 
 		return new MobLootRecipe(
-			new Ingredient(manager, outputItemJson.get("internalname").getAsString(), 1),
+			Ingredient.ingredient(outputItemJson.get("internalname").getAsString(), 1),
 			JsonUtils.getJsonArrayOrEmpty(recipe, "drops", element -> parseMobDrop(manager, element)),
 			recipe.has("level") ? recipe.get("level").getAsInt() : 0,
 			recipe.has("coins") ? recipe.get("coins").getAsInt() : 0,

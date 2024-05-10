@@ -21,7 +21,10 @@ package io.github.moulberry.notenoughupdates.recipes;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.TwoKeyCache;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.item.ItemStack;
 
 import java.util.HashMap;
@@ -34,11 +37,19 @@ public class Ingredient {
 	public static final String SKYBLOCK_COIN = "SKYBLOCK_COIN";
 	private final double count;
 	private final String internalItemId;
-	private final NEUManager manager;
 	private ItemStack itemStack;
 
-	public Ingredient(NEUManager manager, String ingredientIdentifier) {
-		this.manager = manager;
+	private static final Map<String, Ingredient> itemCache = new HashMap<>();
+	private static final Map<Integer, Ingredient> itemCoinCache = new HashMap<>();
+	private static final TwoKeyCache<String, Double, Ingredient> itemAmountCache = new TwoKeyCache<>();
+
+	public static Ingredient ingredient(String ingredientIdentifier) {
+		return Utils.getOrPut(itemCache, ingredientIdentifier,
+			() -> new Ingredient(ingredientIdentifier)
+		);
+	}
+
+	private Ingredient(String ingredientIdentifier) {
 		String[] parts = ingredientIdentifier.split(":");
 		internalItemId = parts[0];
 		if (parts.length == 2) {
@@ -50,14 +61,18 @@ public class Ingredient {
 		}
 	}
 
-	public Ingredient(NEUManager manager, String internalItemId, double count) {
-		this.manager = manager;
+	public static Ingredient ingredient(String ingredientIdentifier, double count) {
+		return itemAmountCache.getOrPut(ingredientIdentifier, count,
+			() -> new Ingredient(ingredientIdentifier, count)
+		);
+	}
+
+	private Ingredient(String internalItemId, double count) {
 		this.count = count;
 		this.internalItemId = internalItemId;
 	}
 
-	private Ingredient(NEUManager manager, double coinValue) {
-		this.manager = manager;
+	private Ingredient(double coinValue) {
 		this.internalItemId = SKYBLOCK_COIN;
 		this.count = coinValue;
 	}
@@ -68,14 +83,16 @@ public class Ingredient {
 			newIngredients.merge(
 				i.getInternalItemId(),
 				i,
-				(a, b) -> new Ingredient(i.manager, i.internalItemId, a.count + b.count)
+				(a, b) -> Ingredient.ingredient(i.internalItemId, a.count + b.count)
 			);
 		}
 		return new HashSet<>(newIngredients.values());
 	}
 
-	public static Ingredient coinIngredient(NEUManager manager, int coins) {
-		return new Ingredient(manager, coins);
+	public static Ingredient coinIngredient(int coins) {
+		return Utils.getOrPut(itemCoinCache, coins,
+			() -> new Ingredient(coins)
+		);
 	}
 
 	public boolean isCoins() {
@@ -95,6 +112,7 @@ public class Ingredient {
 		if (isCoins()) {
 			return ItemUtils.getCoinItemStack(count);
 		}
+		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 		JsonObject itemInfo = manager.getItemInformation().get(internalItemId);
 		itemStack = manager.jsonToStack(itemInfo);
 		itemStack.stackSize = (int) count;

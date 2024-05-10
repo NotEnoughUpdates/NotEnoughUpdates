@@ -185,7 +185,7 @@ public class RecipeGenerator {
 						Utils.addChatMessage("[WARNING] Could not parse drop, ambiguous or missing item information: " + loreLine);
 						continue;
 					}
-					Ingredient item = new Ingredient(neu.manager, possibleItems.get(0).get("internalname").getAsString());
+					Ingredient item = Ingredient.ingredient(possibleItems.get(0).get("internalname").getAsString());
 					String chance = loreMatcher.group("dropChances") != null
 						? loreMatcher.group("dropChances")
 						: loreMatcher.group("dropCount");
@@ -196,7 +196,7 @@ public class RecipeGenerator {
 				}
 			}
 			recipes.add(new MobLootRecipe(
-				new Ingredient(neu.manager, internalMobName, 1),
+				Ingredient.ingredient(internalMobName, 1),
 				drops,
 				level,
 				coins,
@@ -277,9 +277,9 @@ public class RecipeGenerator {
 				int coinCost = Integer.parseInt(
 					name.substring(0, name.length() - COINS_SUFFIX.length())
 							.replace(",", ""));
-				ingredient = Ingredient.coinIngredient(neu.manager, coinCost);
+				ingredient = Ingredient.coinIngredient(coinCost);
 			} else if (internalId != null) {
-				ingredient = new Ingredient(neu.manager, internalId, itemStack.stackSize);
+				ingredient = Ingredient.ingredient(internalId, itemStack.stackSize);
 			}
 			if (ingredient == null) continue;
 			if (col < 4) {

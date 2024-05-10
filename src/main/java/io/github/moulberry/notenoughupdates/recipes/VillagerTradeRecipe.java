@@ -172,8 +172,8 @@ public class VillagerTradeRecipe implements NeuRecipe {
 
 	public static VillagerTradeRecipe parseStaticRecipe(NEUManager manager, JsonObject recipe, JsonObject result) {
 		return new VillagerTradeRecipe(
-			new Ingredient(manager, recipe.get("result").getAsString()),
-			new Ingredient(manager, recipe.get("cost").getAsString()),
+			Ingredient.ingredient(recipe.get("result").getAsString()),
+			Ingredient.ingredient(recipe.get("cost").getAsString()),
 			recipe.has("min") ? recipe.get("min").getAsInt() : -1,
 			recipe.has("max") ? recipe.get("max").getAsInt() : -1
 		);

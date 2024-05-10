@@ -104,6 +104,7 @@ public class NEUEventListener {
 			return;
 		}
 
+		// TODO remove
 		if (neu.hasSkyblockScoreboard()) {
 			if (!preloadedItems) {
 				preloadedItems = true;

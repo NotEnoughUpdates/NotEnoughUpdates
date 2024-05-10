@@ -106,7 +106,7 @@ class ItemShopExporter : RepoExporter {
             }
         }
         return ItemShopRecipe(
-            null, costList, Ingredient(context.manager, resultName, stack.stackSize.toDouble()), null
+            null, costList, Ingredient.ingredient(resultName, stack.stackSize.toDouble()), null
         )
     }
 
@@ -117,16 +117,16 @@ class ItemShopExporter : RepoExporter {
         val coinMatch = coinRegex.matchEntire(loreLine)
         if (coinMatch != null) {
             val amount = coinMatch.groupValues[1].replace(",", "").toInt()
-            return Ingredient.coinIngredient(context.manager, amount)
+            return Ingredient.coinIngredient(amount)
         }
         val itemMatch = itemRegex.matchEntire(loreLine)
         if (itemMatch != null) {
             val label = itemMatch.groups["name"]!!.value
             val amount = itemMatch.groups["amount"]?.value?.replace(",", "")?.toDouble() ?: 1.0
             if (context.manager.itemInformation.containsKey(label.uppercase())) {
-                return Ingredient(context.manager, label, amount)
+                Ingredient.ingredient(label, amount)
             }
-            return Ingredient(context.manager, context.findItemByName(label), amount)
+            Ingredient.ingredient(context.findItemByName(label), amount)
         }
         return null
     }
