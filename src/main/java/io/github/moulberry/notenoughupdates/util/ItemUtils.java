@@ -421,14 +421,12 @@ public class ItemUtils {
 						Constants.PETS
 							.getAsJsonObject("custom_pet_leveling")
 							.getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT))
-							.has(
-								"max_level")) {
-						maxLvl =
-							Constants.PETS
-								.getAsJsonObject("custom_pet_leveling")
-								.getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT))
-								.get("max_level")
-								.getAsInt();
+							.has("max_level")) {
+						maxLvl = Constants.PETS
+							.getAsJsonObject("custom_pet_leveling")
+							.getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT))
+							.get("max_level")
+							.getAsInt();
 					}
 					for (int i = 0; i < lore.tagCount(); i++) {
 						if (i == lore.tagCount() - 2) {
