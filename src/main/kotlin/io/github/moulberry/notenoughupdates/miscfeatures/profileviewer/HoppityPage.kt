@@ -368,7 +368,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         val coachLevel = easterData.chocolate_multiplier_upgrades
         val barnLevel = easterData.rabbit_barn_capacity_level
-        barnCapacity = barnLevel * 2 + 20
+        barnCapacity = barnLevel * 2 + 18
 
         prestigeLevel = easterData.chocolate_level
         var timeTowerLevel = timeTowerInfo.level
