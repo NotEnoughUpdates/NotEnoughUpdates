@@ -265,6 +265,7 @@ public class APIDataJson {
 			public int chocolate_multiplier_upgrades = 0;
 			public int rabbit_barn_capacity_level = 0;
 			public int rabbit_rarity_upgrades = 0;
+			public long last_viewed_chocolate_factory = 0;
 
 			public static class EmployeeData {
 				public int rabbit_bro = 0;
@@ -276,6 +277,9 @@ public class APIDataJson {
 
 			public static class TimeTowerData {
 				public int level = 0;
+				public int charges = 0;
+				public long last_charge_time = 0;
+				public long activation_time = 0;
 			}
 		}
 	}

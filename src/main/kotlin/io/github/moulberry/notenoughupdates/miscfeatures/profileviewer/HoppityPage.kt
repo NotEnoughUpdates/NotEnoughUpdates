@@ -25,10 +25,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
-import io.github.moulberry.notenoughupdates.util.Constants
-import io.github.moulberry.notenoughupdates.util.MC
-import io.github.moulberry.notenoughupdates.util.Utils
-import io.github.moulberry.notenoughupdates.util.roundToDecimals
+import io.github.moulberry.notenoughupdates.util.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -63,6 +60,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private var chocolatePerSecond = 0.0
     private var talisman: String? = null
     private var talismanChocolate = 0
+
+    private var timeTowerCharges = 0
+    private var lastChargeTime = 0L
+    private var lastActivationTime = 0L
+    private var lastViewedChocolateFactory = 0L
 
     private val rabbitToRarity = mutableMapOf<String, String>()
 
@@ -161,7 +163,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110
         )
         val chocolateTilPrestigePercentage = (prestigeChocolate.toFloat() / chocolateForNextPrestige()).coerceIn(0f, 1f)
-        if (chocolateTilPrestigePercentage != 1f) {
+        if (chocolateTilPrestigePercentage == 1f) {
             instance.renderGoldBar(guiLeft + 160.toFloat(), guiTop + 109.toFloat(), 110f)
         } else {
             instance.renderBar(guiLeft + 160.toFloat(), guiTop + 109.toFloat(), 110f, chocolateTilPrestigePercentage)
@@ -177,7 +179,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         Utils.renderAlignedString(
             "§eLast Updated:",
-            "§f${prestigeChocolate} umm uhh  umm uhh  umm uhh ",
+            "§f${Utils.timeSinceMillisecond(lastViewedChocolateFactory)}",
             (guiLeft + 160).toFloat(),
             (guiTop + 117).toFloat(),
             110
@@ -303,8 +305,10 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                             buildList {
                                 add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
                                 add("")
-                                add("§6+${upgradeInfo.level * 0.1}x Chocolate §7per second for §a1h§7.")
-                                add("Time Tower charges ${TODO()}")
+                                add("§6+${(upgradeInfo.level * 0.1).roundToDecimals(1)}x Chocolate §7per second for §a1h§7.")
+                                add("§7Time Tower charges §a$timeTowerCharges§7/§a3")
+                                add("§7Last Activation Time: §b${Utils.timeSinceMillisecond(lastActivationTime)}")
+                                add("§7Last Charge Time: §b${Utils.timeSinceMillisecond(lastChargeTime)}")
                             }
                         }
                     }
@@ -318,7 +322,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                                 add("")
                                 add("§7Increases §dodds §7of finding")
                                 add("§aChocolate Rabbits §7of higher rarity")
-                                add("§7by ${upgradeInfo.level}% §7during §dHoppity's Hunt§7.")
+                                add("§7by §a${upgradeInfo.level}% §7during §dHoppity's Hunt§7.")
 
                             }
                         }
@@ -361,8 +365,10 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                     }
 
                     UpgradeType.TALISMAN -> {
-                        buildList {
-                            add("")
+                        if (upgradeInfo.level == 0) {
+                            fallbackList
+                        } else {
+                            Utils.getRawTooltip(upgradeInfo.stack)
                         }
                     }
 
@@ -561,6 +567,9 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         )
 
         prestigeLevel = easterData.chocolate_level
+        var timeTowerLevel = timeTowerInfo.level
+        if (prestigeLevel > 1) timeTowerLevel = timeTowerLevel.coerceAtLeast(1)
+
         factoryModifiersInfo.add(
             UpgradeInfo(
                 handBaked,
@@ -572,7 +581,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         factoryModifiersInfo.add(
             UpgradeInfo(
                 timeTower,
-                timeTowerInfo.level,
+                timeTowerLevel,
                 UpgradeType.TIME_TOWER,
                 "Time Tower"
             )
@@ -614,15 +623,20 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         otherModifiersInfo.add(
             UpgradeInfo(
                 shownTalismanItem,
-                0,
+                talismanChocolate / 10,
                 UpgradeType.TALISMAN,
-                "tempname"
+                "Chocolate Talisman"
             )
         )
 
         currentChocolate = easterData.chocolate
         prestigeChocolate = easterData.chocolate_since_prestige
         allTimeChocolate = easterData.total_chocolate
+
+        timeTowerCharges = timeTowerInfo.charges
+        lastChargeTime = timeTowerInfo.last_charge_time
+        lastActivationTime = timeTowerInfo.activation_time
+        lastViewedChocolateFactory = easterData.last_viewed_chocolate_factory
 
         val prestigeMultiplier = prestigeMultipliers.get(prestigeLevel.toString()).asDouble
         val coachMultiplier = 0.01 * coachLevel
@@ -669,6 +683,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             }
         }
         talisman = bestTalisman
+        talismanChocolate = bestTalismanCps
     }
 
     private val rabbitBro: ItemStack = Utils.createSkull(
