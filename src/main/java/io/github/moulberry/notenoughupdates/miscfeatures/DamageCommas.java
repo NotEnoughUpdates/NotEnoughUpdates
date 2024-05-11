@@ -27,6 +27,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,10 +52,13 @@ public class DamageCommas {
 	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("(\u00a7.)([\\d+,]*)(.*)");
 	private static final Pattern OVERLOAD_PATTERN = Pattern.compile("(\u00a7.)" + OVERLOAD_STAR + "((?:\u00a7.[\\d,])+)(\u00a7.)" + OVERLOAD_STAR + "\u00a7r");
 
-	public static IChatComponent replaceName(EntityLivingBase entity) {
-		if (!entity.hasCustomName()) return entity.getDisplayName();
+	private static Map<String, IChatComponent> nameCache = new HashMap<>();
 
-		IChatComponent name = entity.getDisplayName();
+	public static IChatComponent replaceName(EntityLivingBase entity) {
+		String rawName = entity.getName();
+		IChatComponent name = Utils.getOrPut(nameCache, rawName, entity::getDisplayName);
+		if (!entity.hasCustomName()) return name;
+
 		if (!NotEnoughUpdates.INSTANCE.config.misc.damageIndicatorStyle2) return name;
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return name;
 

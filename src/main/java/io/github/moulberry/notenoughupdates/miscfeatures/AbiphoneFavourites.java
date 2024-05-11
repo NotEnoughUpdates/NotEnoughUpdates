@@ -33,10 +33,10 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.InventoryLargeChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -169,8 +169,8 @@ public class AbiphoneFavourites {
 
 	@SubscribeEvent
 	public void replaceItem(ReplaceItemEvent event) {
-		IChatComponent chatComponent = event.getInventory().getDisplayName();
-		if (chatComponent == null || isWrongInventory()) return;
+		if (!(event.getInventory() instanceof InventoryLargeChest)) return;
+		if (isWrongInventory()) return;
 		ItemStack original = event.getOriginal();
 		if (original == null) return;
 		if (original.getItem() != Item.getItemFromBlock(Blocks.stained_glass_pane)) return;

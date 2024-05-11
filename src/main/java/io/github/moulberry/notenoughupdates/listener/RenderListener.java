@@ -91,7 +91,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -175,7 +174,7 @@ public class RenderListener {
 			}
 			Utils.pushGuiScale(0);
 			GlStateManager.popMatrix();
-			OverlayManager.dontRenderOverlay = new ArrayList<>();
+			OverlayManager.dontRenderOverlay.clear();
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_X)) {
 			NotificationHandler.notificationDisplayMillis = 0;

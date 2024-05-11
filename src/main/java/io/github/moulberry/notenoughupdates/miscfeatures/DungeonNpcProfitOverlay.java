@@ -86,8 +86,7 @@ public class DungeonNpcProfitOverlay {
 
 	private boolean isChestOverview(IInventory inventory) {
 		return chestNamePattern.matcher(StringUtils.cleanColour(
-			inventory.getDisplayName()
-							 .getUnformattedText())).matches();
+			inventory.getName())).matches();
 	}
 
 	private boolean isChestOverview(GuiChest chest) {
