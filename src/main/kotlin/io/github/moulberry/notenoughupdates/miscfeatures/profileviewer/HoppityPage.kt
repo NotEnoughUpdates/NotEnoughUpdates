@@ -26,10 +26,6 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson
-import io.github.moulberry.notenoughupdates.util.Constants
-import io.github.moulberry.notenoughupdates.util.MC
-import io.github.moulberry.notenoughupdates.util.Utils
-import io.github.moulberry.notenoughupdates.util.roundToDecimals
 import io.github.moulberry.notenoughupdates.util.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
@@ -624,7 +620,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             )
         )
         val shownTalismanItem = talisman?.let { manager.createItem(it) } ?: talismanItem
-        otherModifiersInfo.add(UpgradeInfo(shownTalismanItem, talismanChocolate / 10))
 
         otherModifiersInfo.add(
             UpgradeInfo(
