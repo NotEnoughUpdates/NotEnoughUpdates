@@ -518,7 +518,7 @@ public class SkyblockProfiles {
 		private SoopyNetworth soopyNetworth = null;
 		private MuseumData museumData = null;
 		@Getter
-		private @Nullable APIDataJson APIDataJson;
+		public @Nullable APIDataJson APIDataJson;
 		private final AtomicBoolean updatingMuseumData = new AtomicBoolean(false);
 
 		public class MuseumData {

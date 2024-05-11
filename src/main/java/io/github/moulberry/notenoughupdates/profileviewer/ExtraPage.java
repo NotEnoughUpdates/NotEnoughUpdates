@@ -26,6 +26,7 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.HoppityPage;
 import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -33,6 +34,9 @@ import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.var;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.text.WordUtils;
@@ -43,6 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -69,8 +74,40 @@ public class ExtraPage extends GuiProfileViewerPage {
 	private int killScroll = 0;
 	private boolean clickedLoadGuildInfoButton = false;
 
+	private boolean onHoppityPage;
+	private final HoppityPage hoppityPage;
+
+	public static final ItemStack hoppitySkull = Utils.createSkull(
+		"calmwolfs",
+		"d7ac85e6-bd40-359e-a2c5-86082959309e",
+		"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvO" +
+			"WE4MTUzOThlN2RhODliMWJjMDhmNjQ2Y2FmYzhlN2I4MTNkYTBiZTBlZWMwY2NlNmQzZWZmNTIwNzgwMTAyNiJ9fX0="
+	);
+
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
+		{
+			put(
+				"stats",
+				Utils.editItemStackInfo(
+					new ItemStack(Items.book),
+					EnumChatFormatting.GRAY + "Stats",
+					true
+				)
+			);
+			put(
+				"hoppity",
+				Utils.editItemStackInfo(
+					hoppitySkull,
+					EnumChatFormatting.GRAY + "Hoppity",
+					true
+				)
+			);
+		}
+	};
+
 	public ExtraPage(GuiProfileViewer instance) {
 		super(instance);
+		this.hoppityPage = new HoppityPage(instance);
 		getInstance().killDeathSearchTextField.setSize(80, 12);
 	}
 
@@ -86,6 +123,8 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
 		// Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
@@ -98,6 +137,19 @@ public class ExtraPage extends GuiProfileViewerPage {
 		}
 
 		getInstance().killDeathSearchTextField.otherComponentClick();
+
+		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
+		switch (i) {
+			case 1:
+				onHoppityPage = false;
+				break;
+			case 2:
+				onHoppityPage = true;
+				break;
+
+			default:
+				break;
+		}
 
 		return false;
 	}
@@ -171,6 +223,13 @@ public class ExtraPage extends GuiProfileViewerPage {
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
+
+		drawSideButtons();
+
+		if (onHoppityPage) {
+			hoppityPage.drawPage(mouseX, mouseY, partialTicks);
+			return;
+		}
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_extra);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
@@ -591,5 +650,24 @@ public class ExtraPage extends GuiProfileViewerPage {
 	public void resetCache() {
 		topDeaths = null;
 		topKills = null;
+	}
+
+	private void drawSideButtons() {
+		GlStateManager.enableDepth();
+		GlStateManager.translate(0, 0, 5);
+		if (onHoppityPage) {
+			Utils.drawPvSideButton(1, pageModeIcon.get("hoppity"), true, getInstance());
+		} else {
+			Utils.drawPvSideButton(0, pageModeIcon.get("stats"), true, getInstance());
+		}
+		GlStateManager.translate(0, 0, -3);
+
+		GlStateManager.translate(0, 0, -2);
+		if (!onHoppityPage) {
+			Utils.drawPvSideButton(1, pageModeIcon.get("hoppity"), false, getInstance());
+		} else {
+			Utils.drawPvSideButton(0, pageModeIcon.get("stats"), false, getInstance());
+		}
+		GlStateManager.disableDepth();
 	}
 }
