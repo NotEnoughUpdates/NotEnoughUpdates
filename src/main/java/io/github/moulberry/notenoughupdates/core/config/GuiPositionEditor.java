@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.core.config;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -77,7 +76,6 @@ public class GuiPositionEditor extends GuiScreen {
 				return false;
 			});
 		}
-
 
 		this.positions = pos;
 		this.originalPositions = ogPos;

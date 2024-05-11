@@ -24,7 +24,7 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import javafx.util.Pair;
+import kotlin.Pair;
 import net.minecraft.item.ItemStack;
 
 import java.lang.ref.WeakReference;
@@ -47,11 +47,12 @@ public class Ingredient {
 
 	public static Ingredient ingredient(String ingredientIdentifier) {
 		return Utils.getOrPut(itemCache, ingredientIdentifier,
-			() -> new Ingredient(ingredientIdentifier)
+			() -> new Ingredient(null, ingredientIdentifier)
 		);
 	}
 
-	private Ingredient(String ingredientIdentifier) {
+	// do not break SkyHanni
+	public Ingredient(NEUManager manager, String ingredientIdentifier) {
 		String[] parts = ingredientIdentifier.split(":");
 		internalItemId = parts[0];
 		if (parts.length == 2) {

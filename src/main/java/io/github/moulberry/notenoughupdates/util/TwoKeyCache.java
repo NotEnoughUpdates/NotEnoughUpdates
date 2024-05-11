@@ -1,6 +1,6 @@
 package io.github.moulberry.notenoughupdates.util;
 
-import javafx.util.Pair;
+import kotlin.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
