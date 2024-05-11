@@ -221,6 +221,9 @@ public class BasicPage extends GuiProfileViewerPage {
 					profile.getHypixelProfile().get("rank"),
 					Utils.getElementAsString(profile.getHypixelProfile().get("newPackageRank"), "NONE")
 				);
+				if (rank.equals("NORMAL")) {
+					rank = Utils.getElementAsString(profile.getHypixelProfile().get("newPackageRank"), "NONE");
+				}
 				String monthlyPackageRank = Utils.getElementAsString(
 					profile.getHypixelProfile().get("monthlyPackageRank"),
 					"NONE"
@@ -229,9 +232,9 @@ public class BasicPage extends GuiProfileViewerPage {
 					rank = monthlyPackageRank;
 				}
 				EnumChatFormatting rankPlusColorECF = EnumChatFormatting.getValueByName(
-					Utils.getElementAsString(profile.getHypixelProfile().get("rankPlusColor"), "GOLD")
+					Utils.getElementAsString(profile.getHypixelProfile().get("rankPlusColor"), "RED")
 				);
-				String rankPlusColor = EnumChatFormatting.GOLD.toString();
+				String rankPlusColor = EnumChatFormatting.RED.toString();
 				if (rankPlusColorECF != null) {
 					rankPlusColor = rankPlusColorECF.toString();
 				}

@@ -301,21 +301,19 @@ public class CapeManager {
 		if (event.player == null) return;
 
 		String uuid = event.player.getUniqueID().toString().replace("-", "");
-		if (!capeMap.containsKey(uuid)) return;
-
+		boolean isLocalPlayer = event.player == Minecraft.getMinecraft().thePlayer;
 		boolean hasLocalCape = localCape != null && localCape.getRight() != null && !localCape.getRight().equals("null");
+		if (!capeMap.containsKey(uuid) && !(hasLocalCape && isLocalPlayer)) return;
 
 		try {
 			Pair<NEUCape, String> entry = capeMap.get(uuid);
-			String capeName = entry.getRight();
-			if (capeName != null && !capeName.equals("null")) {
-				if (event.player == Minecraft.getMinecraft().thePlayer && hasLocalCape) {
-					localCape.getLeft().setCapeTexture(localCape.getValue());
-					CAPE_TICKER.submit(() -> localCape.getLeft().onTick(event.player));
-				} else {
-					entry.getLeft().setCapeTexture(capeName);
-					CAPE_TICKER.submit(() -> capeMap.get(uuid).getLeft().onTick(event.player));
-				}
+			String capeName = entry == null ? null : entry.getRight();
+			if (isLocalPlayer && hasLocalCape) {
+				localCape.getLeft().setCapeTexture(localCape.getValue());
+				CAPE_TICKER.submit(() -> localCape.getLeft().onTick(event.player));
+			} else if (capeName != null && !capeName.equals("null")) {
+				entry.getLeft().setCapeTexture(capeName);
+				CAPE_TICKER.submit(() -> capeMap.get(uuid).getLeft().onTick(event.player));
 			} else {
 				capeMap.remove(uuid);
 			}

@@ -1668,13 +1668,15 @@ public class Utils {
 	public static char getPrimaryColourCode(String displayName) {
 		int lastColourCode = -99;
 		int currentColour = 0;
+		int colourIndex = 0;
 		int[] mostCommon = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		for (int i = 0; i < displayName.length(); i++) {
 			char c = displayName.charAt(i);
 			if (c == '\u00A7') {
 				lastColourCode = i;
 			} else if (lastColourCode == i - 1) {
-				currentColour = Math.max(0, "0123456789abcdef".indexOf(c));
+				colourIndex = "0123456789abcdef".indexOf(c);
+				if (colourIndex != -1) currentColour = colourIndex;
 			} else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0) {
 				if (currentColour > 0) {
 					mostCommon[currentColour]++;

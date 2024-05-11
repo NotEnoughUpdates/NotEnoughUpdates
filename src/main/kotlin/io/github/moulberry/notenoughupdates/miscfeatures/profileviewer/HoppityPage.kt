@@ -624,6 +624,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             )
         )
         val shownTalismanItem = talisman?.let { manager.createItem(it) } ?: talismanItem
+        otherModifiersInfo.add(UpgradeInfo(shownTalismanItem, talismanChocolate / 10))
 
         otherModifiersInfo.add(
             UpgradeInfo(
