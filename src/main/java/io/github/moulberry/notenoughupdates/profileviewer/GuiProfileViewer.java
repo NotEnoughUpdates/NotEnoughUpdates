@@ -945,13 +945,14 @@ public class GuiProfileViewer extends GuiScreen {
 
 		if (playerNameTextField.getFocus()) {
 			if (keyCode == Keyboard.KEY_RETURN) {
+				String name = playerNameTextField.getText();
 				currentPage = ProfileViewerPage.LOADING;
 				NotEnoughUpdates.profileViewer.loadPlayerByName(
 					playerNameTextField.getText(),
 					profile -> { //todo: invalid name
 						if (profile != null) {
 							profile.resetCache();
-							ProfileViewerUtils.saveSearch(playerNameTextField.getText());
+							ProfileViewerUtils.saveSearch(name);
 						}
 						Minecraft.getMinecraft().displayGuiScreen(new GuiProfileViewer(profile));
 					}
