@@ -570,32 +570,37 @@ public class BasicPage extends GuiProfileViewerPage {
 		if (petsInfo != null) {
 			if (currentProfile.getGamemode() != null && currentProfile.getGamemode().equals("bingo")) {
 				JsonArray pets = petsInfo.get("pets").getAsJsonArray();
-				for (JsonElement pet : pets) {
-					if (pet.getAsJsonObject().get("type").getAsString().equals("BINGO")) {
-						String tier = pet.getAsJsonObject().get("tier").getAsString();
-						switch (tier) {
-							case "COMMON":
-								bingoRarity = "§7";
-								break;
-							case "UNCOMMON":
-								bingoRarity = "§a";
-								break;
-							case "RARE":
-								bingoRarity = "§9";
-								break;
-							case "EPIC":
-								bingoRarity = "§5";
-								break;
-							case "LEGENDARY":
-								bingoRarity = "§6";
-								break;
-							case "MYTHIC":
-								bingoRarity = "§d";
-								break;
+				if (pets != null) {
+					for (JsonElement pet : pets) {
+						JsonObject petJsonObject = pet.getAsJsonObject();
+						if (petJsonObject.get("type") == null) break;
+						if (petJsonObject.get("type").getAsString().equals("BINGO")) {
+							if (petJsonObject.get("tier") == null) break;
+							String tier = petJsonObject.get("tier").getAsString();
+							switch (tier) {
+								case "COMMON":
+									bingoRarity = "§7";
+									break;
+								case "UNCOMMON":
+									bingoRarity = "§a";
+									break;
+								case "RARE":
+									bingoRarity = "§9";
+									break;
+								case "EPIC":
+									bingoRarity = "§5";
+									break;
+								case "LEGENDARY":
+									bingoRarity = "§6";
+									break;
+								case "MYTHIC":
+									bingoRarity = "§d";
+									break;
+							}
+							break;
 						}
-						break;
+						bingoRarity = "§7";
 					}
-					bingoRarity = "§7";
 				}
 			}
 			JsonElement activePetElement = petsInfo.get("active_pet");
