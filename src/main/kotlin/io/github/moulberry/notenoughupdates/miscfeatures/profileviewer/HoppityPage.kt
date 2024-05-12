@@ -70,6 +70,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private val rabbitToRarity = mutableMapOf<String, String>()
 
     private var tooltipToDisplay = listOf<String>()
+    private var nameToDisplay = String
 
     override fun drawPage(mouseX: Int, mouseY: Int, partialTicks: Float) {
         guiLeft = GuiProfileViewer.getGuiLeft()
@@ -108,10 +109,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         Utils.renderShadowedString("§eRabbit Family", (guiLeft + 74).toFloat(), (guiTop + 14).toFloat(), 105)
         Utils.renderShadowedString("§eFactory Modifiers", (guiLeft + 74).toFloat(), (guiTop + 76).toFloat(), 105)
         Utils.renderShadowedString("§eOther", (guiLeft + 74).toFloat(), (guiTop + 138).toFloat(), 105)
-
         Utils.renderShadowedString("§eChocolate Factory", (guiLeft + 214).toFloat(), (guiTop + 14).toFloat(), 105)
         Utils.renderShadowedString("§eStats", (guiLeft + 214).toFloat(), (guiTop + 30).toFloat(), 105)
-
         Utils.renderShadowedString("§eRabbit Collection", (guiLeft + 356).toFloat(), (guiTop + 14).toFloat(), 105)
 
         GlStateManager.enableDepth()
@@ -173,9 +172,15 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val xBar = guiLeft + 160
         val yBar = guiTop + 109
         if (mouseX in xBar..(xBar + 110) && mouseY in yBar..(yBar + 5)) {
-                tooltipToDisplay = buildList {
-                    add("§6${StringUtils.formatNumber(prestigeChocolate)}§7/§6${StringUtils.formatNumber(chocolateForNextPrestige())}")
-                }
+            tooltipToDisplay = buildList {
+                add(
+                    "§6${StringUtils.formatNumber(prestigeChocolate)}§7/§6${
+                        StringUtils.formatNumber(
+                            chocolateForNextPrestige()
+                        )
+                    }"
+                )
+            }
         }
 
         Utils.renderAlignedString(
@@ -277,7 +282,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
                     UpgradeType.RABBIT_EMPLOYEES -> {
                         if (upgradeInfo.level == 0) {
-                            fallbackList
+                            fallbackList(upgradeInfo.displayName)
                         } else {
                             buildList {
                                 add("${upgradeInfo.colourCode}${upgradeInfo.displayName} §8- §7[${upgradeInfo.level}] ${upgradeInfo.colourCode}${upgradeInfo.suffixName}")
@@ -289,7 +294,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
                     UpgradeType.HAND_BAKED_CHOCOLATE -> {
                         if (upgradeInfo.level == 0) {
-                            fallbackList
+                            fallbackList(upgradeInfo.displayName)
                         } else {
                             buildList {
                                 add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
@@ -301,7 +306,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
                     UpgradeType.TIME_TOWER -> {
                         if (upgradeInfo.level == 0) {
-                            fallbackList
+                            fallbackList(upgradeInfo.displayName)
                         } else {
                             buildList {
                                 add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
@@ -316,7 +321,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
                     UpgradeType.RABBIT_SHRINE -> {
                         if (upgradeInfo.level == 0) {
-                            fallbackList
+                            fallbackList(upgradeInfo.displayName)
                         } else {
                             buildList {
                                 add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
@@ -331,7 +336,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
                     UpgradeType.COACH_JACKRABBIT -> {
                         if (upgradeInfo.level == 0) {
-                            fallbackList
+                            fallbackList(upgradeInfo.displayName)
                         } else {
                             buildList {
                                 add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
@@ -367,7 +372,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
                     UpgradeType.TALISMAN -> {
                         if (upgradeInfo.level == 0) {
-                            fallbackList
+                            fallbackList(upgradeInfo.displayName)
                         } else {
                             Utils.getRawTooltip(upgradeInfo.stack)
                         }
@@ -383,11 +388,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         }
     }
 
-    private val fallbackList
-        get() = listOf(
-            "§7Not Obtained Yet!",
-            "§8${GuiProfileViewer.getDisplayName()} §8hasn't obtained this yet"
-        )
+    private fun fallbackList(name: String) = listOf(
+        "§d${name} §7hasn't been obtained yet!",
+        "§8${GuiProfileViewer.getDisplayName()} §8hasn't obtained this yet"
+    )
+
 
     private fun drawRabbitStats(mouseX: Int, mouseY: Int) {
         val x = guiLeft + 296
@@ -791,6 +796,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                                 "Max Rabbit Rarity: §d§lMYTHIC\n" +
                                 "Max Chocolate: §625B\n" +
                                 "Max Employee: [200] §dExecutive"
+
                         else -> ""
                     }
                 }
