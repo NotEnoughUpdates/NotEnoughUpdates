@@ -395,7 +395,7 @@ public class MiningOverlay extends TextTabOverlay {
 								commissionProgress.put(split[0], progress);
 							} catch (Exception ignored) {
 							}
-						} else {
+						} else if (split[1].endsWith("DONE")) {
 							commissionProgress.put(split[0], 1.0f);
 						}
 					}
