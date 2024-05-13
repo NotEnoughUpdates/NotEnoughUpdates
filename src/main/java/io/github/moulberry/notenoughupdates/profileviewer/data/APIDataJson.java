@@ -260,7 +260,7 @@ public class APIDataJson {
 			public long chocolate = 0;
 			public long chocolate_since_prestige = 0;
 			public long total_chocolate = 0;
-			public int click_upgrades = 1;
+			public int click_upgrades = 0;
 			public int chocolate_level = 1;
 			public int chocolate_multiplier_upgrades = 0;
 			public int rabbit_barn_capacity_level = 1;

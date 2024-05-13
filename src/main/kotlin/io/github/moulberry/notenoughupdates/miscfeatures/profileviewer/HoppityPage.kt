@@ -70,7 +70,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private val rabbitToRarity = mutableMapOf<String, String>()
 
     private var tooltipToDisplay = listOf<String>()
-    private var nameToDisplay = String
 
     override fun drawPage(mouseX: Int, mouseY: Int, partialTicks: Float) {
         guiLeft = GuiProfileViewer.getGuiLeft()
@@ -83,6 +82,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         if (hoppityJson == null) {
             Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 220, guiTop + 101, true, 0)
+            Utils.showOutdatedRepoNotification("hoppity.json")
             return
         }
 
@@ -94,6 +94,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         if (rabbitToRarity.isEmpty()) {
             Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 220, guiTop + 101, true, 0)
+            Utils.showOutdatedRepoNotification("rabbitToRarity is empty")
             return
         }
 
@@ -151,13 +152,17 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 2 -> 1_000_000_000
                 3 -> 4_000_000_000
                 4 -> 10_000_000_000
-                else -> 1
+                else -> 0
             }
         }
 
         Utils.renderAlignedString(
             "§eUntil Prestige:",
-            "§f${StringUtils.shortNumberFormat(chocolateForNextPrestige().toDouble() - prestigeChocolate.toDouble())}",
+            if (chocolateForNextPrestige() != 0L) {
+                "§f${StringUtils.shortNumberFormat(chocolateForNextPrestige().toDouble() - prestigeChocolate.toDouble())}"
+            } else {
+                "§fMax"
+            },
             (guiLeft + 160).toFloat(),
             (guiTop + 98).toFloat(),
             110
@@ -172,20 +177,32 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         val xBar = guiLeft + 160
         val yBar = guiTop + 109
         if (mouseX in xBar..(xBar + 110) && mouseY in yBar..(yBar + 5)) {
-            tooltipToDisplay = buildList {
-                add(
-                    "§6${StringUtils.formatNumber(prestigeChocolate)}§7/§6${
-                        StringUtils.formatNumber(
-                            chocolateForNextPrestige()
-                        )
-                    }"
-                )
+            if (chocolateForNextPrestige() != 0L) {
+                tooltipToDisplay = buildList {
+                    add(
+                        "§6${StringUtils.formatNumber(prestigeChocolate)}§7/§6${
+                            StringUtils.formatNumber(
+                                chocolateForNextPrestige()
+                            )
+                        }"
+                    )
+                }
+            } else {
+                tooltipToDisplay = buildList {
+                    add(
+                        "§6Maxed!"
+                    )
+                }
             }
         }
 
         Utils.renderAlignedString(
             "§eLast Updated:",
-            "§f${Utils.timeSinceMillisecond(lastViewedChocolateFactory)}",
+            if (lastViewedChocolateFactory == 0L) {
+                "§fNever"
+            } else {
+                "§f${Utils.timeSinceMillisecond(lastViewedChocolateFactory)}"
+            },
             (guiLeft + 160).toFloat(),
             (guiTop + 117).toFloat(),
             110
@@ -374,7 +391,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                         if (upgradeInfo.level == 0) {
                             fallbackList(upgradeInfo.displayName)
                         } else {
-                            Utils.getRawTooltip(upgradeInfo.stack)
+                            buildList {
+                                upgradeInfo.chocolateFactoryTooltip.lines().forEach {
+                                    add(it)
+                                }
+                            }
                         }
                     }
 
@@ -751,6 +772,35 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                         else -> "§7"
                     }
                 }
+
+                if (upgradeType == UpgradeType.HAND_BAKED_CHOCOLATE) {
+                    return if (level >= 10) "§d" else "§7"
+                }
+
+                if (upgradeType == UpgradeType.TIME_TOWER) {
+                    return if (level >= 15) "§d" else "§7"
+                }
+
+                if (upgradeType == UpgradeType.RABBIT_SHRINE) {
+                    return if (level >= 20) "§d" else "§7"
+                }
+
+                if (upgradeType == UpgradeType.COACH_JACKRABBIT) {
+                    return if (level >= 20) "§d" else "§7"
+                }
+
+                if (upgradeType == UpgradeType.CHOCOLATE_FACTORY) {
+                    return if (level >= 5) "§d" else "§7"
+                }
+
+                if (upgradeType == UpgradeType.RABBIT_BARN) {
+                    return if (level >= 189) "§d" else "§7"
+                }
+
+                if (upgradeType == UpgradeType.TALISMAN) {
+                    return if (level >= 5) "§d" else "§7"
+                }
+
                 return "§7"
             }
         val suffixName: String
@@ -796,6 +846,53 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                                 "Max Rabbit Rarity: §d§lMYTHIC\n" +
                                 "Max Chocolate: §625B\n" +
                                 "Max Employee: [200] §dExecutive"
+
+                        else -> ""
+                    }
+                }
+                if (upgradeType == UpgradeType.TALISMAN) {
+                    return when (level) {
+                        1 -> "§fNibble Chocolate Stick\n" +
+                                "§7Grants §a+1% §7chance to find a\n" +
+                                "§7§aChocolate Rabbit §7that you haven't\n" +
+                                "§7found yet and grants §6+10 Chocolate\n" +
+                                "§6§7per second.\n" +
+                                "\n" +
+                                "§f§lCOMMON ACCESSORY"
+
+                        2 -> "§aSmooth Chocolate Bar\n" +
+                                "§7Grants §a+2% §7chance to find a\n" +
+                                "§7§aChocolate Rabbit §7that you haven't\n" +
+                                "§7found yet and grants §6+20 Chocolate\n" +
+                                "§6§7per second.\n" +
+                                "\n" +
+                                "§a§lUNCOMMON ACCESSORY"
+
+                        3 -> "§9Rich Chocolate Chunk\n" +
+                                "§7Grants §a+3% §7chance to find a\n" +
+                                "§7§aChocolate Rabbit §7that you haven't\n" +
+                                "§7found yet and grants §6+30 Chocolate\n" +
+                                "§6§7per second.\n" +
+                                "\n" +
+                                "§9§lRARE ACCESSORY"
+
+                        4 -> "§5Ganache Chocolate Slab\n" +
+                                "§7Grants §a+4% §7chance to find a\n" +
+                                "§7§aChocolate Rabbit §7that you haven't\n" +
+                                "§7found yet and grants §6+40 Chocolate\n" +
+                                "§6§7per second.\n" +
+                                "\n" +
+                                "§5§lEPIC ACCESSORY"
+
+                        5 -> {
+                            "§6Prestige Chocolate Realm\n" +
+                                "§7Grants §a+5% §7chance to find a\n" +
+                                "§7§aChocolate Rabbit §7that you haven't\n" +
+                                "§7found yet and grants §6+50 Chocolate\n" +
+                                "§6§7per second.\n" +
+                                "\n" +
+                                "§6§lLEGENDARY ACCESSORY"
+                        }
 
                         else -> ""
                     }
