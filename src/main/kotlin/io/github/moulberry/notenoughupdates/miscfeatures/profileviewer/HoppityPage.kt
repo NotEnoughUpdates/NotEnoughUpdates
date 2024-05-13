@@ -390,14 +390,10 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                     UpgradeType.TALISMAN -> {
                         if (upgradeInfo.level == 0) {
                             fallbackList(upgradeInfo.displayName)
-                        } else if (upgradeInfo.level >= 6) {
-                            Utils.getRawTooltip(upgradeInfo.stack)
                         } else {
-                            buildList {
-                                upgradeInfo.chocolateFactoryTooltip.lines().forEach {
-                                    add(it)
-                                }
-                            }
+                            Utils.getRawTooltip(upgradeInfo.stack)
+                                .dropLastWhile { !Utils.cleanColour(it).startsWith("Cost") }
+                                .dropLast(2)
                         }
                     }
 
@@ -848,53 +844,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                                 "Max Rabbit Rarity: §d§lMYTHIC\n" +
                                 "Max Chocolate: §625B\n" +
                                 "Max Employee: [200] §dExecutive"
-
-                        else -> ""
-                    }
-                }
-                if (upgradeType == UpgradeType.TALISMAN) {
-                    return when (level) {
-                        1 -> "§fNibble Chocolate Stick\n" +
-                                "§7Grants §a+1% §7chance to find a\n" +
-                                "§7§aChocolate Rabbit §7that you haven't\n" +
-                                "§7found yet and grants §6+10 Chocolate\n" +
-                                "§6§7per second.\n" +
-                                "\n" +
-                                "§f§lCOMMON ACCESSORY"
-
-                        2 -> "§aSmooth Chocolate Bar\n" +
-                                "§7Grants §a+2% §7chance to find a\n" +
-                                "§7§aChocolate Rabbit §7that you haven't\n" +
-                                "§7found yet and grants §6+20 Chocolate\n" +
-                                "§6§7per second.\n" +
-                                "\n" +
-                                "§a§lUNCOMMON ACCESSORY"
-
-                        3 -> "§9Rich Chocolate Chunk\n" +
-                                "§7Grants §a+3% §7chance to find a\n" +
-                                "§7§aChocolate Rabbit §7that you haven't\n" +
-                                "§7found yet and grants §6+30 Chocolate\n" +
-                                "§6§7per second.\n" +
-                                "\n" +
-                                "§9§lRARE ACCESSORY"
-
-                        4 -> "§5Ganache Chocolate Slab\n" +
-                                "§7Grants §a+4% §7chance to find a\n" +
-                                "§7§aChocolate Rabbit §7that you haven't\n" +
-                                "§7found yet and grants §6+40 Chocolate\n" +
-                                "§6§7per second.\n" +
-                                "\n" +
-                                "§5§lEPIC ACCESSORY"
-
-                        5 -> {
-                            "§6Prestige Chocolate Realm\n" +
-                                    "§7Grants §a+5% §7chance to find a\n" +
-                                    "§7§aChocolate Rabbit §7that you haven't\n" +
-                                    "§7found yet and grants §6+50 Chocolate\n" +
-                                    "§6§7per second.\n" +
-                                    "\n" +
-                                    "§6§lLEGENDARY ACCESSORY"
-                        }
 
                         else -> ""
                     }
