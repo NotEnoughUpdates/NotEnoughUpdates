@@ -390,6 +390,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                     UpgradeType.TALISMAN -> {
                         if (upgradeInfo.level == 0) {
                             fallbackList(upgradeInfo.displayName)
+                        } else if (upgradeInfo.level >= 6) {
+                            Utils.getRawTooltip(upgradeInfo.stack)
                         } else {
                             buildList {
                                 upgradeInfo.chocolateFactoryTooltip.lines().forEach {
@@ -886,12 +888,12 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
                         5 -> {
                             "§6Prestige Chocolate Realm\n" +
-                                "§7Grants §a+5% §7chance to find a\n" +
-                                "§7§aChocolate Rabbit §7that you haven't\n" +
-                                "§7found yet and grants §6+50 Chocolate\n" +
-                                "§6§7per second.\n" +
-                                "\n" +
-                                "§6§lLEGENDARY ACCESSORY"
+                                    "§7Grants §a+5% §7chance to find a\n" +
+                                    "§7§aChocolate Rabbit §7that you haven't\n" +
+                                    "§7found yet and grants §6+50 Chocolate\n" +
+                                    "§6§7per second.\n" +
+                                    "\n" +
+                                    "§6§lLEGENDARY ACCESSORY"
                         }
 
                         else -> ""
