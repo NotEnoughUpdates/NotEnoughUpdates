@@ -837,6 +837,7 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
+		previousProfileSearches.removeIf(Objects::isNull);
 		for (int i = 0; i < previousProfileSearches.size(); i++) {
 			if (mouseX > x && mouseX < x + 28) {
 				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
