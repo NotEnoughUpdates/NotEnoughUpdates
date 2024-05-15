@@ -54,8 +54,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private var prestigeLevel = 0
     private var barnCapacity = 20
 
-    // assuming cookie buff as Hypixel won't provide data for this
-    private val baseMultiplier = 1.25
+    private var baseMultiplier = 1.0
     private var rawChocolatePerSecond = 0
     private var multiplier = 0.0
     private var chocolatePerSecond = 0.0
@@ -63,6 +62,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private var talismanChocolate = 0
 
     private var timeTowerCharges = 0
+    private var timeTowerLevel = 0
     private var lastChargeTime = 0L
     private var lastActivationTime = 0L
     private var lastViewedChocolateFactory = 0L
@@ -124,7 +124,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110,
             mouseX,
             mouseY,
-            listOf("§eCurrent Chocolate: §f${StringUtils.formatNumber(currentChocolate)}")
+            listOf("§7Current Chocolate: §6${StringUtils.formatNumber(currentChocolate)}")
         )
         drawAlignedStringWithHover(
             "§eSince Prestige:",
@@ -134,7 +134,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110,
             mouseX,
             mouseY,
-            listOf("§eChocolate Since Prestige: §f${StringUtils.formatNumber(prestigeChocolate)}")
+            listOf("§7Chocolate Since Prestige: §6${StringUtils.formatNumber(prestigeChocolate)}")
         )
         drawAlignedStringWithHover(
             "§eAll Time:",
@@ -144,7 +144,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110,
             mouseX,
             mouseY,
-            listOf("§eAll Time Chocolate: §f${StringUtils.formatNumber(allTimeChocolate)}")
+            listOf("§7All Time Chocolate: §6${StringUtils.formatNumber(allTimeChocolate)}")
         )
         fun chocolateForNextPrestige(): Long {
             return when (prestigeLevel) {
@@ -161,7 +161,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             if (chocolateForNextPrestige() != 0L) {
                 "§f${StringUtils.shortNumberFormat(chocolateForNextPrestige().toDouble() - prestigeChocolate.toDouble())}"
             } else {
-                "§fMax"
+                "§f§lMax"
             },
             (guiLeft + 160).toFloat(),
             (guiTop + 98).toFloat(),
@@ -208,12 +208,16 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110
         )
 
-        Utils.renderAlignedString(
+        drawAlignedStringWithHover(
             "§eMultiplier:",
             "§f${multiplier.roundToDecimals(3)}x",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 133).toFloat(),
-            110
+            guiLeft + 160,
+            guiTop + 133,
+            110,
+            mouseX,
+            mouseY,
+            listOf("§7Normal Multiplier: §6${multiplier.roundToDecimals(3)}x",
+            "§7Multiplier with Time Tower: §d${(multiplier + (timeTowerLevel * 0.1)).roundToDecimals(3)}x")
         )
         Utils.renderAlignedString(
             "§eRaw Chocolate/Second:",
@@ -476,6 +480,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
         val easterData = data.events?.easter ?: return
 
+        baseMultiplier = 1.0
+        if (data.profile?.cookie_buff_active == true) {
+            baseMultiplier = 1.25
+        }
+
         rabbitToRarity.clear()
         RabbitCollectionRarity.resetData()
 
@@ -592,7 +601,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         )
 
         prestigeLevel = easterData.chocolate_level
-        var timeTowerLevel = timeTowerInfo.level
+        timeTowerLevel = timeTowerInfo.level
         if (prestigeLevel > 1) timeTowerLevel = timeTowerLevel.coerceAtLeast(1)
 
         factoryModifiersInfo.add(
