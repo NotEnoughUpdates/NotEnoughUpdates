@@ -498,7 +498,7 @@ public class CustomItemEffects {
 		if (Minecraft.getMinecraft().thePlayer.isSneaking()) {
 			itemCount = candidatesOld.size();
 		} else {
-			if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
+			if (match.getBlock() == Blocks.dirt && matchStack.getItem() != null && matchStack.getItemDamage() == 0 && hasDirtWand()) {
 				itemCount = candidatesOld.size();
 				usingDirtWand = true;
 			} else {
