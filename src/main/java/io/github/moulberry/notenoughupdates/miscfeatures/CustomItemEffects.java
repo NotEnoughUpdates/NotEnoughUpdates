@@ -483,6 +483,7 @@ public class CustomItemEffects {
 		if (!Minecraft.getMinecraft().thePlayer.isSneaking()) matchStack = getFirstItemInRuler();
 		match = Blocks.dirt.getDefaultState();
 		if (matchStack == null) return;
+		if (matchStack.getItem() == null) return;
 
 		getBuildersRulerCandidates(
 			Minecraft.getMinecraft().thePlayer,
@@ -498,7 +499,7 @@ public class CustomItemEffects {
 		if (Minecraft.getMinecraft().thePlayer.isSneaking()) {
 			itemCount = candidatesOld.size();
 		} else {
-			if (match.getBlock() == Blocks.dirt && matchStack.getItem() != null && matchStack.getItemDamage() == 0 && hasDirtWand()) {
+			if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
 				itemCount = candidatesOld.size();
 				usingDirtWand = true;
 			} else {
@@ -1478,7 +1479,7 @@ public class CustomItemEffects {
 				matchStack = firstItemInRuler;
 			}
 			int itemCount;
-			if (matchStack != null) {
+			if (matchStack != null && matchStack.getItem() != null) {
 				if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
 					itemCount = candidatesOld.size();
 				} else {
