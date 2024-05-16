@@ -333,7 +333,7 @@ public class CustomItemEffects {
 				}
 
 				if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
-					if (denyTpReason != null) {
+					if (denyTpReason != null && !NotEnoughUpdates.INSTANCE.config.itemOverlays.hideEtherwarpFailText) {
 						ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 						Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
 							Minecraft.getMinecraft().fontRendererObj,
@@ -868,18 +868,23 @@ public class CustomItemEffects {
 					Minecraft.getMinecraft().theWorld,
 					etherwarpRaycast.pos
 				);
+				String color;
+				if (denyTpReason != null && NotEnoughUpdates.INSTANCE.config.itemOverlays.changeEtherwarpColorWhenFailed) {
+					color = NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpFailHighlightColour;
+				} else color = NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour;
+
 				AxisAlignedBB bb = box.expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
 				drawFilledBoundingBox(
 					bb,
 					1f,
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+					color
 				);
 
 				GlStateManager.disableDepth();
 				drawOutlineBoundingBox(
 					bb,
 					2f,
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+					color
 				);
 				GlStateManager.enableDepth();
 

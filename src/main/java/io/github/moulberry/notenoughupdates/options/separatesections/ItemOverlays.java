@@ -243,12 +243,39 @@ public class ItemOverlays {
 
 	@Expose
 	@ConfigOption(
+		name = "Hide fail text",
+		desc = "Dont display the text saying you can't TP to the block"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean hideEtherwarpFailText = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Change color when fail",
+		desc = "Show a different color when you can't TP to the block"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean changeEtherwarpColorWhenFailed = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Highlight Colour",
 		desc = "Change the colour of the etherwarp target block outline"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 4)
 	public String etherwarpHighlightColour = "00:70:156:8:96";
+
+	@Expose
+	@ConfigOption(
+		name = "Fail Highlight Color",
+		desc = "Change the color of the etherwarp target block outline when you can't TP to that block"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 4)
+	public String etherwarpFailHighlightColour = "00:70:220:40:40";
 
 	@ConfigOption(
 		name = "Bonemerang Overlay",
