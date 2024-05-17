@@ -91,7 +91,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				"first_page",
 				Utils.editItemStackInfo(
 					new ItemStack(Items.paper),
-					EnumChatFormatting.GRAY + "Front Page",
+					EnumChatFormatting.GRAY + "Home",
 					true
 				)
 			);
@@ -99,7 +99,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				"second_page",
 				Utils.editItemStackInfo(
 					skull,
-					EnumChatFormatting.GRAY + "Level Page",
+					EnumChatFormatting.GRAY + "Level",
 					true
 				)
 			);
@@ -804,7 +804,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			);
 		}
 
-		drawSideButtons();
+		drawSideButtons(mouseX, mouseY);
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) {
 			renderWeight(mouseX, mouseY, selectedProfile);
 		}
@@ -1061,21 +1061,21 @@ public class BasicPage extends GuiProfileViewerPage {
 		return false;
 	}
 
-	public void drawSideButtons() {
+	public void drawSideButtons(int mouseX, int mouseY) {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		if (onSecondPage) {
-			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), true, guiProfileViewer);
+			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), true, guiProfileViewer, mouseX, mouseY);
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), true, guiProfileViewer);
+			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), true, guiProfileViewer, mouseX, mouseY);
 		}
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
 		if (!onSecondPage) {
-			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), false, guiProfileViewer);
+			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), false, guiProfileViewer, mouseX, mouseY);
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), false, guiProfileViewer);
+			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), false, guiProfileViewer, mouseX, mouseY);
 		}
 		GlStateManager.disableDepth();
 	}

@@ -224,7 +224,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		drawSideButtons();
+		drawSideButtons(mouseX, mouseY);
 
 		if (onHoppityPage) {
 			hoppityPage.drawPage(mouseX, mouseY, partialTicks);
@@ -343,6 +343,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		));
 
 		int fairySouls = data.fairy_soul.total_collected;
+		boolean cookieBuff = data.profile.cookie_buff_active;
 
 		int fairySoulMax = 227;
 		if (Constants.FAIRYSOULS != null && Constants.FAIRYSOULS.has("Max Souls")) {
@@ -413,6 +414,14 @@ public class ExtraPage extends GuiProfileViewerPage {
 				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(totalSlayerXP),
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset * 4,
+				76
+			);
+
+			Utils.renderAlignedString(
+				EnumChatFormatting.GOLD + "Cookie Buff",
+				(cookieBuff) ? EnumChatFormatting.LIGHT_PURPLE + "Active" : EnumChatFormatting.RED + "Inactive",
+				guiLeft + xStart,
+				guiTop + yStartBottom + yOffset * 5,
 				76
 			);
 		}
@@ -652,21 +661,21 @@ public class ExtraPage extends GuiProfileViewerPage {
 		topKills = null;
 	}
 
-	private void drawSideButtons() {
+	private void drawSideButtons(int mouseX, int mouseY) {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		if (onHoppityPage) {
-			Utils.drawPvSideButton(1, pageModeIcon.get("hoppity"), true, getInstance());
+			Utils.drawPvSideButton(1, pageModeIcon.get("hoppity"), true, getInstance(), mouseX, mouseY);
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("stats"), true, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("stats"), true, getInstance(), mouseX, mouseY);
 		}
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
 		if (!onHoppityPage) {
-			Utils.drawPvSideButton(1, pageModeIcon.get("hoppity"), false, getInstance());
+			Utils.drawPvSideButton(1, pageModeIcon.get("hoppity"), false, getInstance(), mouseX, mouseY);
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("stats"), false, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("stats"), false, getInstance(), mouseX, mouseY);
 		}
 		GlStateManager.disableDepth();
 	}

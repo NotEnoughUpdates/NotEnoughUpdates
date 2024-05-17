@@ -585,7 +585,9 @@ public class Utils {
 		int yIndex,
 		ItemStack itemStack,
 		boolean pressed,
-		GuiProfileViewer guiProfileViewer
+		GuiProfileViewer guiProfileViewer,
+		int mouseX,
+		int mouseY
 	) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
@@ -643,6 +645,9 @@ public class Utils {
 
 		GlStateManager.enableDepth();
 		drawItemStack(itemStack, x + 8, y + 7);
+		if (mouseY > y && mouseX > x && mouseY < y + 28 && mouseX < x + 28) {
+			guiProfileViewer.tooltipToDisplay = Collections.singletonList(itemStack.getDisplayName());
+		}
 	}
 
 	public static void drawTexturedRect(float x, float y, float width, float height, int filter) {

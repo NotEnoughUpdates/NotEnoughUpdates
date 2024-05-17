@@ -54,6 +54,7 @@ public class APIDataJson {
 
 	public static class Profile {
 		public int personal_bank_upgrade = 0;
+		public boolean cookie_buff_active = false;
 	}
 
 	public Experimentation experimentation = new Experimentation();
