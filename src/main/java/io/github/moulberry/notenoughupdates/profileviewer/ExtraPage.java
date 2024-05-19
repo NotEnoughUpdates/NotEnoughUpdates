@@ -259,10 +259,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			"banking.balance"
 		), 0);
 		float purseBalance = data.currencies.coin_purse;
+		float personalBankBalance = data.profile.bank_account;
 
 		Utils.renderAlignedString(
-			EnumChatFormatting.GOLD + "Bank Balance",
-			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(bankBalance),
+			EnumChatFormatting.GOLD + "Bank",
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(bankBalance) + "/" +
+				StringUtils.shortNumberFormat(personalBankBalance),
 			guiLeft + xStart,
 			guiTop + yStartTop,
 			76
