@@ -281,4 +281,10 @@ public class APIDataJson {
 			}
 		}
 	}
+
+	public WinterPlayerData winter_player_data = new WinterPlayerData();
+
+	public static class WinterPlayerData {
+		public int refined_jyrre_uses = 0;
+	}
 }
