@@ -252,12 +252,12 @@ public class ItemOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "Change color when fail",
-		desc = "Show a different color when you can't TP to the block"
+		name = "Change colour when fail",
+		desc = "Show a different colour when you can't TP to the block"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 4)
-	public boolean changeEtherwarpColorWhenFailed = false;
+	public boolean changeEtherwarpColourWhenFailed = false;
 
 	@Expose
 	@ConfigOption(
@@ -270,8 +270,8 @@ public class ItemOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "Fail Highlight Color",
-		desc = "Change the color of the etherwarp target block outline when you can't TP to that block"
+		name = "Fail Highlight Colour",
+		desc = "Change the colour of the etherwarp target block outline when you can't TP to that block"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 4)
