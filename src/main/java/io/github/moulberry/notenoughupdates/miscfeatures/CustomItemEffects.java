@@ -868,23 +868,23 @@ public class CustomItemEffects {
 					Minecraft.getMinecraft().theWorld,
 					etherwarpRaycast.pos
 				);
-				String color;
-				if (denyTpReason != null && NotEnoughUpdates.INSTANCE.config.itemOverlays.changeEtherwarpColorWhenFailed) {
-					color = NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpFailHighlightColour;
-				} else color = NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour;
+				String colour;
+				if (denyTpReason != null && NotEnoughUpdates.INSTANCE.config.itemOverlays.changeEtherwarpColourWhenFailed) {
+					colour = NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpFailHighlightColour;
+				} else colour = NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour;
 
 				AxisAlignedBB bb = box.expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
 				drawFilledBoundingBox(
 					bb,
 					1f,
-					color
+					colour
 				);
 
 				GlStateManager.disableDepth();
 				drawOutlineBoundingBox(
 					bb,
 					2f,
-					color
+					colour
 				);
 				GlStateManager.enableDepth();
 
