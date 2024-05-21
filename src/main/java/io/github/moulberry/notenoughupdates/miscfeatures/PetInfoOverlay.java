@@ -691,16 +691,12 @@ public class PetInfoOverlay extends TextOverlay {
 
 	@SubscribeEvent
 	public void onStackClick(SlotClickEvent event) {
-		System.out.println(event.clickedButton);
-		System.out.println(event.clickType);
 		// 0 through 8 are the mouse as well as the keyboard buttons, allow all of those
 		if (event.clickedButton < 0 || event.clickedButton > 8) return;
 		// Ignore RMB clicks, which convert the pet to an item
 		if (event.clickedButton == 1 && event.clickType == 0) return;
 		// Ignore shift clicks, which don't work
 		if (event.clickType == 1) return;
-
-		System.out.println("continue");
 
 		int slotIdMod = (event.slotId - 10) % 9;
 		if (event.slotId >= 10 && event.slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
