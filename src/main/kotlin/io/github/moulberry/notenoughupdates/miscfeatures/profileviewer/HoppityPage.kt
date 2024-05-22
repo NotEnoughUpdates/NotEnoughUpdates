@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures.profileviewer
 import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
@@ -67,6 +68,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private var lastChargeTime = 0L
     private var lastActivationTime = 0L
     private var lastViewedChocolateFactory = 0L
+
+    private var muTimeTowerBonus = 0
 
     private val rabbitToRarity = mutableMapOf<String, String>()
 
@@ -216,8 +219,14 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110,
             mouseX,
             mouseY,
-            listOf("§7Normal Multiplier: §6${multiplier.roundToDecimals(3)}x",
-            "§7Multiplier with Time Tower: §d${(multiplier + (timeTowerLevel * 0.1)).roundToDecimals(3)}x")
+            listOf(
+                "§7Normal Multiplier: §6${multiplier.roundToDecimals(3)}x",
+                "§7Multiplier with Time Tower: §d${
+                    (multiplier + ((timeTowerLevel * 0.1) + muTimeTowerBonus)).roundToDecimals(
+                        3
+                    )
+                }x"
+            )
         )
         Utils.renderAlignedString(
             "§eRaw Chocolate/Second:",
@@ -309,7 +318,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                             buildList {
                                 add("${upgradeInfo.colourCode}${upgradeInfo.displayName} §8- §7[${upgradeInfo.level}] ${upgradeInfo.colourCode}${upgradeInfo.suffixName}")
                                 add("")
-                                add("§7Produces §6+${upgradeInfo.level * upgradeInfo.extraCps} Chocolate §7per second.")
+                                add("§7Produces §6+${StringUtils.formatNumber(upgradeInfo.level * upgradeInfo.extraCps)} Chocolate §7per second.")
                             }
                         }
                     }
@@ -333,10 +342,15 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                             buildList {
                                 add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
                                 add("")
-                                add("§6+${(upgradeInfo.level * 0.1).roundToDecimals(1)}x Chocolate §7per second for §a1h§7.")
+                                add("§6+${((upgradeInfo.level * 0.1) + muTimeTowerBonus).roundToDecimals(1)}x Chocolate §7per second for §a1h§7.")
                                 add("§7Time Tower charges §a$timeTowerCharges§7/§a3")
                                 add("§7Last Activation Time: §b${Utils.timeSinceMillisecond(lastActivationTime)}")
-                                add("§7Last Charge Time: §b${Utils.timeSinceMillisecond(lastChargeTime)}")
+                                if (lastChargeTime == 0L) {
+                                    add("§7Last Charge Time: §cNever")
+                                } else {
+                                    add("§7Last Charge Time: §b${Utils.timeSinceMillisecond(lastChargeTime)}")
+                                }
+
                             }
                         }
                     }
@@ -461,7 +475,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                         add("Duplicate Rabbits: §a${rabbitInfo.duplicates}")
                         add("Total Rabbits Found: §a${rabbitInfo.uniques + rabbitInfo.duplicates}")
                         add("")
-                        add("§6+${rabbitInfo.chocolatePerSecond} Chocolate §7per second.")
+                        add("§6+${StringUtils.formatNumber(rabbitInfo.chocolatePerSecond)} Chocolate §7per second.")
                         add("§6+${rabbitInfo.multiplier.roundToDecimals(3)}x Chocolate §7per second.")
                     }
                 }
@@ -484,6 +498,15 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         baseMultiplier = 1.0
         if (data.profile?.cookie_buff_active == true) {
             baseMultiplier = 1.25
+        }
+        val activePet = selectedProfile?.petsInfo?.get("active_pet")?.asJsonObject
+
+        if (activePet != null && activePet.get("type").asString == "RABBIT" && activePet.get("tier").asString == "MYTHIC") {
+            val petLevel = PetLeveling.getPetLevelingForPet("RABBIT", PetInfoOverlay.Rarity.MYTHIC)
+                .getPetLevel(activePet.get("exp").asDouble).currentLevel
+
+            //calculation is 0.01 + 0.0004 per pet level
+            baseMultiplier += 0.01 + (petLevel * 0.0004)
         }
 
         rabbitToRarity.clear()
@@ -530,6 +553,14 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         }
 
         for (mythic in foundMythicRabbits) {
+            //TODO check if these names are correct when hypixel adds them to the api
+            if (mythic == "sigma") {
+                RabbitCollectionRarity.MYTHIC.chocolatePerSecond += 5 * foundMythicRabbits.size
+            }
+            if (mythic == "mu") {
+                muTimeTowerBonus + 0.7
+            }
+
             val specialRabbit = specialRabbits.getAsJsonObject(mythic)
             val cps = specialRabbit.get("chocolate").asInt
             val multiplier = specialRabbit.get("multiplier").asDouble
@@ -804,8 +835,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                         in (75..124) -> "§9"
                         in (125..174) -> "§5"
                         in (175..199) -> "§6"
-                        in (200..219)-> "§d"
-                        220 -> "§b"
+                        in (200..219) -> "§d"
+                        in (220..225) -> "§b"
                         else -> "§7"
                     }
                 }
@@ -850,7 +881,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                         in (125..174) -> "Manager"
                         in (175..199) -> "Director"
                         in (200..219) -> "Executive"
-                        220 -> "Board Member"
+                        in (220..225) -> "Board Member"
                         else -> ""
                     }
                 }
