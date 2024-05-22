@@ -45,6 +45,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private var currentProfile: SkyblockProfiles.SkyblockProfile? = null
 
     private val rabbitFamilyInfo = mutableListOf<UpgradeInfo>()
+    private val rabbitFamilyInfo2 = mutableListOf<UpgradeInfo>()
     private val factoryModifiersInfo = mutableListOf<UpgradeInfo>()
     private val otherModifiersInfo = mutableListOf<UpgradeInfo>()
 
@@ -107,12 +108,10 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             GL11.GL_NEAREST
         )
 
-        Utils.renderShadowedString("§eRabbit Family", (guiLeft + 74).toFloat(), (guiTop + 14).toFloat(), 105)
-        Utils.renderShadowedString("§eFactory Modifiers", (guiLeft + 74).toFloat(), (guiTop + 76).toFloat(), 105)
-        Utils.renderShadowedString("§eOther", (guiLeft + 74).toFloat(), (guiTop + 138).toFloat(), 105)
-        Utils.renderShadowedString("§eChocolate Factory", (guiLeft + 214).toFloat(), (guiTop + 14).toFloat(), 105)
-        Utils.renderShadowedString("§eStats", (guiLeft + 214).toFloat(), (guiTop + 30).toFloat(), 105)
-        Utils.renderShadowedString("§eRabbit Collection", (guiLeft + 356).toFloat(), (guiTop + 14).toFloat(), 105)
+        Utils.renderShadowedString("§eRabbit Family", (guiLeft + 74).toFloat(), (guiTop + 11).toFloat(), 105)
+        Utils.renderShadowedString("§eModifiers / Other", (guiLeft + 74).toFloat(), (guiTop + 105).toFloat(), 105)
+        Utils.renderShadowedString("§eChocolate Factory", (guiLeft + 214).toFloat(), (guiTop + 12).toFloat(), 105)
+        Utils.renderShadowedString("§eStats", (guiLeft + 214).toFloat(), (guiTop + 28).toFloat(), 105)
 
         GlStateManager.enableDepth()
 
@@ -152,6 +151,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 2 -> 1_000_000_000
                 3 -> 4_000_000_000
                 4 -> 10_000_000_000
+                5 -> 30_000_000_000
                 else -> 0
             }
         }
@@ -241,9 +241,10 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             110
         )
 
-        rabbitFamilyInfo.displayInfo(20, 34, mouseX, mouseY)
-        factoryModifiersInfo.displayInfo(31, 96, mouseX, mouseY)
-        otherModifiersInfo.displayInfo(42, 158, mouseX, mouseY)
+        rabbitFamilyInfo.displayInfo(31, 32, mouseX, mouseY)
+        rabbitFamilyInfo2.displayInfo(42, 66, mouseX, mouseY)
+        factoryModifiersInfo.displayInfo(31, 125, mouseX, mouseY)
+        otherModifiersInfo.displayInfo(42, 159, mouseX, mouseY)
 
         drawRabbitStats(mouseX, mouseY)
 
@@ -418,8 +419,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
 
     private fun drawRabbitStats(mouseX: Int, mouseY: Int) {
-        val x = guiLeft + 296
-        var y = guiTop + 34
+        val x = guiLeft + 299
+        var y = guiTop + 14
 
         RabbitCollectionRarity.values().forEach { rabbitInfo ->
             Utils.renderAlignedString(
@@ -590,13 +591,31 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 4
             )
         )
-        rabbitFamilyInfo.add(
+        rabbitFamilyInfo2.add(
             UpgradeInfo(
                 rabbitGranny,
                 employeesData.rabbit_grandma,
                 UpgradeType.RABBIT_EMPLOYEES,
                 "Rabbit Granny",
                 5,
+            )
+        )
+        rabbitFamilyInfo2.add(
+            UpgradeInfo(
+                rabbitDaddy,
+                employeesData.rabbit_uncle,
+                UpgradeType.RABBIT_EMPLOYEES,
+                "Rabbit Uncle",
+                6
+            )
+        )
+        rabbitFamilyInfo2.add(
+            UpgradeInfo(
+                rabbitGranny,
+                employeesData.rabbit_dog,
+                UpgradeType.RABBIT_EMPLOYEES,
+                "Rabbit Dog",
+                7,
             )
         )
 
@@ -745,6 +764,16 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         "d6c31145-355d-3807-868c-a7e26e11fc59",
         "ewogICJ0aW1lc3RhbXAiIDogMTcxMjU5NDIyNDA2NCwKICAicHJvZmlsZUlkIiA6ICI2OGVmMmM5NTc5NjM0MjE4YjYwNTM5YWVlOTU3NWJiNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGVNdWx0aUFjb3VudCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kNmViMmQ4NWVlOGUzYWYxYzJlYzkzNGJlYjcwYTM5YzVlNzY2YjIzYmRhYjYzMjEwYmQyYWFjZDczY2JiZmM4IgogICAgfQogIH0KfQ=="
     )
+    private val rabbitUncle: ItemStack = Utils.createSkull(
+        "catgirlseraid",
+        "10241221-b83d-3b62-91d8-e3abe8f4c40e",
+        "ewogICJ0aW1lc3RhbXAiIDogMTcxNDc3NjY2NDI1NSwKICAicHJvZmlsZUlkIiA6ICIzZWUxYWRlMzljZDI0ZjFkOWYwODliYjA2ZTkzNTY5YSIsCiAgInByb2ZpbGVOYW1lIiA6ICJSdXNvR01SIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzc2MDkyY2FmMDkxMGEzMzhmZTRmMTIxODI2MzFiNWZjYTY1NTQ5OTcwMmUwMmM0MTQ0MTNjNzU1Y2VjOGY5YTEiCiAgICB9CiAgfQp9=="
+    )
+    private val rabbitDog: ItemStack = Utils.createSkull(
+        "catgirlseraid",
+        "ef693a86-8b91-3753-a563-2efea7606d13",
+        "ewogICJ0aW1lc3RhbXAiIDogMTcxNDk1OTAyNzAyNCwKICAicHJvZmlsZUlkIiA6ICJiZDNhNWRmY2ZkZjg0NDczOTViZDJiZmUwNGY0YzAzMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJwcmVja3Jhc25vIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzM1Y2E5OGJlZGUzODY1ZGQxMjA1ZTRkMDkxMDM2Y2Q5ZGMzNjc5MWI4M2VhNGUwZmY0YTk5YWQ2MWI3MWU4OTgiCiAgICB9CiAgfQp9=="
+    )
 
     private val handBaked = ItemStack(Items.cookie)
     private val timeTower = ItemStack(Items.clock)
@@ -775,7 +804,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                         in (75..124) -> "§9"
                         in (125..174) -> "§5"
                         in (175..199) -> "§6"
-                        200 -> "§d"
+                        in (200..219)-> "§d"
+                        220 -> "§b"
                         else -> "§7"
                     }
                 }
@@ -797,11 +827,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 }
 
                 if (upgradeType == UpgradeType.CHOCOLATE_FACTORY) {
-                    return if (level >= 5) "§d" else "§7"
+                    return if (level >= 6) "§d" else "§7"
                 }
 
                 if (upgradeType == UpgradeType.RABBIT_BARN) {
-                    return if (level >= 189) "§d" else "§7"
+                    return if (level >= 222) "§d" else "§7"
                 }
 
                 if (upgradeType == UpgradeType.TALISMAN) {
@@ -819,7 +849,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                         in (75..124) -> "Assistant"
                         in (125..174) -> "Manager"
                         in (175..199) -> "Director"
-                        200 -> "Executive"
+                        in (200..219) -> "Executive"
+                        220 -> "Board Member"
                         else -> ""
                     }
                 }
@@ -853,6 +884,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                                 "Max Rabbit Rarity: §d§lMYTHIC\n" +
                                 "Max Chocolate: §625B\n" +
                                 "Max Employee: [200] §dExecutive"
+
+                        6 -> "Chocolate Production Multiplier: §62.5x\n" +
+                                "Max Rabbit Rarity: §b§lDIVINE\n" +
+                                "Max Chocolate: §660B\n" +
+                                "Max Employee: [220] §bBoard Member"
 
                         else -> ""
                     }
@@ -904,9 +940,13 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             "447a59da-2eff-3b06-8487-6af08e798c81",
             "ewogICJ0aW1lc3RhbXAiIDogMTcxMTYzNDc1NTM1NCwKICAicHJvZmlsZUlkIiA6ICI5YzM5OTdhMjVjNWY0NmY0OWZlMWFhY2RlZjRiMmMwNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJLaWxsZXJmcmVkZHk4OTQiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGUxYzE3MGI0ZjZjMzc2MTRlZTk2MDk2MDE2NDg1NWFiNzQyNmNlZmI0NDA5N2Y3OTU3ZmEzMGE2N2I5MzVlZiIKICAgIH0KICB9Cn0"
         )
+        private val mythicRabbit: ItemStack = Utils.createSkull(
+            "catgirlseraid",
+            "aa834561-cabc-3d33-8d0a-5d01342e796b",
+            "ewogICJ0aW1lc3RhbXAiIDogMTcxNTEwMzM0ODczNywKICAicHJvZmlsZUlkIiA6ICI3OTZjMDBhNmY0MDA0Mjg2OWMyMTIyNjc0ZmI0MWNiZSIsCiAgInByb2ZpbGVOYW1lIiA6ICJTZWRvbnlhIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzUwZGU1NDVmN2M0MGE2ZWM4ODhhZTNjZjlhZTk4M2Q5Mjc4OWRmNzc4Y2Y1NWQ5ZjVhM2QzY2IzYzZkMWI3NjgiCiAgICB9CiAgfQp9"
+        )
     }
 
-    // todo once someone has a mythic rabbit add it here
     private enum class RabbitCollectionRarity(
         val apiName: String,
         colourCode: String,
@@ -923,7 +963,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         RARE("Rare", "§9", rareRabbit, 0, 0),
         EPIC("Epic", "§5", epicRabbit, 0, 0),
         LEGENDARY("Legendary", "§6", legendaryRabbit, 0, 0),
-        MYTHIC("Mythic", "§d", totalRabbit, 0, 0),
+        MYTHIC("Mythic", "§d", mythicRabbit, 0, 0),
+        DIVINE("Divine", "§b", totalRabbit, 0, 0),
         ;
 
         val displayName = "$colourCode$apiName"

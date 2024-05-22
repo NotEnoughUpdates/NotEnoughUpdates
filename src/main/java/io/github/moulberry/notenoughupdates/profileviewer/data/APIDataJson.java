@@ -274,6 +274,8 @@ public class APIDataJson {
 				public int rabbit_sis = 0;
 				public int rabbit_father = 0;
 				public int rabbit_grandma = 0;
+				public int rabbit_uncle = 0;
+				public int rabbit_dog = 0;
 			}
 
 			public static class TimeTowerData {
