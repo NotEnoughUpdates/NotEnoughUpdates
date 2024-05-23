@@ -1667,7 +1667,8 @@ public class CustomItemEffects {
 					(candidate.getY() + 0.5f - d1 - player.getEyeHeight()) *
 						(candidate.getY() + 0.5f - d1 - player.getEyeHeight()) +
 					(candidate.getZ() + 0.5f - d2) * (candidate.getZ() + 0.5f - d2));
-				if (candidate.getY() < 66 || candidate.getY() >= 76) {
+				if ("garden".equals(SBInfo.getInstance().getLocation()) &&
+					(candidate.getY() < 66 || candidate.getY() >= 76)) {
 					continue;
 				}
 				candidatesOldSorted.computeIfAbsent(distSq, k -> new HashSet<>()).add(candidate);
