@@ -343,7 +343,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                                 add("§d${upgradeInfo.displayName} ${upgradeInfo.level.toRoman()}")
                                 add("")
                                 add("§6+${((upgradeInfo.level * 0.1) + muTimeTowerBonus).roundToDecimals(1)}x Chocolate §7per second for §a1h§7.")
-                                add("§7Time Tower charges §a$timeTowerCharges§7/§a3")
+                                add("§7Time Tower charges: §a$timeTowerCharges§7/§a3")
                                 add("§7Last Activation Time: §b${Utils.timeSinceMillisecond(lastActivationTime)}")
                                 if (lastChargeTime == 0L) {
                                     add("§7Last Charge Time: §cNever")
