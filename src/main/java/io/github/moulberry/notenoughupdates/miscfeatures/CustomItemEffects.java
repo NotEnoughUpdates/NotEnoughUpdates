@@ -333,7 +333,7 @@ public class CustomItemEffects {
 				}
 
 				if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
-					if (denyTpReason != null) {
+					if (denyTpReason != null && !NotEnoughUpdates.INSTANCE.config.itemOverlays.hideEtherwarpFailText) {
 						ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 						Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
 							Minecraft.getMinecraft().fontRendererObj,
@@ -483,6 +483,7 @@ public class CustomItemEffects {
 		if (!Minecraft.getMinecraft().thePlayer.isSneaking()) matchStack = getFirstItemInRuler();
 		match = Blocks.dirt.getDefaultState();
 		if (matchStack == null) return;
+		if (matchStack.getItem() == null) return;
 
 		getBuildersRulerCandidates(
 			Minecraft.getMinecraft().thePlayer,
@@ -868,18 +869,23 @@ public class CustomItemEffects {
 					Minecraft.getMinecraft().theWorld,
 					etherwarpRaycast.pos
 				);
+				String colour;
+				if (denyTpReason != null && NotEnoughUpdates.INSTANCE.config.itemOverlays.changeEtherwarpColourWhenFailed) {
+					colour = NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpFailHighlightColour;
+				} else colour = NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour;
+
 				AxisAlignedBB bb = box.expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
 				drawFilledBoundingBox(
 					bb,
 					1f,
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+					colour
 				);
 
 				GlStateManager.disableDepth();
 				drawOutlineBoundingBox(
 					bb,
 					2f,
-					NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+					colour
 				);
 				GlStateManager.enableDepth();
 
@@ -1478,7 +1484,7 @@ public class CustomItemEffects {
 				matchStack = firstItemInRuler;
 			}
 			int itemCount;
-			if (matchStack != null) {
+			if (matchStack != null && matchStack.getItem() != null) {
 				if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
 					itemCount = candidatesOld.size();
 				} else {

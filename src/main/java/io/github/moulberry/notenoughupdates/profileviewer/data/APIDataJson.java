@@ -55,6 +55,7 @@ public class APIDataJson {
 	public static class Profile {
 		public int personal_bank_upgrade = 0;
 		public boolean cookie_buff_active = false;
+		public float bank_account = 0;
 	}
 
 	public Experimentation experimentation = new Experimentation();
@@ -285,5 +286,11 @@ public class APIDataJson {
 				public long activation_time = 0;
 			}
 		}
+	}
+
+	public WinterPlayerData winter_player_data = new WinterPlayerData();
+
+	public static class WinterPlayerData {
+		public int refined_jyrre_uses = 0;
 	}
 }

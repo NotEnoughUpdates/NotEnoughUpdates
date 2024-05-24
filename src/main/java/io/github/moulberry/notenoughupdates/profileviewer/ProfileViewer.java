@@ -241,7 +241,7 @@ public class ProfileViewer {
 						"REDSTONE",
 						"QUARTZ",
 						"OBSIDIAN",
-						"GLOWSTONE_DUST",
+						"GLOWSTONE",
 						"GRAVEL",
 						"ICE",
 						null,
