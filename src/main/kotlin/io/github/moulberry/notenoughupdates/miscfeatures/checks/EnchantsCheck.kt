@@ -24,16 +24,14 @@ import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.IChatComponent
 import net.minecraft.util.EnumChatFormatting.*
+import net.minecraftforge.fml.common.Loader
 
 class EnchantsCheck {
-
-    private val sbaCheck = "codes.biscuit.skyblockaddons.SkyblockAddons"
-    private val shCheck = "at.hannibal2.skyhanni.SkyHanniMod"
-    private val dsmCheck = "me.Danker.DankersSkyblockMod"
 
     private val sbaMsg = "SkyblockAddons is installed and might break NEU enchants!"
     private val shMsg = "SkyHanni is installed and might break NEU enchants!"
     private val dsmMsg = "DSM is installed and might break NEU enchants!"
+    private val sbeMsg = "SBE is installed and might break NEU enchants!"
 
     private val sbaHelp = "${LIGHT_PURPLE}/sba${YELLOW} -> ${LIGHT_PURPLE}Parse Enchant Tooltips${YELLOW} -> " +
             "${LIGHT_PURPLE}Second Page${YELLOW} -> ${LIGHT_PURPLE}Highlight Special Enchantments${YELLOW} -> ${RED}${BOLD}DISABLE"
@@ -41,12 +39,14 @@ class EnchantsCheck {
             "${LIGHT_PURPLE}Enchant Parsing${YELLOW} -> ${RED}${BOLD}DISABLE"
     private val dsmHelp = "${LIGHT_PURPLE}/dsm${YELLOW} -> ${LIGHT_PURPLE}General${YELLOW} -> " +
             "${LIGHT_PURPLE}Golden ... Enchantments${YELLOW} -> ${RED}${BOLD}DISABLE"
+    private val sbeHelp = "${LIGHT_PURPLE}/sbe${YELLOW} -> ${LIGHT_PURPLE}Color Enchants${YELLOW} -> ${RED}${BOLD}DISABLE"
 
     fun getMessages() : List<IChatComponent> {
         val messages =  mutableListOf<IChatComponent>()
-        if(isModInstalled(sbaCheck)) messages.add(modMessage(sbaMsg, sbaHelp, "/sba"))
-        if(isModInstalled(shCheck)) messages.add(modMessage(shMsg, shHelp, "/sh enchant parsing"))
-        if(isModInstalled(dsmCheck)) messages.add(modMessage(dsmMsg, dsmHelp, "/dsm"))
+        if(Loader.isModLoaded("skyblockaddons")) messages.add(modMessage(sbaMsg, sbaHelp, "/sba"))
+        if(Loader.isModLoaded("skyhanni")) messages.add(modMessage(shMsg, shHelp, "/sh enchant parsing"))
+        if(Loader.isModLoaded("Danker's Skyblock Mod")) messages.add(modMessage(dsmMsg, dsmHelp, "/dsm"))
+        if(Loader.isModLoaded("SkyblockExtras")) messages.add(modMessage(sbeMsg, sbeHelp, "/sbe"))
         if(messages.isNotEmpty()) {
             messages.addAll(listOf(
                 ChatComponentText(""),
@@ -62,15 +62,6 @@ class EnchantsCheck {
                     .also { it.chatStyle.setChatHoverEvent(discordHover).setChatClickEvent(discordClick) }))
         }
         return messages
-    }
-
-    private fun isModInstalled(clazz: String): Boolean {
-        try {
-            Class.forName(clazz)
-        } catch (e: ClassNotFoundException) {
-            return false
-        }
-        return true
     }
 
     private fun modMessage(msg: String, help: String, cmd: String): IChatComponent {
