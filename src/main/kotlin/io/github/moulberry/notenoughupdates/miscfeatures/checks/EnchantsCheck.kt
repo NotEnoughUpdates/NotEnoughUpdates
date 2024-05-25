@@ -22,8 +22,8 @@ package io.github.moulberry.notenoughupdates.miscfeatures.checks
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.IChatComponent
 import net.minecraft.util.EnumChatFormatting.*
+import net.minecraft.util.IChatComponent
 import net.minecraftforge.fml.common.Loader
 
 class EnchantsCheck {
@@ -39,27 +39,33 @@ class EnchantsCheck {
             "${LIGHT_PURPLE}Enchant Parsing${YELLOW} -> ${RED}${BOLD}DISABLE"
     private val dsmHelp = "${LIGHT_PURPLE}/dsm${YELLOW} -> ${LIGHT_PURPLE}General${YELLOW} -> " +
             "${LIGHT_PURPLE}Golden ... Enchantments${YELLOW} -> ${RED}${BOLD}DISABLE"
-    private val sbeHelp = "${LIGHT_PURPLE}/sbe${YELLOW} -> ${LIGHT_PURPLE}Color Enchants${YELLOW} -> ${RED}${BOLD}DISABLE"
+    private val sbeHelp =
+        "${LIGHT_PURPLE}/sbe${YELLOW} -> ${LIGHT_PURPLE}Color Enchants${YELLOW} -> ${RED}${BOLD}DISABLE"
 
-    fun getMessages() : List<IChatComponent> {
-        val messages =  mutableListOf<IChatComponent>()
-        if(Loader.isModLoaded("skyblockaddons")) messages.add(modMessage(sbaMsg, sbaHelp, "/sba"))
-        if(Loader.isModLoaded("skyhanni")) messages.add(modMessage(shMsg, shHelp, "/sh enchant parsing"))
-        if(Loader.isModLoaded("Danker's Skyblock Mod")) messages.add(modMessage(dsmMsg, dsmHelp, "/dsm"))
-        if(Loader.isModLoaded("SkyblockExtras")) messages.add(modMessage(sbeMsg, sbeHelp, "/sbe"))
-        if(messages.isNotEmpty()) {
-            messages.addAll(listOf(
-                ChatComponentText(""),
-                ChatComponentText("${YELLOW}One or more mods conflicting with /neuec found!"),
-                ChatComponentText("${LIGHT_PURPLE}Hover${YELLOW} over the above messages to check the solutions."),
-                ChatComponentText("${LIGHT_PURPLE}Click${YELLOW} on the above messages to run the command mentioned.")))
+    fun getMessages(): List<IChatComponent> {
+        val messages = mutableListOf<IChatComponent>()
+        if (Loader.isModLoaded("skyblockaddons")) messages.add(modMessage(sbaMsg, sbaHelp, "/sba"))
+        if (Loader.isModLoaded("skyhanni")) messages.add(modMessage(shMsg, shHelp, "/sh enchant parsing"))
+        if (Loader.isModLoaded("Danker's Skyblock Mod")) messages.add(modMessage(dsmMsg, dsmHelp, "/dsm"))
+        if (Loader.isModLoaded("SkyblockExtras")) messages.add(modMessage(sbeMsg, sbeHelp, "/sbe"))
+        if (messages.isNotEmpty()) {
+            messages.addAll(
+                listOf(
+                    ChatComponentText(""),
+                    ChatComponentText("${YELLOW}One or more mods conflicting with /neuec found!"),
+                    ChatComponentText("${LIGHT_PURPLE}Hover${YELLOW} over the above messages to check the solutions."),
+                    ChatComponentText("${LIGHT_PURPLE}Click${YELLOW} on the above messages to run the command mentioned.")
+                )
+            )
         } else {
             val discordHover = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("${BLUE}discord.gg/moulberry"))
             val discordClick = ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/moulberry")
-            messages.addAll(listOf(
-                ChatComponentText("${GREEN}Your enchant colors should not be overriden by any mods!"),
-                ChatComponentText("${YELLOW}If any of your mods override them, please let us know on ${BLUE}NEU Discord")
-                    .also { it.chatStyle.setChatHoverEvent(discordHover).setChatClickEvent(discordClick) }))
+            messages.addAll(
+                listOf(
+                    ChatComponentText("${GREEN}Your enchant colors should not be overriden by any mods!"),
+                    ChatComponentText("${YELLOW}If any of your mods override them, please let us know on ${BLUE}NEU Discord")
+                        .also { it.chatStyle.setChatHoverEvent(discordHover).setChatClickEvent(discordClick) })
+            )
         }
         return messages
     }
