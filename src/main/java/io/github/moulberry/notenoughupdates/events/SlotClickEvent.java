@@ -30,6 +30,17 @@ public class SlotClickEvent extends NEUEvent {
 	public final @NotNull Slot slot;
 	public final int slotId;
 	public int clickedButton;
+	/**
+	 * Click types (along with the default keybind):
+	 *
+	 * <ul>
+	 * 	 <li>0 : mouse click (either LMB or RMB)</li>
+	 * 	 <li>1 : Shift mouse click</li>
+	 * 	 <li>2 : hotbar keybind (0-9) -> see clickedButton</li>
+	 * 	 <li>3 : pick block (middle mouse button)</li>
+	 * 	 <li>4 : drop block (Q)</li>
+	 * </ul>
+	 */
 	public int clickType;
 	public boolean usePickblockInstead = false;
 
