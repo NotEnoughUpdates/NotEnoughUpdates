@@ -228,26 +228,28 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 }x"
             )
         )
-        Utils.renderAlignedString(
-            "§eRaw Chocolate/Second:",
-            "§f${StringUtils.formatNumber(rawChocolatePerSecond)}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 148).toFloat(),
-            110
-        )
-        Utils.renderAlignedString(
+
+        drawAlignedStringWithHover(
             "§eChocolate/Second:",
             "§f${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2))}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 163).toFloat(),
-            110
-        )
-        Utils.renderAlignedString(
-            "§eChocolate/Day:",
-            "§f${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 86400)}",
-            (guiLeft + 160).toFloat(),
-            (guiTop + 178).toFloat(),
-            110
+            guiLeft + 160,
+            guiTop + 148,
+            110,
+            mouseX,
+            mouseY,
+            listOf(
+                "§7Raw Chocolate/Second: §6${StringUtils.formatNumber(rawChocolatePerSecond)}",
+                "§7Chocolate/Millisecond: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) / 1000)}",
+                "§7Chocolate/Second: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2))}",
+                "§7Chocolate/Minute: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 60)}",
+                "§7Chocolate/Hour: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 3600)}",
+                "§7Chocolate/Day: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 86400)}",
+                "§7Chocolate/Week: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 86400 * 7)}",
+                "§7Chocolate/Fortnight: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 86400 * 14)}",
+                "§7Chocolate/Month: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 86400 * 28)}",
+                "§7Chocolate/Year: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 86400 * 365.28)}",
+                "§7Chocolate/Leap Year: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 86400 * 366.28)}",
+            )
         )
 
         rabbitFamilyInfo.displayInfo(31, 32, mouseX, mouseY)
