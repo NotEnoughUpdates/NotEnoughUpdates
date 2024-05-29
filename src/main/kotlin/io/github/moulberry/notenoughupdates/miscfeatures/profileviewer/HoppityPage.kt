@@ -344,7 +344,13 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                                 add("")
                                 add("§6+${((upgradeInfo.level * 0.1) + muTimeTowerBonus).roundToDecimals(1)}x Chocolate §7per second for §a1h§7.")
                                 add("§7Time Tower charges: §a$timeTowerCharges§7/§a3")
-                                add("§7Last Activation Time: §b${Utils.timeSinceMillisecond(lastActivationTime)}")
+
+                                if (lastActivationTime != 0L) {
+                                    add("§7Last Activation Time: §b${Utils.timeSinceMillisecond(lastActivationTime)}")
+                                } else {
+                                    add("§7Last Activation Time: §cNever")
+                                }
+
                                 if (lastChargeTime == 0L) {
                                     add("§7Last Charge Time: §cNever")
                                 } else {
@@ -633,7 +639,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         )
         rabbitFamilyInfo2.add(
             UpgradeInfo(
-                rabbitDaddy,
+                rabbitUncle,
                 employeesData.rabbit_uncle,
                 UpgradeType.RABBIT_EMPLOYEES,
                 "Rabbit Uncle",
@@ -642,7 +648,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         )
         rabbitFamilyInfo2.add(
             UpgradeInfo(
-                rabbitGranny,
+                rabbitDog,
                 employeesData.rabbit_dog,
                 UpgradeType.RABBIT_EMPLOYEES,
                 "Rabbit Dog",
@@ -976,6 +982,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             "aa834561-cabc-3d33-8d0a-5d01342e796b",
             "ewogICJ0aW1lc3RhbXAiIDogMTcxNTEwMzM0ODczNywKICAicHJvZmlsZUlkIiA6ICI3OTZjMDBhNmY0MDA0Mjg2OWMyMTIyNjc0ZmI0MWNiZSIsCiAgInByb2ZpbGVOYW1lIiA6ICJTZWRvbnlhIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzUwZGU1NDVmN2M0MGE2ZWM4ODhhZTNjZjlhZTk4M2Q5Mjc4OWRmNzc4Y2Y1NWQ5ZjVhM2QzY2IzYzZkMWI3NjgiCiAgICB9CiAgfQp9"
         )
+        //TODO add divine rabbit once someone has one
     }
 
     private enum class RabbitCollectionRarity(
