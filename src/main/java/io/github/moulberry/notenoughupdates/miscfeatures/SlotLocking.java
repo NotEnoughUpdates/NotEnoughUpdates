@@ -498,6 +498,7 @@ public class SlotLocking {
 					boundLocked.boundTo = id;
 				}
 			} else if (0 <= id && id < 8 && locked.boundTo >= 9 && locked.boundTo <= 39) {
+				// There is an issue where clicking an item in your hotbar while a chest is open will just put it in the chest, I was not able to fix it
 				if (boundLocked.locked || boundLocked.boundTo != id) {
 					locked.boundTo = -1;
 					return;
