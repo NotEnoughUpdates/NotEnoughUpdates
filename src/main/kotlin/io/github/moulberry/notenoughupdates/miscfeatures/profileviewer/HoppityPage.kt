@@ -71,6 +71,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
 
     private var muTimeTowerBonus = 0
 
+    private var chocolateSpent = 0L
+
     private val rabbitToRarity = mutableMapOf<String, String>()
 
     private var tooltipToDisplay = listOf<String>()
@@ -251,6 +253,19 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 "§7Chocolate/Leap Year: §6${StringUtils.formatNumber(chocolatePerSecond.roundToDecimals(2) * 86400 * 366.28)}",
             )
         )
+
+        drawAlignedStringWithHover(
+            "§eChocolate Spent:",
+            "§f${StringUtils.shortNumberFormat(chocolateSpent.toDouble())}",
+            guiLeft + 160,
+            guiTop + 163,
+            110,
+            mouseX,
+            mouseY,
+            listOf("§7Chocolate Spent: §6${StringUtils.formatNumber(chocolateSpent)}")
+        )
+
+        //178
 
         rabbitFamilyInfo.displayInfo(31, 32, mouseX, mouseY)
         rabbitFamilyInfo2.displayInfo(42, 66, mouseX, mouseY)
@@ -740,6 +755,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         rawChocolatePerSecond = rabbitChocolate + employeeChocolate + talismanChocolate
 
         chocolatePerSecond = rawChocolatePerSecond * multiplier
+
+        chocolateSpent = easterData.shop?.chocolate_spent ?: 0
     }
 
     private fun getTalismanTier(talismanChocolateData: JsonObject) {
