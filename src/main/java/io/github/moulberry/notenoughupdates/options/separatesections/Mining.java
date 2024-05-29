@@ -29,6 +29,7 @@ import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.observer.Property;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import org.jetbrains.annotations.NotNull;
 
@@ -103,7 +104,7 @@ public class Mining {
 	)
 	@ConfigEditorDropdown
 	@ConfigAccordionId(id = 0)
-	public @NotNull GlaciteTunnelWaypointBehaviour tunnelWaypoints = GlaciteTunnelWaypointBehaviour.SHOW_ALL;
+	public @NotNull Property<GlaciteTunnelWaypointBehaviour> tunnelWaypoints = Property.of(GlaciteTunnelWaypointBehaviour.SHOW_ALL);
 
 	@Expose
 	@ConfigOption(
