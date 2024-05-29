@@ -482,7 +482,7 @@ public class SlotLocking {
 			int from, to;
 			int id = slotClickEvent.slot.getSlotIndex();
 			// if the inventory is bigger than the vanilla inventory
-			// I don't know of a way to detect non-player inventories but it should to apply here and L505
+			// I don't know of a way to detect non-player inventories but it should to apply here
 			if (size > 45) {
 				// adjust the id of the clicked slot to align with the current inventories numbers
 				id += size - 45;
