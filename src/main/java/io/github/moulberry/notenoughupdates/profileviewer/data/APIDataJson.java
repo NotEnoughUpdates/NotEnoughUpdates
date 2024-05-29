@@ -258,6 +258,7 @@ public class APIDataJson {
 			public @Nullable JsonObject rabbits;
 			public @Nullable EmployeeData employees;
 			public @Nullable TimeTowerData time_tower;
+			public @Nullable HoppityShoppity shop;
 
 			public long chocolate = 0;
 			public long chocolate_since_prestige = 0;
@@ -284,6 +285,9 @@ public class APIDataJson {
 				public int charges = 0;
 				public long last_charge_time = 0;
 				public long activation_time = 0;
+			}
+			public static class HoppityShoppity {
+				public long chocolate_spent = 0;
 			}
 		}
 	}
