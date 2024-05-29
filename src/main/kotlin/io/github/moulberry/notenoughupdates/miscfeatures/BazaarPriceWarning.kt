@@ -59,7 +59,7 @@ class BazaarPriceWarning : WarningPopUp() {
                     ItemUtils.getDisplayName(signStack) != "§aCustom Amount"
         val isBuyOrder = Utils.getOpenChestName().contains("How many do you want?")
         val isConfirmInstantBuy = Utils.getOpenChestName().contains("Confirm Instant Buy")
-        if ((hasCustomAmount && !isBuyOrder) || isConfirmInstantBuy) return
+        if ((hasCustomAmount && !isBuyOrder && !isConfirmInstantBuy)) return
         if (shouldShow()) return
         val stack = event.slot.stack ?: return
         val lore = ItemUtils.getLore(stack)
