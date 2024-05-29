@@ -751,7 +751,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         multiplier = baseMultiplier + prestigeMultiplier + coachMultiplier + rabbitMultiplier
 
         val rabbitChocolate = RabbitCollectionRarity.TOTAL.chocolatePerSecond
-        val employeeChocolate = rabbitFamilyInfo.sumOf { it.extraCps * it.level }
+        val employeeChocolate = rabbitFamilyInfo.sumOf { it.extraCps * it.level } + rabbitFamilyInfo2.sumOf { it.extraCps * it.level }
         rawChocolatePerSecond = rabbitChocolate + employeeChocolate + talismanChocolate
 
         chocolatePerSecond = rawChocolatePerSecond * multiplier
