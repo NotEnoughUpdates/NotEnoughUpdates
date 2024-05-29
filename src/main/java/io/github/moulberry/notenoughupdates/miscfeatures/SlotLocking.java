@@ -40,6 +40,7 @@ import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -477,14 +478,15 @@ public class SlotLocking {
 				return;
 			}
 			GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+			int size = container.inventorySlots.inventorySlots.size();
 
 			int from, to;
 			int id = slotClickEvent.slot.getSlotIndex();
 			// if the inventory is bigger than the vanilla inventory
-			// if there's a better way to check for only the players inventory (not a chest) being open then it should be used here
-			if (container.inventorySlots.inventorySlots.size() > 45) {
+			// I don't know of a way to detect non-player inventories but it should to apply here and L505
+			if (size > 45) {
 				// adjust the id of the clicked slot to align with the current inventories numbers
-				id += container.inventorySlots.inventorySlots.size() - 45;
+				id += size - 45;
 			}
 			if (id >= 9 && 0 <= locked.boundTo && locked.boundTo < 8 && !boundLocked.locked) {
 				from = id;
