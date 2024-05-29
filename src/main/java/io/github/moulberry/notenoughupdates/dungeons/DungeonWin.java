@@ -27,7 +27,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import org.lwjgl.opengl.GL11;
@@ -184,9 +183,9 @@ public class DungeonWin {
 
 		//Added two more Resets, can't do Reset+Reset+Reset cause idk?
 		//hypixel please don't randomly add more
+		//Clueless
 
-		if (e.message.getFormattedText().startsWith(
-			EnumChatFormatting.RESET + "" + EnumChatFormatting.RESET + "" + EnumChatFormatting.RESET + "   ")) {
+		if (unformatted.trim().startsWith("Team Score:")) {
 			if (currentTime - lastDungeonFinish > 30000) {
 				Matcher matcher = TEAM_SCORE_REGEX.matcher(unformatted);
 				if (matcher.find()) {
