@@ -473,8 +473,19 @@ public class SlotLocking {
 
 			LockedSlot boundLocked = getLockedSlot(boundSlot);
 
+			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
+				return;
+			}
+			GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+
 			int from, to;
 			int id = slotClickEvent.slot.getSlotIndex();
+			// if the inventory is bigger than the vanilla inventory
+			// if there's a better way to check for only the players inventory (not a chest) being open then it should be used here
+			if (container.inventorySlots.inventorySlots.size() > 45) {
+				// adjust the id of the clicked slot to align with the current inventories numbers
+				id += container.inventorySlots.inventorySlots.size() - 45;
+			}
 			if (id >= 9 && 0 <= locked.boundTo && locked.boundTo < 8 && !boundLocked.locked) {
 				from = id;
 				to = locked.boundTo;
