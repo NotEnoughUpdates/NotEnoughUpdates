@@ -18,10 +18,7 @@
  */
 
 
-import neubs.CustomSignTask
-import neubs.NEUBuildFlags
-import neubs.applyPublishingInformation
-import neubs.setVersionFromEnvironment
+import neubs.*
 import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.net.URL
@@ -259,18 +256,9 @@ val mixinDependencyCollectionJar by tasks.creating(Zip::class) {
 	into("neu-mixin-libraries-wrapped")
 }
 
-tasks.register("includeBackupRepo") {
-	doLast {
-		val url = URL("https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/archive/refs/heads/prerelease.zip")
-		val destinationFolder = project.buildDir.resolve("classes/java/main/assets/notenoughupdates/")
-		destinationFolder.mkdirs()
-		val destination = destinationFolder.resolve("repo.zip")
-		destination.createNewFile()
-
-		destination.outputStream().use {
-			url.openStream().copyTo(it)
-		}
-	}
+val includeBackupRepo by tasks.registering(DownloadBackupRepo::class) {
+	this.branch.set("master")
+	this.outputDirectory.set(layout.buildDirectory.dir("downloadedRepo"))
 }
 
 
@@ -302,6 +290,7 @@ tasks.assemble.get().dependsOn(remapJar)
 
 tasks.processResources {
 	from(tasks["generateBuildFlags"])
+	from(includeBackupRepo)
 	filesMatching(listOf("mcmod.info", "fabric.mod.json", "META-INF/mods.toml")) {
 		expand(
 			"version" to project.version, "mcversion" to "1.8.9"
