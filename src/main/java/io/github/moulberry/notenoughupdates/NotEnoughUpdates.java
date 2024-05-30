@@ -260,6 +260,7 @@ public class NotEnoughUpdates {
 				config.apiData.repoBranch = "master";
 			}
 
+			// When this is changed next, also change it in the build gradle
 			if ("prerelease".equals(config.apiData.repoBranch)) {
 				config.apiData.repoBranch = "master";
 			}
