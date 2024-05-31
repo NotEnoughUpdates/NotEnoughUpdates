@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.util
 
+import net.minecraft.util.EnumChatFormatting.RED
+import net.minecraft.util.EnumChatFormatting.YELLOW
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.round
@@ -47,7 +49,11 @@ private val romanSymbols = TreeMap(
 )
 
 fun Int.toRoman(): String {
-    if (this <= 0) error("$this must be positive!")
+    if (this <= 0) {
+        Utils.addChatMessage("$YELLOW[NEU] ${RED}Invalid number roman numeral conversion: $this")
+        Utils.addChatMessage("$YELLOW[NEU] ${RED}Please report this to discord.gg/moulberry")
+        return "?"
+    }
     val l = romanSymbols.floorKey(this)
     return if (this == l) {
         romanSymbols[this]!!
