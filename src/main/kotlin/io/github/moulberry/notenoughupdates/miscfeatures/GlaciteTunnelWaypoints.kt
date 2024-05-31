@@ -70,7 +70,7 @@ object GlaciteTunnelWaypoints {
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if (NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints == Mining.GlaciteTunnelWaypointBehaviour.NONE)
+        if (NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints.get() == Mining.GlaciteTunnelWaypointBehaviour.NONE)
             return
 
         if (SBInfo.getInstance().scoreboardLocation !in glaciteTunnelLocations)
@@ -83,7 +83,7 @@ object GlaciteTunnelWaypoints {
         val player = Minecraft.getMinecraft().thePlayer?.position ?: return
         for (entry in wantedGemstones) {
             val waypoints = waypointsForQuest[entry] ?: continue
-            val waypointLocations = when (NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints) {
+            val waypointLocations = when (NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints.get()) {
                 Mining.GlaciteTunnelWaypointBehaviour.SHOW_ALL -> {
                     waypoints.waypoints
                 }
@@ -92,7 +92,7 @@ object GlaciteTunnelWaypoints {
                     listOf(waypoints.waypoints.minByOrNull { it.distanceSq(player) })
                 }
 
-                Mining.GlaciteTunnelWaypointBehaviour.NONE -> break
+                else -> break
             }
             for (waypoint in waypointLocations) {
                 if (waypoint == null) continue
