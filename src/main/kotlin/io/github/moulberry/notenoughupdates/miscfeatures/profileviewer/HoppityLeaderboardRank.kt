@@ -64,7 +64,7 @@ object HoppityLeaderboardRank {
                 .requestJson()
                 .whenComplete { json: JsonObject?, error: Throwable? ->
                     if (error != null || json == null) {
-                        processResult(-1, true)
+                        processResult(-1, true, uuid)
                     } else {
                         val rank = json.getIntOrValue("rank", -1)
                         processResult(rank)
@@ -73,10 +73,13 @@ object HoppityLeaderboardRank {
         }
     }
 
-    private fun processResult(rank: Int, errored: Boolean = false) {
+    private fun processResult(rank: Int, errored: Boolean = false, uuid: String? = null) {
         if (!currentlyLoading) return
         if (errored) {
             currentRankStatus = HoppityLeaderboardRankStatus.ERROR
+            if (uuid != null) {
+                addToElite(uuid)
+            }
         } else if (rank == -1) {
             currentRankStatus = HoppityLeaderboardRankStatus.TOO_LOW
         } else {
@@ -84,6 +87,13 @@ object HoppityLeaderboardRank {
             currentRankStatus = HoppityLeaderboardRankStatus.FOUND
         }
         currentlyLoading = false
+    }
+
+    private fun addToElite(uuid: String) {
+        // errors when player has never been loaded on elitebot before, load their whole profile to add them to it
+        manager.apiUtils.request()
+            .url("https://api.elitebot.dev/account/$uuid")
+            .requestJson()
     }
 }
 
@@ -95,7 +105,6 @@ enum class HoppityLeaderboardRankStatus(private val display: () -> String, priva
         { "§7#§b${HoppityLeaderboardRank.getRank()} §7on the Elitebot chocolate leaderboard." }
     ),
 
-    // if the user has never been loaded into the elitebot api, they will error for ~2 minutes
     ERROR({ "Error" }, { "§cError while fetching leaderboard rank, try again later." }),
     ;
 
