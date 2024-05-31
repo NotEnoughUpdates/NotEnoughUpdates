@@ -19,10 +19,37 @@
 
 package io.github.moulberry.notenoughupdates.util
 
+import java.util.*
 import kotlin.math.pow
 import kotlin.math.round
 
 fun Double.roundToDecimals(decimals: Int): Double {
     val multiplier = 10.0.pow(decimals)
     return round(this * multiplier) / multiplier
+}
+
+private val romanSymbols = TreeMap(
+    mapOf(
+        1000 to "M",
+        900 to "CM",
+        500 to "D",
+        400 to "CD",
+        100 to "C",
+        90 to "XC",
+        50 to "L",
+        40 to "XL",
+        10 to "X",
+        9 to "IX",
+        5 to "V",
+        4 to "IV",
+        1 to "I",
+    )
+)
+
+fun Int.toRoman(): String {
+    if (this <= 0) error("$this must be positive!")
+    val l = romanSymbols.floorKey(this)
+    return if (this == l) {
+        romanSymbols[this]!!
+    } else romanSymbols[l] + (this - l).toRoman()
 }
