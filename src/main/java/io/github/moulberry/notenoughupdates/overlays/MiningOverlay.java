@@ -268,7 +268,7 @@ public class MiningOverlay extends TextTabOverlay {
 			NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints == 0 &&
 			!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert &&
 			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0
-			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints != Mining.GlaciteTunnelWaypointBehaviour.NONE
+			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints.get() != Mining.GlaciteTunnelWaypointBehaviour.NONE
 			&& HotmDesires.wantsPowderInfo()) {
 			return;
 		}
