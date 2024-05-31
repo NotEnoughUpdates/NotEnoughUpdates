@@ -94,7 +94,9 @@ enum class HoppityLeaderboardRankStatus(private val display: () -> String, priva
         { HoppityLeaderboardRank.getRank() },
         { "§7#§b${HoppityLeaderboardRank.getRank()} §7on the Elitebot chocolate leaderboard." }
     ),
-    ERROR({ "Error" }, { "§cError while fetching leaderboard rank." }),
+
+    // if the user has never been loaded into the elitebot api, they will error for ~2 minutes
+    ERROR({ "Error" }, { "§cError while fetching leaderboard rank, try again later." }),
     ;
 
     fun getDisplayString() = display()
