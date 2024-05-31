@@ -164,7 +164,12 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         Utils.renderAlignedString(
             "§eUntil Prestige:",
             if (chocolateForNextPrestige() != 0L) {
-                "§f${StringUtils.shortNumberFormat(chocolateForNextPrestige().toDouble() - prestigeChocolate.toDouble())}"
+                val amount = chocolateForNextPrestige().toDouble() - prestigeChocolate.toDouble()
+                if (amount < 0) {
+                    "§f0"
+                } else {
+                    "§f${StringUtils.shortNumberFormat(amount)}"
+                }
             } else {
                 "§f§lMax"
             },
@@ -265,7 +270,21 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             listOf("§7Chocolate Spent: §6${StringUtils.formatNumber(chocolateSpent)}")
         )
 
-        //178
+        drawAlignedStringWithHover(
+            "§eLeaderboard Rank:",
+            "§f${HoppityLeaderboardRank.getRankInfo()}",
+            guiLeft + 160,
+            guiTop + 178,
+            110,
+            mouseX,
+            mouseY,
+            listOf(
+                HoppityLeaderboardRank.getAdditionalInfo(),
+                "",
+                "Data provided by the Elitebot API.",
+                "§eClick to view on the Elitebot website."
+            )
+        )
 
         rabbitFamilyInfo.displayInfo(31, 32, mouseX, mouseY)
         rabbitFamilyInfo2.displayInfo(42, 66, mouseX, mouseY)
@@ -280,6 +299,18 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             tooltipToDisplay = listOf()
         }
     }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
+
+        if (mouseButton == 0) {
+            if (mouseX in (guiLeft + 160)..(guiLeft + 270) && mouseY in (guiTop + 178)..(guiTop + 190)) {
+                HoppityLeaderboardRank.openWebsite()
+            }
+        }
+
+        return false
+    }
+
 
     private fun drawAlignedStringWithHover(
         first: String,
@@ -522,18 +553,27 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         if (data.profile?.cookie_buff_active == true) {
             baseMultiplier = 1.25
         }
-        val activePet = selectedProfile?.petsInfo?.get("active_pet")?.asJsonObject
+        val activePetInfo = selectedProfile?.petsInfo?.get("active_pet")
+        if (activePetInfo != null && !activePetInfo.isJsonNull) {
+            activePetInfo.asJsonObject?.let { pet ->
+                if (pet.get("type").asString == "RABBIT" && pet.get("tier").asString == "MYTHIC") {
+                    val petLevel = PetLeveling.getPetLevelingForPet("RABBIT", PetInfoOverlay.Rarity.MYTHIC)
+                        .getPetLevel(pet.get("exp").asDouble).currentLevel
 
-        if (activePet != null && activePet.get("type").asString == "RABBIT" && activePet.get("tier").asString == "MYTHIC") {
-            val petLevel = PetLeveling.getPetLevelingForPet("RABBIT", PetInfoOverlay.Rarity.MYTHIC)
-                .getPetLevel(activePet.get("exp").asDouble).currentLevel
-
-            //calculation is 0.01 + 0.0004 per pet level
-            baseMultiplier += 0.01 + (petLevel * 0.0004)
+                    //calculation is 0.01 + 0.0004 per pet level
+                    baseMultiplier += 0.01 + (petLevel * 0.0004)
+                }
+            }
         }
 
         rabbitToRarity.clear()
         RabbitCollectionRarity.resetData()
+
+        val profileId = selectedProfile?.outerProfileJson?.get("profile_id")?.asString?.replace("-", "")
+        val uuid = GuiProfileViewer.getProfile()?.uuid
+
+        HoppityLeaderboardRank.resetData()
+        HoppityLeaderboardRank.loadData(uuid, profileId)
 
         val hoppityData = hoppityJson.getAsJsonObject("hoppity") ?: return
         val rabbitRarities = hoppityData.getAsJsonObject("rarities") ?: return
@@ -576,7 +616,6 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         }
 
         for (mythic in foundMythicRabbits) {
-            //TODO check if these names are correct when hypixel adds them to the api
             if (mythic == "sigma") {
                 RabbitCollectionRarity.MYTHIC.chocolatePerSecond += 5 * foundMythicRabbits.size
             }
@@ -599,6 +638,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         totalRabbit.maximum = RabbitCollectionRarity.values().sumOf { it.maximum }
 
         rabbitFamilyInfo.clear()
+        rabbitFamilyInfo2.clear()
         factoryModifiersInfo.clear()
         otherModifiersInfo.clear()
 
@@ -751,7 +791,8 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         multiplier = baseMultiplier + prestigeMultiplier + coachMultiplier + rabbitMultiplier
 
         val rabbitChocolate = RabbitCollectionRarity.TOTAL.chocolatePerSecond
-        val employeeChocolate = rabbitFamilyInfo.sumOf { it.extraCps * it.level } + rabbitFamilyInfo2.sumOf { it.extraCps * it.level }
+        val employeeChocolate =
+            rabbitFamilyInfo.sumOf { it.extraCps * it.level } + rabbitFamilyInfo2.sumOf { it.extraCps * it.level }
         rawChocolatePerSecond = rabbitChocolate + employeeChocolate + talismanChocolate
 
         chocolatePerSecond = rawChocolatePerSecond * multiplier
