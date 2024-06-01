@@ -37,6 +37,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
+import io.github.moulberry.notenoughupdates.mixins.AccessorRenderItem;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextTabOverlay;
@@ -48,6 +49,9 @@ import io.github.moulberry.notenoughupdates.util.TabSkillInfoParser;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
@@ -115,7 +119,23 @@ public class NEUEventListener {
 					});
 				}
 			} else if (!toPreload.isEmpty()) {
-				Utils.drawItemStack(toPreload.get(0), -100, -100);
+				RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
+				ItemStack itemStack = toPreload.get(0);
+				if (itemStack != null && itemStack.getItem() != null) {
+					IBakedModel ibakedmodel = itemRender.getItemModelMesher().getItemModel(itemStack);
+					AccessorRenderItem itemRenderAccessor = (AccessorRenderItem) itemRender;
+
+					itemRenderAccessor.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+					itemRenderAccessor.getTextureManager().getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(
+						false,
+						false
+					);
+
+					itemRender.renderItem(itemStack, ibakedmodel);
+
+					itemRenderAccessor.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+					itemRenderAccessor.getTextureManager().getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+				}
 				toPreload.remove(0);
 			} else {
 				itemPreloader.shutdown();
