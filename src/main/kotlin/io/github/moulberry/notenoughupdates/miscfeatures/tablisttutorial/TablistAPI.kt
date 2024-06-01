@@ -57,8 +57,10 @@ object TablistAPI {
             }
 
             if (list.isNotEmpty()) {
-                // Empty line, the widget ends here.
-                if (entry == "§r") {
+                // Empty line
+                // Or there is no spacing between two widgets
+                // The widget ends here.
+                if (entry == "§r" || entry.startsWith("§r§")) {
                     break
                 }
 
