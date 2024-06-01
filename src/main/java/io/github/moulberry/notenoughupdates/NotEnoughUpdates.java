@@ -260,14 +260,9 @@ public class NotEnoughUpdates {
 				config.apiData.repoBranch = "master";
 			}
 
-			// Remove after 2.1 ig
-			if ("dangerous".equals(config.apiData.repoBranch)) {
-				config.apiData.repoBranch = "prerelease";
-			}
-
-			// Remove before 2.1.1 release
-			if ("master".equals(config.apiData.repoBranch)) {
-				config.apiData.repoBranch = "prerelease";
+			// When this is changed next, also change it in the build gradle
+			if ("prerelease".equals(config.apiData.repoBranch)) {
+				config.apiData.repoBranch = "master";
 			}
 
 			if (config.apiData.moulberryCodesApi.isEmpty()) {
