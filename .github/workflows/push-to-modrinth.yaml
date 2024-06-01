@@ -13,6 +13,7 @@ jobs:
           regex: true
           file: ".*\\.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
+          target: .
       - run: |
           printf %s "$CHANGELOG" > CHANGELOG.md
         env:
