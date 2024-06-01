@@ -48,6 +48,8 @@ import io.github.moulberry.notenoughupdates.util.TabSkillInfoParser;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
@@ -115,7 +117,12 @@ public class NEUEventListener {
 					});
 				}
 			} else if (!toPreload.isEmpty()) {
-				Utils.drawItemStack(toPreload.get(0), -100, -100);
+				RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
+				ItemStack itemStack = toPreload.get(0);
+				if (itemStack != null && itemStack.getItem() != null) {
+					IBakedModel ibakedmodel = itemRender.getItemModelMesher().getItemModel(itemStack);
+					itemRender.renderItem(itemStack, ibakedmodel);
+				}
 				toPreload.remove(0);
 			} else {
 				itemPreloader.shutdown();
