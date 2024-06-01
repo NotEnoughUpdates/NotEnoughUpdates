@@ -60,7 +60,6 @@
     "AccessorGuiContainer",
     "AccessorGuiEditSign",
     "AccessorMinecraft",
-    "AccessorRenderItem",
     "MixinEntityChargedCreeper",
     "MixinGuiEditSign",
     "MixinGuiTextField",
