@@ -7,17 +7,23 @@ jobs:
   upload-to-modrinth:
     runs-on: ubuntu-latest
     steps:
-      - uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          version: ${{ github.event.release.id }}
-          regex: true
-          file: ".*\\.jar"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target: .
+      - name: Download release file
+          gh release download "$TAG" -p '*.jar' --repo "$REPO"
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
       - run: |
           printf %s "$CHANGELOG" > CHANGELOG.md
+        name: Set changelog
         env:
           CHANGELOG: ${{ github.event.release.body }}
+      - name: Display file tree
+        run: |
+          ls -Rla .
+          echo ::group::Changelog
+          cat CHANGELOG.md
+          echo ::endgroup::
       - uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: GGamhqbw
