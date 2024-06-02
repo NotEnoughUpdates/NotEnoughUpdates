@@ -19,11 +19,53 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
+import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
+import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+
+import java.util.List;
 
 public class ItemCustomizationUtills {
+
+	public static List<String> customizeColourGuide = Lists.newArrayList(
+		EnumChatFormatting.AQUA + "Set a custom name for the item",
+		EnumChatFormatting.GREEN + "",
+		EnumChatFormatting.GREEN + "Type \"&&\" for \u00B6",
+		EnumChatFormatting.GREEN + "Type \"**\" for \u272A",
+		EnumChatFormatting.GREEN + "Type \"*1-9\" for \u278A-\u2792",
+		EnumChatFormatting.GREEN + "",
+		EnumChatFormatting.GREEN + "Available colour codes:",
+		Utils.chromaString("\u00B6z = Chroma"),
+		EnumChatFormatting.DARK_BLUE + "\u00B61 = Dark Blue",
+		EnumChatFormatting.DARK_GREEN + "\u00B62 = Dark Green",
+		EnumChatFormatting.DARK_AQUA + "\u00B63 = Dark Aqua",
+		EnumChatFormatting.DARK_RED + "\u00B64 = Dark Red",
+		EnumChatFormatting.DARK_PURPLE + "\u00B65 = Dark Purple",
+		EnumChatFormatting.GOLD + "\u00B66 = Gold",
+		EnumChatFormatting.GRAY + "\u00B67 = Gray",
+		EnumChatFormatting.DARK_GRAY + "\u00B68 = Dark Gray",
+		EnumChatFormatting.BLUE + "\u00B69 = Blue",
+		EnumChatFormatting.GREEN + "\u00B6a = Green",
+		EnumChatFormatting.AQUA + "\u00B6b = Aqua",
+		EnumChatFormatting.RED + "\u00B6c = Red",
+		EnumChatFormatting.LIGHT_PURPLE + "\u00B6d = Purple",
+		EnumChatFormatting.YELLOW + "\u00B6e = Yellow",
+		EnumChatFormatting.WHITE + "\u00B6f = White",
+		"\u00A7Z\u00B6Z = SBA Chroma" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + " (Requires SBA)",
+		"",
+		EnumChatFormatting.GREEN + "Available formatting codes:",
+		EnumChatFormatting.GRAY + "\u00B6k = " + EnumChatFormatting.OBFUSCATED + "Obfuscated",
+		EnumChatFormatting.GRAY + "\u00B6l = " + EnumChatFormatting.BOLD + "Bold",
+		EnumChatFormatting.GRAY + "\u00B6m = " + EnumChatFormatting.STRIKETHROUGH + "Strikethrough",
+		EnumChatFormatting.GRAY + "\u00B6n = " + EnumChatFormatting.UNDERLINE + "Underline",
+		EnumChatFormatting.GRAY + "\u00B6o = " + EnumChatFormatting.ITALIC + "Italic"
+	);
 
 	public static ItemStack copy(ItemStack stack, GuiItemCustomize instance) {
 		ItemStack customStack = stack.copy();
@@ -49,5 +91,67 @@ public class ItemCustomizationUtills {
 			? ((ItemArmor) instance.customItemStack.getItem()).getColor(instance.customItemStack)
 			: ChromaColour.specialToChromaRGB(customLeatherColour);
 		return 0xff000000 | col;
+	}
+
+	public static String getChromaStrFromLeatherColour(GuiItemCustomize instance) {
+		ItemStack customItemStack = instance.customItemStack;
+		return ChromaColour.special(0, 0xff, ((ItemArmor) customItemStack.getItem()).getColor(customItemStack));
+	}
+
+	public static void renderFooter(int xCenter, int yTop, GuiType guiType) {
+		int xCentreLeft = xCenter - 90;
+		int xCentreRight = xCenter;
+
+		Gui.drawRect(xCentreLeft - 0, yTop, xCenter + 3, yTop + 17, 0xff101016);
+		Gui.drawRect(xCentreLeft - 0, yTop, xCenter + 1, yTop + 15, 0xff101016);
+		Gui.drawRect(xCentreLeft - 1, yTop + 1, xCenter, yTop + 14, 0xff000000 | 0xff00ffc4);
+
+		Utils.renderShadowedString(getButtons(guiType, 0).getDisplay(), xCentreLeft + 45, yTop + 4, xCenter*2 - xCentreRight);
+
+		xCentreLeft += 90;
+		xCentreRight += 90;
+
+		Gui.drawRect(xCentreLeft - 0, yTop, xCentreRight, yTop + 17, 0x70000000);
+		Gui.drawRect(xCentreLeft - 0, yTop, xCentreRight, yTop + 15, 0xff101016);
+		Gui.drawRect(xCentreLeft - 1, yTop + 1, xCentreRight, yTop + 14, 0xff000000 | 0xff00ffc4 * 2);
+
+		Utils.renderShadowedString(getButtons(guiType, 1).getDisplay(), xCentreLeft + 45, yTop + 4, xCenter*2 - xCentreRight);
+	}
+
+	public static GuiType getButtons(GuiType guiType, int button) {
+		if (button == 0) {
+			if (guiType == GuiType.DEFAULT) {
+				return GuiType.ANIMATED;
+			} else {
+				return GuiType.DEFAULT;
+			}
+		}
+		if (button == 1) {
+			if (guiType == GuiType.HYPIXEL) {
+				return GuiType.ANIMATED;
+			} else {
+				return GuiType.HYPIXEL;
+			}
+		}
+
+		return GuiType.DEFAULT;
+	}
+
+	public static GuiType getButtonClicked(int mouseX, int mouseY, GuiType guiType, float offset) {
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+		int xCenter = scaledResolution.getScaledWidth() / 2;
+		int xCentreLeft = xCenter - 90;
+		int xCentreRight = xCenter;
+
+		for (int i = 0; i < 2; i++) {
+			if (mouseX >= xCentreLeft && mouseX <= xCentreRight &&
+				mouseY >= offset - 7 && mouseY <= offset + 12) {
+				return getButtons(guiType, i);
+			}
+			xCentreLeft += 90;
+			xCentreRight += 90;
+		}
+
+		return null;
 	}
 }

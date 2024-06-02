@@ -19,8 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
-import com.google.common.collect.Lists;
-import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.core.GlScissorStack;
 import io.github.moulberry.notenoughupdates.core.GuiElement;
 import io.github.moulberry.notenoughupdates.core.GuiElementBoolean;
@@ -39,7 +37,6 @@ import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -70,6 +67,8 @@ public class GuiItemCustomize extends GuiScreen {
 	private String lastCustomItem = "";
 
 	private GuiElement editor = null;
+
+	private GuiType guiType = GuiType.DEFAULT;
 
 	public GuiItemCustomize(ItemStack stack, String itemUUID) {
 		this.stack = stack;
@@ -113,10 +112,6 @@ public class GuiItemCustomize extends GuiScreen {
 		updateData();
 	}
 
-	public String getChromaStrFromLeatherColour() {
-		return ChromaColour.special(0, 0xff, ((ItemArmor) customItemStack.getItem()).getColor(customItemStack));
-	}
-
 	public void updateData() {
 		ItemCustomizeManager.ItemData data = new ItemCustomizeManager.ItemData();
 
@@ -140,7 +135,7 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		if (this.customLeatherColour != null && (!(customItemStack.getItem() instanceof ItemArmor) || !this.customLeatherColour.equals(
-			getChromaStrFromLeatherColour()))) {
+			ItemCustomizationUtills.getChromaStrFromLeatherColour(this)))) {
 			data.customLeatherColour = this.customLeatherColour;
 		} else {
 			data.customLeatherColour = null;
@@ -178,6 +173,19 @@ public class GuiItemCustomize extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		if (!supportCustomLeatherColour) guiType = GuiType.DEFAULT;
+		drawScreenType(mouseX, mouseY, partialTicks, guiType);
+	}
+
+	private void drawScreenType(int mouseX, int mouseY, float partialTicks, GuiType type) {
+		if (type == GuiType.DEFAULT) {
+			drawScreenDefault(mouseX, mouseY, partialTicks);
+		} else {
+			drawScreenDyes(mouseX, mouseY, partialTicks);
+		}
+	}
+
+	private void drawScreenDefault(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
 
 		List<String> tooltipToDisplay = null;
@@ -219,39 +227,7 @@ public class GuiItemCustomize extends GuiScreen {
 		Utils.drawTexturedRect(helpX, yTop, 20, 20, GL11.GL_LINEAR);
 
 		if (mouseX >= helpX && mouseX <= helpX + 20 && mouseY >= yTop && mouseY <= yTop + 20) {
-			tooltipToDisplay = Lists.newArrayList(
-				EnumChatFormatting.AQUA + "Set a custom name for the item",
-				EnumChatFormatting.GREEN + "",
-				EnumChatFormatting.GREEN + "Type \"&&\" for \u00B6",
-				EnumChatFormatting.GREEN + "Type \"**\" for \u272A",
-				EnumChatFormatting.GREEN + "Type \"*1-9\" for \u278A-\u2792",
-				EnumChatFormatting.GREEN + "",
-				EnumChatFormatting.GREEN + "Available colour codes:",
-				Utils.chromaString("\u00B6z = Chroma"),
-				EnumChatFormatting.DARK_BLUE + "\u00B61 = Dark Blue",
-				EnumChatFormatting.DARK_GREEN + "\u00B62 = Dark Green",
-				EnumChatFormatting.DARK_AQUA + "\u00B63 = Dark Aqua",
-				EnumChatFormatting.DARK_RED + "\u00B64 = Dark Red",
-				EnumChatFormatting.DARK_PURPLE + "\u00B65 = Dark Purple",
-				EnumChatFormatting.GOLD + "\u00B66 = Gold",
-				EnumChatFormatting.GRAY + "\u00B67 = Gray",
-				EnumChatFormatting.DARK_GRAY + "\u00B68 = Dark Gray",
-				EnumChatFormatting.BLUE + "\u00B69 = Blue",
-				EnumChatFormatting.GREEN + "\u00B6a = Green",
-				EnumChatFormatting.AQUA + "\u00B6b = Aqua",
-				EnumChatFormatting.RED + "\u00B6c = Red",
-				EnumChatFormatting.LIGHT_PURPLE + "\u00B6d = Purple",
-				EnumChatFormatting.YELLOW + "\u00B6e = Yellow",
-				EnumChatFormatting.WHITE + "\u00B6f = White",
-				"\u00A7Z\u00B6Z = SBA Chroma" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + " (Requires SBA)",
-				"",
-				EnumChatFormatting.GREEN + "Available formatting codes:",
-				EnumChatFormatting.GRAY + "\u00B6k = " + EnumChatFormatting.OBFUSCATED + "Obfuscated",
-				EnumChatFormatting.GRAY + "\u00B6l = " + EnumChatFormatting.BOLD + "Bold",
-				EnumChatFormatting.GRAY + "\u00B6m = " + EnumChatFormatting.STRIKETHROUGH + "Strikethrough",
-				EnumChatFormatting.GRAY + "\u00B6n = " + EnumChatFormatting.UNDERLINE + "Underline",
-				EnumChatFormatting.GRAY + "\u00B6o = " + EnumChatFormatting.ITALIC + "Italic"
-			);
+			tooltipToDisplay = ItemCustomizationUtills.customizeColourGuide;
 		}
 
 		yTop += 25;
@@ -355,6 +331,60 @@ public class GuiItemCustomize extends GuiScreen {
 
 		textFieldCustomItem.render(xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11, yTopText + offset);
 
+		if (supportCustomLeatherColour) {
+			yTop += 25;
+			ItemCustomizationUtills.renderFooter(xCenter, yTop, guiType);
+		}
+
+
+		renderHeight = yTop - yTopStart;
+
+		if (editor != null) {
+			editor.render();
+		}
+
+		if (tooltipToDisplay != null) {
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
+		}
+
+		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
+
+	private void drawScreenDyes(int mouseX, int mouseY, float partialTicks) {
+		drawDefaultBackground();
+
+		List<String> tooltipToDisplay = null;
+
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+
+		int xCenter = scaledResolution.getScaledWidth() / 2;
+		int yTopStart = (scaledResolution.getScaledHeight() - renderHeight) / 2;
+		int yTop = yTopStart;
+
+		RenderUtils.drawFloatingRectDark(xCenter - 100, yTop - 9, 200, renderHeight + 33);
+
+		RenderUtils.drawFloatingRectDark(xCenter - 90, yTop - 5, 180, 14);
+		Utils.renderShadowedString("\u00a75\u00a7lNEU Item Customizer", xCenter, yTop - 1, 180);
+
+		yTop += 14;
+		int yTopText = yTop;
+
+
+		RenderUtils.drawFloatingRectDark(xCenter - 90, yTop, 180, 110);
+		GlStateManager.enableDepth();
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(xCenter - 48, yTop + 7, 0);
+		GlStateManager.scale(6, 6, 1);
+		this.customItemStack = ItemCustomizationUtills.copy(stack, this);
+		Utils.drawItemStack(customItemStack, 0, 0);
+		GlStateManager.popMatrix();
+
+		yTop += 115;
+
+		enchantGlintCustomColourAnimation.tick();
+
+		ItemCustomizationUtills.renderFooter(xCenter, yTop, guiType);
+
 		renderHeight = yTop - yTopStart;
 
 		if (editor != null) {
@@ -427,7 +457,7 @@ public class GuiItemCustomize extends GuiScreen {
 
 		if (editor == null || !editor.mouseInput(mouseX, mouseY)) {
 			super.handleMouseInput();
-			enchantGlintButton.mouseInput(mouseX, mouseY);
+			if (guiType == GuiType.DEFAULT) enchantGlintButton.mouseInput(mouseX, mouseY);
 		}
 	}
 
@@ -437,8 +467,16 @@ public class GuiItemCustomize extends GuiScreen {
 		textFieldCustomItem.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 	}
 
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+
+	private void mouseClickedType(int mouseX, int mouseY, int mouseButton, GuiType type) throws IOException {
+		if (type == GuiType.DEFAULT) {
+			mouseClickedDefault(mouseX, mouseY, mouseButton);
+		} else {
+			mouseClickedDyes(mouseX, mouseY, mouseButton);
+		}
+	}
+
+	private void mouseClickedDefault(int mouseX, int mouseY, int mouseButton) throws IOException {
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int xCenter = scaledResolution.getScaledWidth() / 2;
 		int yTop = (scaledResolution.getScaledHeight() - renderHeight) / 2;
@@ -494,7 +532,7 @@ public class GuiItemCustomize extends GuiScreen {
 				updateData();
 			} else {
 				editor = new GuiElementColour(mouseX, mouseY,
-					() -> customLeatherColour == null ? getChromaStrFromLeatherColour() : customLeatherColour,
+					() -> customLeatherColour == null ? ItemCustomizationUtills.getChromaStrFromLeatherColour(this) : customLeatherColour,
 					(colour) -> {
 						customLeatherColour = colour;
 						updateData();
@@ -503,6 +541,49 @@ public class GuiItemCustomize extends GuiScreen {
 			}
 		}
 
+		if (supportCustomLeatherColour) {
+			/*if (mouseX >= xCenter + 105 && mouseY >= belowEnchGlint - 7) {
+				if (mouseX <= xCenter + 125 && mouseY <= belowEnchGlint + 15) {
+					guiType = GuiType.DYES;
+				}
+			}*/
+
+				float buttonOffset = yTop + 174 + enchantGlintCustomColourAnimation.getValue() + 5 + 45;
+				System.out.println(mouseY - buttonOffset);
+
+				GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, buttonOffset);
+				if (buttonClicked != null) guiType = buttonClicked;
+
+		/*	System.out.println(mouseX + " " + mouseY);
+			System.out.println(xCenter + " " + belowEnchGlint);
+			System.out.println((mouseX >= xCenter + 105) + " " + (mouseY >= belowEnchGlint - 7));
+			System.out.println((mouseX <= xCenter + 125) + " " + (mouseY <= belowEnchGlint + 15));*/
+
+		}
+
 		super.mouseClicked(mouseX, mouseY, mouseButton);
+	}
+
+	private void mouseClickedDyes(int mouseX, int mouseY, int mouseButton) throws IOException {
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+		//int xCenter = scaledResolution.getScaledWidth() / 2;
+		int yTop = (scaledResolution.getScaledHeight() - renderHeight) / 2;
+		float belowEnchGlint = yTop + 174 + 5 - 43;
+
+		/*if (mouseX >= xCenter + 105 && mouseY >= belowEnchGlint - 7) {
+			if (mouseX <= xCenter + 125 && mouseY <= belowEnchGlint + 15) {
+				guiType = GuiType.DEFAULT;
+			}
+		}*/
+
+		GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, belowEnchGlint);
+		if (buttonClicked != null) guiType = buttonClicked;
+
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+	}
+
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		mouseClickedType(mouseX, mouseY, mouseButton, guiType);
 	}
 }
