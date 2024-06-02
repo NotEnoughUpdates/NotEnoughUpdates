@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,7 +17,7 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui;
+package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
@@ -53,10 +53,10 @@ public class GuiItemCustomize extends GuiScreen {
 	private static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
 
 	private final ItemStack stack;
-	private ItemStack customItemStack;
+	ItemStack customItemStack;
 	private final String itemUUID;
 	private final GuiElementTextField textFieldRename = new GuiElementTextField("", 158, 20, GuiElementTextField.COLOUR);
-	private final GuiElementTextField textFieldCustomItem = new GuiElementTextField("", 180, 20, GuiElementTextField.COLOUR);
+	final GuiElementTextField textFieldCustomItem = new GuiElementTextField("", 180, 20, GuiElementTextField.COLOUR);
 	private final GuiElementBoolean enchantGlintButton;
 
 	private int renderHeight = 0;
@@ -64,10 +64,10 @@ public class GuiItemCustomize extends GuiScreen {
 	private final LerpingFloat enchantGlintCustomColourAnimation = new LerpingFloat(0, 200);
 
 	private boolean enchantGlint;
-	private String customGlintColour = null;
+	String customGlintColour = null;
 
-	private String customLeatherColour = null;
-	private boolean supportCustomLeatherColour;
+	String customLeatherColour = null;
+	boolean supportCustomLeatherColour;
 	private String lastCustomItem = "";
 
 	private GuiElement editor = null;
@@ -75,7 +75,7 @@ public class GuiItemCustomize extends GuiScreen {
 	public GuiItemCustomize(ItemStack stack, String itemUUID) {
 		this.stack = stack;
 		this.itemUUID = itemUUID;
-		this.customItemStack = copy(stack);
+		this.customItemStack = ItemCustomizationUtills.copy(stack, this);
 
 		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
 		boolean stackHasEffect = stack.hasEffect() && !model.isBuiltInRenderer();
@@ -124,7 +124,7 @@ public class GuiItemCustomize extends GuiScreen {
 		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
 		boolean stackHasEffect = stack.hasEffect() && !model.isBuiltInRenderer();
 
-		this.customItemStack = copy(stack);
+		this.customItemStack = ItemCustomizationUtills.copy(stack, this);
 		data.defaultItem = stack.getItem().getRegistryName();
 
 		if (this.enchantGlint != stackHasEffect) {
@@ -175,31 +175,6 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		ItemCustomizeManager.putItemData(itemUUID, data);
-	}
-
-	private ItemStack copy(ItemStack stack) {
-		ItemStack customStack = stack.copy();
-		if (!this.textFieldCustomItem.getText().isEmpty()) {
-			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
-			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
-		}
-		return customStack;
-	}
-
-	private int getGlintColour() {
-		int col = customGlintColour == null
-			? ChromaColour.specialToChromaRGB(ItemCustomizeManager.DEFAULT_GLINT_COLOR)
-			: ChromaColour.specialToChromaRGB(customGlintColour);
-		return 0xff000000 | col;
-	}
-
-	private int getLeatherColour() {
-		if (!supportCustomLeatherColour) return 0xff000000;
-
-		int col =
-			customLeatherColour == null ? ((ItemArmor) customItemStack.getItem()).getColor(customItemStack) : ChromaColour.specialToChromaRGB(
-				customLeatherColour);
-		return 0xff000000 | col;
 	}
 
 	@Override
@@ -287,7 +262,7 @@ public class GuiItemCustomize extends GuiScreen {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(xCenter - 48, yTop + 7, 0);
 		GlStateManager.scale(6, 6, 1);
-		this.customItemStack = copy(stack);
+		this.customItemStack = ItemCustomizationUtills.copy(stack, this);
 		Utils.drawItemStack(customItemStack, 0, 0);
 		GlStateManager.popMatrix();
 
@@ -309,7 +284,7 @@ public class GuiItemCustomize extends GuiScreen {
 		if (enchantGlintCustomColourAnimation.getValue() > 0) {
 			yTop -= 5;
 
-			int glintColour = getGlintColour();
+			int glintColour = ItemCustomizationUtills.getGlintColour(this);
 
 			GlScissorStack.push(
 				0,
@@ -340,7 +315,7 @@ public class GuiItemCustomize extends GuiScreen {
 			((ItemArmor) customItemStack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
 
 		if (supportCustomLeatherColour) {
-			int leatherColour = getLeatherColour();
+			int leatherColour = ItemCustomizationUtills.getLeatherColour(this);
 
 			Gui.drawRect(xCenter - 90, yTop, xCenter + 92, yTop + 17, 0x70000000);
 			Gui.drawRect(xCenter - 90, yTop, xCenter + 90, yTop + 15, 0xff101016);
@@ -354,30 +329,6 @@ public class GuiItemCustomize extends GuiScreen {
 
 			yTop += 20;
 		}
-
-        /*if(true) {
-            yTop += 20;
-
-            String titleStr = "\u00a76\u00a7lWant other players to see your customized item?";
-            String buttonStr = "\u00a76Purchase Item Customize Tag";
-            if(true) {
-                buttonStr = "\u00a76Use item customize tag (3 remaining)";
-            }
-
-            int w = Minecraft.getMinecraft().fontRendererObj.getStringWidth(titleStr)+8;
-            if(w > scaledResolution.getScaledWidth()/2) w= scaledResolution.getScaledWidth()/2;
-
-            RenderUtils.drawFloatingRectDark(xCenter-w/2, yTop, w, 50);
-            Utils.renderShadowedString(titleStr,  xCenter, yTop+8, scaledResolution.getScaledWidth()/2);
-
-            int ctw = Minecraft.getMinecraft().fontRendererObj.getStringWidth(buttonStr)+8;
-
-            RenderUtils.drawFloatingRectDark(xCenter-ctw/2, yTop+25, ctw, 15);
-            Utils.renderShadowedString(buttonStr, xCenter, yTop+28, w);
-
-
-
-        }*/
 
 		if (!lastCustomItem.equals(textFieldCustomItem.getText())) {
 			updateData();
