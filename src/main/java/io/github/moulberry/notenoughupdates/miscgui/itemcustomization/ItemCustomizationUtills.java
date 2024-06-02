@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
-import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 
