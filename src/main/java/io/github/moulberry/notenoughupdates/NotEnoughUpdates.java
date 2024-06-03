@@ -156,6 +156,14 @@ public class NotEnoughUpdates {
 			.setBiomeName("NeuCrystalHollowsCrystalNucleus")
 			.setFillerBlockMetadata(5470985)
 			.setTemperatureRainfall(0.95F, 0.9F);
+	public static final BiomeGenBase smolderingTomb =
+		(new BiomeGenSnow(105, false))
+			.setColor(16777215)
+			.setBiomeName("NeuSmolderingTomb");
+	public static final BiomeGenBase glaciteMineshaft =
+		(new BiomeGenSnow(105, false))
+			.setColor(16777215)
+			.setBiomeName("NeuGlaciteMineshaft");
 	private static final long CHAT_MSG_COOLDOWN = 200;
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =
