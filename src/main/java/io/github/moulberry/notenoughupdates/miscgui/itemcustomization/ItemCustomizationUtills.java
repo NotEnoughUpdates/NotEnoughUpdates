@@ -21,13 +21,18 @@ package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
+import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
@@ -157,5 +162,44 @@ public class ItemCustomizationUtills {
 		}
 
 		return null;
+	}
+
+	public static int getAnimatedDyeColour(String[] dyeColours, int ticks) {
+			return ChromaColour.specialToChromaRGB(dyeColours[(Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length]);
+	}
+
+	private static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
+
+	public static void renderColourBlob(int xCenter, int yTop, int colour, String text, boolean renderReset) {
+		Gui.drawRect(xCenter - 90, yTop, xCenter + 92, yTop + 17, 0x70000000);
+		Gui.drawRect(xCenter - 90, yTop, xCenter + 90, yTop + 15, 0xff101016);
+		Gui.drawRect(xCenter - 89, yTop + 1, xCenter + 89, yTop + 14, 0xff000000 | colour);
+
+		Utils.renderShadowedString(text, xCenter, yTop + 4, 180);
+
+		if (renderReset) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(RESET);
+			GlStateManager.color(1, 1, 1, 1);
+			RenderUtils.drawTexturedRect(xCenter + 90 - 12, yTop + 2, 10, 11, GL11.GL_NEAREST);
+		}
+	}
+
+	public static void renderTextBox(GuiElementTextField textField, String text, int xOffset, int yOffset, int maxTextSize) {
+		if (!textField.getFocus() && textField.getText().isEmpty()) {
+			textField.setOptions(GuiElementTextField.SCISSOR_TEXT);
+			textField.setPrependText(text);
+		} else {
+			textField.setOptions(GuiElementTextField.COLOUR | GuiElementTextField.SCISSOR_TEXT);
+			textField.setPrependText("");
+		}
+
+		if (!textField.getFocus()) {
+			textField.setSize(maxTextSize, 20);
+		} else {
+			int textSize = Minecraft.getMinecraft().fontRendererObj.getStringWidth(textField.getTextDisplay()) + 10;
+			textField.setSize(Math.max(textSize, maxTextSize), 20);
+		}
+
+		textField.render(xOffset, yOffset);
 	}
 }
