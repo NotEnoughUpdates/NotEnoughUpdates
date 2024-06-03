@@ -19,6 +19,10 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.core.GlScissorStack;
 import io.github.moulberry.notenoughupdates.core.GuiElement;
@@ -27,7 +31,9 @@ import io.github.moulberry.notenoughupdates.core.GuiElementColour;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingFloat;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
+import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -75,6 +81,11 @@ public class GuiItemCustomize extends GuiScreen {
 	private int lastTicks = 2;
 	boolean supportCustomLeatherColour;
 	private String lastCustomItem = "";
+
+	JsonObject animatedDyes = null;
+	JsonObject staticDyes = null;
+	ArrayList<DyeType> dyes = new ArrayList<>();
+	boolean repoError = false;
 
 	private GuiElement editor = null;
 
@@ -129,6 +140,44 @@ public class GuiItemCustomize extends GuiScreen {
 			enchantGlint = bool;
 			updateData();
 		});
+
+		JsonObject dyesConst = Constants.DYES;
+
+		if (dyesConst == null) {
+			Utils.showOutdatedRepoNotification("dyes.json");
+			repoError = true;
+			return;
+		} else {
+			repoError = false;
+		}
+
+		if (dyesConst.has("animated")) {
+			animatedDyes = dyesConst.get("animated").getAsJsonObject();
+		}
+		if (dyesConst.has("static")) {
+			staticDyes = dyesConst.get("static").getAsJsonObject();
+		}
+
+		DyeType animatedHeader = new DyeType("Animated Dyes");
+		dyes.add(animatedHeader);
+
+		animatedDyes.entrySet().forEach(entry -> {
+			String key = entry.getKey();
+			JsonArray value = entry.getValue().getAsJsonArray();
+			DyeType dyeType = new DyeType(key, value);
+			dyes.add(dyeType);
+		});
+
+		DyeType staticHeader = new DyeType("Static Dyes");
+		dyes.add(staticHeader);
+
+		staticDyes.entrySet().forEach(entry -> {
+			String key = entry.getKey();
+			String value = entry.getValue().getAsString();
+			DyeType dyeType = new DyeType(key, value);
+			dyes.add(dyeType);
+		});
+
 
 	}
 
@@ -220,8 +269,10 @@ public class GuiItemCustomize extends GuiScreen {
 	private void drawScreenType(int mouseX, int mouseY, float partialTicks, GuiType type) {
 		if (type == GuiType.DEFAULT) {
 			drawScreenDefault(mouseX, mouseY, partialTicks);
-		} else {
-			drawScreenDyes(mouseX, mouseY, partialTicks);
+		} else if (type == GuiType.ANIMATED) {
+			drawScreenAnimatedDyes(mouseX, mouseY, partialTicks);
+		} else if (type == GuiType.HYPIXEL) {
+			drawScreenHypixel(mouseX, mouseY, partialTicks);
 		}
 	}
 
@@ -337,7 +388,7 @@ public class GuiItemCustomize extends GuiScreen {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
-	private void drawScreenDyes(int mouseX, int mouseY, float partialTicks) {
+	private void drawScreenAnimatedDyes(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
 
 		List<String> tooltipToDisplay = null;
@@ -360,7 +411,7 @@ public class GuiItemCustomize extends GuiScreen {
 			//animatedLeatherColours.add(ItemCustomizationUtills.getChromaStrFromLeatherColour(this));
 
 			//warden dye, i think its right
-			String[] a = new String[]{				"#034150",				"#034150",				"#034150",				"#034150",				"#034150",				"#024554",				"#004a59",				"#004f5e",				"#005463",				"#005a68",				"#005f6d",				"#006472",				"#006a76",				"#006a76",				"#00757f",				"#007a84",				"#008088",				"#00868c",				"#008b90",				"#009194",				"#009194",				"#009295",				"#009295",				"#009295",				"#009295",				"#009295",				"#009295",				"#009194",				"#009194",				"#008b90",				"#00868c",				"#008088",				"#007a84",				"#00757f",				"#006a76",				"#006a76",				"#006472",				"#005f6d",				"#005a68",				"#005463",				"#004f5e",				"#004a59",				"#024554",				"#034150",				"#034150",				"#034150",				"#034150",				"#034150",};
+			String[] a = new String[]{				"#034150",				"#034150",				"#034150",				"#034150",				"#034150",				"#024554",				"#004a59",				"#004f5e",				"#005463",				"#005a68",				"#005f6d",				"#006472",				"#006a76",				"#006a76",				"#00757f",				"#007a84",				"#008088",				"#00868c",				"#008b90",				"#009194",				"#009194",				"#009295",				"#009295",				"#009295",				"#009295",				"#009295",				"#009295",				"#009194",				"#009194",				"#008b90",				"#00868c",				"#008088",				"#007a84",				"#00757f",				"#006a76",				"#006a76",				"#006472",				"#005f6d",				"#005a68",				"#005463",				"#004f5e",				"#004a59",				"#024554",				"#034150",				"#034150",				"#034150",				"#034150",				"#034150"};
 			//lucky dye
 			String[] b = new String[]{				"#87ff37",				"#81F83C",				"#7DF43F",				"#79EF42",				"#73E944",				"#6FE547",				"#69DF49",				"#64D84B",				"#5DD24D",				"#57CC4E",				"#52C551",				"#4ABE52",				"#44B752",				"#3DB153",				"#36AB53",				"#30A553",				"#299F54",				"#239954",				"#1D9553",				"#179153",				"#0F8C52",				"#098852",				"#008350",				"#007D4F",				"#00774D",				"#00734B",				"#006F49",				"#006C47",				"#006944",				"#006944",				"#006C47",				"#006F49",				"#00734B",				"#00774D",				"#007D4F",				"#008350",				"#098852",				"#0F8C52",				"#179153",				"#1D9553",				"#239954",				"#299F54",				"#30A553",				"#36AB53",				"#3DB153",				"#44B752",				"#4ABE52",				"#52C551",				"#57CC4E",				"#5DD24D",				"#64D84B",				"#69DF49",				"#6FE547",				"#73E944",				"#79EF42",				"#7DF43F",				"#81F83C",				"#87ff37"			};
 			//rose dye
@@ -379,8 +430,7 @@ public class GuiItemCustomize extends GuiScreen {
 			}
 
 			for (String s : d) {
-				Integer decode = Integer.decode(s);
-				Color color = new Color(decode);
+				Color color = ItemCustomizationUtills.getColourFromHex(s);
 				animatedLeatherColours.add(ChromaColour.special(0, 0, color.getRGB()));
 			}
 		}
@@ -432,7 +482,118 @@ public class GuiItemCustomize extends GuiScreen {
 			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 		}
 
-		scrollScreen();
+		scrollScreen(animatedLeatherColours.size());
+
+		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
+
+	private void drawScreenHypixel(int mouseX, int mouseY, float partialTicks) {
+		drawDefaultBackground();
+
+		List<String> tooltipToDisplay = null;
+
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+
+		int xCenter = scaledResolution.getScaledWidth() / 2;
+		int yTopStart = (scaledResolution.getScaledHeight() - renderHeight) / 2;
+		int yTop = yTopStart;
+
+		renderHeader(xCenter, yTop);
+
+		yTop += 14;
+
+		if (repoError) {
+			Utils.renderShadowedString("Repo Error", xCenter, yTop + 4, 180);
+
+			yTop += 15;
+
+			ItemCustomizationUtills.renderFooter(xCenter, yTop, guiType);
+
+			renderHeight = yTop - yTopStart;
+
+			super.drawScreen(mouseX, mouseY, partialTicks);
+			return;
+		}
+
+		renderBigStack(xCenter, yTop);
+
+		yTop += 115;
+
+		int adjustedY = yTop + pageScroll + 20;
+
+		for (int i = 0; i < dyes.size(); i++) {
+			//todo gui auto is + 230
+			if (adjustedY + 20 * i < yTopStart + 130 || adjustedY + 20 * i >= yTopStart + 330) {
+				continue;
+			}
+
+			Color color = ItemCustomizationUtills.getColourFromHex(dyes.get(i).colour);
+
+			JsonArray colours = dyes.get(i).colours;
+			String itemId = dyes.get(i).itemId;
+			String displayName = null;
+			ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
+																														 .withKnownInternalName(itemId)
+																														 .resolveToItemStack();
+			if (itemStack == null && (colours != null || dyes.get(i).colour != null)) {
+				itemStack = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
+																														 .withKnownInternalName("DYE_PURE_YELLOW")
+																														 .resolveToItemStack();
+				displayName = itemId;
+			}
+			if (itemStack != null) {
+				if (displayName == null) displayName = itemStack.getDisplayName();
+				//Utils.drawItemStack(itemStack, xCenter - 90, yTop);
+				GlStateManager.enableDepth();
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(xCenter - 90, yTop, 0);
+				GlStateManager.scale(.9, .9, 1);
+				Utils.drawItemStack(itemStack, 0, 0);
+				GlStateManager.popMatrix();
+			}
+			if (color == null && colours == null) {
+				if (displayName == null) displayName = itemId;
+				Utils.renderShadowedString(displayName, xCenter, yTop + 4, 180);
+			} else if (color == null && colours != null) {
+				String colourHex = colours.get(
+					(Minecraft.getMinecraft().thePlayer.ticksExisted / this.animatedDyeTicks) % colours.size()).getAsString();
+				int colourFromHex = ItemCustomizationUtills.rgbToInt(ItemCustomizationUtills.getColourFromHex(colourHex));
+				ItemCustomizationUtills.renderColourBlob(xCenter, yTop, colourFromHex, displayName, false);
+			} else {
+				int colour = ItemCustomizationUtills.rgbToInt(color);
+				ItemCustomizationUtills.renderColourBlob(xCenter, yTop, colour, displayName, false);
+			}
+
+			yTop += 20;
+		}
+
+		ItemCustomizationUtills.renderTextBox(textFieldTickSpeed, "§7Speed...", xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11, yTop, 45);
+
+		yTop += 25;
+
+		enchantGlintCustomColourAnimation.tick();
+
+		ItemCustomizationUtills.renderFooter(xCenter, yTop, guiType);
+
+		try {
+			if (lastTicks != (Integer.parseInt(textFieldTickSpeed.getText()))) {
+				updateData();
+			}
+			lastTicks = Integer.parseInt(textFieldTickSpeed.getText());
+		} catch (NumberFormatException ignored) {
+		}
+
+		renderHeight = yTop - yTopStart;
+
+		if (editor != null) {
+			editor.render();
+		}
+
+		if (tooltipToDisplay != null) {
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
+		}
+
+		scrollScreen(dyes.size());
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
@@ -442,7 +603,7 @@ public class GuiItemCustomize extends GuiScreen {
 	double scrollVelocity = 0;
 	int pageScroll = 0;
 
-	private void scrollScreen() {
+	private void scrollScreen(int size) {
 		scrollVelocity += lastMouseScroll / 48.0;
 		scrollVelocity *= 0.95;
 		pageScroll += (int) scrollVelocity + lastMouseScroll / 24;
@@ -458,7 +619,7 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		//todo gui auto is - 80
-		pageScroll = MathHelper.clamp_int(pageScroll, -((animatedLeatherColours.size() * 20 - 20) - 180), 0);
+		pageScroll = MathHelper.clamp_int(pageScroll, -((size * 20 - 20) - 180), 0);
 		lastMouseScroll = 0;
 	}
 
@@ -546,14 +707,17 @@ public class GuiItemCustomize extends GuiScreen {
 	protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
 		textFieldRename.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 		textFieldCustomItem.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+		textFieldTickSpeed.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 	}
 
 
 	private void mouseClickedType(int mouseX, int mouseY, int mouseButton, GuiType type) throws IOException {
 		if (type == GuiType.DEFAULT) {
 			mouseClickedDefault(mouseX, mouseY, mouseButton);
-		} else {
-			mouseClickedDyes(mouseX, mouseY, mouseButton);
+		} else if (type == GuiType.ANIMATED) {
+			mouseClickedAnimatedDyes(mouseX, mouseY, mouseButton);
+		} else if (type == GuiType.HYPIXEL) {
+			mouseClickedHypixel(mouseX, mouseY, mouseButton);
 		}
 	}
 
@@ -645,18 +809,12 @@ public class GuiItemCustomize extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
-	private void mouseClickedDyes(int mouseX, int mouseY, int mouseButton) throws IOException {
+	private void mouseClickedAnimatedDyes(int mouseX, int mouseY, int mouseButton) throws IOException {
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int xCenter = scaledResolution.getScaledWidth() / 2;
 		int yTop = (scaledResolution.getScaledHeight() - renderHeight) / 2;
 		int topOffset = yTop + 129;
 		float bottomOffset = yTop + renderHeight + 3;
-
-		/*if (mouseX >= xCenter + 105 && mouseY >= belowEnchGlint - 7) {
-			if (mouseX <= xCenter + 125 && mouseY <= belowEnchGlint + 15) {
-				guiType = GuiType.DEFAULT;
-			}
-		}*/
 
 		ArrayList<Integer> indexToRemove = new ArrayList<>();
 
@@ -732,6 +890,54 @@ public class GuiItemCustomize extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
+	private void mouseClickedHypixel(int mouseX, int mouseY, int mouseButton) throws IOException {
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+		int xCenter = scaledResolution.getScaledWidth() / 2;
+		int yTop = (scaledResolution.getScaledHeight() - renderHeight) / 2;
+		int topOffset = yTop + 129;
+		float bottomOffset = yTop + renderHeight + 3;
+
+		int adjustedY = topOffset + pageScroll + 20;
+
+		for (int i = 0; i < dyes.size(); i++) {
+			if (adjustedY + 20 * i < yTop + 130 || adjustedY + 20 * i >= yTop + 330) {
+				continue;
+			}
+			if (supportCustomLeatherColour && mouseX >= xCenter - 90 && mouseX <= xCenter + 90 && mouseY >= topOffset &&
+				mouseY <= topOffset + 15) {
+				if (dyes.get(i).hasAnimatedColour()) {
+					animatedLeatherColours.clear();
+					for (JsonElement colour : dyes.get(i).colours) {
+						String string = colour.getAsString();
+						Color colourFromHex = ItemCustomizationUtills.getColourFromHex(string);
+						String special = SpecialColour.special(0, 0, colourFromHex.getRGB());
+						animatedLeatherColours.add(special);
+					}
+				} else if ((dyes.get(i).hasStaticColour())) {
+					animatedLeatherColours.clear();
+					Color colourFromHex = ItemCustomizationUtills.getColourFromHex(dyes.get(i).colour);
+					String special = SpecialColour.special(0, 0, colourFromHex.getRGB());
+					customLeatherColour = special;
+				}
+				updateData();
+			} topOffset += 20;
+		}
+
+		if (mouseX >= xCenter - textFieldTickSpeed.getWidth() / 2 - 70 &&
+			mouseX <= xCenter + textFieldTickSpeed.getWidth() / 2 - 70 &&
+			mouseY >= topOffset && mouseY <= topOffset + textFieldTickSpeed.getHeight()) {
+			textFieldTickSpeed.mouseClicked(mouseX, mouseY, mouseButton);
+		} else {
+			textFieldTickSpeed.unfocus();
+		}
+
+		GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
+		if (buttonClicked != null) guiType = buttonClicked;
+
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+	}
+
+
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		mouseClickedType(mouseX, mouseY, mouseButton, guiType);
@@ -744,8 +950,6 @@ public class GuiItemCustomize extends GuiScreen {
 		Utils.renderShadowedString("\u00a75\u00a7lNEU Item Customizer", xCenter, yTop - 1, 180);
 
 	}
-
-
 
 	private void renderBigStack(int xCenter, int yTop) {
 		RenderUtils.drawFloatingRectDark(xCenter - 90, yTop, 180, 110);

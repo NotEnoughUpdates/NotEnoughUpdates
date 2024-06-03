@@ -34,6 +34,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.List;
 
 public class ItemCustomizationUtills {
@@ -201,5 +202,19 @@ public class ItemCustomizationUtills {
 		}
 
 		textField.render(xOffset, yOffset);
+	}
+
+	public static Color getColourFromHex(String hex) {
+		Color color = null;
+		try {
+			int decode = Integer.decode(hex);
+			color = new Color(decode);
+		} catch (NumberFormatException | NullPointerException e) {
+		}
+		return color;
+	}
+
+	public static int rgbToInt(Color color) {
+		return (color.getRed() << 16) | (color.getGreen() << 8) | color.getBlue();
 	}
 }

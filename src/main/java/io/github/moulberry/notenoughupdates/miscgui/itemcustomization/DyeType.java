@@ -16,10 +16,37 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
-package io.github.moulberry.notenoughupdates.miscgui.itemcustomization
 
-enum class GuiType(val display: String) {
-    DEFAULT("§d§lMain Menu"),
-    ANIMATED("§b§lAnimated Dyes"),
-    HYPIXEL("§a§lHypixel Dyes"),
+package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
+
+import com.google.gson.JsonArray;
+
+public class DyeType {
+
+	String itemId;
+	String colour = null;
+	JsonArray colours = null;
+
+	public DyeType(String displayName) {
+		this.itemId = displayName;
+
+	}
+
+	public DyeType(String itemID, String colour) {
+		this.itemId = itemID;
+		this.colour = colour;
+	}
+
+	public DyeType(String itemID, JsonArray colours) {
+		this.itemId = itemID;
+		this.colours = colours;
+	}
+
+	public boolean hasStaticColour() {
+		return colour != null;
+	}
+
+	public boolean hasAnimatedColour() {
+		return colours != null;
+	}
 }
