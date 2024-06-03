@@ -93,6 +93,10 @@ public class ItemCustomizationUtills {
 		return 0xff000000 | col;
 	}
 
+	public static int getLeatherColour(String colourString) {
+		return 0xff000000 | ChromaColour.specialToChromaRGB(colourString);
+	}
+
 	public static String getChromaStrFromLeatherColour(GuiItemCustomize instance) {
 		ItemStack customItemStack = instance.customItemStack;
 		return ChromaColour.special(0, 0xff, ((ItemArmor) customItemStack.getItem()).getColor(customItemStack));

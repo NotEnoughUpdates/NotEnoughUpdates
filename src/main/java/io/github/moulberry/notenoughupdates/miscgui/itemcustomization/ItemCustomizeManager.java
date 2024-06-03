@@ -85,6 +85,7 @@ public class ItemCustomizeManager {
 		public String customGlintColour = DEFAULT_GLINT_COLOR;
 
 		public String customLeatherColour = null;
+		public String[] animatedLeatherColours = null;
 
 		public String defaultItem = null;
 		public String customItem = null;
