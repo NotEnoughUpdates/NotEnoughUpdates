@@ -157,11 +157,11 @@ public class NotEnoughUpdates {
 			.setFillerBlockMetadata(5470985)
 			.setTemperatureRainfall(0.95F, 0.9F);
 	public static final BiomeGenBase smolderingTomb =
-		(new BiomeGenSnow(105, false))
+		(new BiomeGenHell(107))
 			.setColor(16777215)
 			.setBiomeName("NeuSmolderingTomb");
 	public static final BiomeGenBase glaciteMineshaft =
-		(new BiomeGenSnow(105, false))
+		(new BiomeGenSnow(108, false))
 			.setColor(16777215)
 			.setBiomeName("NeuGlaciteMineshaft");
 	private static final long CHAT_MSG_COOLDOWN = 200;
