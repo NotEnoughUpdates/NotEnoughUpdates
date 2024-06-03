@@ -19,12 +19,26 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.customblockzones;
 
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 
 public class CrimsonIsleTextures implements IslandZoneSubdivider {
+
+	//-200 123 -940
+	//-390 123 -940
+	//-200 123 -1100
+	//-200 123 -1100
+	//-200 40 -940
+	//-390 40 -940
+	//-200 40 -1100
+	//-200 40 -1100
+	//smoldering tomb
+
 	@Override
 	public SpecialBlockZone getSpecialZoneForBlock(String location, BlockPos position) {
-		if (position.getX() > 5) return SpecialBlockZone.SMOLDERING_TOMB;
-		return null;
+		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(-390, 40, -1100, -200, 123, -940);
+		if (!axisAlignedBB.isVecInside(new Vec3(position))) return null;
+		return SpecialBlockZone.SMOLDERING_TOMB;
 	}
 }
