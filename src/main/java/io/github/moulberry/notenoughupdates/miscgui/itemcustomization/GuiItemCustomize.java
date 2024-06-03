@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class GuiItemCustomize extends GuiScreen {
 	private static final ResourceLocation PLUS = new ResourceLocation("notenoughupdates:itemcustomize/plus.png");
@@ -360,8 +361,21 @@ public class GuiItemCustomize extends GuiScreen {
 
 			//warden dye, i think its right
 			String[] a = new String[]{				"#034150",				"#034150",				"#034150",				"#034150",				"#034150",				"#024554",				"#004a59",				"#004f5e",				"#005463",				"#005a68",				"#005f6d",				"#006472",				"#006a76",				"#006a76",				"#00757f",				"#007a84",				"#008088",				"#00868c",				"#008b90",				"#009194",				"#009194",				"#009295",				"#009295",				"#009295",				"#009295",				"#009295",				"#009295",				"#009194",				"#009194",				"#008b90",				"#00868c",				"#008088",				"#007a84",				"#00757f",				"#006a76",				"#006a76",				"#006472",				"#005f6d",				"#005a68",				"#005463",				"#004f5e",				"#004a59",				"#024554",				"#034150",				"#034150",				"#034150",				"#034150",				"#034150",};
+			//lucky dye
+			String[] b = new String[]{				"#87ff37",				"#81F83C",				"#7DF43F",				"#79EF42",				"#73E944",				"#6FE547",				"#69DF49",				"#64D84B",				"#5DD24D",				"#57CC4E",				"#52C551",				"#4ABE52",				"#44B752",				"#3DB153",				"#36AB53",				"#30A553",				"#299F54",				"#239954",				"#1D9553",				"#179153",				"#0F8C52",				"#098852",				"#008350",				"#007D4F",				"#00774D",				"#00734B",				"#006F49",				"#006C47",				"#006944",				"#006944",				"#006C47",				"#006F49",				"#00734B",				"#00774D",				"#007D4F",				"#008350",				"#098852",				"#0F8C52",				"#179153",				"#1D9553",				"#239954",				"#299F54",				"#30A553",				"#36AB53",				"#3DB153",				"#44B752",				"#4ABE52",				"#52C551",				"#57CC4E",				"#5DD24D",				"#64D84B",				"#69DF49",				"#6FE547",				"#73E944",				"#79EF42",				"#7DF43F",				"#81F83C",				"#87ff37"			};
+			
+			
+			Random random = new Random();
+			int i = random.nextInt(2);
 
-			for (String s : a) {
+			String[] c;
+			if (i == 0) {
+				c = a;
+			} else {
+				c = b;
+			}
+
+			for (String s : c) {
 				Integer decode = Integer.decode(s);
 				Color color = new Color(decode);
 				animatedLeatherColours.add(ChromaColour.special(0, 0, color.getRGB()));
