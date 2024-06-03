@@ -25,19 +25,19 @@ import net.minecraft.util.Vec3;
 
 public class CrimsonIsleTextures implements IslandZoneSubdivider {
 
-	//-200 123 -940
-	//-390 123 -940
+	//-200 123 -930
+	//-390 123 -930
 	//-200 123 -1100
 	//-200 123 -1100
-	//-200 40 -940
-	//-390 40 -940
+	//-200 40 -930
+	//-390 40 -930
 	//-200 40 -1100
 	//-200 40 -1100
 	//smoldering tomb
 
 	@Override
 	public SpecialBlockZone getSpecialZoneForBlock(String location, BlockPos position) {
-		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(-390, 40, -1100, -200, 123, -940);
+		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(-390, 40, -1100, -200, 123, -930);
 		if (!axisAlignedBB.isVecInside(new Vec3(position))) return null;
 		return SpecialBlockZone.SMOLDERING_TOMB;
 	}
