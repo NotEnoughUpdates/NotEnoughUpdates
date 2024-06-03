@@ -78,6 +78,14 @@ public class SlotLocking {
 	public boolean lockSlotsInTrade = true;
 
 	@Expose
+	@ConfigOption(
+		name = "Disable Locking in Storage",
+		desc = "Disables slot locking and binding in the storage gui"
+	)
+	@ConfigEditorBoolean
+	public boolean disableInStorage = false;
+
+	@Expose
     /*@ConfigOption(
             name = "Item Swap drop delay",
             desc = "Set the delay between swapping to another item and being able to drop it.\n"+
