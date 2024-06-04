@@ -350,7 +350,15 @@ public class GuiItemCustomize extends GuiScreen {
 		if (supportCustomLeatherColour) {
 			int leatherColour = ItemCustomizationUtills.getLeatherColour(this);
 
-			ItemCustomizationUtills.renderColourBlob(xCenter, yTop, leatherColour, "§b§lCustom Leather Colour", true);
+			String text = "§b§lCustom Leather Colour";
+			boolean reset = true;
+
+			if (!animatedLeatherColours.isEmpty()) {
+				text = "§b§lOverridden by Animated";
+				reset = false;
+			}
+
+			ItemCustomizationUtills.renderColourBlob(xCenter, yTop, leatherColour, text, reset);
 
 			yTop += 20;
 		}
@@ -748,7 +756,7 @@ public class GuiItemCustomize extends GuiScreen {
 				editor = null;
 				customLeatherColour = null;
 				updateData();
-			} else {
+			} else if (animatedLeatherColours.isEmpty()) {
 				editor = new GuiElementColour(mouseX, mouseY,
 					() -> customLeatherColour == null ? ItemCustomizationUtills.getChromaStrFromLeatherColour(this) : customLeatherColour,
 					(colour) -> {
@@ -756,6 +764,8 @@ public class GuiItemCustomize extends GuiScreen {
 						updateData();
 					}, () -> editor = null, false, true
 				);
+			} else {
+				guiType = GuiType.ANIMATED;
 			}
 		}
 
@@ -856,6 +866,7 @@ public class GuiItemCustomize extends GuiScreen {
 			mouseX <= xCenter + 23 / 2 - 15 &&
 			mouseY >= topOffset && mouseY <= topOffset + 20) {
 			animatedLeatherColours.clear();
+			updateData();
 		}
 
 		GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
