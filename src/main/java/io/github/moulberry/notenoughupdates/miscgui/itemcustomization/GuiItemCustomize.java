@@ -904,6 +904,7 @@ public class GuiItemCustomize extends GuiScreen {
 					DyeType dyeType = gson.fromJson(shareJson, DyeType.class);
 					if (dyeType.coloursArray != null) {
 						this.animatedDyeTicks = dyeType.ticks;
+						dataForItem.animatedDyeTicks = dyeType.ticks;
 						System.out.println(Arrays.toString(dyeType.coloursArray));
 						dataForItem.animatedLeatherColours = Arrays.copyOf(dyeType.coloursArray, dyeType.coloursArray.length);
 						this.animatedLeatherColours.clear();
