@@ -40,13 +40,7 @@ public class ChromaColour {
 
 	@Deprecated
 	public static int[] decompose(String csv) {
-		String[] split = null;
-		try {
-			split = csv.split(":");
-		} catch (Exception e) {
-			System.out.println("ERROR DECOMPOSING CHROMA COLOUR: " + csv);
-			return new int[]{0, 0, 0, 0, 0};
-		}
+		String[] split = csv.split(":");
 
 		int[] arr = new int[split.length];
 
