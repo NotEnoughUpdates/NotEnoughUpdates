@@ -585,7 +585,9 @@ public class Utils {
 		int yIndex,
 		ItemStack itemStack,
 		boolean pressed,
-		GuiProfileViewer guiProfileViewer
+		GuiProfileViewer guiProfileViewer,
+		int mouseX,
+		int mouseY
 	) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
@@ -643,6 +645,9 @@ public class Utils {
 
 		GlStateManager.enableDepth();
 		drawItemStack(itemStack, x + 8, y + 7);
+		if (mouseY > y && mouseX > x && mouseY < y + 28 && mouseX < x + 28) {
+			guiProfileViewer.tooltipToDisplay = Collections.singletonList(itemStack.getDisplayName());
+		}
 	}
 
 	public static void drawTexturedRect(float x, float y, float width, float height, int filter) {
@@ -1668,13 +1673,15 @@ public class Utils {
 	public static char getPrimaryColourCode(String displayName) {
 		int lastColourCode = -99;
 		int currentColour = 0;
+		int colourIndex = 0;
 		int[] mostCommon = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		for (int i = 0; i < displayName.length(); i++) {
 			char c = displayName.charAt(i);
 			if (c == '\u00A7') {
 				lastColourCode = i;
 			} else if (lastColourCode == i - 1) {
-				currentColour = Math.max(0, "0123456789abcdef".indexOf(c));
+				colourIndex = "0123456789abcdef".indexOf(c);
+				if (colourIndex != -1) currentColour = colourIndex;
 			} else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0) {
 				if (currentColour > 0) {
 					mostCommon[currentColour]++;
@@ -2390,6 +2397,13 @@ public class Utils {
 		Minecraft.getMinecraft().playerController.windowClick(
 			windowId,
 			slot, 0, 0, Minecraft.getMinecraft().thePlayer
+		);
+	}
+
+	public static void sendMiddleMouseClick(int windowId, int slot) {
+		Minecraft.getMinecraft().playerController.windowClick(
+			windowId,
+			slot, 2, 3, Minecraft.getMinecraft().thePlayer
 		);
 	}
 

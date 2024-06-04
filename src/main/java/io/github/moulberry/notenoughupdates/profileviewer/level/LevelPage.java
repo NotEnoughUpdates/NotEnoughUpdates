@@ -73,7 +73,7 @@ public class LevelPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		basicPage.drawSideButtons();
+		basicPage.drawSideButtons(mouseX, mouseY);
 
 		if (constant == null) {
 			Utils.showOutdatedRepoNotification("sblevels.json");

@@ -86,6 +86,7 @@ public class GuiCustomHex extends Gui {
 	private static final ModelBook MODEL_BOOK = new ModelBook();
 
 	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
+	private static final Pattern DISCOUNT_COST_PATTERN = Pattern.compile("\\u00a78\\u00a7m(\\d+)\\u00a73 (\\d+) Exp Levels");
 	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
 	private static final Pattern ENCHANT_NAME_PATTERN = Pattern.compile("([^IVX]*) ([IVX]*)");
 
@@ -172,6 +173,15 @@ public class GuiCustomHex extends Gui {
 						}
 					}
 
+				}
+			}
+			for (String line : this.displayLore) {
+				Matcher matcher = XP_COST_PATTERN.matcher(line);
+				Matcher discount_matcher = DISCOUNT_COST_PATTERN.matcher(line);
+				if (matcher.find()) {
+					this.xpCost = Integer.parseInt(matcher.group(1));
+				} else if (discount_matcher.find()) {
+						this.xpCost = Integer.parseInt(discount_matcher.group(2));
 				}
 			}
 		}
@@ -562,8 +572,11 @@ public class GuiCustomHex extends Gui {
 				if (enchanterCurrentEnch != null && removingEnchantPlayerLevel >= 0) {
 					for (String line : enchanterCurrentEnch.displayLore) {
 						Matcher matcher = XP_COST_PATTERN.matcher(line);
+						Matcher discount_matcher = DISCOUNT_COST_PATTERN.matcher(line);
 						if (matcher.find()) {
 							enchanterCurrentEnch.xpCost = Integer.parseInt(matcher.group(1));
+						} else if (discount_matcher.find()) {
+								enchanterCurrentEnch.xpCost = Integer.parseInt(discount_matcher.group(2));
 						}
 					}
 				}

@@ -284,7 +284,9 @@ public class ChatListener {
 		if (LvlMatcher.matches()) {
 			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel &&
 				NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
-				e.setCanceled(true);
+				if (!unformatted.contains(Minecraft.getMinecraft().thePlayer.getName())) {
+					e.setCanceled(true);
+				}
 			}
 		}
 

@@ -437,7 +437,7 @@ public class NEUConfig extends Config {
 	@Expose
 	@Category(
 		name = "AH Tweaks",
-		desc = "Tweaks for Hypixel's (Not NEU's) Auction House"
+		desc = "Tweaks for The Auction House"
 	)
 	public AHTweaks ahTweaks = new AHTweaks();
 

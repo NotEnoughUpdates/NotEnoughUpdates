@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.mbgui.MBAnchorPoint;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiElement;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
+import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
@@ -1219,7 +1220,8 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) {
 							NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
 							return true;
-						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind &&
+							CookieWarning.hasActiveBoosterCookie()) {
 							String displayName = item.get("displayname").getAsString();
 
 							String cleanName = Utils.cleanColour(displayName).replace("[Lvl {LVL}]", "]").trim();

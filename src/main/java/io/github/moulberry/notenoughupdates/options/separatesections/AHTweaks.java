@@ -146,4 +146,11 @@ public class AHTweaks {
 	@ConfigEditorBoolean
 	public boolean enableAhSellValue = true;
 
+	@Expose
+	@ConfigOption(
+		name = "CTRL+F for search",
+		desc = "Open search GUI when pressing CTRL + F in the AH"
+	)
+	@ConfigEditorBoolean()
+	public boolean ctrlFSearch = true;
 }

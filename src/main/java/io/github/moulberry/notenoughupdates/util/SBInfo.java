@@ -416,8 +416,8 @@ public class SBInfo {
 						SlayerOverlay.slayerTier = 5;
 					}
 				}
-				if (line.contains("☀ Stranded")) containsStranded = true;
-				if (line.contains("Ⓑ Bingo")) containsBingo = true;
+				if (line.contains("Stranded")) containsStranded = true;
+				if (line.contains("Bingo")) containsBingo = true;
 			}
 			stranded = containsStranded;
 			bingo = containsBingo;

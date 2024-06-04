@@ -54,6 +54,8 @@ public class APIDataJson {
 
 	public static class Profile {
 		public int personal_bank_upgrade = 0;
+		public boolean cookie_buff_active = false;
+		public float bank_account = 0;
 	}
 
 	public Experimentation experimentation = new Experimentation();
@@ -245,5 +247,54 @@ public class APIDataJson {
 			public int double_drops = 0;
 			public int farming_level_cap = 0;
 		}
+	}
+
+	public @Nullable Events events;
+
+	public static class Events {
+		public @Nullable EasterEventData easter;
+
+		public static class EasterEventData {
+			public @Nullable JsonObject rabbits;
+			public @Nullable EmployeeData employees;
+			public @Nullable TimeTowerData time_tower;
+			public @Nullable HoppityShoppity shop;
+
+			public long chocolate = 0;
+			public long chocolate_since_prestige = 0;
+			public long total_chocolate = 0;
+			public int click_upgrades = 0;
+			public int chocolate_level = 1;
+			public int chocolate_multiplier_upgrades = 0;
+			public int rabbit_barn_capacity_level = 1;
+			public int rabbit_rarity_upgrades = 0;
+			public long last_viewed_chocolate_factory = 0;
+
+			public static class EmployeeData {
+				public int rabbit_bro = 0;
+				public int rabbit_cousin = 0;
+				public int rabbit_sis = 0;
+				public int rabbit_father = 0;
+				public int rabbit_grandma = 0;
+				public int rabbit_uncle = 0;
+				public int rabbit_dog = 0;
+			}
+
+			public static class TimeTowerData {
+				public int level = 0;
+				public int charges = 0;
+				public long last_charge_time = 0;
+				public long activation_time = 0;
+			}
+			public static class HoppityShoppity {
+				public long chocolate_spent = 0;
+			}
+		}
+	}
+
+	public WinterPlayerData winter_player_data = new WinterPlayerData();
+
+	public static class WinterPlayerData {
+		public int refined_jyrre_uses = 0;
 	}
 }

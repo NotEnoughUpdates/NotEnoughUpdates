@@ -363,4 +363,12 @@ public class Misc {
 		values = {"Off", "AM/PM [1PM]", "24hr [13:00]"}
 	)
 	public int showWhenCountdownEnds = 1;
+
+	@Expose
+	@ConfigOption(
+		name = "Stop Hearts Bouncing",
+		desc = "Stops the hearts bouncing with regeneration effect"
+	)
+	@ConfigEditorBoolean
+	public boolean hideRegenBounce = false;
 }

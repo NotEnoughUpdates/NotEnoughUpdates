@@ -24,9 +24,10 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Build with Gradle
         run: |
+          ./gradlew test
           ./gradlew clean
           ./gradlew includeBackupRepo
-          ./gradlew test remapJar
+          ./gradlew remapJar
         env:
           NEU_RELEASE: true
       - uses: actions/upload-artifact@v3

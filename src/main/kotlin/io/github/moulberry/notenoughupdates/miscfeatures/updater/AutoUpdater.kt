@@ -132,7 +132,7 @@ object AutoUpdater {
         }.thenAcceptAsync({
             logger.info("Update download completed, setting exit hook")
             updateState = UpdateState.DOWNLOADED
-            potentialUpdate!!.executeUpdate()
+            potentialUpdate!!.executePreparedUpdate()
         }, MinecraftExecutor.OnThread)
     }
 

@@ -21,6 +21,8 @@ package io.github.moulberry.notenoughupdates.listener;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
@@ -48,12 +50,16 @@ import io.github.moulberry.notenoughupdates.util.TabSkillInfoParser;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.resources.SkinManager;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -61,6 +67,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -115,7 +122,28 @@ public class NEUEventListener {
 					});
 				}
 			} else if (!toPreload.isEmpty()) {
-				Utils.drawItemStack(toPreload.get(0), -100, -100);
+				ItemStack itemStack = toPreload.get(0);
+				if (itemStack != null && itemStack.getItem() != null) {
+					GameProfile gameprofile = null;
+					if (itemStack.hasTagCompound()) {
+						NBTTagCompound nbttagcompound = itemStack.getTagCompound();
+						if (nbttagcompound.hasKey("SkullOwner", 10)) {
+							gameprofile = NBTUtil.readGameProfileFromNBT(nbttagcompound.getCompoundTag("SkullOwner"));
+						}
+					}
+
+					SkinManager skinManager = Minecraft.getMinecraft().getSkinManager();
+					if (gameprofile != null) {
+						Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> typeMinecraftProfileTextureMap =
+							skinManager.loadSkinFromCache(gameprofile);
+
+						ResourceLocation resourceLocation = skinManager.loadSkin(
+							typeMinecraftProfileTextureMap.get(MinecraftProfileTexture.Type.SKIN),
+							MinecraftProfileTexture.Type.SKIN
+						);
+						Minecraft.getMinecraft().getTextureManager().bindTexture(resourceLocation);
+					}
+				}
 				toPreload.remove(0);
 			} else {
 				itemPreloader.shutdown();

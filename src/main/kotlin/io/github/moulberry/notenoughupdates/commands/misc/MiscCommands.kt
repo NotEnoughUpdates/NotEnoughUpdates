@@ -153,9 +153,7 @@ class MiscCommands {
             nc.printChatMessageWithOptionalDeletion(
                 ChatComponentText("§e[NEU] Pronouns for §b$user §eon §b$platform§e:"), id
             )
-            betterPronounChoice.render().forEach {
-                nc.printChatMessage(ChatComponentText("§e[NEU] §a$it"))
-            }
+            nc.printChatMessage(ChatComponentText("§e[NEU] §a${betterPronounChoice.render()}"))
             null
         }, MinecraftExecutor.OffThread)
 

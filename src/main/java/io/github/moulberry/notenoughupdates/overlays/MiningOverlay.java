@@ -268,7 +268,7 @@ public class MiningOverlay extends TextTabOverlay {
 			NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints == 0 &&
 			!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert &&
 			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0
-			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints != Mining.GlaciteTunnelWaypointBehaviour.NONE
+			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints.get() != Mining.GlaciteTunnelWaypointBehaviour.NONE
 			&& HotmDesires.wantsPowderInfo()) {
 			return;
 		}
@@ -395,7 +395,7 @@ public class MiningOverlay extends TextTabOverlay {
 								commissionProgress.put(split[0], progress);
 							} catch (Exception ignored) {
 							}
-						} else {
+						} else if (split[1].endsWith("DONE")) {
 							commissionProgress.put(split[0], 1.0f);
 						}
 					}

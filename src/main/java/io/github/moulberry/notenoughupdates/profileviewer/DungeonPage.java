@@ -593,7 +593,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			);
 		}
 
-		drawSideButtons();
+		drawSideButtons(mouseX, mouseY);
 	}
 
 	private boolean isHasTime(float fastestTime, String format, long runsAmount, boolean hasTime) {
@@ -659,21 +659,21 @@ public class DungeonPage extends GuiProfileViewerPage {
 		dungeonLevelTextField.keyTyped(typedChar, keyCode);
 	}
 
-	private void drawSideButtons() {
+	private void drawSideButtons(int mouseX, int mouseY) {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		if (onMasterMode) {
-			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), true, getInstance());
+			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), true, getInstance(), mouseX, mouseY);
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), true, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), true, getInstance(), mouseX, mouseY);
 		}
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
 		if (!onMasterMode) {
-			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), false, getInstance());
+			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), false, getInstance(), mouseX, mouseY);
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), false, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), false, getInstance(), mouseX, mouseY);
 		}
 		GlStateManager.disableDepth();
 	}

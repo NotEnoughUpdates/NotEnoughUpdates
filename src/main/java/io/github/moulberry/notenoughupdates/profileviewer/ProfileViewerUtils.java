@@ -61,7 +61,7 @@ public class ProfileViewerUtils {
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
 		String bytes = Utils.getElementAsString(
 			Utils.getElement(profileInfo, "inventory.bag_contents." + bagName + ".data"),
-			"Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA="
+			"H4sIAAAAAAAAAONiYOBkYMzkYmBg0GUgCQAA4gDYkzoAAAA="
 		);
 
 		NBTTagCompound nbt;
