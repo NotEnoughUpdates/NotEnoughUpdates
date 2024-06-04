@@ -303,6 +303,7 @@ public class GuiItemCustomize extends GuiScreen {
 		Utils.drawTexturedRect(helpX, yTop, 20, 20, GL11.GL_LINEAR);
 
 		if (mouseX >= helpX && mouseX <= helpX + 20 && mouseY >= yTop && mouseY <= yTop + 20) {
+			ItemCustomizationUtills.customizeColourGuide.set(7, Utils.chromaString("¶z = Chroma"));
 			tooltipToDisplay = ItemCustomizationUtills.customizeColourGuide;
 		}
 
