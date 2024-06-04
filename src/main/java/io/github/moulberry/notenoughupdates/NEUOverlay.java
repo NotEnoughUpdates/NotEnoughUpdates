@@ -1254,7 +1254,7 @@ public class NEUOverlay extends Gui {
 								.replace("[Lvl {LVL}]", "")
 								.trim());
 							NotEnoughUpdates.INSTANCE.trySendCommand("/recipe " + displayName);
-						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.neuCustomizeKeybind) {
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.neuCustomizeKeybind && hoverStack.get() != null) {
 							String uuid = NEUManager.getUUIDFromNBT(hoverStack.get().getTagCompound());
 							if (uuid != null) {
 								NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(hoverStack.get(), uuid);
