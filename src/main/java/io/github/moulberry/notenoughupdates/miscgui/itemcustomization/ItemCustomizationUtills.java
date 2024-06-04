@@ -139,7 +139,11 @@ public class ItemCustomizationUtills {
 		Gui.drawRect(xCentreLeft, yTop, xCenter - 1, yTop + 15, 0xff101016);
 		Gui.drawRect(xCentreLeft - 1, yTop + 1, xCenter - 2, yTop + 14, 0xff000000 | 0xff00ffc4);
 
-		Utils.renderShadowedString(getButtons(guiType, 0).getDisplay(), xCentreLeft + 44, yTop + 4, xCenter*2 - xCentreRight);
+		Utils.renderShadowedString(getButtons(guiType, 0).getDisplay(),
+			xCentreLeft + 44,
+			yTop + 4,
+			xCenter * 2 - xCentreRight
+		);
 
 		xCentreLeft += 90;
 		xCentreRight += 90;
@@ -148,7 +152,11 @@ public class ItemCustomizationUtills {
 		Gui.drawRect(xCentreLeft, yTop, xCentreRight, yTop + 15, 0xff101016);
 		Gui.drawRect(xCentreLeft - 1, yTop + 1, xCentreRight, yTop + 14, 0xff000000 | 0xff00ffc4 * 2);
 
-		Utils.renderShadowedString(getButtons(guiType, 1).getDisplay(), xCentreLeft + 45, yTop + 4, xCenter*2 - xCentreRight);
+		Utils.renderShadowedString(getButtons(guiType, 1).getDisplay(),
+			xCentreLeft + 45,
+			yTop + 4,
+			xCenter * 2 - xCentreRight
+		);
 	}
 
 	public static GuiType getButtons(GuiType guiType, int button) {
@@ -189,7 +197,8 @@ public class ItemCustomizationUtills {
 	}
 
 	public static int getAnimatedDyeColour(String[] dyeColours, int ticks) {
-			return ChromaColour.specialToChromaRGB(dyeColours[(Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length]);
+		return ChromaColour.specialToChromaRGB(
+			dyeColours[(Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length]);
 	}
 
 	static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
@@ -208,7 +217,9 @@ public class ItemCustomizationUtills {
 		}
 	}
 
-	public static void renderTextBox(GuiElementTextField textField, String text, int xOffset, int yOffset, int maxTextSize) {
+	public static void renderTextBox(
+		GuiElementTextField textField, String text, int xOffset, int yOffset, int maxTextSize
+	) {
 		if (!textField.getFocus() && textField.getText().isEmpty()) {
 			textField.setOptions(GuiElementTextField.SCISSOR_TEXT);
 			textField.setPrependText(text);
@@ -267,38 +278,10 @@ public class ItemCustomizationUtills {
 			GL11.GL_NEAREST
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Load " + preset,
-			x - 44 + 198,
-			y + 8,
-			false,
-			86,
-			4210752
-		);
-		Utils.drawStringCenteredScaledMaxWidth(
-			"from Clipboard",
-			x - 44 + 198,
-			y + 16,
-			false,
-			86,
-			4210752
-		);
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Save " + preset,
-			x - 44 + 198,
-			y + 8 + 24,
-			false,
-			86,
-			4210752
-		);
-		Utils.drawStringCenteredScaledMaxWidth(
-			"to Clipboard",
-			x - 44 + 198,
-			y + 16 + 24,
-			false,
-			86,
-			4210752
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Load " + preset, x - 44 + 198, y + 8, false, 86, 4210752);
+		Utils.drawStringCenteredScaledMaxWidth("from Clipboard", x - 44 + 198, y + 16, false, 86, 4210752);
+		Utils.drawStringCenteredScaledMaxWidth("Save " + preset, x - 44 + 198, y + 8 + 24, false, 86, 4210752);
+		Utils.drawStringCenteredScaledMaxWidth("to Clipboard", x - 44 + 198, y + 16 + 24, false, 86, 4210752);
 
 		if (!valid) {
 			Gui.drawRect(x - 88 + 198, y + 2, x + 198, y + 2 + 20, 0x80000000);
