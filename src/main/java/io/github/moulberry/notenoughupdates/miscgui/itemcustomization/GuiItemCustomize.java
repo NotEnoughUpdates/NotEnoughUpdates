@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -54,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class GuiItemCustomize extends GuiScreen {
 	private static final ResourceLocation PLUS = new ResourceLocation("notenoughupdates:itemcustomize/plus.png");
@@ -151,32 +153,33 @@ public class GuiItemCustomize extends GuiScreen {
 
 		if (dyesConst.has("animated")) {
 			animatedDyes = dyesConst.get("animated").getAsJsonObject();
+			DyeType animatedHeader = new DyeType("Animated Dyes");
+			dyes.add(animatedHeader);
+			animatedDyes.entrySet().forEach(entry -> {
+				String key = entry.getKey();
+				JsonArray value = entry.getValue().getAsJsonArray();
+				DyeType dyeType = new DyeType(key, value);
+				dyes.add(dyeType);
+			});
 		}
+
 		if (dyesConst.has("static")) {
 			staticDyes = dyesConst.get("static").getAsJsonObject();
+			DyeType staticHeader = new DyeType("Static Dyes");
+			dyes.add(staticHeader);
+
+			staticDyes.entrySet().forEach(entry -> {
+				String key = entry.getKey();
+				String value = entry.getValue().getAsString();
+				DyeType dyeType = new DyeType(key, value);
+				dyes.add(dyeType);
+			});
 		}
+	}
 
-		DyeType animatedHeader = new DyeType("Animated Dyes");
-		dyes.add(animatedHeader);
-
-		animatedDyes.entrySet().forEach(entry -> {
-			String key = entry.getKey();
-			JsonArray value = entry.getValue().getAsJsonArray();
-			DyeType dyeType = new DyeType(key, value);
-			dyes.add(dyeType);
-		});
-
-		DyeType staticHeader = new DyeType("Static Dyes");
-		dyes.add(staticHeader);
-
-		staticDyes.entrySet().forEach(entry -> {
-			String key = entry.getKey();
-			String value = entry.getValue().getAsString();
-			DyeType dyeType = new DyeType(key, value);
-			dyes.add(dyeType);
-		});
-
-
+	public GuiItemCustomize(ItemStack stack, String itemUUID, GuiType gui) {
+		this(stack, itemUUID);
+		guiType = gui;
 	}
 
 	@Override
@@ -303,6 +306,8 @@ public class GuiItemCustomize extends GuiScreen {
 			tooltipToDisplay = ItemCustomizationUtills.customizeColourGuide;
 		}
 
+		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop, ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"), "preset");
+
 		yTop += 25;
 
 		renderBigStack(xCenter, yTop);
@@ -407,14 +412,15 @@ public class GuiItemCustomize extends GuiScreen {
 
 		renderHeader(xCenter, yTop);
 
+		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop, ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"), "preset");
+		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop + 50, ItemCustomizationUtills.validShareContents("NEUANIMATED"), "animated");
+
 		yTop += 14;
 
 		renderBigStack(xCenter, yTop);
 
 		yTop += 115;
 
-		if (animatedLeatherColours.isEmpty()) {
-		}
 
 		int adjustedY = yTop + pageScroll + 20;
 
@@ -725,6 +731,27 @@ public class GuiItemCustomize extends GuiScreen {
 			textFieldRename.unfocus();
 		}
 
+		if (mouseX >= xCenter - 88 + 198 && mouseX <= xCenter + 88 + 105) {
+			Gson gson = new Gson();
+			ItemCustomizeManager.ItemData dataForItem = ItemCustomizeManager.getDataForItem(stack);
+			if (mouseY >= yTop + 40 && mouseY <= yTop + 40 + 20) {
+				ItemCustomizationUtills.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
+
+			} else if (mouseY >= yTop + 10 && mouseY <= yTop + 10 + 20) {
+				if (ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE")) {
+					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUCUSTOMIZE");
+					ItemCustomizeManager.ItemData itemData = gson.fromJson(shareJson, ItemCustomizeManager.ItemData.class);
+					itemData.defaultItem = dataForItem.defaultItem;
+					System.out.println(itemData.customItem + " " + itemData.customGlintColour);
+					ItemCustomizeManager.putItemData(itemUUID, itemData);
+					NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
+				}
+			}
+		}
+
+
+
+
 		int offset = 200;
 		if (!supportCustomLeatherColour) offset -= 20;
 		if (!enchantGlint) offset -= 18;
@@ -845,6 +872,46 @@ public class GuiItemCustomize extends GuiScreen {
 				}
 			}
 			topOffset += 20;
+		}
+
+		if (mouseX >= xCenter - 88 + 198 && mouseX <= xCenter + 88 + 105) {
+			Gson gson = new Gson();
+			ItemCustomizeManager.ItemData dataForItem = ItemCustomizeManager.getDataForItem(stack);
+			if (mouseY >= yTop + 0 && mouseY <= yTop + 0 + 20) {
+				if (ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE")) {
+					System.out.println("load");
+					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUCUSTOMIZE");
+					ItemCustomizeManager.ItemData itemData = gson.fromJson(shareJson, ItemCustomizeManager.ItemData.class);
+					itemData.defaultItem = dataForItem.defaultItem;
+					ItemCustomizeManager.putItemData(itemUUID, itemData);
+					NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
+				}
+			} else if (mouseY >= yTop + 20 && mouseY <= yTop + 20 + 20) {
+				ItemCustomizationUtills.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
+				System.out.println("save");
+			} else if (mouseY >= yTop + 45 && mouseY <= yTop + 45 + 20) {
+				System.out.println("load");
+				if (ItemCustomizationUtills.validShareContents("NEUANIMATED")) {
+					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUANIMATED");
+					DyeType dyeType = gson.fromJson(shareJson, DyeType.class);
+					if (dyeType.coloursArray != null) {
+						this.animatedDyeTicks = dyeType.ticks;
+						System.out.println(Arrays.toString(dyeType.coloursArray));
+						dataForItem.animatedLeatherColours = Arrays.copyOf(dyeType.coloursArray, dyeType.coloursArray.length);
+						this.animatedLeatherColours.clear();
+						this.animatedLeatherColours = new ArrayList<>(Arrays.asList(dyeType.coloursArray));
+						dataForItem.animatedLeatherColours =
+							Arrays.stream(dataForItem.animatedLeatherColours).filter(Objects::nonNull).toArray(String[]::new);
+						ItemCustomizeManager.putItemData(itemUUID, dataForItem);
+						NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID, GuiType.ANIMATED);
+					}
+				}
+			} else if (mouseY >= yTop + 72 && mouseY <= yTop + 72 + 20) {
+			ItemCustomizationUtills.shareContents("NEUANIMATED", gson.toJson(
+					new DyeType(dataForItem.animatedLeatherColours, dataForItem.animatedDyeTicks)));
+				System.out.println(Arrays.toString(dataForItem.animatedLeatherColours));
+				System.out.println("save");
+			}
 		}
 
 		if (supportCustomLeatherColour && mouseX >= xCenter - 90 && mouseX <= xCenter + 90 &&

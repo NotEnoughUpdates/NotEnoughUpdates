@@ -26,6 +26,8 @@ public class DyeType {
 	String itemId;
 	String colour = null;
 	JsonArray colours = null;
+	String[] coloursArray = null;
+	int ticks = 2;
 
 	public DyeType(String displayName) {
 		this.itemId = displayName;
@@ -40,6 +42,11 @@ public class DyeType {
 	public DyeType(String itemID, JsonArray colours) {
 		this.itemId = itemID;
 		this.colours = colours;
+	}
+
+	public DyeType(String[] coloursArray, int ticks) {
+		this.ticks = ticks;
+		this.coloursArray = coloursArray;
 	}
 
 	public boolean hasStaticColour() {

@@ -36,42 +36,50 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
+
+import static io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour.custom_ench_colour;
 
 public class ItemCustomizationUtills {
 
 	public static List<String> customizeColourGuide = Lists.newArrayList(
 		EnumChatFormatting.AQUA + "Set a custom name for the item",
 		EnumChatFormatting.GREEN + "",
-		EnumChatFormatting.GREEN + "Type \"&&\" for \u00B6",
-		EnumChatFormatting.GREEN + "Type \"**\" for \u272A",
-		EnumChatFormatting.GREEN + "Type \"*1-9\" for \u278A-\u2792",
+		EnumChatFormatting.GREEN + "Type \"&&\" for ¶",
+		EnumChatFormatting.GREEN + "Type \"**\" for ✪",
+		EnumChatFormatting.GREEN + "Type \"*1-9\" for ➊-➒",
 		EnumChatFormatting.GREEN + "",
 		EnumChatFormatting.GREEN + "Available colour codes:",
-		Utils.chromaString("\u00B6z = Chroma"),
-		EnumChatFormatting.DARK_BLUE + "\u00B61 = Dark Blue",
-		EnumChatFormatting.DARK_GREEN + "\u00B62 = Dark Green",
-		EnumChatFormatting.DARK_AQUA + "\u00B63 = Dark Aqua",
-		EnumChatFormatting.DARK_RED + "\u00B64 = Dark Red",
-		EnumChatFormatting.DARK_PURPLE + "\u00B65 = Dark Purple",
-		EnumChatFormatting.GOLD + "\u00B66 = Gold",
-		EnumChatFormatting.GRAY + "\u00B67 = Gray",
-		EnumChatFormatting.DARK_GRAY + "\u00B68 = Dark Gray",
-		EnumChatFormatting.BLUE + "\u00B69 = Blue",
-		EnumChatFormatting.GREEN + "\u00B6a = Green",
-		EnumChatFormatting.AQUA + "\u00B6b = Aqua",
-		EnumChatFormatting.RED + "\u00B6c = Red",
-		EnumChatFormatting.LIGHT_PURPLE + "\u00B6d = Purple",
-		EnumChatFormatting.YELLOW + "\u00B6e = Yellow",
-		EnumChatFormatting.WHITE + "\u00B6f = White",
-		"\u00A7Z\u00B6Z = SBA Chroma" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + " (Requires SBA)",
+		Utils.chromaString("¶z = Chroma"),
+		EnumChatFormatting.DARK_BLUE + "¶1 = Dark Blue",
+		EnumChatFormatting.DARK_GREEN + "¶2 = Dark Green",
+		EnumChatFormatting.DARK_AQUA + "¶3 = Dark Aqua",
+		EnumChatFormatting.DARK_RED + "¶4 = Dark Red",
+		EnumChatFormatting.DARK_PURPLE + "¶5 = Dark Purple",
+		EnumChatFormatting.GOLD + "¶6 = Gold",
+		EnumChatFormatting.GRAY + "¶7 = Gray",
+		EnumChatFormatting.DARK_GRAY + "¶8 = Dark Gray",
+		EnumChatFormatting.BLUE + "¶9 = Blue",
+		EnumChatFormatting.GREEN + "¶a = Green",
+		EnumChatFormatting.AQUA + "¶b = Aqua",
+		EnumChatFormatting.RED + "¶c = Red",
+		EnumChatFormatting.LIGHT_PURPLE + "¶d = Purple",
+		EnumChatFormatting.YELLOW + "¶e = Yellow",
+		EnumChatFormatting.WHITE + "¶f = White",
+		"§Z¶Z = SBA Chroma" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + " (Requires SBA)",
 		"",
 		EnumChatFormatting.GREEN + "Available formatting codes:",
-		EnumChatFormatting.GRAY + "\u00B6k = " + EnumChatFormatting.OBFUSCATED + "Obfuscated",
-		EnumChatFormatting.GRAY + "\u00B6l = " + EnumChatFormatting.BOLD + "Bold",
-		EnumChatFormatting.GRAY + "\u00B6m = " + EnumChatFormatting.STRIKETHROUGH + "Strikethrough",
-		EnumChatFormatting.GRAY + "\u00B6n = " + EnumChatFormatting.UNDERLINE + "Underline",
-		EnumChatFormatting.GRAY + "\u00B6o = " + EnumChatFormatting.ITALIC + "Italic"
+		EnumChatFormatting.GRAY + "¶k = " + EnumChatFormatting.OBFUSCATED + "Obfuscated",
+		EnumChatFormatting.GRAY + "¶l = " + EnumChatFormatting.BOLD + "Bold",
+		EnumChatFormatting.GRAY + "¶m = " + EnumChatFormatting.STRIKETHROUGH + "Strikethrough",
+		EnumChatFormatting.GRAY + "¶n = " + EnumChatFormatting.UNDERLINE + "Underline",
+		EnumChatFormatting.GRAY + "¶o = " + EnumChatFormatting.ITALIC + "Italic"
 	);
 
 	public static ItemStack copy(ItemStack stack, GuiItemCustomize instance) {
@@ -225,5 +233,121 @@ public class ItemCustomizationUtills {
 
 	public static int rgbToInt(Color color) {
 		return (color.getRed() << 16) | (color.getGreen() << 8) | color.getBlue();
+	}
+
+	public static void renderPresetButtons(int x, int y, boolean valid, String preset) {
+		Minecraft.getMinecraft().getTextureManager().bindTexture(custom_ench_colour);
+		GlStateManager.color(1, 1, 1, 1);
+		Utils.drawTexturedRect(
+			x - 88 + 198,
+			y + 2,
+			88,
+			20,
+			64 / 217f,
+			152 / 217f,
+			48 / 78f,
+			68 / 78f,
+			GL11.GL_NEAREST
+		);
+		Utils.drawTexturedRect(
+			x - 88 + 198,
+			y + 2 + 24,
+			88,
+			20,
+			64 / 217f,
+			152 / 217f,
+			48 / 78f,
+			68 / 78f,
+			GL11.GL_NEAREST
+		);
+
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Load " + preset,
+			x - 44 + 198,
+			y + 8,
+			false,
+			86,
+			4210752
+		);
+		Utils.drawStringCenteredScaledMaxWidth(
+			"from Clipboard",
+			x - 44 + 198,
+			y + 16,
+			false,
+			86,
+			4210752
+		);
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Save " + preset,
+			x - 44 + 198,
+			y + 8 + 24,
+			false,
+			86,
+			4210752
+		);
+		Utils.drawStringCenteredScaledMaxWidth(
+			"to Clipboard",
+			x - 44 + 198,
+			y + 16 + 24,
+			false,
+			86,
+			4210752
+		);
+
+		if (!valid) {
+			Gui.drawRect(x - 88 + 198, y + 2, x + 198, y + 2 + 20, 0x80000000);
+		}
+
+		GlStateManager.color(1, 1, 1, 1);
+	}
+
+	public static boolean validShareContents(String sharePrefix) {
+		try {
+			String base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+
+			if (base64.length() <= sharePrefix.length()) return false;
+
+			base64 = base64.trim();
+
+			try {
+				return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
+			} catch (IllegalArgumentException e) {
+				return false;
+			}
+		} catch (HeadlessException | IOException | UnsupportedFlavorException | IllegalStateException e) {
+			return false;
+		}
+	}
+
+	public static void shareContents(String sharePrefix, String jsonObject) {
+		String base64String = Base64.getEncoder().encodeToString((sharePrefix +
+			jsonObject).getBytes(StandardCharsets.UTF_8));
+		System.out.println(base64String);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
+	}
+
+	public static String getShareFromClipboard(String sharePrefix) {
+		String base64;
+
+		try {
+			base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+		} catch (HeadlessException | IOException | UnsupportedFlavorException e) {
+			return null;
+		}
+
+		if (base64.length() <= sharePrefix.length()) return null;
+
+		base64 = base64.trim();
+
+		String jsonString;
+		try {
+			jsonString = new String(Base64.getDecoder().decode(base64));
+			if (!jsonString.startsWith(sharePrefix)) return null;
+			jsonString = jsonString.substring(sharePrefix.length());
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+
+		return jsonString;
 	}
 }
