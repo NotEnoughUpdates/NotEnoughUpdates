@@ -121,17 +121,17 @@ public class ItemCustomizationUtills {
 		int xCentreLeft = xCenter - 90;
 		int xCentreRight = xCenter;
 
-		Gui.drawRect(xCentreLeft - 0, yTop, xCenter + 3, yTop + 17, 0xff101016);
-		Gui.drawRect(xCentreLeft - 0, yTop, xCenter + 1, yTop + 15, 0xff101016);
-		Gui.drawRect(xCentreLeft - 1, yTop + 1, xCenter, yTop + 14, 0xff000000 | 0xff00ffc4);
+		Gui.drawRect(xCentreLeft, yTop, xCenter + 1, yTop + 17, 0xff101016);
+		Gui.drawRect(xCentreLeft, yTop, xCenter - 1, yTop + 15, 0xff101016);
+		Gui.drawRect(xCentreLeft - 1, yTop + 1, xCenter - 2, yTop + 14, 0xff000000 | 0xff00ffc4);
 
-		Utils.renderShadowedString(getButtons(guiType, 0).getDisplay(), xCentreLeft + 45, yTop + 4, xCenter*2 - xCentreRight);
+		Utils.renderShadowedString(getButtons(guiType, 0).getDisplay(), xCentreLeft + 44, yTop + 4, xCenter*2 - xCentreRight);
 
 		xCentreLeft += 90;
 		xCentreRight += 90;
 
-		Gui.drawRect(xCentreLeft - 0, yTop, xCentreRight, yTop + 17, 0x70000000);
-		Gui.drawRect(xCentreLeft - 0, yTop, xCentreRight, yTop + 15, 0xff101016);
+		Gui.drawRect(xCentreLeft, yTop, xCentreRight, yTop + 17, 0x70000000);
+		Gui.drawRect(xCentreLeft, yTop, xCentreRight, yTop + 15, 0xff101016);
 		Gui.drawRect(xCentreLeft - 1, yTop + 1, xCentreRight, yTop + 14, 0xff000000 | 0xff00ffc4 * 2);
 
 		Utils.renderShadowedString(getButtons(guiType, 1).getDisplay(), xCentreLeft + 45, yTop + 4, xCenter*2 - xCentreRight);

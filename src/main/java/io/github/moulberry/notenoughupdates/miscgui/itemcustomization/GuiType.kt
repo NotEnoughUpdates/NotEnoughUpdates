@@ -20,6 +20,6 @@ package io.github.moulberry.notenoughupdates.miscgui.itemcustomization
 
 enum class GuiType(val display: String) {
     DEFAULT("§d§lMain Menu"),
-    ANIMATED("§b§lAnimated Dyes"),
+    ANIMATED("§b§lAnimated Dye"),
     HYPIXEL("§a§lHypixel Dyes"),
 }
