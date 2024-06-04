@@ -419,8 +419,7 @@ public class GuiItemCustomize extends GuiScreen {
 		int adjustedY = yTop + pageScroll + 20;
 
 		for (int i = 0; i < animatedLeatherColours.size(); i++) {
-			//todo gui auto is + 230
-			if (adjustedY + 20 * i < yTopStart + 130 || adjustedY + 20 * i >= yTopStart + 330) {
+			if (adjustedY + 20 * i < yTopStart + 130 || adjustedY + 20 * i >= yTopStart + guiScaleOffset() + 150) {
 				continue;
 			}
 
@@ -503,8 +502,7 @@ public class GuiItemCustomize extends GuiScreen {
 		int adjustedY = yTop + pageScroll + 20;
 
 		for (int i = 0; i < dyes.size(); i++) {
-			//todo gui auto is + 230
-			if (adjustedY + 20 * i < yTopStart + 130 || adjustedY + 20 * i >= yTopStart + 330) {
+			if (adjustedY + 20 * i < yTopStart + 130 || adjustedY + 20 * i >= yTopStart + guiScaleOffset() + 150) {
 				continue;
 			}
 
@@ -599,9 +597,21 @@ public class GuiItemCustomize extends GuiScreen {
 			pageScroll = 0;
 		}
 
-		//todo gui auto is - 80
-		pageScroll = MathHelper.clamp_int(pageScroll, -((size * 20 - 20) - 180), 0);
+		pageScroll = MathHelper.clamp_int(pageScroll, -((size * 20 - 20) - guiScaleOffset()), 0);
 		lastMouseScroll = 0;
+	}
+
+	private int guiScaleOffset() {
+		//auto 0
+		//large 3
+		//medium 2
+		//small 1
+		int scale = Minecraft.getMinecraft().gameSettings.guiScale;
+		if (scale == 0) return 80;
+		if (scale == 1) return 680;
+		if (scale == 2) return 280;
+		if (scale == 3) return 220;
+		return 80;
 	}
 
 	@Override
@@ -804,7 +814,7 @@ public class GuiItemCustomize extends GuiScreen {
 		int adjustedY = topOffset + pageScroll + 20;
 
 		for (int i = 0; i < animatedLeatherColours.size(); i++) {
-			if (adjustedY + 20 * i < yTop + 130 || adjustedY + 20 * i >= yTop + 330) {
+			if (adjustedY + 20 * i < yTop + 130 || adjustedY + 20 * i >= yTop + guiScaleOffset() + 150) {
 				continue;
 			}
 			if (supportCustomLeatherColour && mouseX >= xCenter - 90 && mouseX <= xCenter + 90 &&
@@ -843,8 +853,7 @@ public class GuiItemCustomize extends GuiScreen {
 				else if (customLeatherColour != null) animatedLeatherColours.add(customLeatherColour);
 				else animatedLeatherColours.add(ItemCustomizationUtills.getChromaStrFromLeatherColour(this));
 				updateData();
-				//todo gui scales
-				pageScroll = -((animatedLeatherColours.size() * 20 - 20) - 180);
+				pageScroll = -((animatedLeatherColours.size() * 20 - 20) - guiScaleOffset());
 			}
 		}
 
@@ -885,7 +894,7 @@ public class GuiItemCustomize extends GuiScreen {
 		int adjustedY = topOffset + pageScroll + 20;
 
 		for (int i = 0; i < dyes.size(); i++) {
-			if (adjustedY + 20 * i < yTop + 130 || adjustedY + 20 * i >= yTop + 330) {
+			if (adjustedY + 20 * i < yTop + 130 || adjustedY + 20 * i >= yTop + guiScaleOffset() + 150) {
 				continue;
 			}
 			if (supportCustomLeatherColour && mouseX >= xCenter - 90 && mouseX <= xCenter + 90 && mouseY >= topOffset &&
