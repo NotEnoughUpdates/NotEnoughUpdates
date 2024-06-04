@@ -790,7 +790,10 @@ public class GuiItemCustomize extends GuiScreen {
 				System.out.println(mouseY - buttonOffset);
 
 				GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, buttonOffset);
-				if (buttonClicked != null) guiType = buttonClicked;
+				if (buttonClicked != null) {
+					guiType = buttonClicked;
+					pageScroll = 0;
+				}
 
 		/*	System.out.println(mouseX + " " + mouseY);
 			System.out.println(xCenter + " " + belowEnchGlint);
@@ -879,7 +882,10 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
-		if (buttonClicked != null) guiType = buttonClicked;
+		if (buttonClicked != null) {
+			guiType = buttonClicked;
+			pageScroll = 0;
+		}
 
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
@@ -926,7 +932,10 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
-		if (buttonClicked != null) guiType = buttonClicked;
+		if (buttonClicked != null) {
+			guiType = buttonClicked;
+			pageScroll = 0;
+		}
 
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
