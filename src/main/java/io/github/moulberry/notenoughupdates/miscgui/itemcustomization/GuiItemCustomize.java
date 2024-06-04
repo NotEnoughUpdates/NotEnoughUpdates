@@ -63,7 +63,7 @@ public class GuiItemCustomize extends GuiScreen {
 	private final ItemStack stack;
 	ItemStack customItemStack;
 	private final String itemUUID;
-	private final GuiElementTextField textFieldRename = new GuiElementTextField("", 158, 20, GuiElementTextField.COLOUR);
+	private final GuiElementTextField textFieldRename = new GuiElementTextField("", 138, 20, GuiElementTextField.COLOUR);
 	final GuiElementTextField textFieldCustomItem = new GuiElementTextField("", 180, 20, GuiElementTextField.COLOUR);
 	final GuiElementTextField textFieldTickSpeed = new GuiElementTextField("", 180, 45, GuiElementTextField.COLOUR | GuiElementTextField.NUM_ONLY);
 	private final GuiElementBoolean enchantGlintButton;
@@ -287,19 +287,29 @@ public class GuiItemCustomize extends GuiScreen {
 
 		yTop += 14;
 
-		ItemCustomizationUtills.renderTextBox(textFieldRename, "§7Enter Custom Name...", xCenter - textFieldRename.getWidth() / 2 - 10, yTop, 158);
+		ItemCustomizationUtills.renderTextBox(textFieldRename, "§7Enter Custom Name...", xCenter - textFieldRename.getWidth() / 2 - 20, yTop, 138);
 
 
 		int yTopText = yTop;
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.help);
 		GlStateManager.color(1, 1, 1, 1);
-		int helpX = xCenter + textFieldRename.getWidth() / 2 - 5;
+		int helpX = xCenter + textFieldRename.getWidth() / 2 - 5 + 10;
 		Utils.drawTexturedRect(helpX, yTop, 20, 20, GL11.GL_LINEAR);
 
 		if (mouseX >= helpX && mouseX <= helpX + 20 && mouseY >= yTop && mouseY <= yTop + 20) {
 			ItemCustomizationUtills.customizeColourGuide.set(7, Utils.chromaString("¶z = Chroma"));
 			tooltipToDisplay = ItemCustomizationUtills.customizeColourGuide;
+		}
+
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(ItemCustomizationUtills.RESET);
+		GlStateManager.color(1, 1, 1, 1);
+		int resetX = xCenter + textFieldRename.getWidth() / 2 - 15;
+		Utils.drawTexturedRect(resetX, yTop + 5, 10, 11, GL11.GL_LINEAR);
+
+		if (mouseX >= resetX && mouseX <= resetX + 10 && mouseY >= yTop && mouseY <= yTop + 20) {
+			tooltipToDisplay = ItemCustomizationUtills.resetGuide;
 		}
 
 		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop, ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"),
@@ -754,7 +764,12 @@ public class GuiItemCustomize extends GuiScreen {
 			}
 		}
 
+		int resetX = xCenter + textFieldRename.getWidth() / 2 - 15;
 
+		if (mouseX >= resetX && mouseX <= resetX + 10 && mouseY >= yTop + 15 && mouseY <= yTop + 25) {
+			ItemCustomizeManager.putItemData(itemUUID, new ItemCustomizeManager.ItemData());
+			NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
+		}
 
 
 		int offset = 200;

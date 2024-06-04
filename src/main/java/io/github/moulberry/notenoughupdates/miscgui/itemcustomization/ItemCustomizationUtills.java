@@ -82,6 +82,12 @@ public class ItemCustomizationUtills {
 		EnumChatFormatting.GRAY + "¶o = " + EnumChatFormatting.ITALIC + "Italic"
 	);
 
+	public static List<String> resetGuide = Lists.newArrayList(
+		EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "This will reset all customisations!!",
+		EnumChatFormatting.GREEN + "",
+		EnumChatFormatting.RED + "Only click if you are sure you want to reset everything for this item"
+	);
+
 	public static ItemStack copy(ItemStack stack, GuiItemCustomize instance) {
 		ItemStack customStack = stack.copy();
 		if (!instance.textFieldCustomItem.getText().isEmpty()) {
@@ -186,7 +192,7 @@ public class ItemCustomizationUtills {
 			return ChromaColour.specialToChromaRGB(dyeColours[(Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length]);
 	}
 
-	private static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
+	static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
 
 	public static void renderColourBlob(int xCenter, int yTop, int colour, String text, boolean renderReset) {
 		Gui.drawRect(xCenter - 90, yTop, xCenter + 92, yTop + 17, 0x70000000);
