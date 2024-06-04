@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
@@ -37,6 +38,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -49,6 +51,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -337,6 +340,11 @@ public class ItemCustomizeManager {
 					lastUpdate.put(stack.getTagCompound().hashCode(), System.currentTimeMillis());
 				}
 				return damageMap.get(stack.getTagCompound().hashCode());
+			} else if (getCustomItem(stack) == Items.skull) {
+				ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.createItem(damageString.toUpperCase(Locale.ROOT).replace(" ", "_"));
+				if (itemStack != null && itemStack.getItem() == Items.skull) {
+					return 3;
+				}
 			}
 			return Integer.parseInt(data.customItem.split(":")[1]);
 		} catch (Exception e) {
@@ -371,6 +379,11 @@ public class ItemCustomizeManager {
 			data.customItem = null;
 			return false;
 		}
+		if (item == defaultItem) {
+			if (ItemCustomizeManager.getCustomSkull(stack) != null) {
+				return true;
+			}
+		}
 		return defaultItem != item;
 	}
 
@@ -380,6 +393,13 @@ public class ItemCustomizeManager {
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
 		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
+		if (newStack.hasTagCompound()) {
+			NBTTagCompound customSkull = ItemCustomizeManager.getCustomSkull(newStack);
+			if (customSkull != null) {
+				newStack.getTagCompound().removeTag("SkullOwner");
+				newStack.getTagCompound().setTag("SkullOwner", customSkull);
+			}
+		}
 		if (armorSlot != 4) {
 			if (newStack.getItem() instanceof ItemArmor) return newStack;
 			else return stack;
@@ -393,6 +413,14 @@ public class ItemCustomizeManager {
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
 		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
+		NBTTagCompound tagCompound = newStack.getTagCompound();
+		if (tagCompound != null) {
+			NBTTagCompound customSkull = ItemCustomizeManager.getCustomSkull(newStack);
+			if (customSkull != null) {
+				tagCompound.removeTag("SkullOwner");
+				tagCompound.setTag("SkullOwner", customSkull);
+			}
+		}
 		return newStack;
 	}
 
@@ -401,7 +429,32 @@ public class ItemCustomizeManager {
 		ItemStack stack = instance.getCurrentArmor(3).copy();
 		stack.setItem(ItemCustomizeManager.getCustomItem(stack));
 		stack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
+		NBTTagCompound tagCompound = stack.getTagCompound();
+		if (tagCompound != null) {
+			NBTTagCompound customSkull = ItemCustomizeManager.getCustomSkull(stack);
+			if (customSkull != null) {
+				tagCompound.removeTag("SkullOwner");
+				tagCompound.setTag("SkullOwner", customSkull);
+			}
+		}
 		return stack;
+	}
+
+	public static NBTTagCompound getCustomSkull(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+
+		if (data == null || data.customItem == null || data.customItem.isEmpty()) return null;
+		try {
+			String damageString = data.customItem.split(":")[1];
+			if (getCustomItem(stack) == Items.skull) {
+				ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.createItem(damageString.toUpperCase(Locale.ROOT).replace(" ", "_"));
+				if (itemStack != null && itemStack.getItem() == Items.skull) {
+					return itemStack.getTagCompound().getCompoundTag("SkullOwner");
+				}
+			}
+		} catch (Exception ignored) {
+		}
+		return null;
 	}
 
 }

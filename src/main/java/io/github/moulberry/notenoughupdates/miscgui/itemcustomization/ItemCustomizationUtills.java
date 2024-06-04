@@ -30,6 +30,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -78,6 +79,14 @@ public class ItemCustomizationUtills {
 		if (!instance.textFieldCustomItem.getText().isEmpty()) {
 			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, instance.textFieldCustomItem.getText().trim()));
 			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
+			NBTTagCompound tagCompound = customStack.getTagCompound();
+			if (tagCompound != null) {
+				NBTTagCompound customSkull = ItemCustomizeManager.getCustomSkull(customStack);
+				if (customSkull != null) {
+					tagCompound.removeTag("SkullOwner");
+					tagCompound.setTag("SkullOwner", customSkull);
+				}
+			}
 		}
 		return customStack;
 	}
