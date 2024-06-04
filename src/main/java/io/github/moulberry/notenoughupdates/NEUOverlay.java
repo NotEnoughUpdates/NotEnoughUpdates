@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.GuiItemCustomize;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.util.Calculator;
@@ -1115,6 +1116,7 @@ public class NEUOverlay extends Gui {
 
 				AtomicReference<String> internalname = new AtomicReference<>(null);
 				AtomicReference<ItemStack> itemstack = new AtomicReference<>(null);
+				AtomicReference<ItemStack> hoverStack = new AtomicReference<>(null);
 				if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer &&
 					Utils.getSlotUnderMouse((GuiContainer) Minecraft.getMinecraft().currentScreen) != null) {
 					Slot slot = Utils.getSlotUnderMouse((GuiContainer) Minecraft.getMinecraft().currentScreen);
@@ -1122,6 +1124,7 @@ public class NEUOverlay extends Gui {
 					if (hover != null) {
 						internalname.set(manager.getInternalNameForItem(hover));
 						itemstack.set(hover);
+						hoverStack.set(hover);
 					}
 				} else {
 					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
@@ -1251,6 +1254,13 @@ public class NEUOverlay extends Gui {
 								.replace("[Lvl {LVL}]", "")
 								.trim());
 							NotEnoughUpdates.INSTANCE.trySendCommand("/recipe " + displayName);
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.neuCustomizeKeybind) {
+							String uuid = NEUManager.getUUIDFromNBT(hoverStack.get().getTagCompound());
+							if (uuid != null) {
+								NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(hoverStack.get(), uuid);
+							} else {
+								Utils.addChatMessage("§cThis item does not have an UUID, so it cannot be customized.");
+							}
 						}
 					}
 				}
