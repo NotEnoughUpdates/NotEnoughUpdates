@@ -757,7 +757,6 @@ public class GuiItemCustomize extends GuiScreen {
 					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUCUSTOMIZE");
 					ItemCustomizeManager.ItemData itemData = gson.fromJson(shareJson, ItemCustomizeManager.ItemData.class);
 					itemData.defaultItem = dataForItem.defaultItem;
-					System.out.println(itemData.customItem + " " + itemData.customGlintColour);
 					ItemCustomizeManager.putItemData(itemUUID, itemData);
 					NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
 				}
@@ -827,26 +826,13 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		if (supportCustomLeatherColour) {
-			/*if (mouseX >= xCenter + 105 && mouseY >= belowEnchGlint - 7) {
-				if (mouseX <= xCenter + 125 && mouseY <= belowEnchGlint + 15) {
-					guiType = GuiType.DYES;
-				}
-			}*/
-
 				float buttonOffset = yTop + 174 + enchantGlintCustomColourAnimation.getValue() + 5 + 45;
-				System.out.println(mouseY - buttonOffset);
 
 				GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, buttonOffset);
 				if (buttonClicked != null) {
 					guiType = buttonClicked;
 					pageScroll = 0;
 				}
-
-		/*	System.out.println(mouseX + " " + mouseY);
-			System.out.println(xCenter + " " + belowEnchGlint);
-			System.out.println((mouseX >= xCenter + 105) + " " + (mouseY >= belowEnchGlint - 7));
-			System.out.println((mouseX <= xCenter + 125) + " " + (mouseY <= belowEnchGlint + 15));*/
-
 		}
 
 		super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -899,7 +885,6 @@ public class GuiItemCustomize extends GuiScreen {
 			ItemCustomizeManager.ItemData dataForItem = ItemCustomizeManager.getDataForItem(stack);
 			if (mouseY >= yTop + 0 && mouseY <= yTop + 0 + 20) {
 				if (ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE")) {
-					System.out.println("load");
 					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUCUSTOMIZE");
 					ItemCustomizeManager.ItemData itemData = gson.fromJson(shareJson, ItemCustomizeManager.ItemData.class);
 					itemData.defaultItem = dataForItem.defaultItem;
@@ -911,16 +896,15 @@ public class GuiItemCustomize extends GuiScreen {
 					dataForItem.customItem = null;
 				}
 				ItemCustomizationUtills.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
-				System.out.println("save");
+
 			} else if (mouseY >= yTop + 45 && mouseY <= yTop + 45 + 20) {
-				System.out.println("load");
+
 				if (ItemCustomizationUtills.validShareContents("NEUANIMATED") && this.animatedLeatherColours != null) {
 					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUANIMATED");
 					DyeType dyeType = gson.fromJson(shareJson, DyeType.class);
 					if (dyeType.coloursArray != null) {
 						this.animatedDyeTicks = dyeType.ticks;
 						dataForItem.animatedDyeTicks = dyeType.ticks;
-						System.out.println(Arrays.toString(dyeType.coloursArray));
 						dataForItem.animatedLeatherColours = Arrays.copyOf(dyeType.coloursArray, dyeType.coloursArray.length);
 						this.animatedLeatherColours.clear();
 						this.animatedLeatherColours = new ArrayList<>(Arrays.asList(dyeType.coloursArray));
@@ -933,8 +917,6 @@ public class GuiItemCustomize extends GuiScreen {
 			} else if (mouseY >= yTop + 72 && mouseY <= yTop + 72 + 20) {
 			ItemCustomizationUtills.shareContents("NEUANIMATED", gson.toJson(
 					new DyeType(dataForItem.animatedLeatherColours, dataForItem.animatedDyeTicks)));
-				System.out.println(Arrays.toString(dataForItem.animatedLeatherColours));
-				System.out.println("save");
 			}
 		}
 

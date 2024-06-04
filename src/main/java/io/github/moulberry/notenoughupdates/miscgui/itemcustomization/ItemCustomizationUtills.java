@@ -331,7 +331,6 @@ public class ItemCustomizationUtills {
 	public static void shareContents(String sharePrefix, String jsonObject) {
 		String base64String = Base64.getEncoder().encodeToString((sharePrefix +
 			jsonObject).getBytes(StandardCharsets.UTF_8));
-		System.out.println(base64String);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
 	}
 
