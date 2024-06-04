@@ -177,11 +177,6 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 	}
 
-	public GuiItemCustomize(ItemStack stack, String itemUUID, GuiType gui) {
-		this(stack, itemUUID);
-		guiType = gui;
-	}
-
 	@Override
 	public void onGuiClosed() {
 		updateData();
@@ -307,7 +302,9 @@ public class GuiItemCustomize extends GuiScreen {
 			tooltipToDisplay = ItemCustomizationUtills.customizeColourGuide;
 		}
 
-		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop, ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"), "preset");
+		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop, ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"),
+			true,
+			"preset");
 
 		yTop += 25;
 
@@ -413,8 +410,12 @@ public class GuiItemCustomize extends GuiScreen {
 
 		renderHeader(xCenter, yTop);
 
-		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop, ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"), "preset");
-		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop + 50, ItemCustomizationUtills.validShareContents("NEUANIMATED"), "animated");
+		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop, ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"),
+			true,
+			"preset");
+		ItemCustomizationUtills.renderPresetButtons(xCenter, yTop + 50, ItemCustomizationUtills.validShareContents("NEUANIMATED"),
+			!this.animatedLeatherColours.isEmpty(),
+			"animated");
 
 		yTop += 14;
 
@@ -736,6 +737,9 @@ public class GuiItemCustomize extends GuiScreen {
 			Gson gson = new Gson();
 			ItemCustomizeManager.ItemData dataForItem = ItemCustomizeManager.getDataForItem(stack);
 			if (mouseY >= yTop + 40 && mouseY <= yTop + 40 + 20) {
+				if (dataForItem.customItem != null && dataForItem.customItem.equals(dataForItem.defaultItem.replace("minecraft:", ""))) {
+					dataForItem.customItem = null;
+				}
 				ItemCustomizationUtills.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
 
 			} else if (mouseY >= yTop + 10 && mouseY <= yTop + 10 + 20) {
@@ -888,11 +892,14 @@ public class GuiItemCustomize extends GuiScreen {
 					NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
 				}
 			} else if (mouseY >= yTop + 20 && mouseY <= yTop + 20 + 20) {
+				if (dataForItem.customItem != null && dataForItem.customItem.equals(dataForItem.defaultItem.replace("minecraft:", ""))) {
+					dataForItem.customItem = null;
+				}
 				ItemCustomizationUtills.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
 				System.out.println("save");
 			} else if (mouseY >= yTop + 45 && mouseY <= yTop + 45 + 20) {
 				System.out.println("load");
-				if (ItemCustomizationUtills.validShareContents("NEUANIMATED")) {
+				if (ItemCustomizationUtills.validShareContents("NEUANIMATED") && this.animatedLeatherColours != null) {
 					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUANIMATED");
 					DyeType dyeType = gson.fromJson(shareJson, DyeType.class);
 					if (dyeType.coloursArray != null) {
@@ -904,7 +911,7 @@ public class GuiItemCustomize extends GuiScreen {
 						dataForItem.animatedLeatherColours =
 							Arrays.stream(dataForItem.animatedLeatherColours).filter(Objects::nonNull).toArray(String[]::new);
 						ItemCustomizeManager.putItemData(itemUUID, dataForItem);
-						NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID, GuiType.ANIMATED);
+						NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
 					}
 				}
 			} else if (mouseY >= yTop + 72 && mouseY <= yTop + 72 + 20) {

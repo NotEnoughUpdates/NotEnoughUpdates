@@ -235,7 +235,7 @@ public class ItemCustomizationUtills {
 		return (color.getRed() << 16) | (color.getGreen() << 8) | color.getBlue();
 	}
 
-	public static void renderPresetButtons(int x, int y, boolean valid, String preset) {
+	public static void renderPresetButtons(int x, int y, boolean valid, boolean secondValid, String preset) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(custom_ench_colour);
 		GlStateManager.color(1, 1, 1, 1);
 		Utils.drawTexturedRect(
@@ -296,6 +296,9 @@ public class ItemCustomizationUtills {
 
 		if (!valid) {
 			Gui.drawRect(x - 88 + 198, y + 2, x + 198, y + 2 + 20, 0x80000000);
+		}
+		if (!secondValid) {
+			Gui.drawRect(x - 88 + 198, y + 2 + 24, x + 198, y + 2 + 20 + 24, 0x80000000);
 		}
 
 		GlStateManager.color(1, 1, 1, 1);
