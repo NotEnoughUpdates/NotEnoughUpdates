@@ -23,7 +23,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.core.GlScissorStack;
 import io.github.moulberry.notenoughupdates.core.GuiElement;
 import io.github.moulberry.notenoughupdates.core.GuiElementBoolean;
@@ -55,7 +54,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class GuiItemCustomize extends GuiScreen {
 	private static final ResourceLocation PLUS = new ResourceLocation("notenoughupdates:itemcustomize/plus.png");
@@ -408,31 +406,6 @@ public class GuiItemCustomize extends GuiScreen {
 		yTop += 115;
 
 		if (animatedLeatherColours.isEmpty()) {
-			//animatedLeatherColours.add(ItemCustomizationUtills.getChromaStrFromLeatherColour(this));
-
-			//warden dye, i think its right
-			String[] a = new String[]{				"#034150",				"#034150",				"#034150",				"#034150",				"#034150",				"#024554",				"#004a59",				"#004f5e",				"#005463",				"#005a68",				"#005f6d",				"#006472",				"#006a76",				"#006a76",				"#00757f",				"#007a84",				"#008088",				"#00868c",				"#008b90",				"#009194",				"#009194",				"#009295",				"#009295",				"#009295",				"#009295",				"#009295",				"#009295",				"#009194",				"#009194",				"#008b90",				"#00868c",				"#008088",				"#007a84",				"#00757f",				"#006a76",				"#006a76",				"#006472",				"#005f6d",				"#005a68",				"#005463",				"#004f5e",				"#004a59",				"#024554",				"#034150",				"#034150",				"#034150",				"#034150",				"#034150"};
-			//lucky dye
-			String[] b = new String[]{				"#87ff37",				"#81F83C",				"#7DF43F",				"#79EF42",				"#73E944",				"#6FE547",				"#69DF49",				"#64D84B",				"#5DD24D",				"#57CC4E",				"#52C551",				"#4ABE52",				"#44B752",				"#3DB153",				"#36AB53",				"#30A553",				"#299F54",				"#239954",				"#1D9553",				"#179153",				"#0F8C52",				"#098852",				"#008350",				"#007D4F",				"#00774D",				"#00734B",				"#006F49",				"#006C47",				"#006944",				"#006944",				"#006C47",				"#006F49",				"#00734B",				"#00774D",				"#007D4F",				"#008350",				"#098852",				"#0F8C52",				"#179153",				"#1D9553",				"#239954",				"#299F54",				"#30A553",				"#36AB53",				"#3DB153",				"#44B752",				"#4ABE52",				"#52C551",				"#57CC4E",				"#5DD24D",				"#64D84B",				"#69DF49",				"#6FE547",				"#73E944",				"#79EF42",				"#7DF43F",				"#81F83C",				"#87ff37"			};
-			//rose dye
-			String[] c = new String[]{				"#F06766",				"#f06766",				"#f06766",				"#ee6364",				"#ee6364",				"#eb5e61",				"#e8595e",				"#e45359",				"#e04d55",				"#db4650",				"#d3404c",				"#cb3947",				"#c43043",				"#bd2b40",				"#b8293e",				"#b3263d",				"#ae243b",				"#ae243b",				"#a32038",				"#9c1e36",				"#961c34",				"#901a32",				"#881731",				"#81162e",				"#881830",				"#81162e",				"#7b142d",				"#74122b",				"#6d1029",				"#650e27",				"#5e0d24",				"#560b22",				"#500a20",				"#49081f",				"#44061d",				"#3e061b",				"#39041a",				"#39041a",				"#39041a",				"#39041a",				"#39041a",				"#39041a",				"#39041a",				"#39041a",				"#39041a",				"#39041a",				"#3e061b",				"#44061d",				"#49081f",				"#500a20",				"#560b22",				"#5e0d24",				"#650e27",				"#6d1029",				"#74122b",				"#7b142d",				"#81162e",				"#881830",				"#81162e",				"#881731",				"#901a32",				"#961c34",				"#9c1e36",				"#a32038",				"#ae243b",				"#ae243b",				"#b3263d",				"#b8293e",				"#bd2b40",				"#c43043",				"#cb3947",				"#d3404c",				"#db4650",				"#e04d55",				"#e45359",				"#e8595e",				"#eb5e61",				"#ee6364",				"#ee6364",				"#f06766",				"#f06766",				"#F06766"			};
-			
-			Random random = new Random();
-			int i = random.nextInt(3);
-
-			String[] d;
-			if (i == 0) {
-				d = a;
-			} else if (i == 1) {
-				d = b;
-			} else {
-				d = c;
-			}
-
-			for (String s : d) {
-				Color color = ItemCustomizationUtills.getColourFromHex(s);
-				animatedLeatherColours.add(ChromaColour.special(0, 0, color.getRGB()));
-			}
 		}
 
 		int adjustedY = yTop + pageScroll + 20;
@@ -856,7 +829,9 @@ public class GuiItemCustomize extends GuiScreen {
 			mouseY <= topOffset + 15) {
 			if (mouseX >= xCenter + 90 - 12) {
 				editor = null;
-				animatedLeatherColours.add(ItemCustomizationUtills.getChromaStrFromLeatherColour(this));
+				if (!animatedLeatherColours.isEmpty()) animatedLeatherColours.add(animatedLeatherColours.get(animatedLeatherColours.size() - 1));
+				else if (customLeatherColour != null) animatedLeatherColours.add(customLeatherColour);
+				else animatedLeatherColours.add(ItemCustomizationUtills.getChromaStrFromLeatherColour(this));
 				updateData();
 				//todo gui scales
 				pageScroll = -((animatedLeatherColours.size() * 20 - 20) - 180);
@@ -881,7 +856,6 @@ public class GuiItemCustomize extends GuiScreen {
 			mouseX <= xCenter + 23 / 2 - 15 &&
 			mouseY >= topOffset && mouseY <= topOffset + 20) {
 			animatedLeatherColours.clear();
-			animatedLeatherColours.add(ItemCustomizationUtills.getChromaStrFromLeatherColour(this));
 		}
 
 		GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
