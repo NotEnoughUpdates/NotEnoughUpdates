@@ -286,12 +286,17 @@ public class PetInfoOverlay extends TextOverlay {
 				JsonObject petInfo = new JsonParser().parse(ea.getString("petInfo")).getAsJsonObject();
 				petType = petInfo.get("type").getAsString();
 				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
-				// Should only default if from item list and repo missing exp: 0
-				level = PetLeveling.getPetLevelingForPet(petType, rarity)
-													 .getPetLevel(Utils.getElementAsFloat(petInfo.get("exp"), 0));
 				if (petInfo.has("heldItem")) {
 					heldItem = petInfo.get("heldItem").getAsString();
 				}
+
+				if ("PET_ITEM_TIER_BOOST".equals(heldItem)) {
+					rarity = rarity.nextRarity();
+				}
+
+				// Should only default if from item list and repo missing exp: 0
+				level = PetLeveling.getPetLevelingForPet(petType, rarity)
+													 .getPetLevel(Utils.getElementAsFloat(petInfo.get("exp"), 0));
 				if (petInfo.has("skin")) {
 					skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
 				}
