@@ -23,6 +23,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.TabListChangeEvent;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiPlayerTabOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -86,6 +87,33 @@ public class TabListUtils {
 		for (NetworkPlayerInfo info : players) {
 			String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
 			result.add(name);
+		}
+
+		ArrayList<String> lines = null;
+		try {
+			String[] footer = ((AccessorGuiPlayerTabOverlay) Minecraft.getMinecraft().ingameGUI.getTabList())
+				.getFooter().getFormattedText()
+				.split("\n");
+			//System.out.println();
+			lines = new ArrayList<>();
+			boolean seenBlank = false;
+			for (String line : footer) {
+				if (line.equals("§r§r§r§r§s§r")) {
+					seenBlank = true; //This is to emulate the space every other widget has for its lines
+					continue;
+				}
+				if (seenBlank) {
+					lines.add(line);
+					seenBlank = false;
+				} else {
+					lines.add(" " + line);
+				}
+			}
+		} catch (NullPointerException ignored) {
+		}
+
+		if (lines != null) {
+			result.addAll(lines);
 		}
 		return result;
 	}
