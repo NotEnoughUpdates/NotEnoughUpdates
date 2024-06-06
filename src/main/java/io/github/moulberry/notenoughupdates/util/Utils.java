@@ -119,6 +119,7 @@ public class Utils {
 		EnumChatFormatting.DARK_PURPLE
 	};
 	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
+	final static Pattern guildOrPartyMessage = Pattern.compile("(?:Party|Guild|Officer) > (?:\\[.*\\] )?([a-zA-Z0-9_]+):? (?:\\[.*\\]: )?");
 	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
 	public static boolean hasEffectOverride = false;
@@ -2336,18 +2337,13 @@ public class Utils {
 
 	public static String getNameFromChatComponent(IChatComponent chatComponent) {
 		String unformattedText = cleanColour(chatComponent.getSiblings().get(0).getUnformattedText());
-		String username = unformattedText.substring(unformattedText.indexOf(">") + 2, unformattedText.indexOf(":"));
-		// If the first character is a square bracket the user has a rank
-		// So we get the username from the space after the closing square bracket (end of their rank)
-		if (username.charAt(0) == '[') {
-			username = username.substring(username.indexOf(" ") + 1);
+		Matcher matcher = guildOrPartyMessage.matcher(unformattedText);
+		if (matcher.matches()) {
+			return matcher.group(1);
+		} else {
+			System.out.println("[NEU] getNameFromChatComponent ERROR: " + unformattedText);
+			return "idk_bruh";
 		}
-		// If we still get any square brackets it means the user was talking in guild chat with a guild rank
-		// So we get the username up to the space before the guild rank
-		if (username.contains("[") || username.contains("]")) {
-			username = username.substring(0, username.indexOf(" "));
-		}
-		return username;
 	}
 
 	public static void addChatMessage(@NotNull String message) {
