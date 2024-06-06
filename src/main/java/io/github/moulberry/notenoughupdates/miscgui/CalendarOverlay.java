@@ -143,8 +143,6 @@ public class CalendarOverlay {
 		"NEU Calendar Item"
 	); // Star Cult Stack
 
-	private boolean canAddcountdownCalc = (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2);
-
 	static {
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setString("event_id", "dark_auction");
