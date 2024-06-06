@@ -367,7 +367,7 @@ public class CalendarOverlay {
 
 	public String getZooPet(long startTime) {
 		long time = startTime - oringoEpoch;
-		return "§7Pet in Zoo: " + oringoPets[(int) ((time / oringoInterval) % 6)];
+		return "§7Pet available: " + oringoPets[(int) ((time / oringoInterval) % 6)];
 	}
 
 	@SubscribeEvent
@@ -546,7 +546,6 @@ public class CalendarOverlay {
 				}
 				if (zoo) {
 					desc.add("");
-					System.out.println();
 					desc.add(getZooPet(eventTime));
 				}
 				getEventsAt(eventTime).add(new SBEvent(
