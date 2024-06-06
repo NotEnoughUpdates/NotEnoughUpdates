@@ -67,6 +67,9 @@ public class ItemPriceInformation {
 	private static final Pattern COMPOSTER_STORED_AMOUNT = Pattern.compile(
 		".*Compost Available: §.(?<amount>[\\d,]+)");
 
+	private static final Pattern BAZAAR_STORED_AMOUNT = Pattern.compile(
+		".*(?:Offer|Order) amount: §.(?<amount>[\\d,]+)§.x");
+
 	public static void addToTooltip(List<String> tooltip, String internalName, ItemStack stack) {
 		addToTooltip(tooltip, internalName, stack, true);
 	}
@@ -144,7 +147,7 @@ public class ItemPriceInformation {
 		boolean foundMulti = false;
 		for (int i = 1; i < tooltip.size(); i++) {
 			if (foundMulti) break;
-			for (Pattern pattern : new Pattern[]{SACK_STORED_AMOUNT, GEMSTONE_STORED_AMOUNT, COMPOSTER_STORED_AMOUNT}) {
+			for (Pattern pattern : new Pattern[]{SACK_STORED_AMOUNT, GEMSTONE_STORED_AMOUNT, COMPOSTER_STORED_AMOUNT, BAZAAR_STORED_AMOUNT}) {
 				val matcher = pattern.matcher(tooltip.get(i));
 				if (matcher.matches()) {
 					String amountString = matcher.group("amount").replace(",", "");
