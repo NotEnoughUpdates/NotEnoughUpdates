@@ -76,6 +76,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern XP_BOOST_PATTERN = Pattern.compile(
 		"PET_ITEM_(COMBAT|FISHING|MINING|FORAGING|ALL|FARMING)_(SKILL|SKILLS)_BOOST_(COMMON|UNCOMMON|RARE|EPIC)");
 	private static final Pattern PET_CONTAINER_PAGE = Pattern.compile("Pets \\((\\d)/(\\d)\\) *");
+	private static final Pattern PET_CONTAINER_SEARCH = Pattern.compile("Pets: \".+\"");
 	private static final Pattern TAB_LIST_XP = Pattern.compile("(\\d+\\.?\\d*)/(\\d+\\.?\\d*)[kM]? XP \\(\\d+\\.?\\d*%\\)");
 	private static final Pattern TAB_LIST_XP_OVERFLOW = Pattern.compile("\\+(\\d+\\.?\\d*) XP");
 	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("\\[Lvl (\\d+)\\] (.+)");
@@ -720,12 +721,15 @@ public class PetInfoOverlay extends TextOverlay {
 					isPets = true;
 				} else {
 					Matcher matcher = PET_CONTAINER_PAGE.matcher(containerName);
+					Matcher matcherSearch = PET_CONTAINER_SEARCH.matcher(containerName);
 					if (matcher.matches()) {
 						try {
 							page = Integer.parseInt(matcher.group(1)) - 1;
 							isPets = true;
 						} catch (NumberFormatException ignored) {
 						}
+					} else if (matcherSearch.matches()) {
+						isPets = true;
 					}
 				}
 
@@ -774,6 +778,7 @@ public class PetInfoOverlay extends TextOverlay {
 					isPets = true;
 				} else {
 					Matcher matcher = PET_CONTAINER_PAGE.matcher(containerName);
+					Matcher matcherSearch = PET_CONTAINER_SEARCH.matcher(containerName);
 					if (matcher.matches()) {
 						try {
 							page = Integer.parseInt(matcher.group(1)) - 1;
@@ -781,6 +786,8 @@ public class PetInfoOverlay extends TextOverlay {
 							isPets = true;
 						} catch (NumberFormatException ignored) {
 						}
+					} else if (matcherSearch.matches()) {
+						isPets = true;
 					}
 				}
 				if (isPets) {
