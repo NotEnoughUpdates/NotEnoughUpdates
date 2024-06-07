@@ -119,7 +119,7 @@ public class Utils {
 		EnumChatFormatting.DARK_PURPLE
 	};
 	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
-	final static Pattern guildOrPartyMessage = Pattern.compile("(?:Party|Guild|Officer) > (?:\\[.*\\] )?([a-zA-Z0-9_]+):? (?:\\[.*\\]: )?");
+	final static Pattern GUILD_OR_PARTY_MESSAGE_PATTERN = Pattern.compile("(?:Party|Guild|Officer) > (?:\\[.*\\] )?([a-zA-Z0-9_]+):? (?:\\[.*\\]: )?");
 	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
 	public static boolean hasEffectOverride = false;
