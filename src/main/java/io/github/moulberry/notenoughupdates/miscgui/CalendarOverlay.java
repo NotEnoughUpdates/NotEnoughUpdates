@@ -93,7 +93,7 @@ public class CalendarOverlay {
 
 	public static boolean ableToClickCalendar = true;
 	long thunderStormEpoch = 1692826500000L;
-	long oringoEpoch = SkyBlockTime.Companion.fromDayMonthYear(1, "Early Summer", 52).toMillis();
+	long oringoEpoch = 1583153700000L;
 	long oringoInterval = 223200000L;
 	long rainInterval = 3600000L;
 	long thunderFrequency = 3;
