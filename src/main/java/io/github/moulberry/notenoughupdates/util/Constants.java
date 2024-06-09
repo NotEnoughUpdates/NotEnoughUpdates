@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -86,6 +86,7 @@ public class Constants {
 	public static JsonObject BESTIARY;
 	public static JsonObject SACKS;
 	public static JsonObject HOPPITY;
+	public static JsonObject GEMSTONES;
 
 	private static final ReentrantLock lock = new ReentrantLock();
 
@@ -115,6 +116,7 @@ public class Constants {
 			BESTIARY = Utils.getConstant("bestiary", gson);
 			SACKS = Utils.getConstant("sacks", gson);
 			HOPPITY = Utils.getConstant("hoppity", gson);
+			GEMSTONES = Utils.getConstant("gemstones", gson);
 
 			parseEssenceCosts();
 		} catch (Exception ex) {
