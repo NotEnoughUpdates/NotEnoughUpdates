@@ -25,8 +25,10 @@ import io.github.moulberry.notenoughupdates.util.SBInfo
 object TablistTaskQueue {
     private val queue = mutableListOf<TablistTutorial.TabListWidget>()
 
+    val blacklistedLocatoions = setOf("dungeon", "kuudra")
+
     fun addToQueue(task: TablistTutorial.TabListWidget, showNotification: Boolean) {
-        if (showNotification && !queueContainsElements() && !SBInfo.getInstance().location.contains("The Catacombs")) {
+        if (showNotification && !queueContainsElements() && !blacklistedLocatoions.contains(SBInfo.getInstance().mode)) {
             NotificationHandler.displayNotification(
                 listOf(
                     "§l§4Widget missing",
