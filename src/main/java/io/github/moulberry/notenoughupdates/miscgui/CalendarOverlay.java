@@ -114,7 +114,7 @@ public class CalendarOverlay {
 	private int ySize = 170;
 
 	private static final Pattern CALENDAR_PATTERN = Pattern.compile(
-		"((?:Early | Late )?(?:Spring|Summer|Fall|Winter)), Year ([0-9]+)");
+		"((?:Early |Late )?(?:Spring|Summer|Fall|Winter)), Year ([0-9]+)");
 
 	private int jingleIndex = -1;
 
@@ -570,7 +570,7 @@ public class CalendarOverlay {
 				JsonArray array = new JsonArray();
 
 				for (String line : ItemUtils.getLore(item)) {
-					if (line.startsWith(EnumChatFormatting.YELLOW + "\u25CB")) {
+					if (line.startsWith("§e○") || line.startsWith("§6☘")) {
 						array.add(new JsonPrimitive(Utils.cleanColour(line.substring(4))));
 					}
 				}
