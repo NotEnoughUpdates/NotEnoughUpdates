@@ -507,15 +507,6 @@ public class ItemOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "Enable armor check",
-		desc = "Checks if you have Bat Person Armor equipped"
-	)
-	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 9)
-	public boolean enableGrappleArmorCheck = true;
-
-	@Expose
-	@ConfigOption(
 		name = "Use Durability for Cooldowns",
 		desc = "Show the cooldown durations as the durability."
 	)

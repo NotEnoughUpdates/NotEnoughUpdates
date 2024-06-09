@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -76,6 +77,14 @@ public class ItemCooldowns {
 	private static long bonzoMaskCooldown = -1;
 	private static long spiritMaskCooldown = -1;
 	private static long sprayonatorCooldown = -1;
+
+	private static long grappleCooldown = 2000;
+	private static HashSet<String> grappleSetIds = new HashSet<String>() {{
+		add("BAT_PERSON_BOOTS");
+		add("BAT_PERSON_LEGGINGS");
+		add("BAT_PERSON_CHESTPLATE");
+		add("BAT_PERSON_HELMET");
+	}};
 
 	public static TreeMap<Long, BlockData> blocksClicked = new TreeMap<>();
 
@@ -191,9 +200,6 @@ public class ItemCooldowns {
 	}
 
 	public static long getGrappleCooldownWithArmor() {
-		if (!NotEnoughUpdates.INSTANCE.config.itemOverlays.enableGrappleArmorCheck) {
-			return 2000;
-		}
 		if (!NotEnoughUpdates.INSTANCE.config.itemOverlays.enableGrappleOverlay) {
 			return 0;
 		}
@@ -203,11 +209,8 @@ public class ItemCooldowns {
 			String internal =
 				NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(armorPiece).resolveInternalName();
 			if (internal != null) {
-				if (!internal.equals("BAT_PERSON_BOOTS") && !internal.equals("BAT_PERSON_LEGGINGS") &&
-					!internal.equals("BAT_PERSON_CHESTPLATE") && !internal.equals("BAT_PERSON_HELMET")) return 2000;
-			} else {
-				return 2000;
-			}
+				if (!grappleSetIds.contains(internal)) return grappleCooldown;
+			} else return grappleCooldown;
 		}
 		return 0;
 	}
