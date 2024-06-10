@@ -79,20 +79,6 @@ public class ItemTooltipListener {
 	private boolean showGemstoneStats = true;
 	private boolean pressedArrowLast = false;
 	private boolean pressedShiftLast = false;
-	private final HashMap<String, Integer> chiselBonusPercentage = new HashMap<String, Integer>() {{
-		put("ROUGH", 30);
-		put("FLAWED", 40);
-		put("FINE", 50);
-		put("FLAWLESS", 60);
-		put("PERFECT", 100);
-	}};
-	private final HashMap<String, Integer> gemstoneRemoveCosts = new HashMap<String, Integer>() {{
-		put("ROUGH", 1);
-		put("FLAWED", 100);
-		put("FINE", 10_000);
-		put("FLAWLESS", 100_000);
-		put("PERFECT", 500_000);
-	}};
 
 	public ItemTooltipListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -331,8 +317,9 @@ public class ItemTooltipListener {
 				String gemstoneType = splitInternal[1];
 
 				JsonObject gemstones = Constants.GEMSTONES;
-				if (gemstones != null && gemstones.has(gemstoneType) &&
-					gemstones.getAsJsonObject(gemstoneType).getAsJsonObject("stats").has(gemstoneTier)) {
+				if (gemstones != null && gemstones.getAsJsonObject("gemstoneTypes").has(gemstoneType) &&
+					gemstones.getAsJsonObject("gemstoneTypes").getAsJsonObject(gemstoneType).getAsJsonObject("stats").has(
+						gemstoneTier)) {
 					int lineToInject = event.toolTip.get(1).contains("Collection Item") ? 3 : 1;
 
 					if (k == lineToInject) {
@@ -348,7 +335,7 @@ public class ItemTooltipListener {
 							newTooltip.add(EnumChatFormatting.DARK_GRAY + "[Press SHIFT to hide extra info]");
 						}
 
-						JsonObject gemstoneInfo = gemstones.getAsJsonObject(gemstoneType);
+						JsonObject gemstoneInfo = gemstones.getAsJsonObject("gemstoneTypes").getAsJsonObject(gemstoneType);
 						JsonObject statNums = gemstoneInfo.getAsJsonObject("stats").getAsJsonObject(gemstoneTier);
 
 						List<Map.Entry<String, JsonElement>> validRarities = new ArrayList<>(statNums.entrySet());
@@ -382,6 +369,7 @@ public class ItemTooltipListener {
 							String rarityFormatted = Utils.rarityArrMap.getOrDefault(rarity, rarity);
 							String statName = gemstoneInfo.get("statName").getAsString();
 							double statNum = validRarities.get(rarityIndex).getValue().getAsDouble();
+							int removalCost = gemstones.getAsJsonObject("removalCosts").get(gemstoneTier).getAsInt();
 
 							String formattedStatNum = "";
 							if (statNum == 0) formattedStatNum = "???";
@@ -392,7 +380,7 @@ public class ItemTooltipListener {
 								String chiselBonus = gemstoneInfo.get("chiselBonus").getAsString();
 								String formattedChiselBonus = chiselBonus.replace(
 									"{}",
-									chiselBonusPercentage.get(gemstoneTier).toString()
+									gemstones.getAsJsonObject("chiselPercentages").get(gemstoneTier).getAsString()
 								);
 
 								newTooltip.add("");
@@ -408,7 +396,7 @@ public class ItemTooltipListener {
 							newTooltip.add("  §7" + statName + ": §a+" + formattedStatNum);
 							newTooltip.add("");
 							newTooltip.add(
-								"§9Removal Cost: §6" + StringUtils.formatNumber(gemstoneRemoveCosts.get(gemstoneTier)) + " coins");
+								"§9Removal Cost: §6" + StringUtils.formatNumber(removalCost) + (removalCost == 1 ? " coin" : " coins"));
 							newTooltip.add("§8Combinable in Gemstone Grinder or The Hex");
 							newTooltip.add("");
 						}
