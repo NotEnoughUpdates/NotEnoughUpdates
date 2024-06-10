@@ -97,7 +97,7 @@ public class TabListUtils {
 			lines = new ArrayList<>();
 			boolean seenBlank = false;
 			for (String line : footer) {
-				if (line.equals("§r§r§r§r§s§r")) {
+				if (line.equals("§r§r§r§r§s§r") || line.equals("§r")) {
 					seenBlank = true; //This is to emulate the space every other widget has for its lines
 					continue;
 				}

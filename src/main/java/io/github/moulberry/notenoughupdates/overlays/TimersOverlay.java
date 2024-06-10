@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodoHud;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
@@ -69,7 +70,7 @@ public class TimersOverlay extends TextTabOverlay {
 	}
 
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?([ms])?\u00a7r");
+		" You have a God Potion active! ([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?([ms])?");
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
 		"§r§d§l(?:Big )?Yum! §r§eYou (?:refresh|gain) §r§.+ §r§efor §r§a48 §r§ehours!§r");
 	private static final Pattern PUZZLER_PATTERN =
@@ -84,6 +85,7 @@ public class TimersOverlay extends TextTabOverlay {
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
 	private static final Pattern DAILY_SHOP_LIMIT = Pattern.compile(
 		"\u00a7r\u00a7cYou may only buy up to 6,?400? of this item each day!\u00a7r");
+	private static final Pattern GOD_POTION_TIME = Pattern.compile(" God Potion: ([1-5][0-9]|[0-9])([dhms])");
 
 	@SubscribeEvent
 	public void onClickItem(SlotClickEvent event) {
@@ -470,44 +472,27 @@ public class TimersOverlay extends TextTabOverlay {
 		boolean foundEffectsText = false;
 		if (SBInfo.getInstance().getLocation() != null && !SBInfo.getInstance().getLocation().equals("dungeon") &&
 			SBInfo.getInstance().footer != null) {
-			String formatted = SBInfo.getInstance().footer.getFormattedText();
-			for (String line : formatted.split("\n")) {
+			List<String> effectsLine = TablistAPI.getOptionalWidgetLines(TablistAPI.WidgetNames.ACTIVE_EFFECTS);
+			for (String line : effectsLine) {
+				line = Utils.cleanColour(line);
 				if (line.contains("Active Effects")) {
 					foundEffectsText = true;
 				}
 				Matcher activeEffectsMatcher = PATTERN_ACTIVE_EFFECTS.matcher(line);
+				Matcher godPotionMatcher = GOD_POTION_TIME.matcher(line);
+				String godpotRemainingTimeType = null;
+				long godpotRemainingTime = 0;
+				long godPotDuration = 0;
+
 				if (activeEffectsMatcher.matches()) {
 					foundGodPotText = true;
-					long godPotDuration = 0;
 					try {
-						long godpotRemainingTime;
 						for (int i = 1; i < activeEffectsMatcher.groupCount(); i += 2) {
 							if (activeEffectsMatcher.group(i) == null) {
 								continue;
 							}
 							godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
-							String godpotRemainingTimeType = activeEffectsMatcher.group(i + 1);
-							switch (godpotRemainingTimeType) {
-								case "Days":
-								case "Day":
-									godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
-									break;
-								case "Hours":
-								case "Hour":
-								case "h":
-									godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
-									break;
-								case "Minutes":
-								case "Minute":
-								case "m":
-									godPotDuration += godpotRemainingTime * 60 * 1000;
-									break;
-								case "Seconds":
-								case "Second":
-								case "s":
-									godPotDuration += godpotRemainingTime * 1000;
-									break;
-							}
+							godpotRemainingTimeType = activeEffectsMatcher.group(i + 1);
 						}
 					} catch (Exception e) {
 						if (!hasErrorMessage) {
@@ -517,9 +502,35 @@ public class TimersOverlay extends TextTabOverlay {
 						}
 						break;
 					}
-
+				} else if (godPotionMatcher.matches()) {
+					foundGodPotText = true;
+					godpotRemainingTime = Integer.parseInt(godPotionMatcher.group(1));
+					godpotRemainingTimeType = godPotionMatcher.group(2);
+				}
+				if (godpotRemainingTimeType != null) {
+					switch (godpotRemainingTimeType) {
+						case "Days":
+						case "Day":
+						case "d":
+							godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
+							break;
+						case "Hours":
+						case "Hour":
+						case "h":
+							godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
+							break;
+						case "Minutes":
+						case "Minute":
+						case "m":
+							godPotDuration += godpotRemainingTime * 60 * 1000;
+							break;
+						case "Seconds":
+						case "Second":
+						case "s":
+							godPotDuration += godpotRemainingTime * 1000;
+							break;
+					}
 					hidden.godPotionDuration = godPotDuration;
-
 				}
 			}
 		}
