@@ -396,7 +396,7 @@ public class ItemUtils {
 			NBTTagCompound display = tag.getCompoundTag("display");
 			if (display.hasKey("Lore", 9)) {
 				NBTTagList lore = display.getTagList("Lore", 8);
-				if (ItemTooltipListener.petToolTipRegex.matcher(lore.getStringTagAt(0)).matches() &&
+				if (ItemTooltipListener.petToolTipRegex.matcher(Utils.cleanColour(lore.getStringTagAt(0))).matches() &&
 					lore.tagCount() > 7) {
 
 					PetLeveling.PetLevel petLevel;
