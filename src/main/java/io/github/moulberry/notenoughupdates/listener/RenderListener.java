@@ -304,6 +304,8 @@ public class RenderListener {
 		}
 	}
 
+	boolean storageTurnedOffTheCalendar = false;
+
 	/**
 	 * Sets hoverInv and focusInv variables, representing whether the NEUOverlay should render behind the inventory when
 	 * (hoverInv == true) and whether mouse/kbd inputs shouldn't be sent to NEUOverlay (focusInv == true).
@@ -420,9 +422,14 @@ public class RenderListener {
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 
 		if (storageOverlayActive) {
+			storageTurnedOffTheCalendar = true;
+			CalendarOverlay.ableToClickCalendar = false;
 			StorageOverlay.getInstance().render();
 			event.setCanceled(true);
 			return;
+		} else if (storageTurnedOffTheCalendar) {
+			CalendarOverlay.ableToClickCalendar = true;
+			storageTurnedOffTheCalendar = false;
 		}
 
 		if (tradeWindowActive) {
