@@ -129,6 +129,9 @@ public class ItemResolutionQuery {
 				case "POTION":
 					resolvedName = resolvePotionName();
 					break;
+				case "BALLOON_HAT_2024":
+					resolvedName = resolveBalloonHatName();
+					break;
 			}
 		}
 
@@ -354,6 +357,11 @@ public class ItemResolutionQuery {
 		} else {
 			return "WATER_BOTTLE";
 		}
+	}
+
+	private String resolveBalloonHatName() {
+		String color = getExtraAttributes().getString("party_hat_color");
+		return "BALLOON_HAT_2024_" + color.toUpperCase(Locale.ROOT);
 	}
 
 	private NBTTagCompound getExtraAttributes() {
