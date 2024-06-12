@@ -37,8 +37,8 @@ public class CraftingRecipe implements NeuRecipe {
 	public static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates",
 		"textures/gui/crafting_table_tall.png");
 
-	private static final int EXTRA_STRING_X = 132;
-	private static final int EXTRA_STRING_Y = 50;
+	private static final int EXTRA_STRING_X = 90;
+	private static final int EXTRA_STRING_Y = 35;
 
 	private final NEUManager manager;
 	private final Ingredient[] inputs;
@@ -116,7 +116,7 @@ public class CraftingRecipe implements NeuRecipe {
 		String craftingText = getCraftText();
 		if (craftingText != null)
 			Utils.drawStringCenteredScaledMaxWidth(craftingText,
-				gui.guiLeft + EXTRA_STRING_X, gui.guiTop + EXTRA_STRING_Y, false, 75, 0x404040
+				gui.guiLeft + EXTRA_STRING_X, gui.guiTop + EXTRA_STRING_Y, false, 85, 0x404040
 			);
 	}
 
