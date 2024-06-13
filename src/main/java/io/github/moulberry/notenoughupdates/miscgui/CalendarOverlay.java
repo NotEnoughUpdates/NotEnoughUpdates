@@ -93,6 +93,8 @@ public class CalendarOverlay {
 
 	public static boolean ableToClickCalendar = true;
 	long thunderStormEpoch = 1692826500000L;
+	long oringoEpoch = 1583153700000L;
+	long oringoInterval = 223200000L;
 	long rainInterval = 3600000L;
 	long thunderFrequency = 3;
 	long rainDuration = 1200 * 1000L;
@@ -112,7 +114,7 @@ public class CalendarOverlay {
 	private int ySize = 170;
 
 	private static final Pattern CALENDAR_PATTERN = Pattern.compile(
-		"((?:Early | Late )?(?:Spring|Summer|Fall|Winter)), Year ([0-9]+)");
+		"((?:Early |Late )?(?:Spring|Summer|Fall|Winter)), Year ([0-9]+)");
 
 	private int jingleIndex = -1;
 
@@ -142,8 +144,6 @@ public class CalendarOverlay {
 		"Cult of the Fallen Star",
 		"NEU Calendar Item"
 	); // Star Cult Stack
-
-	private boolean canAddcountdownCalc = (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2);
 
 	static {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -356,6 +356,20 @@ public class CalendarOverlay {
 		}
 	}
 
+	String[] oringoPets = new String[]{
+		"§6Lion",
+		"§6Monkey",
+		"§6Elephant",
+		"§6Tiger",
+		"§6Blue Whale",
+		"§6Giraffe",
+	};
+
+	public String getZooPet(long startTime) {
+		long time = startTime - oringoEpoch;
+		return "§7Pet available: " + oringoPets[(int) ((time / oringoInterval) % 6)];
+	}
+
 	@SubscribeEvent
 	public void tick(RepositoryReloadEvent event) {
 		JsonObject calendarJson = NotEnoughUpdates.INSTANCE.manager.getJsonFromFile(new File(
@@ -506,6 +520,10 @@ public class CalendarOverlay {
 			if (lore.isEmpty()) continue;
 			String first = lore.get(0);
 			if (first.startsWith(startsInText)) {
+				boolean zoo = false;
+				if (item.hasDisplayName()) {
+					zoo = item.getDisplayName().equals("§aTraveling Zoo");
+				}
 				String time = Utils.cleanColour(first.substring(startsInText.length()));
 				long eventTime = currentTime + getTimeOffset(time);
 
@@ -521,10 +539,14 @@ public class CalendarOverlay {
 							String lastsForS = Utils.cleanColour(line.substring(lastsForText.length()));
 							lastsFor = getTimeOffset(lastsForS);
 						}
-						if (Utils.cleanColour(line).trim().length() == 0) {
+						if (Utils.cleanColour(line).trim().isEmpty()) {
 							foundBreak = true;
 						}
 					}
+				}
+				if (zoo) {
+					desc.add("");
+					desc.add(getZooPet(eventTime));
 				}
 				getEventsAt(eventTime).add(new SBEvent(
 					getIdForDisplayName(item.getDisplayName()), item.getDisplayName(),
@@ -548,7 +570,7 @@ public class CalendarOverlay {
 				JsonArray array = new JsonArray();
 
 				for (String line : ItemUtils.getLore(item)) {
-					if (line.startsWith(EnumChatFormatting.YELLOW + "\u25CB")) {
+					if (line.startsWith("§e○") || line.startsWith("§6☘")) {
 						array.add(new JsonPrimitive(Utils.cleanColour(line.substring(4))));
 					}
 				}

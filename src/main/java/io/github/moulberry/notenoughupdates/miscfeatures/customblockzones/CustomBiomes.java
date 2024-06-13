@@ -49,6 +49,8 @@ public class CustomBiomes {
 	private CustomBiomes() {
 		subdividers.put("crystal_hollows", new CrystalHollowsTextures());
 		subdividers.put("mining_3", new DwarvenMinesTextures());
+		subdividers.put("crimson_isle", new CrimsonIsleTextures());
+		subdividers.put("mineshaft", new MineshaftTextures());
 	}
 
 	//Biome Prefix: NeuAreaBiomeName
