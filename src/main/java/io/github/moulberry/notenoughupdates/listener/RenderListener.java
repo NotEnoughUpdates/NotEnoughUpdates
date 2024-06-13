@@ -92,6 +92,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -452,9 +453,24 @@ public class RenderListener {
 		}
 	}
 
+	private static final String[] dungeonMenus =
+		{
+			"Spirit Leap",
+			"Revive A Teammate",
+			"Click in order!",
+			"What starts with",
+			"Select all the",
+			"Click the button on time!",
+			"Correct all the panes!",
+			"Change all to same color!"
+		};
+	private static final List<String> dungeonMenuList = Arrays.asList(dungeonMenus);
+
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
 		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null ||
-			!NotEnoughUpdates.INSTANCE.config.inventoryButtons.enableInventoryButtons) {
+			!NotEnoughUpdates.INSTANCE.config.inventoryButtons.enableInventoryButtons ||
+			(NotEnoughUpdates.INSTANCE.config.inventoryButtons.hideInDungeonMenus &&
+				dungeonMenuList.contains(Utils.getOpenChestName()))) {
 			return;
 		}
 

@@ -53,6 +53,14 @@ public class InventoryButtons {
 
 	@Expose
 	@ConfigOption(
+		name = "Hide Buttons in Dungeon Menus",
+		desc = "Hide Inventory Buttons in Dungeon Menus."
+	)
+	@ConfigEditorBoolean
+	public boolean hideInDungeonMenus = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Button Click Type",
 		desc = "Change the click type needed to trigger commands"
 	)
