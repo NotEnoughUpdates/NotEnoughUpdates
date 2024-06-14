@@ -471,7 +471,7 @@ public class RenderListener {
 			"Correct all the panes!",
 			"Change all to same color!"
 		};
-	private static final List<String> dungeonMenuList = Arrays.asList(dungeonMenus);
+	private static final Set<String> dungeonMenuList = new HashSet<>(Arrays.asList(dungeonMenus));
 
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
 		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null ||
