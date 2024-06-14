@@ -92,12 +92,15 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -459,9 +462,24 @@ public class RenderListener {
 		}
 	}
 
+	private static final String[] dungeonMenus =
+		{
+			"Spirit Leap",
+			"Revive A Teammate",
+			"Click in order!",
+			"What starts with",
+			"Select all the",
+			"Click the button on time!",
+			"Correct all the panes!",
+			"Change all to same color!"
+		};
+	private static final Set<String> dungeonMenuSet = new HashSet<>(Arrays.asList(dungeonMenus));
+
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
 		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null ||
-			!NotEnoughUpdates.INSTANCE.config.inventoryButtons.enableInventoryButtons) {
+			!NotEnoughUpdates.INSTANCE.config.inventoryButtons.enableInventoryButtons ||
+			(NotEnoughUpdates.INSTANCE.config.inventoryButtons.hideInDungeonMenus &&
+				dungeonMenuSet.contains(Utils.getOpenChestName()))) {
 			return;
 		}
 
