@@ -95,10 +95,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -471,13 +473,13 @@ public class RenderListener {
 			"Correct all the panes!",
 			"Change all to same color!"
 		};
-	private static final Set<String> dungeonMenuList = new HashSet<>(Arrays.asList(dungeonMenus));
+	private static final Set<String> dungeonMenuSet = new HashSet<>(Arrays.asList(dungeonMenus));
 
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
 		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null ||
 			!NotEnoughUpdates.INSTANCE.config.inventoryButtons.enableInventoryButtons ||
 			(NotEnoughUpdates.INSTANCE.config.inventoryButtons.hideInDungeonMenus &&
-				dungeonMenuList.contains(Utils.getOpenChestName()))) {
+				dungeonMenuSet.contains(Utils.getOpenChestName()))) {
 			return;
 		}
 
