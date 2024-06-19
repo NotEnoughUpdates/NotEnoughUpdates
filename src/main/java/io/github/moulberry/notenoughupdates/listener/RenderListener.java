@@ -48,6 +48,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
+import io.github.moulberry.notenoughupdates.overlays.RecipeSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
@@ -62,6 +63,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -71,6 +73,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -395,6 +398,11 @@ public class RenderListener {
 		}
 		if (BazaarSearchOverlay.shouldReplace()) {
 			BazaarSearchOverlay.render();
+			event.setCanceled(true);
+			return;
+		}
+		if (RecipeSearchOverlay.shouldReplace()) {
+			RecipeSearchOverlay.render();
 			event.setCanceled(true);
 			return;
 		}
@@ -941,6 +949,11 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
+		if (RecipeSearchOverlay.shouldReplace()) {
+			RecipeSearchOverlay.mouseEvent();
+			event.setCanceled(true);
+			return;
+		}
 
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
@@ -973,6 +986,15 @@ public class RenderListener {
 						});
 					}
 				}
+			} else if (containerName.equals("Craft Item") && BetterContainers.recipeSearchStackIndex != -1 &&
+				((AccessorGuiContainer) eventGui).doIsMouseOverSlot(
+					cc.inventorySlots.get(BetterContainers.recipeSearchStackIndex),
+					mouseX,
+					mouseY
+				) &&
+				Mouse.getEventButton() >= 0) {
+				event.setCanceled(true);
+				NotEnoughUpdates.INSTANCE.openGui = new GuiEditSign(new TileEntitySign());
 			}
 		}
 
@@ -1109,6 +1131,11 @@ public class RenderListener {
 		}
 		if (BazaarSearchOverlay.shouldReplace()) {
 			BazaarSearchOverlay.keyEvent();
+			event.setCanceled(true);
+			return;
+		}
+		if (RecipeSearchOverlay.shouldReplace()) {
+			RecipeSearchOverlay.keyEvent();
 			event.setCanceled(true);
 			return;
 		}
