@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -28,11 +28,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -47,10 +49,12 @@ public class ItemCooldowns {
 		Pattern.compile("\\u00a7r\\u00a7aYou used your \\u00a7r\\u00a7..+ \\u00a7r\\u00a7aPickaxe Ability!\\u00a7r");
 
 	private static final Pattern BONZO_ABILITY_ACTIVATION =
-		Pattern.compile("\\u00a7r\\u00a7aYour \\u00a7r\\u00a7[9|5](\\u269A )*Bonzo's Mask \\u00a7r\\u00a7asaved your life!\\u00a7r");
+		Pattern.compile(
+			"\\u00a7r\\u00a7aYour \\u00a7r\\u00a7[9|5](\\u269A )*Bonzo's Mask \\u00a7r\\u00a7asaved your life!\\u00a7r");
 
 	private static final Pattern SPIRIT_ABILITY_ACTIVATION =
-		Pattern.compile("\\u00a7r\\u00a76Second Wind Activated\\u00a7r\\u00a7a! \\u00a7r\\u00a7aYour Spirit Mask saved your life!\\u00a7r");
+		Pattern.compile(
+			"\\u00a7r\\u00a76Second Wind Activated\\u00a7r\\u00a7a! \\u00a7r\\u00a7aYour Spirit Mask saved your life!\\u00a7r");
 
 	private static final Pattern SPRAYONATOR_ACTIVATION =
 		Pattern.compile("§r§a§lSPRAYONATOR! §r§7You sprayed §r§aPlot §r§7- §r§b.* §r§7with §r§a.*§r§7!§r");
@@ -62,6 +66,7 @@ public class ItemCooldowns {
 	private static long bonzomaskCooldownMillisRemaining = -1;
 	private static long spiritMaskCooldownMillisRemaining = -1;
 	private static long sprayonatorCooldownMillisRemaining = -1;
+	private static long grappleCooldownMillisRemaining = -1;
 
 	public static boolean firstLoad = true;
 	public static long firstLoadMillis = 0;
@@ -72,6 +77,14 @@ public class ItemCooldowns {
 	private static long bonzoMaskCooldown = -1;
 	private static long spiritMaskCooldown = -1;
 	private static long sprayonatorCooldown = -1;
+
+	private static long grappleCooldown = 2000;
+	private static HashSet<String> grappleSetIds = new HashSet<String>() {{
+		add("BAT_PERSON_BOOTS");
+		add("BAT_PERSON_LEGGINGS");
+		add("BAT_PERSON_CHESTPLATE");
+		add("BAT_PERSON_HELMET");
+	}};
 
 	public static TreeMap<Long, BlockData> blocksClicked = new TreeMap<>();
 
@@ -140,6 +153,9 @@ public class ItemCooldowns {
 			if (sprayonatorCooldownMillisRemaining >= 0) {
 				sprayonatorCooldownMillisRemaining -= millisDelta;
 			}
+			if (grappleCooldownMillisRemaining >= 0) {
+				grappleCooldownMillisRemaining -= millisDelta;
+			}
 		}
 	}
 
@@ -148,6 +164,22 @@ public class ItemCooldowns {
 		blocksClicked.clear();
 		if (pickaxeCooldown > 0) pickaxeUseCooldownMillisRemaining = 60 * 1000;
 		pickaxeCooldown = -1;
+	}
+
+	@SubscribeEvent
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR ||
+			event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+			ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
+			String internalname =
+				NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(held).resolveInternalName();
+			if (internalname != null) {
+				if (grappleCooldownMillisRemaining < 0 && internalname.equals("GRAPPLING_HOOK") &&
+					Minecraft.getMinecraft().thePlayer.fishEntity != null) {
+					grappleCooldownMillisRemaining = getGrappleCooldownWithArmor();
+				}
+			}
+		}
 	}
 
 	public static long getTreecapCooldownWithPet() {
@@ -165,6 +197,22 @@ public class ItemCooldowns {
 			}
 		}
 		return 2000;
+	}
+
+	public static long getGrappleCooldownWithArmor() {
+		if (!NotEnoughUpdates.INSTANCE.config.itemOverlays.enableGrappleOverlay) {
+			return 0;
+		}
+
+		for (int i = 0; i < 4; i++) {
+			ItemStack armorPiece = Minecraft.getMinecraft().thePlayer.getCurrentArmor(i);
+			String internal =
+				NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(armorPiece).resolveInternalName();
+			if (internal != null) {
+				if (!grappleSetIds.contains(internal)) return grappleCooldown;
+			} else return grappleCooldown;
+		}
+		return 0;
 	}
 
 	public static void blockClicked(BlockPos pos) {
@@ -197,7 +245,8 @@ public class ItemCooldowns {
 
 	public static void onBlockMined() {
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
-		String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(held).resolveInternalName();
+		String internalname =
+			NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(held).resolveInternalName();
 		if (internalname != null) {
 			if (treecapitatorCooldownMillisRemaining < 0 &&
 				(internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE"))) {
@@ -257,7 +306,8 @@ public class ItemCooldowns {
 	private static void setSpecificCooldown(ItemStack stack, Item item) {
 		if (stack != null && stack.hasTagCompound()) {
 
-			String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
+			String internalname =
+				NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 
 			if (internalname != null) {
 				switch (item) {
@@ -265,10 +315,12 @@ public class ItemCooldowns {
 						if (isPickaxe(internalname)) pickaxeCooldown = setCooldown(stack);
 						break;
 					case BONZO_MASK:
-						if (internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) bonzoMaskCooldown = setCooldown(stack);
+						if (internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK"))
+							bonzoMaskCooldown = setCooldown(stack);
 						break;
 					case SPIRIT_MASK:
-						if (internalname.equals("SPIRIT_MASK") || internalname.equals("STARRED_SPIRIT_MASK")) spiritMaskCooldown = setCooldown(stack);
+						if (internalname.equals("SPIRIT_MASK") || internalname.equals("STARRED_SPIRIT_MASK"))
+							spiritMaskCooldown = setCooldown(stack);
 						break;
 					case SPRAYONATOR:
 						if (internalname.equals("SPRAYONATOR")) sprayonatorCooldown = setCooldown(stack);
@@ -299,7 +351,8 @@ public class ItemCooldowns {
 			return durabilityOverrideMap.get(stack);
 		}
 
-		String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
+		String internalname =
+			NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 		if (internalname == null) {
 			durabilityOverrideMap.put(stack, -1f);
 			return -1;
@@ -328,6 +381,10 @@ public class ItemCooldowns {
 			durabilityOverrideMap.put(stack, durability);
 
 			return durability;
+		}
+		// Grappling Hook
+		if (internalname.equals("GRAPPLING_HOOK")) {
+			return grappleCooldownMillisRemaining / 2000f;
 		}
 		// Bonzo Mask
 		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility &&

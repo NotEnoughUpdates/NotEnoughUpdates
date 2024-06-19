@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -409,7 +409,7 @@ public class ItemOverlays {
 	public boolean enableScytheOverlay = true;
 
 	@ConfigOption(
-		name="Custom Wither Cloak",
+		name = "Custom Wither Cloak",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 8)
@@ -488,6 +488,22 @@ public class ItemOverlays {
 	)
 	@ConfigEditorInfoText()
 	public boolean customWitherCloakCredit = false;
+
+	@ConfigOption(
+		name = "Grappling hook Overlay",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 9)
+	public boolean grappleAccordion = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable grappling hook overlay",
+		desc = "Show the cooldown of grappling hook in the item durability"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 9)
+	public boolean enableGrappleOverlay = true;
 
 	@Expose
 	@ConfigOption(
