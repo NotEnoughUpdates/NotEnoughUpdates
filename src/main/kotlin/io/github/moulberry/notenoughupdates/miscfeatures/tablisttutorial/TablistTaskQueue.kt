@@ -20,12 +20,15 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial
 
 import io.github.moulberry.notenoughupdates.util.NotificationHandler
+import io.github.moulberry.notenoughupdates.util.SBInfo
 
 object TablistTaskQueue {
     private val queue = mutableListOf<TablistTutorial.TabListWidget>()
 
+    val blacklistedLocatoions = setOf("dungeon", "kuudra")
+
     fun addToQueue(task: TablistTutorial.TabListWidget, showNotification: Boolean) {
-        if (showNotification && !queueContainsElements()) {
+        if (showNotification && !queueContainsElements() && !blacklistedLocatoions.contains(SBInfo.getInstance().mode)) {
             NotificationHandler.displayNotification(
                 listOf(
                     "§l§4Widget missing",
