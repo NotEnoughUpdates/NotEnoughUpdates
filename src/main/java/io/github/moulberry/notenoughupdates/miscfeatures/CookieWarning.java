@@ -21,12 +21,12 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.mixins.AccessorGuiPlayerTabOverlay;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.util.List;
 import java.util.Locale;
 
 public class CookieWarning {
@@ -93,14 +93,17 @@ public class CookieWarning {
 				switch (unit.toLowerCase(Locale.ROOT)) {
 					case "years":
 					case "year":
+					case "y":
 						minutes += val * 525600;
 						break;
 					case "months":
 					case "month":
+					case "mo": //todo: no clue if this is right
 						minutes += val * 43200;
 						break;
 					case "days":
 					case "day":
+					case "d":
 						minutes += val * 1440;
 						break;
 					case "hours":
@@ -128,22 +131,30 @@ public class CookieWarning {
 	}
 
 	private static String getTimeLine() {
-		String[] lines;
-		try {
-			lines = ((AccessorGuiPlayerTabOverlay) Minecraft.getMinecraft().ingameGUI.getTabList())
-				.getFooter()
-				.getUnformattedText()
-				.split("\n");
-		} catch (NullPointerException ignored) {
-			return null;
-		}
+		List<String> lines = TablistAPI.getOptionalWidgetLines(TablistAPI.WidgetNames.ACTIVE_EFFECTS);
+		List<String> lines2 = TablistAPI.getOptionalWidgetLines(TablistAPI.WidgetNames.COOKIE_BUFF);
+		lines.addAll(lines2);
 		String timeLine = null; // the line that contains the cookie timer
-		for (int i = 0; i < lines.length; i++) {
-			if (lines[i].startsWith("Cookie Buff")) {
-				timeLine = lines[i + 1]; // the line after the "Cookie Buff" line
+
+		for (int i = 0; i < lines.size(); i++) {
+			String line = lines.get(i);
+			line = Utils.cleanColour(line).trim();
+
+			if (line.startsWith("Cookie Buff:")) {
+				timeLine = line.replace("Cookie Buff: ", "");
+				if (timeLine.contains("INACTIVE")) {
+					hasCookie = false;
+					return null;
+				}
+			} else if (line.startsWith("Cookie Buff")) {
+				timeLine = lines.get(i + 1); // the line after the "Cookie Buff" line
+				timeLine = Utils.cleanColour(timeLine).trim();
 			}
-			if (lines[i].startsWith("Not active! Obtain booster cookies from the")) {
+
+
+			if (line.startsWith("Not active! Obtain booster cookies from the")) {
 				hasCookie = false;
+				return null;
 			}
 		}
 		return timeLine;
