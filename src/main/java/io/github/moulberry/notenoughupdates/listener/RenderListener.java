@@ -467,19 +467,25 @@ public class RenderListener {
 			"Spirit Leap",
 			"Revive A Teammate",
 			"Click in order!",
-			"What starts with",
-			"Select all the",
 			"Click the button on time!",
 			"Correct all the panes!",
 			"Change all to same color!"
 		};
 	private static final Set<String> dungeonMenuSet = new HashSet<>(Arrays.asList(dungeonMenus));
 
+	private boolean isInDungeonMenu(String chestName) {
+		if (!SBInfo.getInstance().isInDungeon) {
+			return false;
+		}
+		return dungeonMenuSet.contains(chestName) ||
+			chestName.startsWith("What starts with") ||
+			chestName.startsWith("Select all the");
+	}
+
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
 		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null ||
 			!NotEnoughUpdates.INSTANCE.config.inventoryButtons.enableInventoryButtons ||
-			(NotEnoughUpdates.INSTANCE.config.inventoryButtons.hideInDungeonMenus &&
-				dungeonMenuSet.contains(Utils.getOpenChestName()))) {
+			(NotEnoughUpdates.INSTANCE.config.inventoryButtons.hideInDungeonMenus && isInDungeonMenu(Utils.getOpenChestName()))) {
 			return;
 		}
 
