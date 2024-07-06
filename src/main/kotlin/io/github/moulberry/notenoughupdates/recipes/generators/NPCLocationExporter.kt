@@ -97,7 +97,7 @@ class NPCLocationExporter {
             json["z"] = position.z
             json["island"] = island
             NotEnoughUpdates.INSTANCE.manager.writeJsonDefaultDir(json, "$id.json")
-            Utils.addChatMessage("Saved to file")
+            Utils.addChatMessage("§a[NEU] Saved to file")
             Minecraft.getMinecraft().displayGuiScreen(null)
         }
 
@@ -125,15 +125,17 @@ class NPCLocationExporter {
 
     @SubscribeEvent
     fun onMouseClick(event: MouseEvent) {
-        if (event.buttonstate || event.button != 2 || !NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing) return
+        if (event.buttonstate || event.button != 2 || !NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing ||
+            !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()
+        ) return
         val location = SBInfo.getInstance().getLocation()
         if (location == null) {
-            Utils.addChatMessage("No location found")
+            Utils.addChatMessage("§c[NEU] No location found")
             return
         }
         val pointedEntity = Minecraft.getMinecraft().pointedEntity
         if (pointedEntity == null) {
-            Utils.addChatMessage("Could not find entity under cursor")
+            Utils.addChatMessage("§e[NEU] Could not find entity under cursor")
             return
         }
         if (pointedEntity is EntityVillager) {
@@ -161,14 +163,14 @@ class NPCLocationExporter {
                 )
                 return
             }
-            Utils.addChatMessage("Entity under cursor is not a player")
+            Utils.addChatMessage("§e[NEU] Entity under cursor is not a player")
             return
         }
         val uuid = pointedEntity.uniqueID
         val position = pointedEntity.position
         val skin = pointedEntity.locationSkin.resourcePath?.replace("skins/", "")
         if (skin == null) {
-            Utils.addChatMessage("Could not load skin")
+            Utils.addChatMessage("§c[NEU] Could not load skin")
             return
         }
         Minecraft.getMinecraft().displayGuiScreen(NPCNamePrompt(uuid, position, location, skin))
