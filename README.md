@@ -30,10 +30,6 @@
 
 NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel Skyblock.
 
-## Active repository
-
-Ever since Moulberry has stopped working on NEU, other contributors have been working on new features and fixes for the mod. If you are interested in contributing yourself, make a pull request to [NotEnoughUpdates/NotEnoughUpdates](https://github.com/NotEnoughUpdates/NotEnoughUpdates) to contribute to the prereleases, which eventually will be merged in bulk to [Moulberry/NotEnoughUpdates](https://github.com/Moulberry/NotEnoughUpdates) for major releases.
-
 ## Getting Started
 
 #### Installing Forge
@@ -47,7 +43,7 @@ Ever since Moulberry has stopped working on NEU, other contributors have been wo
 
 #### Installing the NotEnoughUpdates mod
 
-1. Download the latest mod [release](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/releases). If it says `this file may harm your computer`, click `allow anyways` as all java files will be flagged by Chrome.
+1. Download the latest mod [release](https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases). If it says `this file may harm your computer`, click `allow anyways` as all java files will be flagged by Chrome.
 2. Add the NEU mod:
    - If you have java installed, double click the file, click `install`
    - If not, press the windows key + R; type `%appdata%`; click on the folder called `.minecraft`; click on the folder called `mods` and drag the mods file in here.

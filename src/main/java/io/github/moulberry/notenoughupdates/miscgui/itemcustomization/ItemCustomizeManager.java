@@ -75,6 +75,7 @@ public class ItemCustomizeManager {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static ItemDataMap itemDataMap = new ItemDataMap();
+
 	public static class ItemDataMap {
 		public HashMap<String, ItemData> itemData = new HashMap<>();
 	}
@@ -309,7 +310,8 @@ public class ItemCustomizeManager {
 
 	public static Item getCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.customItem.split(":").length == 0) return stack.getItem();
+		if (data == null || data.customItem == null || data.customItem.length() == 0 ||
+			data.customItem.split(":").length == 0) return stack.getItem();
 		Item newItem = Item.getByNameOrId(data.customItem.split(":")[0]);
 		if (newItem == null) return stack.getItem();
 		return newItem;
@@ -334,7 +336,8 @@ public class ItemCustomizeManager {
 			if (damageString.equals("?")) {
 				ArrayList<ItemStack> list = new ArrayList<>();
 				getCustomItem(stack).getSubItems(getCustomItem(stack), null, list);
-				if (damageMap.get(stack.getTagCompound().hashCode()) == null || System.currentTimeMillis() - lastUpdate.get(stack.getTagCompound().hashCode()) > 250) {
+				if (damageMap.get(stack.getTagCompound().hashCode()) == null || System.currentTimeMillis() - lastUpdate.get(
+					stack.getTagCompound().hashCode()) > 250) {
 					damageMap.put(stack.getTagCompound().hashCode(), random.nextInt(list.size()));
 
 					lastUpdate.put(stack.getTagCompound().hashCode(), System.currentTimeMillis());
@@ -361,8 +364,9 @@ public class ItemCustomizeManager {
 
 	public static boolean shouldRenderLeatherColour(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem() instanceof ItemArmor &&
-			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
+		if (data == null || data.customItem == null || data.customItem.length() == 0)
+			return stack.getItem() instanceof ItemArmor &&
+				((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
 		Item item = Item.getByNameOrId(data.customItem);
 		if (item == null) return stack.getItem() instanceof ItemArmor &&
 			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
@@ -372,7 +376,8 @@ public class ItemCustomizeManager {
 
 	public static boolean hasCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.defaultItem == null || data.customItem.equals(data.defaultItem) || data.customItem.split(":").length == 0) return false;
+		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.defaultItem == null ||
+			data.customItem.equals(data.defaultItem) || data.customItem.split(":").length == 0) return false;
 		Item item = Item.getByNameOrId(data.customItem.split(":")[0]);
 		Item defaultItem = Item.getByNameOrId(data.defaultItem);
 		if (item == null) {
@@ -387,9 +392,13 @@ public class ItemCustomizeManager {
 		return defaultItem != item;
 	}
 
-	public static ItemStack useCustomArmour(LayerArmorBase<?> instance, EntityLivingBase entitylivingbaseIn, int armorSlot) {
+	public static ItemStack useCustomArmour(
+		LayerArmorBase<?> instance,
+		EntityLivingBase entitylivingbaseIn,
+		int armorSlot
+	) {
 		ItemStack stack = instance.getCurrentArmor(entitylivingbaseIn, armorSlot);
-		if (stack == null) return stack;
+		if (stack == null || getDataForItem(stack) == null) return stack;
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
 		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
@@ -400,10 +409,13 @@ public class ItemCustomizeManager {
 				newStack.getTagCompound().setTag("SkullOwner", customSkull);
 			}
 		}
-		if (armorSlot != 4) {
-			if (newStack.getItem() instanceof ItemArmor) return newStack;
-			else return stack;
-		}
+		if (armorSlot != 4 && newStack.getItem() instanceof ItemArmor)
+			// Remove non armor from any slot except heads
+			newStack = stack;
+
+		if (newStack.getItem() == stack.getItem()
+			&& newStack.getItemDamage() == stack.getItemDamage())
+			return stack;
 		return newStack;
 	}
 
