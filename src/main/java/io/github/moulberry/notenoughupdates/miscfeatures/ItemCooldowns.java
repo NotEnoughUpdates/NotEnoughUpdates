@@ -337,7 +337,8 @@ public class ItemCooldowns {
 			return durabilityOverride(bonzomaskCooldownMillisRemaining, bonzoMaskCooldown, stack);
 		}
 		// Spirit Mask
-		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && internalname.equals("SPIRIT_MASK")) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility &&
+			(internalname.equals("SPIRIT_MASK") || internalname.equals("STARRED_SPIRIT_MASK"))) {
 			findCooldownInTooltip(Item.SPIRIT_MASK);
 
 			return durabilityOverride(spiritMaskCooldownMillisRemaining, spiritMaskCooldown, stack);
