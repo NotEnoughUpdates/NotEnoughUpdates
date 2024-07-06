@@ -77,7 +77,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	 * Stores the values of the crop counter as a sliding window.
 	 * Values can be accessed using the {@link #cropsPerSecondCursor}.
 	 */
-	private float[] cropsPerSecondValues = new float[CPS_WINDOW_SIZE];
+	private long[] cropsPerSecondValues = new long[CPS_WINDOW_SIZE];
 	/**
 	 * The theoretical call interval of {@link #update()} is 1 second,
 	 * but in reality it can deviate by one tick, or 50ms,
@@ -125,7 +125,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private void resetCropsPerSecond() {
 		cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
-		cropsPerSecondValues = new float[CPS_WINDOW_SIZE];
+		cropsPerSecondValues = new long[CPS_WINDOW_SIZE];
 		cropsPerSecond = 0;
 		cropsPerSecondLast = 0;
 	}
@@ -395,7 +395,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE] = counter;
 
 		//calculate
-		float current = cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE];
+		long current = cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE];
 		int timeFrame = Math.min(
 			NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame,
 			CPS_WINDOW_SIZE
