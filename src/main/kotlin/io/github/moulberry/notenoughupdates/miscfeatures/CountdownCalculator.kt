@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,6 +25,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 /*
    CountdownCalculator.kt
@@ -62,7 +63,10 @@ class CountdownCalculator {
         TIMELEFT("Time left:", "Ends at"),
         EVENTTIMELEFT("Event lasts for", "Ends at", isRelative = true),
         SHENSUCKS("Auction ends in:", "Auction ends at"),
-        TAMINGSIXTYWASAMISTAKE("Ends:", "Finishes at"), // There would be a more specific message here seeing as this is for pet XP, but knowing Hypixel it's probably safer to leave it like this in case they use the "Ends:" prefix elsewhere besides the pet training menus.
+        TAMINGSIXTYWASAMISTAKE(
+            "Ends:",
+            "Finishes at"
+        ), // There would be a more specific message here seeing as this is for pet XP, but knowing Hypixel it's probably safer to leave it like this in case they use the "Ends:" prefix elsewhere besides the pet training menus.
         CALENDARDETAILS(" (§e", "Starts at"), // calendar details
         COMMUNITYPROJECTSSUCK("Contribute again", "Come back at"), // nopo i just woke up i really hope this works
         CHOCOLATEFACTORY("Next Charge", "Available at");
@@ -88,10 +92,11 @@ class CountdownCalculator {
                 val hours = match.groups["hours"]?.value?.toLong() ?: 0L
                 val minutes = match.groups["minutes"]?.value?.toLong() ?: 0L
                 val seconds = match.groups["seconds"]?.value?.toLong() ?: 0L
-                val totalSeconds = (years * 31_536_000L) + (days * 86_400L) + (hours * 3_600L) + (minutes * 60L) + seconds
+                val totalSeconds =
+                    (years * 31_536_000L) + (days * 86_400L) + (hours * 3_600L) + (minutes * 60L) + seconds
                 if (totalSeconds == 0L) continue
                 if (years != 0L) formatterAsString = "${formatterAsString} yyyy"
-                val useFormatter = DateTimeFormatter.ofPattern(formatterAsString)!!
+                var useFormatter = DateTimeFormatter.ofPattern(formatterAsString)!!
                 val countdownTarget = if (countdownKind.isRelative) {
                     if (lastTimer == null) {
                         event.toolTip.add(
@@ -101,6 +106,9 @@ class CountdownCalculator {
                         continue
                     } else lastTimer.addTime(years, days, hours, minutes, seconds)
                 } else ZonedDateTime.now().addTime(years, days, hours, minutes, seconds)
+                if (NotEnoughUpdates.INSTANCE.config.misc.useEnglishCountdown) useFormatter = useFormatter.withLocale(
+                    Locale.ENGLISH
+                )
                 val countdownTargetFormatted = useFormatter.format(countdownTarget)
                 event.toolTip.add(
                     ++i,
@@ -111,7 +119,13 @@ class CountdownCalculator {
         }
     }
 
-    private fun ZonedDateTime.addTime(years: Long, days: Long, hours: Long, minutes: Long, seconds: Long): ZonedDateTime {
+    private fun ZonedDateTime.addTime(
+        years: Long,
+        days: Long,
+        hours: Long,
+        minutes: Long,
+        seconds: Long
+    ): ZonedDateTime {
         return this.plusYears(years).plusDays(days).plusHours(hours).plusMinutes(minutes).plusSeconds(seconds)
     }
 }
