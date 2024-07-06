@@ -109,12 +109,30 @@ public class PetsPage extends GuiProfileViewerPage {
 				String tierNum1 = GuiProfileViewer.RARITY_TO_NUM.get(tier1);
 				if (tierNum1 == null) return 1;
 				int tierNum1I = Integer.parseInt(tierNum1);
+				if ("PET_ITEM_TIER_BOOST".equals(Utils.getElementAsString(pet1.get("heldItem"), null))) {
+					PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
+					PetInfoOverlay.Rarity tier = PetInfoOverlay.Rarity.valueOf(pet1.get("tier").getAsString());
+					parsedPet.petType = pet1.get("type").getAsString();
+					parsedPet.rarity = tier;
+					if (Utils.canPetBeTierBoosted(parsedPet, tier.nextRarity())) {
+						tierNum1I += 1;
+					}
+				}
 				float exp1 = pet1.get("exp").getAsFloat();
 
 				String tier2 = pet2.get("tier").getAsString();
 				String tierNum2 = GuiProfileViewer.RARITY_TO_NUM.get(tier2);
 				if (tierNum2 == null) return -1;
 				int tierNum2I = Integer.parseInt(tierNum2);
+				if ("PET_ITEM_TIER_BOOST".equals(Utils.getElementAsString(pet2.get("heldItem"), null))) {
+					PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
+					PetInfoOverlay.Rarity tier = PetInfoOverlay.Rarity.valueOf(pet2.get("tier").getAsString());
+					parsedPet.petType = pet2.get("type").getAsString();
+					parsedPet.rarity = tier;
+					if (Utils.canPetBeTierBoosted(parsedPet, tier.nextRarity())) {
+						tierNum2I += 1;
+					}
+				}
 				float exp2 = pet2.get("exp").getAsFloat();
 
 				if (tierNum1I != tierNum2I) {
@@ -127,12 +145,16 @@ public class PetsPage extends GuiProfileViewerPage {
 				PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
 				parsedPet.petType = pet.get("type").getAsString();
 				parsedPet.rarity = PetInfoOverlay.Rarity.valueOf(pet.get("tier").getAsString());
+				parsedPet.petItem = Utils.getElementAsString(pet.get("heldItem"), null);
+				if ("PET_ITEM_TIER_BOOST".equals(parsedPet.petItem)) {
+					PetInfoOverlay.Rarity nextRarity = parsedPet.rarity.nextRarity();
+					if (Utils.canPetBeTierBoosted(parsedPet, nextRarity)) parsedPet.rarity = nextRarity;
+				}
 				parsedPet.petLevel = PetLeveling.getPetLevelingForPet(
 					parsedPet.petType,
 					parsedPet.rarity
 				).getPetLevel(pet.get("exp").getAsFloat());
 				parsedPet.petXpType = "unknown";
-				parsedPet.petItem = Utils.getElementAsString(pet.get("heldItem"), null);
 				parsedPet.skin = Utils.getElementAsString(pet.get("skin"), null);
 				parsedPet.candyUsed = pet.get("candyUsed").getAsInt();
 				sortedPetsStack.add(ItemUtils.createPetItemstackFromPetInfo(parsedPet));
