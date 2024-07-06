@@ -77,8 +77,9 @@ public class PetInfoOverlay extends TextOverlay {
 		"PET_ITEM_(COMBAT|FISHING|MINING|FORAGING|ALL|FARMING)_(SKILL|SKILLS)_BOOST_(COMMON|UNCOMMON|RARE|EPIC)");
 	private static final Pattern PET_CONTAINER_PAGE = Pattern.compile("Pets \\((\\d)/(\\d)\\) *");
 	private static final Pattern PET_CONTAINER_SEARCH = Pattern.compile("Pets: \".+\"");
-	private static final Pattern TAB_LIST_XP = Pattern.compile("(\\d+\\.?\\d*)/(\\d+\\.?\\d*)[kM]? XP \\(\\d+\\.?\\d*%\\)");
-	private static final Pattern TAB_LIST_XP_OVERFLOW = Pattern.compile("\\+(\\d+\\.?\\d*) XP");
+	private static final Pattern TAB_LIST_XP = Pattern.compile(
+		"([0-9,]+\\.?[0-9]*)/([0-9,]+\\.?[0-9]*)[kM]? XP \\(\\d+\\.?\\d*%\\)");
+	private static final Pattern TAB_LIST_XP_OVERFLOW = Pattern.compile("\\+([0-9,]+\\.?[0-9]*) XP");
 	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("\\[Lvl (\\d+)\\] (.+)");
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -316,7 +317,10 @@ public class PetInfoOverlay extends TextOverlay {
 		pet.petType = petType;
 		JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
 		pet.petXpType =
-			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase(Locale.ROOT)).getAsString().toLowerCase(Locale.ROOT) : "unknown";
+			petTypes.has(pet.petType) ? petTypes
+				.get(pet.petType.toUpperCase(Locale.ROOT))
+				.getAsString()
+				.toLowerCase(Locale.ROOT) : "unknown";
 		pet.skin = skin;
 
 		return pet;
@@ -365,8 +369,14 @@ public class PetInfoOverlay extends TextOverlay {
 			pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase(Locale.ROOT)) &&
 			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase(Locale.ROOT)).getAsJsonObject().has(
 				"xp_multiplier")) {
-			xp *= pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase(Locale.ROOT)).getAsJsonObject().get(
-				"xp_multiplier").getAsFloat();
+			xp *= pets
+				.get("custom_pet_leveling")
+				.getAsJsonObject()
+				.get(pet.petType.toUpperCase(Locale.ROOT))
+				.getAsJsonObject()
+				.get(
+					"xp_multiplier")
+				.getAsFloat();
 		}
 		return xp;
 	}
@@ -932,10 +942,12 @@ public class PetInfoOverlay extends TextOverlay {
 					Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] Invalid number in tab list: " + petNameMatcher.group(1));
 				}
 
-			} else if (normalXPMatcher.matches() || overflowXPMatcher.matches()) {
+			}
+			if (normalXPMatcher.matches() || overflowXPMatcher.matches()) {
 				String xpString;
 				if (normalXPMatcher.matches()) xpString = normalXPMatcher.group(1);
 				else xpString = overflowXPMatcher.group(1);
+				xpString = xpString.replace(",", "");
 				float xpNumber = 0;
 				try {
 					xpNumber = Float.parseFloat(xpString);
@@ -944,8 +956,7 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 				PetLeveling.ExpLadder petLadder = PetLeveling.getPetLevelingForPet(currentPet.petType, currentPet.rarity);
 
-				long petExpForLevel = petLadder.getPetExpForLevel(
-					currentPet.petLevel.getCurrentLevel());
+				long petExpForLevel = petLadder.getPetExpForLevel(currentPet.petLevel.getCurrentLevel());
 				float expTotalBefore = currentPet.petLevel.getExpTotal();
 				currentPet.petLevel.setExpTotal(xpNumber + petExpForLevel);
 				float expTotalAfter = currentPet.petLevel.getExpTotal();
@@ -977,7 +988,6 @@ public class PetInfoOverlay extends TextOverlay {
 				} else {
 					xpGainQueue.clear();
 				}
-
 
 				currentPet.petLevel = petLadder.getPetLevel(currentPet.petLevel.getExpTotal());
 			}
@@ -1051,7 +1061,8 @@ public class PetInfoOverlay extends TextOverlay {
 									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
 						}
 					}
-				} else if ((chatMessage.toLowerCase(Locale.ROOT).startsWith("you despawned your")) || (chatMessage.toLowerCase(Locale.ROOT).contains(
+				} else if ((chatMessage.toLowerCase(Locale.ROOT).startsWith("you despawned your")) || (chatMessage.toLowerCase(
+					Locale.ROOT).contains(
 					"switching to profile"))
 					|| (chatMessage.toLowerCase(Locale.ROOT).contains("transferring you to a new island..."))) {
 					clearPet();
