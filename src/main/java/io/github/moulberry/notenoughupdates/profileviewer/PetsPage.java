@@ -110,7 +110,13 @@ public class PetsPage extends GuiProfileViewerPage {
 				if (tierNum1 == null) return 1;
 				int tierNum1I = Integer.parseInt(tierNum1);
 				if ("PET_ITEM_TIER_BOOST".equals(Utils.getElementAsString(pet1.get("heldItem"), null))) {
-					tierNum1I += 1;
+					PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
+					PetInfoOverlay.Rarity tier = PetInfoOverlay.Rarity.valueOf(pet1.get("tier").getAsString());
+					parsedPet.petType = pet1.get("type").getAsString();
+					parsedPet.rarity = tier;
+					if (Utils.canPetBeTierBoosted(parsedPet, tier.nextRarity())) {
+						tierNum1I += 1;
+					}
 				}
 				float exp1 = pet1.get("exp").getAsFloat();
 
@@ -119,7 +125,13 @@ public class PetsPage extends GuiProfileViewerPage {
 				if (tierNum2 == null) return -1;
 				int tierNum2I = Integer.parseInt(tierNum2);
 				if ("PET_ITEM_TIER_BOOST".equals(Utils.getElementAsString(pet2.get("heldItem"), null))) {
-					tierNum2I += 1;
+					PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
+					PetInfoOverlay.Rarity tier = PetInfoOverlay.Rarity.valueOf(pet2.get("tier").getAsString());
+					parsedPet.petType = pet2.get("type").getAsString();
+					parsedPet.rarity = tier;
+					if (Utils.canPetBeTierBoosted(parsedPet, tier.nextRarity())) {
+						tierNum2I += 1;
+					}
 				}
 				float exp2 = pet2.get("exp").getAsFloat();
 
@@ -136,7 +148,7 @@ public class PetsPage extends GuiProfileViewerPage {
 				parsedPet.petItem = Utils.getElementAsString(pet.get("heldItem"), null);
 				if ("PET_ITEM_TIER_BOOST".equals(parsedPet.petItem)) {
 					PetInfoOverlay.Rarity nextRarity = parsedPet.rarity.nextRarity();
-					if (nextRarity != null) parsedPet.rarity = nextRarity;
+					if (Utils.canPetBeTierBoosted(parsedPet, nextRarity)) parsedPet.rarity = nextRarity;
 				}
 				parsedPet.petLevel = PetLeveling.getPetLevelingForPet(
 					parsedPet.petType,
