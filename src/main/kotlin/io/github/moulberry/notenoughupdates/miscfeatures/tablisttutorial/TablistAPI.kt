@@ -145,7 +145,9 @@ object TablistAPI {
         TRAPPER(null),
         FORGE(Regex("Forges:( \\(\\d/\\d\\))?")),
         POWDER(Regex.fromLiteral("Powders:")),
-        PROFILE(Regex("Profile: ([A-Za-z]+)( .*)?"))
+        PROFILE(Regex("Profile: ([A-Za-z]+)( .*)?")),
+        ACTIVE_EFFECTS(Regex("Active Effects(: \\(\\d+\\))?")),
+        COOKIE_BUFF(Regex("Cookie Buff")),
         ;
 
         override fun toString(): String {
