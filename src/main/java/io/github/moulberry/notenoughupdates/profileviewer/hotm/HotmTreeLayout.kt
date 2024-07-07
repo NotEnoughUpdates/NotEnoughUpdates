@@ -17,7 +17,7 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui
+package io.github.moulberry.notenoughupdates.profileviewer.hotm
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
