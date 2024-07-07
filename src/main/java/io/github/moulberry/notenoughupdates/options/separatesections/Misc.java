@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -363,6 +363,14 @@ public class Misc {
 		values = {"Off", "AM/PM [1PM]", "24hr [13:00]"}
 	)
 	public int showWhenCountdownEnds = 1;
+
+	@Expose
+	@ConfigOption(
+		name = "Use english countdown",
+		desc = "Uses english language for countdown instead of your system's selected one"
+	)
+	@ConfigEditorBoolean
+	public boolean useEnglishCountdown = false;
 
 	@Expose
 	@ConfigOption(

@@ -435,29 +435,25 @@ public class CrystalHollowOverlay extends TextOverlay {
 					hidden.automatonParts.put(item, false);
 			}
 		} else if (message.startsWith("[NPC] Professor Robot: ")) {
-			switch (message) {
-				case "[NPC] Professor Robot: That's not one of the components I need! Bring me one of the missing components:":
-					hidden.automatonParts.replaceAll((k, v) -> true);
-					break;
-				case "[NPC] Professor Robot: You've brought me all of the components!":
-					hidden.automatonParts.replaceAll((k, v) -> false);
-					break;
-				default:
-					Matcher giveMatcher = givePattern.matcher(message);
-					Matcher notFinalMatcher = notFinalPattern.matcher(message);
-					if (giveMatcher.matches()) {
-						String item = giveMatcher.group("part");
-						if (hidden.automatonParts.containsKey(item)) {
-							hidden.automatonParts.put(item, true);
-						}
-					} else if (notFinalMatcher.matches()) {
-						String item = notFinalMatcher.group("part");
-						if (hidden.automatonParts.containsKey(item)) {
-							hidden.automatonParts.replaceAll((k, v) -> true);
-							hidden.automatonParts.put(item, false);
-						}
+			if (message.equals("[NPC] Professor Robot: That's not one of the components I need! Bring me one of the missing components:")) {
+				hidden.automatonParts.replaceAll((k, v) -> true);
+			} else if (message.startsWith("[NPC] Professor Robot: You've brought me all of the components")) {
+				hidden.automatonParts.replaceAll((k, v) -> false);
+			} else {
+				Matcher giveMatcher = givePattern.matcher(message);
+				Matcher notFinalMatcher = notFinalPattern.matcher(message);
+				if (giveMatcher.matches()) {
+					String item = giveMatcher.group("part");
+					if (hidden.automatonParts.containsKey(item)) {
+						hidden.automatonParts.put(item, true);
 					}
-					break;
+				} else if (notFinalMatcher.matches()) {
+					String item = notFinalMatcher.group("part");
+					if (hidden.automatonParts.containsKey(item)) {
+						hidden.automatonParts.replaceAll((k, v) -> true);
+						hidden.automatonParts.put(item, false);
+					}
+				}
 			}
 		}
 	}

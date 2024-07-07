@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -1699,11 +1699,16 @@ public class CalendarOverlay {
 	}
 
 	private List<String> addCountdownCalculatorToTooltip(long millis, List<String> tooltipToModify) {
-		if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) {
+		if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 ||
+			NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) {
 			String formatString = "EEEE, MMM d h:mm a";
-			if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) { formatString = "EEEE, MMM d HH:mm"; }
-			tooltipToModify.add("§b" + DateTimeFormatter.ofPattern(formatString).format(ZonedDateTime.now().plusSeconds(((millis / 1000)))));
-
+			if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) {
+				formatString = "EEEE, MMM d HH:mm";
+			}
+			DateTimeFormatter useFormatter = DateTimeFormatter.ofPattern(formatString);
+			if (NotEnoughUpdates.INSTANCE.config.misc.useEnglishCountdown)
+				useFormatter = useFormatter.withLocale(Locale.ENGLISH);
+			tooltipToModify.add("§b" + useFormatter.format(ZonedDateTime.now().plusSeconds(((millis / 1000)))));
 		}
 		return tooltipToModify;
 	}

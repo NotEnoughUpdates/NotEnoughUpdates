@@ -28,6 +28,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import lombok.var;
@@ -2422,5 +2423,14 @@ public class Utils {
 			renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		}
 		return renderText;
+	}
+
+	public static boolean canPetBeTierBoosted(PetInfoOverlay.Pet pet, PetInfoOverlay.Rarity rarityToBeBoostedTo) {
+		if (rarityToBeBoostedTo == null) return false;
+		ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager
+			.createItemResolutionQuery()
+			.withKnownInternalName(pet.petType + ";" + rarityToBeBoostedTo.petId)
+			.resolveToItemStack(false);
+		return itemStack != null;
 	}
 }
