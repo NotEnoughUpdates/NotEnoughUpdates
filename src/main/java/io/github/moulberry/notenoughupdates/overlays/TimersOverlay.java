@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodoHud;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -508,28 +509,8 @@ public class TimersOverlay extends TextTabOverlay {
 					godpotRemainingTimeType = godPotionMatcher.group(2);
 				}
 				if (godpotRemainingTimeType != null) {
-					switch (godpotRemainingTimeType) {
-						case "Days":
-						case "Day":
-						case "d":
-							godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
-							break;
-						case "Hours":
-						case "Hour":
-						case "h":
-							godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
-							break;
-						case "Minutes":
-						case "Minute":
-						case "m":
-							godPotDuration += godpotRemainingTime * 60 * 1000;
-							break;
-						case "Seconds":
-						case "Second":
-						case "s":
-							godPotDuration += godpotRemainingTime * 1000;
-							break;
-					}
+					godPotDuration +=
+						CookieWarning.getCookieTimeRemainingInMilliseconds(godpotRemainingTimeType, godpotRemainingTime);
 					hidden.godPotionDuration = godPotDuration;
 				}
 			}

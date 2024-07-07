@@ -66,7 +66,7 @@ public class CookieWarning {
 		}
 		if (timeLine == null) return;
 
-		int minutes = getMinutesRemaining(timeLine);
+		int minutes = (int) getMillisecondsRemaining(timeLine) / 60 / 1000;
 		if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 				"§cBooster Cookie Running Low!",
@@ -78,11 +78,11 @@ public class CookieWarning {
 		}
 	}
 
-	private static int getMinutesRemaining(String timeLine) {
+	private static long getMillisecondsRemaining(String timeLine) {
 		String clean = timeLine.replaceAll("(§.)", "");
 		clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
 		String[] digits = clean.split(" ");
-		int minutes = 0;
+		long ms = 0;
 		try {
 			for (int i = 0; i < digits.length; i++) {
 				if (i % 2 == 1) continue;
@@ -90,33 +90,7 @@ public class CookieWarning {
 				String number = digits[i];
 				String unit = digits[i + 1];
 				long val = Integer.parseInt(number);
-				switch (unit.toLowerCase(Locale.ROOT)) {
-					case "years":
-					case "year":
-					case "y":
-						minutes += val * 525600;
-						break;
-					case "months":
-					case "month":
-					case "mo": //todo: no clue if this is right
-						minutes += val * 43200;
-						break;
-					case "days":
-					case "day":
-					case "d":
-						minutes += val * 1440;
-						break;
-					case "hours":
-					case "hour":
-					case "h":
-						minutes += val * 60;
-						break;
-					case "minutes":
-					case "minute":
-					case "m":
-						minutes += val;
-						break;
-				} // ignore seconds
+				ms += (getCookieTimeRemainingInMilliseconds(unit, val));
 			}
 		} catch (NumberFormatException e) {
 			if (!hasErrorMessage) {
@@ -127,7 +101,7 @@ public class CookieWarning {
 			}
 			hasNotified = true;
 		}
-		return minutes;
+		return ms;
 	}
 
 	private static String getTimeLine() {
@@ -172,8 +146,8 @@ public class CookieWarning {
 
 		String timeLine = getTimeLine();
 		if (hasCookie && timeLine != null) {
-			int minutes = getMinutesRemaining(timeLine);
-			cookieEndTime = System.currentTimeMillis() + (long) minutes * 60 * 1000;
+			long ms = getMillisecondsRemaining(timeLine);
+			cookieEndTime = System.currentTimeMillis() + ms;
 		} else {
 			cookieEndTime = 0;
 		}
@@ -188,5 +162,35 @@ public class CookieWarning {
 		cookieEndTime = 0;
 		hasCookie = true;
 		lastChecked = 0;
+	}
+
+	public static long getCookieTimeRemainingInMilliseconds(String godpotRemainingTimeType, long godpotRemainingTime) {
+		switch (godpotRemainingTimeType.toLowerCase(Locale.ROOT).replace(",", "")) {
+			case "years":
+			case "year":
+			case "y":
+				return godpotRemainingTime * 24 * 60 * 60 * 1000 * 30 * 12;
+			case "months":
+			case "month":
+			case "mo":
+				return godpotRemainingTime * 24 * 60 * 60 * 1000 * 30;
+			case "days":
+			case "day":
+			case "d":
+				return godpotRemainingTime * 24 * 60 * 60 * 1000;
+			case "hours":
+			case "hour":
+			case "h":
+				return godpotRemainingTime * 60 * 60 * 1000;
+			case "minutes":
+			case "minute":
+			case "m":
+				return godpotRemainingTime * 60 * 1000;
+			case "seconds":
+			case "second":
+			case "s":
+				return godpotRemainingTime * 1000;
+		}
+		return godpotRemainingTime;
 	}
 }
