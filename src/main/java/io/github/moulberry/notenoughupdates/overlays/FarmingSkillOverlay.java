@@ -48,8 +48,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private static final NumberFormat format = NumberFormat.getIntegerInstance();
 	private final HashMap<Integer, String> lineMap = new HashMap<>();
 	private long lastUpdate = -1;
-	private int counterLast = -1;
-	private int counter = -1;
+	private long counterLast = -1;
+	private long counter = -1;
 	private int cultivatingLast = -1;
 	private int cultivating = -1;
 	private int cultivatingTier = -1;
@@ -77,7 +77,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	 * Stores the values of the crop counter as a sliding window.
 	 * Values can be accessed using the {@link #cropsPerSecondCursor}.
 	 */
-	private int[] cropsPerSecondValues = new int[CPS_WINDOW_SIZE];
+	private long[] cropsPerSecondValues = new long[CPS_WINDOW_SIZE];
 	/**
 	 * The theoretical call interval of {@link #update()} is 1 second,
 	 * but in reality it can deviate by one tick, or 50ms,
@@ -125,7 +125,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private void resetCropsPerSecond() {
 		cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
-		cropsPerSecondValues = new int[CPS_WINDOW_SIZE];
+		cropsPerSecondValues = new long[CPS_WINDOW_SIZE];
 		cropsPerSecond = 0;
 		cropsPerSecondLast = 0;
 	}
@@ -343,10 +343,10 @@ public class FarmingSkillOverlay extends TextOverlay {
 				NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
 
 				if (ea.hasKey("mined_crops", 99)) {
-					counter = ea.getInteger("mined_crops");
+					counter = ea.getLong("mined_crops");
 					cultivating = ea.getInteger("farmed_cultivating");
 				} else if (ea.hasKey("farmed_cultivating", 99)) {
-					counter = ea.getInteger("farmed_cultivating");
+					counter = ea.getLong("farmed_cultivating");
 					cultivating = ea.getInteger("farmed_cultivating");
 				}
 			}
@@ -395,7 +395,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE] = counter;
 
 		//calculate
-		int current = cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE];
+		long current = cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE];
 		int timeFrame = Math.min(
 			NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame,
 			CPS_WINDOW_SIZE
