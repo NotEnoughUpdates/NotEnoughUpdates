@@ -94,7 +94,7 @@ public class GuiItemCustomize extends GuiScreen {
 	public GuiItemCustomize(ItemStack stack, String itemUUID) {
 		this.stack = stack;
 		this.itemUUID = itemUUID;
-		this.customItemStack = ItemCustomizationUtills.copy(stack, this);
+		this.customItemStack = ItemCustomizationUtils.copy(stack, this);
 
 		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
 		boolean stackHasEffect = stack.hasEffect() && !model.isBuiltInRenderer();
@@ -187,7 +187,7 @@ public class GuiItemCustomize extends GuiScreen {
 		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
 		boolean stackHasEffect = stack.hasEffect() && !model.isBuiltInRenderer();
 
-		this.customItemStack = ItemCustomizationUtills.copy(stack, this);
+		this.customItemStack = ItemCustomizationUtils.copy(stack, this);
 		data.defaultItem = stack.getItem().getRegistryName();
 
 		if (this.enchantGlint != stackHasEffect) {
@@ -204,7 +204,7 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		if (this.customLeatherColour != null && (!(customItemStack.getItem() instanceof ItemArmor) ||
-			!this.customLeatherColour.equals(ItemCustomizationUtills.getChromaStrFromLeatherColour(this)))) {
+			!this.customLeatherColour.equals(ItemCustomizationUtils.getChromaStrFromLeatherColour(this)))) {
 			data.customLeatherColour = this.customLeatherColour;
 		} else {
 			data.customLeatherColour = null;
@@ -286,7 +286,7 @@ public class GuiItemCustomize extends GuiScreen {
 
 		yTop += 14;
 
-		ItemCustomizationUtills.renderTextBox(textFieldRename, "§7Enter Custom Name...", xCenter - textFieldRename.getWidth() / 2 - 20, yTop, 138);
+		ItemCustomizationUtils.renderTextBox(textFieldRename, "§7Enter Custom Name...", xCenter - textFieldRename.getWidth() / 2 - 20, yTop, 138);
 
 		int yTopText = yTop;
 
@@ -296,22 +296,22 @@ public class GuiItemCustomize extends GuiScreen {
 		Utils.drawTexturedRect(helpX, yTop, 20, 20, GL11.GL_LINEAR);
 
 		if (mouseX >= helpX && mouseX <= helpX + 20 && mouseY >= yTop && mouseY <= yTop + 20) {
-			ItemCustomizationUtills.customizeColourGuide.set(7, Utils.chromaString("¶z = Chroma"));
-			tooltipToDisplay = ItemCustomizationUtills.customizeColourGuide;
+			ItemCustomizationUtils.customizeColourGuide.set(7, Utils.chromaString("¶z = Chroma"));
+			tooltipToDisplay = ItemCustomizationUtils.customizeColourGuide;
 		}
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(ItemCustomizationUtills.RESET);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(ItemCustomizationUtils.RESET);
 		GlStateManager.color(1, 1, 1, 1);
 		int resetX = xCenter + textFieldRename.getWidth() / 2 - 15;
 		Utils.drawTexturedRect(resetX, yTop + 5, 10, 11, GL11.GL_LINEAR);
 
 		if (mouseX >= resetX && mouseX <= resetX + 10 && mouseY >= yTop && mouseY <= yTop + 20) {
-			tooltipToDisplay = ItemCustomizationUtills.resetGuide;
+			tooltipToDisplay = ItemCustomizationUtils.resetGuide;
 		}
 
-		ItemCustomizationUtills.renderPresetButtons(xCenter,
+		ItemCustomizationUtils.renderPresetButtons(xCenter,
 			yTop,
-			ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"),
+			ItemCustomizationUtils.validShareContents("NEUCUSTOMIZE"),
 			true,
 			"preset"
 		);
@@ -336,7 +336,7 @@ public class GuiItemCustomize extends GuiScreen {
 		if (enchantGlintCustomColourAnimation.getValue() > 0) {
 			yTop -= 5;
 
-			int glintColour = ItemCustomizationUtills.getGlintColour(this);
+			int glintColour = ItemCustomizationUtils.getGlintColour(this);
 
 			GlScissorStack.push(0,
 				yTop,
@@ -346,7 +346,7 @@ public class GuiItemCustomize extends GuiScreen {
 			);
 			GlStateManager.translate(0, enchantGlintCustomColourAnimation.getValue() - 17, 0);
 
-			ItemCustomizationUtills.renderColourBlob(xCenter, yTop, glintColour, "§a§lCustom Glint Colour", true);
+			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, glintColour, "§a§lCustom Glint Colour", true);
 
 			GlStateManager.translate(0, -enchantGlintCustomColourAnimation.getValue() + 17, 0);
 			GlScissorStack.pop(scaledResolution);
@@ -358,7 +358,7 @@ public class GuiItemCustomize extends GuiScreen {
 			((ItemArmor) customItemStack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
 
 		if (supportCustomLeatherColour) {
-			int leatherColour = ItemCustomizationUtills.getLeatherColour(this);
+			int leatherColour = ItemCustomizationUtils.getLeatherColour(this);
 
 			String text = "§b§lCustom Leather Colour";
 			boolean reset = true;
@@ -368,7 +368,7 @@ public class GuiItemCustomize extends GuiScreen {
 				reset = false;
 			}
 
-			ItemCustomizationUtills.renderColourBlob(xCenter, yTop, leatherColour, text, reset);
+			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, leatherColour, text, reset);
 
 			yTop += 20;
 		}
@@ -382,11 +382,11 @@ public class GuiItemCustomize extends GuiScreen {
 		if (!supportCustomLeatherColour) offset -= 20;
 		if (!enchantGlint) offset -= 16;
 
-		ItemCustomizationUtills.renderTextBox(textFieldCustomItem, "§7Enter Custom Item ID...", xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11, yTopText + offset, 180);
+		ItemCustomizationUtils.renderTextBox(textFieldCustomItem, "§7Enter Custom Item ID...", xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11, yTopText + offset, 180);
 
 		if (supportCustomLeatherColour) {
 			yTop += 25;
-			ItemCustomizationUtills.renderFooter(xCenter, yTop, guiType);
+			ItemCustomizationUtils.renderFooter(xCenter, yTop, guiType);
 		}
 
 		renderHeight = yTop - yTopStart;
@@ -415,15 +415,15 @@ public class GuiItemCustomize extends GuiScreen {
 
 		renderHeader(xCenter, yTop);
 
-		ItemCustomizationUtills.renderPresetButtons(xCenter,
+		ItemCustomizationUtils.renderPresetButtons(xCenter,
 			yTop,
-			ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE"),
+			ItemCustomizationUtils.validShareContents("NEUCUSTOMIZE"),
 			true,
 			"preset"
 		);
-		ItemCustomizationUtills.renderPresetButtons(xCenter,
+		ItemCustomizationUtils.renderPresetButtons(xCenter,
 			yTop + 50,
-			ItemCustomizationUtills.validShareContents("NEUANIMATED"),
+			ItemCustomizationUtils.validShareContents("NEUANIMATED"),
 			!this.animatedLeatherColours.isEmpty(),
 			"animated"
 		);
@@ -441,8 +441,8 @@ public class GuiItemCustomize extends GuiScreen {
 				continue;
 			}
 
-			int leatherColour = ItemCustomizationUtills.getLeatherColour(animatedLeatherColours.get(i));
-			ItemCustomizationUtills.renderColourBlob(xCenter, yTop, leatherColour, "§b§lDye Colour " + (i + 1), true);
+			int leatherColour = ItemCustomizationUtils.getLeatherColour(animatedLeatherColours.get(i));
+			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, leatherColour, "§b§lDye Colour " + (i + 1), true);
 
 			yTop += 20;
 		}
@@ -451,7 +451,7 @@ public class GuiItemCustomize extends GuiScreen {
 		GlStateManager.color(1, 1, 1, 1);
 		RenderUtils.drawTexturedRect(xCenter + 90 - 12, yTop + 4, 10, 10, GL11.GL_NEAREST);
 
-		ItemCustomizationUtills.renderTextBox(textFieldTickSpeed,
+		ItemCustomizationUtils.renderTextBox(textFieldTickSpeed,
 			"§7Speed...",
 			xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11,
 			yTop,
@@ -464,7 +464,7 @@ public class GuiItemCustomize extends GuiScreen {
 
 		enchantGlintCustomColourAnimation.tick();
 
-		ItemCustomizationUtills.renderFooter(xCenter, yTop, guiType);
+		ItemCustomizationUtils.renderFooter(xCenter, yTop, guiType);
 
 		try {
 			if (lastTicks != (Integer.parseInt(textFieldTickSpeed.getText()))) {
@@ -509,7 +509,7 @@ public class GuiItemCustomize extends GuiScreen {
 
 			yTop += 15;
 
-			ItemCustomizationUtills.renderFooter(xCenter, yTop, guiType);
+			ItemCustomizationUtils.renderFooter(xCenter, yTop, guiType);
 
 			renderHeight = yTop - yTopStart;
 
@@ -528,7 +528,7 @@ public class GuiItemCustomize extends GuiScreen {
 				continue;
 			}
 
-			Color color = ItemCustomizationUtills.getColourFromHex(dyes.get(i).colour);
+			Color color = ItemCustomizationUtils.getColourFromHex(dyes.get(i).colour);
 
 			JsonArray colours = dyes.get(i).colours;
 			String itemId = dyes.get(i).itemId;
@@ -558,17 +558,17 @@ public class GuiItemCustomize extends GuiScreen {
 			} else if (color == null && colours != null) {
 				String colourHex = colours.get(
 					(Minecraft.getMinecraft().thePlayer.ticksExisted / this.animatedDyeTicks) % colours.size()).getAsString();
-				int colourFromHex = ItemCustomizationUtills.rgbToInt(ItemCustomizationUtills.getColourFromHex(colourHex));
-				ItemCustomizationUtills.renderColourBlob(xCenter, yTop, colourFromHex, displayName, false);
+				int colourFromHex = ItemCustomizationUtils.rgbToInt(ItemCustomizationUtils.getColourFromHex(colourHex));
+				ItemCustomizationUtils.renderColourBlob(xCenter, yTop, colourFromHex, displayName, false);
 			} else {
-				int colour = ItemCustomizationUtills.rgbToInt(color);
-				ItemCustomizationUtills.renderColourBlob(xCenter, yTop, colour, displayName, false);
+				int colour = ItemCustomizationUtils.rgbToInt(color);
+				ItemCustomizationUtils.renderColourBlob(xCenter, yTop, colour, displayName, false);
 			}
 
 			yTop += 20;
 		}
 
-		ItemCustomizationUtills.renderTextBox(textFieldTickSpeed,
+		ItemCustomizationUtils.renderTextBox(textFieldTickSpeed,
 			"§7Speed...",
 			xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11,
 			yTop,
@@ -579,7 +579,7 @@ public class GuiItemCustomize extends GuiScreen {
 
 		enchantGlintCustomColourAnimation.tick();
 
-		ItemCustomizationUtills.renderFooter(xCenter, yTop, guiType);
+		ItemCustomizationUtils.renderFooter(xCenter, yTop, guiType);
 
 		try {
 			if (lastTicks != (Integer.parseInt(textFieldTickSpeed.getText()))) {
@@ -759,11 +759,11 @@ public class GuiItemCustomize extends GuiScreen {
 					dataForItem.customItem.equals(dataForItem.defaultItem.replace("minecraft:", ""))) {
 					dataForItem.customItem = null;
 				}
-				ItemCustomizationUtills.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
+				ItemCustomizationUtils.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
 
 			} else if (mouseY >= yTop + 10 && mouseY <= yTop + 10 + 20) {
-				if (ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE")) {
-					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUCUSTOMIZE");
+				if (ItemCustomizationUtils.validShareContents("NEUCUSTOMIZE")) {
+					String shareJson = ItemCustomizationUtils.getShareFromClipboard("NEUCUSTOMIZE");
 					ItemCustomizeManager.ItemData itemData = gson.fromJson(shareJson, ItemCustomizeManager.ItemData.class);
 					itemData.defaultItem = dataForItem.defaultItem;
 					ItemCustomizeManager.putItemData(itemUUID, itemData);
@@ -822,7 +822,7 @@ public class GuiItemCustomize extends GuiScreen {
 				editor = new GuiElementColour(mouseX,
 					mouseY,
 					() -> customLeatherColour == null
-						? ItemCustomizationUtills.getChromaStrFromLeatherColour(this)
+						? ItemCustomizationUtils.getChromaStrFromLeatherColour(this)
 						: customLeatherColour,
 					(colour) -> {
 						customLeatherColour = colour;
@@ -840,7 +840,7 @@ public class GuiItemCustomize extends GuiScreen {
 		if (supportCustomLeatherColour) {
 			float buttonOffset = yTop + 174 + enchantGlintCustomColourAnimation.getValue() + 5 + 45;
 
-			GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, buttonOffset);
+			GuiType buttonClicked = ItemCustomizationUtils.getButtonClicked(mouseX, mouseY, guiType, buttonOffset);
 			if (buttonClicked != null) {
 				guiType = buttonClicked;
 				pageScroll = 0;
@@ -877,7 +877,7 @@ public class GuiItemCustomize extends GuiScreen {
 					editor = new GuiElementColour(mouseX, mouseY, () -> {
 						String animatedColour = animatedLeatherColours.get(finalI);
 						return animatedColour == null
-							? ItemCustomizationUtills.getChromaStrFromLeatherColour(this)
+							? ItemCustomizationUtils.getChromaStrFromLeatherColour(this)
 							: animatedColour;
 					}, (colour) -> {
 						animatedLeatherColours.set(finalI, colour);
@@ -892,8 +892,8 @@ public class GuiItemCustomize extends GuiScreen {
 			Gson gson = new Gson();
 			ItemCustomizeManager.ItemData dataForItem = ItemCustomizeManager.getDataForItem(stack);
 			if (mouseY >= yTop + 0 && mouseY <= yTop + 0 + 20) {
-				if (ItemCustomizationUtills.validShareContents("NEUCUSTOMIZE")) {
-					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUCUSTOMIZE");
+				if (ItemCustomizationUtils.validShareContents("NEUCUSTOMIZE")) {
+					String shareJson = ItemCustomizationUtils.getShareFromClipboard("NEUCUSTOMIZE");
 					ItemCustomizeManager.ItemData itemData = gson.fromJson(shareJson, ItemCustomizeManager.ItemData.class);
 					itemData.defaultItem = dataForItem.defaultItem;
 					ItemCustomizeManager.putItemData(itemUUID, itemData);
@@ -904,12 +904,12 @@ public class GuiItemCustomize extends GuiScreen {
 					dataForItem.customItem.equals(dataForItem.defaultItem.replace("minecraft:", ""))) {
 					dataForItem.customItem = null;
 				}
-				ItemCustomizationUtills.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
+				ItemCustomizationUtils.shareContents("NEUCUSTOMIZE", gson.toJson(dataForItem));
 
 			} else if (mouseY >= yTop + 45 && mouseY <= yTop + 45 + 20) {
 
-				if (ItemCustomizationUtills.validShareContents("NEUANIMATED") && this.animatedLeatherColours != null) {
-					String shareJson = ItemCustomizationUtills.getShareFromClipboard("NEUANIMATED");
+				if (ItemCustomizationUtils.validShareContents("NEUANIMATED") && this.animatedLeatherColours != null) {
+					String shareJson = ItemCustomizationUtils.getShareFromClipboard("NEUANIMATED");
 					DyeType dyeType = gson.fromJson(shareJson, DyeType.class);
 					if (dyeType.coloursArray != null) {
 						this.animatedDyeTicks = dyeType.ticks;
@@ -924,7 +924,7 @@ public class GuiItemCustomize extends GuiScreen {
 					}
 				}
 			} else if (mouseY >= yTop + 72 && mouseY <= yTop + 72 + 20) {
-				ItemCustomizationUtills.shareContents(
+				ItemCustomizationUtils.shareContents(
 					"NEUANIMATED",
 					gson.toJson(new DyeType(dataForItem.animatedLeatherColours, dataForItem.animatedDyeTicks))
 				);
@@ -938,7 +938,7 @@ public class GuiItemCustomize extends GuiScreen {
 				if (!animatedLeatherColours.isEmpty()) animatedLeatherColours.add(animatedLeatherColours.get(
 					animatedLeatherColours.size() - 1));
 				else if (customLeatherColour != null) animatedLeatherColours.add(customLeatherColour);
-				else animatedLeatherColours.add(ItemCustomizationUtills.getChromaStrFromLeatherColour(this));
+				else animatedLeatherColours.add(ItemCustomizationUtils.getChromaStrFromLeatherColour(this));
 				updateData();
 				pageScroll = -((animatedLeatherColours.size() * 20 - 20) - guiScaleOffset());
 			}
@@ -963,7 +963,7 @@ public class GuiItemCustomize extends GuiScreen {
 			updateData();
 		}
 
-		GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
+		GuiType buttonClicked = ItemCustomizationUtils.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
 		if (buttonClicked != null) {
 			guiType = buttonClicked;
 			pageScroll = 0;
@@ -991,13 +991,13 @@ public class GuiItemCustomize extends GuiScreen {
 					animatedLeatherColours.clear();
 					for (JsonElement colour : dyes.get(i).colours) {
 						String string = colour.getAsString();
-						Color colourFromHex = ItemCustomizationUtills.getColourFromHex(string);
+						Color colourFromHex = ItemCustomizationUtils.getColourFromHex(string);
 						String special = SpecialColour.special(0, 0, colourFromHex.getRGB());
 						animatedLeatherColours.add(special);
 					}
 				} else if ((dyes.get(i).hasStaticColour())) {
 					animatedLeatherColours.clear();
-					Color colourFromHex = ItemCustomizationUtills.getColourFromHex(dyes.get(i).colour);
+					Color colourFromHex = ItemCustomizationUtils.getColourFromHex(dyes.get(i).colour);
 					String special = SpecialColour.special(0, 0, colourFromHex.getRGB());
 					customLeatherColour = special;
 				}
@@ -1014,7 +1014,7 @@ public class GuiItemCustomize extends GuiScreen {
 			textFieldTickSpeed.unfocus();
 		}
 
-		GuiType buttonClicked = ItemCustomizationUtills.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
+		GuiType buttonClicked = ItemCustomizationUtils.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
 		if (buttonClicked != null) {
 			guiType = buttonClicked;
 			pageScroll = 0;
@@ -1042,7 +1042,7 @@ public class GuiItemCustomize extends GuiScreen {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(xCenter - 48, yTop + 7, 0);
 		GlStateManager.scale(6, 6, 1);
-		this.customItemStack = ItemCustomizationUtills.copy(stack, this);
+		this.customItemStack = ItemCustomizationUtils.copy(stack, this);
 		Utils.drawItemStack(customItemStack, 0, 0);
 		GlStateManager.popMatrix();
 	}

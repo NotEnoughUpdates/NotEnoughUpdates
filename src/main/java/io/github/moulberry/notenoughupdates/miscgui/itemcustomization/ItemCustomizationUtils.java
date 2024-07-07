@@ -46,7 +46,7 @@ import java.util.List;
 
 import static io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour.custom_ench_colour;
 
-public class ItemCustomizationUtills {
+public class ItemCustomizationUtils {
 
 	public static List<String> customizeColourGuide = Lists.newArrayList(
 		EnumChatFormatting.AQUA + "Set a custom name for the item",
