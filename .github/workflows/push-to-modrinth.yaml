@@ -24,7 +24,8 @@ jobs:
           ls -Rla .
           echo ::group::Changelog
           cat CHANGELOG.md
-          echo \n::endgroup::
+          echo
+          echo ::endgroup::
       - name: Publish to Modrinth
         uses: Kir-Antipov/mc-publish@v3.3
         with:
