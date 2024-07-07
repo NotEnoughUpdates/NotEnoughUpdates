@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -79,7 +79,8 @@ public class TooltipTweaks {
 			"\u00a7eInsta-Buys (Daily)",
 			"\u00a7eInsta-Sells (Daily)",
 			"\u00a7eInsta-Buys (Weekly)",
-			"\u00a7eInsta-Sells (Weekly)"}
+			"\u00a7eInsta-Sells (Weekly)"
+		}
 	)
 	@ConfigAccordionId(id = 0)
 	public List<Integer> priceInfoBaz = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
@@ -170,6 +171,14 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Show gemstone stats",
+		desc = "Show statistics a gemstone will apply"
+	)
+	@ConfigEditorBoolean
+	public boolean showGemstoneStats = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Hide default reforge stats",
 		desc = "Hides the reforge stats only for Legendary items that Hypixel adds to the Reforge stones"
 	)
@@ -209,7 +218,6 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	public boolean scrollableTooltips = false;
-
 
 	@Expose
 	@ConfigOption(
@@ -329,7 +337,6 @@ public class TooltipTweaks {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
 	public boolean copperCoins = true;
-
 
 	@Expose
 	@ConfigOption(
