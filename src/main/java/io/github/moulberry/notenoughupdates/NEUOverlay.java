@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -743,6 +743,7 @@ public class NEUOverlay extends Gui {
 			}
 			String internalname = item.get("internalname").getAsString();
 			String name = item.get("displayname").getAsString();
+			name = name.replace("[Lvl {LVL}] ", ""); // Remove dynamic level prefix for pets
 			if (NotEnoughUpdates.INSTANCE.config.itemlist.wikiInBrowser) {
 				Utils.openUrl(infoText);
 				Utils.addChatMessage("§e[NEU] Opening webpage in browser.");
