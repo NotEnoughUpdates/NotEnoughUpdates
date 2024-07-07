@@ -35,6 +35,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.roundToInt
 
@@ -71,7 +72,15 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
                 Utils.showOutdatedRepoNotification("constants/hotmlayout.json")
             }.getOrNull()
         }
+
+        val perkBackground = ResourceLocation("notenoughupdates:profile_viewer/mining/perk_background.png")
+        val perkConnectionX = ResourceLocation("notenoughupdates:profile_viewer/mining/perk_connection_x.png")
+        val perkConnectionY = ResourceLocation("notenoughupdates:profile_viewer/mining/perk_connection_y.png")
     }
+
+    val gridNodes = hotmLayout.perks.map { (it.value.x to it.value.y) to it }.toMap()
+    val ySize = hotmLayout.perks.maxOf { it.value.y }
+    val xSize = hotmLayout.perks.maxOf { it.value.x }
 
     fun renderPerks(
         levels: Map<String, JsonElement>,
@@ -79,6 +88,7 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
         mouseX: Int, mouseY: Int,
         renderTooltip: Boolean,
         gridSize: Int,
+        gridSpacing: Int,
     ) {
         val sr = ScaledResolution(Minecraft.getMinecraft())
         val relX = mouseX - x
@@ -89,7 +99,31 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
             val (values, bindings) = calculatePerkProperties(perk, level, levels)
             val tooltip = createPerkTooltip(perk, level, values, bindings)
             val perkItem = getPerkItem(perk, level, values, bindings, tooltip) ?: ItemStack(Items.painting, 1, 10)
-            Utils.drawItemStack(perkItem, perk.x * gridSize + x + gridOffset, perk.y * gridSize + y + gridOffset)
+            Minecraft.getMinecraft().textureManager.bindTexture(perkBackground)
+            Utils.drawTexturedRect(
+                (perk.x * gridSize + x + gridSpacing / 2).toFloat(),
+                (perk.y * gridSize + y + gridSpacing / 2).toFloat(),
+                gridSize.toFloat() - gridSpacing, gridSize.toFloat() - gridSpacing,
+                0F, 1f, 0f, 1f
+            )
+            if (Pair(perk.x - 1, perk.y) in gridNodes) {
+                Minecraft.getMinecraft().textureManager.bindTexture(perkConnectionX)
+                Utils.drawTexturedRect(
+                    (perk.x * gridSize + x - gridSpacing / 2).toFloat(),
+                    (perk.y * gridSize + y).toFloat(),
+                    gridSpacing.toFloat(), gridSize.toFloat(),
+                    0F, 1f, 0f, 1f
+                )
+            }
+            if (Pair(perk.x, perk.y - 1) in gridNodes) {
+                Minecraft.getMinecraft().textureManager.bindTexture(perkConnectionY)
+                Utils.drawTexturedRect(
+                    (perk.x * gridSize + x).toFloat(),
+                    (perk.y * gridSize + y - gridSpacing / 2).toFloat(),
+                    gridSize.toFloat(), gridSpacing.toFloat(),
+                    0F, 1f, 0f, 1f
+                )
+            }
             if (renderTooltip &&
                 relX in (perk.x * gridSize..perk.x * gridSize + gridSize) &&
                 relY in (perk.y * gridSize..perk.y * gridSize + gridSize)) {
@@ -101,6 +135,7 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
                 )
                 GlScissorStack.refresh(sr)
             }
+            Utils.drawItemStack(perkItem, perk.x * gridSize + x + gridOffset, perk.y * gridSize + y + gridOffset)
         }
     }
 
