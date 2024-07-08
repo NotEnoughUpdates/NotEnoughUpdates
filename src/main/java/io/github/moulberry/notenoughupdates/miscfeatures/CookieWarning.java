@@ -66,7 +66,7 @@ public class CookieWarning {
 		}
 		if (timeLine == null) return;
 
-		int minutes = (int) getMillisecondsRemaining(timeLine) / 60 / 1000;
+		int minutes = (int) (getMillisecondsRemaining(timeLine) / 60 / 1000);
 		if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 				"§cBooster Cookie Running Low!",
@@ -90,7 +90,7 @@ public class CookieWarning {
 				String number = digits[i];
 				String unit = digits[i + 1];
 				long val = Integer.parseInt(number);
-				ms += (getCookieTimeRemainingInMilliseconds(unit, val));
+				ms += (getEffectRemainingInMilliseconds(unit, val));
 			}
 		} catch (NumberFormatException e) {
 			if (!hasErrorMessage) {
@@ -164,33 +164,33 @@ public class CookieWarning {
 		lastChecked = 0;
 	}
 
-	public static long getCookieTimeRemainingInMilliseconds(String godpotRemainingTimeType, long godpotRemainingTime) {
-		switch (godpotRemainingTimeType.toLowerCase(Locale.ROOT).replace(",", "")) {
+	public static long getEffectRemainingInMilliseconds(String remainingTimeType, long remainingTime) {
+		switch (remainingTimeType.toLowerCase(Locale.ROOT).replace(",", "")) {
 			case "years":
 			case "year":
 			case "y":
-				return godpotRemainingTime * 24 * 60 * 60 * 1000 * 30 * 12;
+				return remainingTime * 24 * 60 * 60 * 1000 * 30 * 12;
 			case "months":
 			case "month":
 			case "mo":
-				return godpotRemainingTime * 24 * 60 * 60 * 1000 * 30;
+				return remainingTime * 24 * 60 * 60 * 1000 * 30;
 			case "days":
 			case "day":
 			case "d":
-				return godpotRemainingTime * 24 * 60 * 60 * 1000;
+				return remainingTime * 24 * 60 * 60 * 1000;
 			case "hours":
 			case "hour":
 			case "h":
-				return godpotRemainingTime * 60 * 60 * 1000;
+				return remainingTime * 60 * 60 * 1000;
 			case "minutes":
 			case "minute":
 			case "m":
-				return godpotRemainingTime * 60 * 1000;
+				return remainingTime * 60 * 1000;
 			case "seconds":
 			case "second":
 			case "s":
-				return godpotRemainingTime * 1000;
+				return remainingTime * 1000;
 		}
-		return godpotRemainingTime;
+		return remainingTime;
 	}
 }
