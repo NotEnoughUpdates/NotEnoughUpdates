@@ -381,12 +381,6 @@ public class NEUManager {
 				}
 			}
 		} catch (Exception e) {
-			synchronized (loreWordMap) {
-				System.out.println("loreWordMap is : " + loreWordMap);
-			}
-			synchronized (titleWordMap) {
-				System.out.println("titleWordMap is : " + titleWordMap);
-			}
 			System.out.println("internalName is : " + internalName);
 			e.printStackTrace();
 		}

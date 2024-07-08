@@ -62,6 +62,8 @@ import org.lwjgl.util.vector.Vector2f;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NEUAutoSubscribe
 public class SlotLocking {
@@ -156,10 +158,28 @@ public class SlotLocking {
 		ConfigUtil.saveConfig(config, file, GSON);
 	}
 
+
+	private static final Pattern WINDOW_REGEX = Pattern.compile(".+ Backpack (?:✦ )?\\(Slot #(\\d+)\\)");
+	private static final Pattern ECHEST_WINDOW_REGEX = Pattern.compile("Ender Chest \\((\\d+)/(\\d+)\\)");
+
+
 	private LockedSlot[] getDataForProfile() {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ||
 			!NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking)
 			return null;
+
+		if (NotEnoughUpdates.INSTANCE.config.slotLocking.disableInStorage) {
+			if (StorageManager.getInstance().isStorageOpen) return null;
+			String openChestName = Utils.getOpenChestName();
+			if (openChestName.trim().equals("Storage")) return null;
+
+			Matcher matcher = WINDOW_REGEX.matcher(openChestName);
+			Matcher matcherEchest = ECHEST_WINDOW_REGEX.matcher(openChestName);
+
+			if (matcher.matches() || matcherEchest.matches()) {
+				return null;
+			}
+		}
 
 		String profileName = SBInfo.getInstance().currentProfile;
 		if (profileName == null) profileName = "generic";
