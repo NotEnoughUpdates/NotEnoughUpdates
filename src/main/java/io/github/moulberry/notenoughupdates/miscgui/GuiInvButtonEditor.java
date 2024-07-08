@@ -45,10 +45,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -680,19 +676,16 @@ public class GuiInvButtonEditor extends GuiScreen {
 	}
 
 	private boolean validShareContents() {
+		String base64 = Utils.getClipboard();
+		if (base64 == null) return false;
+
+		if (base64.length() <= sharePrefix.length()) return false;
+
+		base64 = base64.trim();
+
 		try {
-			String base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-
-			if (base64.length() <= sharePrefix.length()) return false;
-
-			base64 = base64.trim();
-
-			try {
-				return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
-			} catch (IllegalArgumentException e) {
-				return false;
-			}
-		} catch (HeadlessException | IOException | UnsupportedFlavorException | IllegalStateException e) {
+			return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
+		} catch (IllegalArgumentException e) {
 			return false;
 		}
 	}
@@ -806,13 +799,8 @@ public class GuiInvButtonEditor extends GuiScreen {
 		if (mouseX > guiLeft - 2 - 88 - 22 && mouseX < guiLeft - 2 - 22) {
 			if (mouseY > guiTop + 2 && mouseY < guiTop + 22) {
 
-				String base64;
-
-				try {
-					base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-				} catch (HeadlessException | IOException | UnsupportedFlavorException e) {
-					return;
-				}
+				String base64 = Utils.getClipboard();
+				if (base64 == null) return;
 
 				if (base64.length() <= sharePrefix.length()) return;
 
@@ -871,7 +859,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 				}
 				String base64String = Base64.getEncoder().encodeToString((sharePrefix +
 					jsonArray).getBytes(StandardCharsets.UTF_8));
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
+				Utils.copyToClipboard(base64String);
 				return;
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -88,7 +88,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -744,6 +743,7 @@ public class NEUOverlay extends Gui {
 			}
 			String internalname = item.get("internalname").getAsString();
 			String name = item.get("displayname").getAsString();
+			name = name.replace("[Lvl {LVL}] ", ""); // Remove dynamic level prefix for pets
 			if (NotEnoughUpdates.INSTANCE.config.itemlist.wikiInBrowser) {
 				Utils.openUrl(infoText);
 				Utils.addChatMessage("§e[NEU] Opening webpage in browser.");
@@ -1079,9 +1079,7 @@ public class NEUOverlay extends Gui {
 					BigDecimal calculate = Calculator.calculate(textField.getText(), PROVIDE_LOWEST_BIN);
 					textField.setText(calculate.toPlainString());
 					if (NotEnoughUpdates.INSTANCE.config.toolbar.copyToClipboardWhenGettingResult) {
-						Toolkit.getDefaultToolkit().getSystemClipboard()
-									 .setContents(new StringSelection(calculate.toPlainString()), null);
-
+						Utils.copyToClipboard(calculate.toPlainString());
 					}
 				} catch (Calculator.CalculatorException | IllegalStateException | HeadlessException ignored) {
 				}
