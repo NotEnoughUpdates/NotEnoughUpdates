@@ -36,6 +36,7 @@ import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -458,6 +459,10 @@ public class GuiItemCustomize extends GuiScreen {
 			45
 		);
 
+		// Button background
+		Gui.drawRect(xCenter - 40, yTop + 2, xCenter - 2, yTop + 19, 0x70000000);
+		Gui.drawRect(xCenter - 40, yTop + 2, xCenter - 2, yTop + 16, 0xff101016);
+		Gui.drawRect(xCenter - 39, yTop + 3, xCenter - 3, yTop + 16, 0xff000000 | 0xff6955);
 		Utils.renderShadowedString("§c§lClear", xCenter - 20, yTop + 6, xCenter * 2);
 
 		yTop += 25;
