@@ -529,7 +529,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
 
         for ((itemName, _) in sacksInfo.entrySet()) {
             val adjustedName = itemName.replace(":", "-")
-            if ((adjustedName in sackItems) || adjustedName.contains(Regex("(RUNE|PERFECT_|MUSHROOM_COLLECTION)"))) continue
+            if ((adjustedName in sackItems) || adjustedName.contains(Regex("(RUNE|PERFECT_|FLAWLESS_|MUSHROOM_COLLECTION)"))) continue
             println("$adjustedName missing from repo sacks file!")
         }
 
