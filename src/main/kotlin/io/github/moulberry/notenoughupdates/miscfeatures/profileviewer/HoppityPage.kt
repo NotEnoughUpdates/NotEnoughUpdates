@@ -1042,7 +1042,11 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
             "aa834561-cabc-3d33-8d0a-5d01342e796b",
             "ewogICJ0aW1lc3RhbXAiIDogMTcxNTEwMzM0ODczNywKICAicHJvZmlsZUlkIiA6ICI3OTZjMDBhNmY0MDA0Mjg2OWMyMTIyNjc0ZmI0MWNiZSIsCiAgInByb2ZpbGVOYW1lIiA6ICJTZWRvbnlhIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzUwZGU1NDVmN2M0MGE2ZWM4ODhhZTNjZjlhZTk4M2Q5Mjc4OWRmNzc4Y2Y1NWQ5ZjVhM2QzY2IzYzZkMWI3NjgiCiAgICB9CiAgfQp9"
         )
-        //TODO add divine rabbit once someone has one
+        private val divineRabbit: ItemStack = Utils.createSkull(
+            "Throwpo",
+            "4e2dea5e-25f9-35b5-b4b1-883347d584e9",
+            "ewogICJ0aW1lc3RhbXAiIDogMTcxNTEwMzA0NzIwNywKICAicHJvZmlsZUlkIiA6ICJlZTg4M2RmMjM0ZWI0YWM1YTFlNDEwODhhYzZkZWIxNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJUdW5lc0Jsb2NrIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2JmYzQ3MWUwMThiZjQzZjMxNWIwMGVjNDE5YWU3YTdmOWRlNjY5MDQ0NGIzMGU5ZTVkMzRjZjc5YTMxNmMwMjMiCiAgICB9CiAgfQp9"
+        )
     }
 
     private enum class RabbitCollectionRarity(
@@ -1062,7 +1066,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
         EPIC("Epic", "§5", epicRabbit, 0, 0),
         LEGENDARY("Legendary", "§6", legendaryRabbit, 0, 0),
         MYTHIC("Mythic", "§d", mythicRabbit, 0, 0),
-        DIVINE("Divine", "§b", totalRabbit, 0, 0),
+        DIVINE("Divine", "§b", divineRabbit, 0, 0),
         ;
 
         val displayName = "$colourCode$apiName"
