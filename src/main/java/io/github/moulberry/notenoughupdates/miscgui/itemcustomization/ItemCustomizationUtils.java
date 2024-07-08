@@ -207,8 +207,10 @@ public class ItemCustomizationUtils {
 	}
 
 	static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
+	static final ResourceLocation CROSS = new ResourceLocation("notenoughupdates:itemcustomize/cross.png");
 
-	public static void renderColourBlob(int xCenter, int yTop, int colour, String text, boolean renderReset) {
+	public static void renderColourBlob(int xCenter, int yTop, int colour, String text, boolean renderReset,
+																			boolean renderCross) {
 		Gui.drawRect(xCenter - 90, yTop, xCenter + 92, yTop + 17, 0x70000000);
 		Gui.drawRect(xCenter - 90, yTop, xCenter + 90, yTop + 15, 0xff101016);
 		Gui.drawRect(xCenter - 89, yTop + 1, xCenter + 89, yTop + 14, 0xff000000 | colour);
@@ -219,6 +221,12 @@ public class ItemCustomizationUtils {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(RESET);
 			GlStateManager.color(1, 1, 1, 1);
 			RenderUtils.drawTexturedRect(xCenter + 90 - 12, yTop + 2, 10, 11, GL11.GL_NEAREST);
+		}
+
+		if (renderCross) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(CROSS);
+			GlStateManager.color(1, 1, 1, 1);
+			RenderUtils.drawTexturedRect(xCenter + 90 - 12, yTop + 3, 9, 9, GL11.GL_NEAREST);
 		}
 	}
 

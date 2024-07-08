@@ -347,7 +347,7 @@ public class GuiItemCustomize extends GuiScreen {
 			);
 			GlStateManager.translate(0, enchantGlintCustomColourAnimation.getValue() - 17, 0);
 
-			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, glintColour, "§a§lCustom Glint Colour", true);
+			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, glintColour, "§a§lCustom Glint Colour", true, false);
 
 			GlStateManager.translate(0, -enchantGlintCustomColourAnimation.getValue() + 17, 0);
 			GlScissorStack.pop(scaledResolution);
@@ -369,7 +369,7 @@ public class GuiItemCustomize extends GuiScreen {
 				reset = false;
 			}
 
-			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, leatherColour, text, reset);
+			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, leatherColour, text, reset, false);
 
 			yTop += 20;
 		}
@@ -443,7 +443,7 @@ public class GuiItemCustomize extends GuiScreen {
 			}
 
 			int leatherColour = ItemCustomizationUtils.getLeatherColour(animatedLeatherColours.get(i));
-			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, leatherColour, "§b§lDye Colour " + (i + 1), true);
+			ItemCustomizationUtils.renderColourBlob(xCenter, yTop, leatherColour, "§b§lDye Colour " + (i + 1), false, true);
 
 			yTop += 20;
 		}
@@ -569,10 +569,10 @@ public class GuiItemCustomize extends GuiScreen {
 				String colourHex = colours.get(
 					(Minecraft.getMinecraft().thePlayer.ticksExisted / this.animatedDyeTicks) % colours.size()).getAsString();
 				int colourFromHex = ItemCustomizationUtils.rgbToInt(ItemCustomizationUtils.getColourFromHex(colourHex));
-				ItemCustomizationUtils.renderColourBlob(xCenter, yTop, colourFromHex, displayName, false);
+				ItemCustomizationUtils.renderColourBlob(xCenter, yTop, colourFromHex, displayName, false, false);
 			} else {
 				int colour = ItemCustomizationUtils.rgbToInt(color);
-				ItemCustomizationUtils.renderColourBlob(xCenter, yTop, colour, displayName, false);
+				ItemCustomizationUtils.renderColourBlob(xCenter, yTop, colour, displayName, false, false);
 			}
 
 			yTop += 20;
