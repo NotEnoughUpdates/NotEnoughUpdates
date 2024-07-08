@@ -40,10 +40,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -524,12 +520,9 @@ public class GuiEnchantColour extends GuiScreen {
 	}
 
 	private boolean validShareContents() {
-		try {
-			String base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-			return Objects.equals(TemplateUtil.getTemplatePrefix(base64), sharePrefix);
-		} catch (HeadlessException | IOException | UnsupportedFlavorException | IllegalStateException e) {
-			return false;
-		}
+		String base64 = Utils.getClipboard();
+		if (base64 == null) return false;
+		return Objects.equals(TemplateUtil.getTemplatePrefix(base64), sharePrefix);
 	}
 
 	@Override
@@ -630,13 +623,9 @@ public class GuiEnchantColour extends GuiScreen {
 		if (mouseX > guiLeft + xSize + 3 && mouseX < guiLeft + xSize + 3 + 88) {
 			if (mouseY > guiTopSidebar + 2 && mouseY < guiTopSidebar + 20 + 2) {
 
-				String base64;
 
-				try {
-					base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-				} catch (HeadlessException | IOException | UnsupportedFlavorException e) {
-					return;
-				}
+				String base64 = Utils.getClipboard();
+				if (base64 == null) return;
 				JsonArray presetArray = TemplateUtil.maybeDecodeTemplate(sharePrefix, base64, JsonArray.class);
 				ArrayList<String> presetList = new ArrayList<>();
 
@@ -663,7 +652,7 @@ public class GuiEnchantColour extends GuiScreen {
 				}
 
 				String base64String = TemplateUtil.encodeTemplate(sharePrefix, jsonArray);
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
+				Utils.copyToClipboard(base64String);
 			} else if (mouseY > guiTopSidebar + 2 + (24 * 2) && mouseY < guiTopSidebar + 20 + 2 + 24 * 2) {
 				NotEnoughUpdates.INSTANCE.config.hidden.enchantColours = NEUConfig.createDefaultEnchantColours();
 			}

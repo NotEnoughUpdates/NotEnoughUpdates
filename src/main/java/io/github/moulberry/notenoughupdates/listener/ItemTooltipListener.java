@@ -27,7 +27,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -48,7 +47,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -752,7 +750,7 @@ public class ItemTooltipListener {
 				if (!copied) {
 					copied = true;
 					StringSelection selection = new StringSelection(sb.toString().replace("§r§7", ""));
-					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
+					Utils.copyToClipboard(selection, selection);
 				}
 			} else {
 				copied = false;
@@ -773,14 +771,14 @@ public class ItemTooltipListener {
 			boolean b = Keyboard.isKeyDown(Keyboard.KEY_B);
 
 			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-				MiscUtils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
+				Utils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
 			}
 
 			event.toolTip.add(
 				EnumChatFormatting.AQUA + "Internal Name: " + EnumChatFormatting.GRAY + internal + EnumChatFormatting.GOLD +
 					" [K]");
 			if (!copied && k) {
-				MiscUtils.copyToClipboard(internal);
+				Utils.copyToClipboard(internal);
 			}
 
 			if (event.itemStack.getTagCompound() != null) {
@@ -789,7 +787,7 @@ public class ItemTooltipListener {
 				event.toolTip.add(EnumChatFormatting.AQUA + "NBT: " + EnumChatFormatting.GRAY + "[...]" +
 					EnumChatFormatting.GOLD + " [B]");
 				if (!copied && b) {
-					MiscUtils.copyToClipboard(tag.toString());
+					Utils.copyToClipboard(tag.toString());
 				}
 
 				if (tag.hasKey("SkullOwner", 10)) {
@@ -799,7 +797,7 @@ public class ItemTooltipListener {
 						event.toolTip.add(EnumChatFormatting.AQUA + "Skull UUID: " + EnumChatFormatting.GRAY + gameprofile.getId() +
 							EnumChatFormatting.GOLD + " [M]");
 						if (!copied && m) {
-							MiscUtils.copyToClipboard(gameprofile.getId().toString());
+							Utils.copyToClipboard(gameprofile.getId().toString());
 						}
 
 						Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map =
@@ -812,7 +810,7 @@ public class ItemTooltipListener {
 									EnumChatFormatting.GOLD + " [N]");
 
 							if (!copied && n) {
-								MiscUtils.copyToClipboard(profTex.getUrl());
+								Utils.copyToClipboard(profTex.getUrl());
 							}
 						}
 					}

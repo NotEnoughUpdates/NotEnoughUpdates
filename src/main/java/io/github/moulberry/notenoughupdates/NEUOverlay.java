@@ -87,7 +87,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -1079,9 +1078,7 @@ public class NEUOverlay extends Gui {
 					BigDecimal calculate = Calculator.calculate(textField.getText(), PROVIDE_LOWEST_BIN);
 					textField.setText(calculate.toPlainString());
 					if (NotEnoughUpdates.INSTANCE.config.toolbar.copyToClipboardWhenGettingResult) {
-						Toolkit.getDefaultToolkit().getSystemClipboard()
-									 .setContents(new StringSelection(calculate.toPlainString()), null);
-
+						Utils.copyToClipboard(calculate.toPlainString());
 					}
 				} catch (Calculator.CalculatorException | IllegalStateException | HeadlessException ignored) {
 				}
