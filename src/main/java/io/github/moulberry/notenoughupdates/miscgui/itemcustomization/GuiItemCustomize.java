@@ -452,12 +452,17 @@ public class GuiItemCustomize extends GuiScreen {
 		GlStateManager.color(1, 1, 1, 1);
 		RenderUtils.drawTexturedRect(xCenter + 90 - 12, yTop + 4, 10, 10, GL11.GL_NEAREST);
 
+		int xOffset = xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11;
 		ItemCustomizationUtils.renderTextBox(textFieldTickSpeed,
 			"§7Speed...",
-			xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11,
+			xOffset,
 			yTop,
 			45
 		);
+
+		if (mouseX >= xOffset && mouseX <= xOffset + textFieldTickSpeed.getWidth() && mouseY >= yTop && mouseY <= yTop + 20) {
+			tooltipToDisplay = ItemCustomizationUtils.speedGuide;
+		}
 
 		// Button background
 		Gui.drawRect(xCenter - 40, yTop + 2, xCenter - 2, yTop + 19, 0x70000000);
@@ -573,12 +578,17 @@ public class GuiItemCustomize extends GuiScreen {
 			yTop += 20;
 		}
 
+		int xOffset = xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11;
 		ItemCustomizationUtils.renderTextBox(textFieldTickSpeed,
 			"§7Speed...",
-			xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11,
+			xOffset,
 			yTop,
 			45
 		);
+
+		if (mouseX >= xOffset && mouseX <= xOffset + textFieldTickSpeed.getWidth() && mouseY >= yTop && mouseY <= yTop + 20) {
+			tooltipToDisplay = ItemCustomizationUtils.speedGuide;
+		}
 
 		yTop += 25;
 

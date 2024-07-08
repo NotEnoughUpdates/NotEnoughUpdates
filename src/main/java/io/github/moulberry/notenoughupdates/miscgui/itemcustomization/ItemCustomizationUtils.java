@@ -88,6 +88,11 @@ public class ItemCustomizationUtils {
 		EnumChatFormatting.RED + "Only click if you are sure you want to reset everything for this item"
 	);
 
+	public static List<String> speedGuide = Lists.newArrayList(
+		EnumChatFormatting.AQUA + "This is how fast the dyes will cycle, in ticks",
+		EnumChatFormatting.GRAY + "Hypixel dyes cycle every 2 ticks"
+	);
+
 	public static ItemStack copy(ItemStack stack, GuiItemCustomize instance) {
 		ItemStack customStack = stack.copy();
 		if (!instance.textFieldCustomItem.getText().isEmpty()) {
