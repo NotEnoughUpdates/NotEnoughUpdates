@@ -36,10 +36,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -307,19 +303,16 @@ public class ItemCustomizationUtils {
 	}
 
 	public static boolean validShareContents(String sharePrefix) {
+		String base64 = Utils.getClipboard();
+		if (base64 == null) return false;
+
+		if (base64.length() <= sharePrefix.length()) return false;
+
+		base64 = base64.trim();
+
 		try {
-			String base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-
-			if (base64.length() <= sharePrefix.length()) return false;
-
-			base64 = base64.trim();
-
-			try {
-				return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
-			} catch (IllegalArgumentException e) {
-				return false;
-			}
-		} catch (HeadlessException | IOException | UnsupportedFlavorException | IllegalStateException e) {
+			return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
+		} catch (IllegalArgumentException e) {
 			return false;
 		}
 	}
@@ -327,17 +320,13 @@ public class ItemCustomizationUtils {
 	public static void shareContents(String sharePrefix, String jsonObject) {
 		String base64String = Base64.getEncoder().encodeToString((sharePrefix +
 			jsonObject).getBytes(StandardCharsets.UTF_8));
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
+		Utils.copyToClipboard(base64String);
 	}
 
 	public static String getShareFromClipboard(String sharePrefix) {
-		String base64;
 
-		try {
-			base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-		} catch (HeadlessException | IOException | UnsupportedFlavorException e) {
-			return null;
-		}
+		String base64 = Utils.getClipboard();
+		if (base64 == null) return null;
 
 		if (base64.length() <= sharePrefix.length()) return null;
 
