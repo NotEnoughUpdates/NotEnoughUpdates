@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.GuiItemCustomize;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.util.Calculator;
@@ -1249,6 +1250,13 @@ public class NEUOverlay extends Gui {
 								.replace("[Lvl {LVL}]", "")
 								.trim());
 							NotEnoughUpdates.INSTANCE.trySendCommand("/recipe " + displayName);
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.neuCustomizeKeybind && itemstack.get() != null) {
+							String uuid = NEUManager.getUUIDFromNBT(itemstack.get().getTagCompound());
+							if (uuid != null) {
+								NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(itemstack.get(), uuid);
+							} else {
+								Utils.addChatMessage("§cThis item does not have an UUID, so it cannot be customized.");
+							}
 						}
 					}
 				}

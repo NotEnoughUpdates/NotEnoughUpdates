@@ -19,8 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
