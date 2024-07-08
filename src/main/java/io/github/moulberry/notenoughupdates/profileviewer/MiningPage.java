@@ -101,8 +101,10 @@ public class MiningPage extends GuiProfileViewerPage {
 
 		float mithrilPowder = core.powder_mithril;
 		float gemstonePowder = core.powder_gemstone;
+		float glacitePowder = core.powder_glacite;
 		float mithrilPowderTotal = core.powder_spent_mithril;
 		float gemstonePowderTotal = core.powder_spent_gemstone;
+		float glacitePowderTotal = core.powder_spent_glacite;
 
 		double nucleusRunsCompleted = Stream.of("amber", "amethyst", "jade", "sapphire", "topaz")
 																				.mapToDouble(crystal -> Utils.getElementAsFloat(Utils.getElement(
@@ -132,30 +134,79 @@ public class MiningPage extends GuiProfileViewerPage {
 
 		// Powder
 		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_GREEN + "Mithril Powder",
-			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(mithrilPowder),
-			guiLeft + xStart,
+			EnumChatFormatting.DARK_GREEN + "Mithril",
+			"",
+			guiLeft + xStart + 45,
 			guiTop + yStartTop + 24,
 			115
 		);
 		Utils.renderAlignedString(
-			EnumChatFormatting.LIGHT_PURPLE + "Gemstone Powder",
-			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(gemstonePowder),
+			EnumChatFormatting.LIGHT_PURPLE + "Gemstone",
+			"",
+			guiLeft + xStart + 85,
+			guiTop + yStartTop + 24,
+			115
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.AQUA + "Glacite",
+			"",
+			guiLeft + xStart + 145,
+			guiTop + yStartTop + 24,
+			115
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.WHITE + "Powder:",
+			"",
 			guiLeft + xStart,
 			guiTop + yStartTop + 44,
 			115
 		);
 		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_GREEN + "Total Mithril Powder",
-			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(mithrilPowderTotal + mithrilPowder),
-			guiLeft + xStart,
-			guiTop + yStartTop + 34,
+			EnumChatFormatting.DARK_GREEN + StringUtils.shortNumberFormat(mithrilPowder),
+			"",
+			guiLeft + xStart + 50,
+			guiTop + yStartTop + 44,
 			115
 		);
 		Utils.renderAlignedString(
-			EnumChatFormatting.LIGHT_PURPLE + "Total Gemstone Powder",
-			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(gemstonePowderTotal + gemstonePowder),
+			EnumChatFormatting.LIGHT_PURPLE + StringUtils.shortNumberFormat(gemstonePowder),
+			"",
+			guiLeft + xStart + 100,
+			guiTop + yStartTop + 44,
+			115
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.AQUA + StringUtils.shortNumberFormat(glacitePowder),
+			"",
+			guiLeft + xStart + 150,
+			guiTop + yStartTop + 44,
+			115
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.WHITE + "Total:",
+			"",
 			guiLeft + xStart,
+			guiTop + yStartTop + 54,
+			115
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.DARK_GREEN + StringUtils.shortNumberFormat(mithrilPowder + mithrilPowderTotal),
+			"",
+			guiLeft + xStart + 50,
+			guiTop + yStartTop + 54,
+			115
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.LIGHT_PURPLE + StringUtils.shortNumberFormat(gemstonePowder + gemstonePowderTotal),
+			"",
+			guiLeft + xStart + 100,
+			guiTop + yStartTop + 54,
+			115
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.AQUA + StringUtils.shortNumberFormat(glacitePowder + glacitePowderTotal),
+			"",
+			guiLeft + xStart + 150,
 			guiTop + yStartTop + 54,
 			115
 		);

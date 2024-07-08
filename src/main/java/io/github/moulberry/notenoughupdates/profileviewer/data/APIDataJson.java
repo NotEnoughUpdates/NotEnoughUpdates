@@ -136,8 +136,10 @@ public class APIDataJson {
 	public static class MiningCore {
 		public float powder_mithril = 0;
 		public float powder_gemstone = 0;
+		public float powder_glacite = 0;
 		public float powder_spent_mithril = 0;
 		public float powder_spent_gemstone = 0;
+		public float powder_spent_glacite = 0;
 
 		public Map<String, JsonElement> nodes = new HashMap<>();
 	}
