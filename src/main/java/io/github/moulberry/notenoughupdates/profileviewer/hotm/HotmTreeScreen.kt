@@ -70,7 +70,7 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
                 val hotmLayout = gson.fromJson(hotmLayoutFile.readText(), HotmTreeLayoutFile::class.java)
                 HotmTreeRenderer(hotmLayout.hotm, hotmLayout.prelude)
             }.onFailure {
-                Utils.showOutdatedRepoNotification("constants/hotmlayout.json")
+                Utils.showOutdatedRepoNotification("constants/hotmlayout.json", it)
             }.getOrNull()
         }
 

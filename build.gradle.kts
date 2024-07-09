@@ -22,6 +22,7 @@ import neubs.*
 import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.net.URL
+import com.xpdustry.ksr.kotlinRelocate
 
 plugins {
 	idea
@@ -35,6 +36,7 @@ plugins {
 	id("io.gitlab.arturbosch.detekt") version "1.23.0"
 	id("com.google.devtools.ksp") version "1.8.21-1.0.11"
 	id("net.kyori.blossom") version "2.1.0"
+	id("com.xpdustry.ksr") version "1.0.0"
 }
 
 
@@ -282,7 +284,7 @@ tasks.shadowJar {
 	from(mixinDependencyCollectionJar)
 	dependsOn(kotlinDependencyCollectionJar)
 	dependsOn(mixinDependencyCollectionJar)
-	fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
+	fun relocate(name: String) = kotlinRelocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
 	relocate("com.mojang.brigadier")
 	relocate("io.github.moulberry.moulconfig")
 	relocate("moe.nea.libautoupdate")

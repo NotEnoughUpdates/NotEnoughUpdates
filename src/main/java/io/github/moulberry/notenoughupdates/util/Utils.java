@@ -120,7 +120,8 @@ public class Utils {
 		EnumChatFormatting.DARK_PURPLE
 	};
 	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
-	final static Pattern GUILD_OR_PARTY_MESSAGE_PATTERN = Pattern.compile("(?:Party|Guild|Officer) > (?:\\[.*\\] )?([a-zA-Z0-9_]+):? (?:\\[.*\\]: )?");
+	final static Pattern GUILD_OR_PARTY_MESSAGE_PATTERN = Pattern.compile(
+		"(?:Party|Guild|Officer) > (?:\\[.*\\] )?([a-zA-Z0-9_]+):? (?:\\[.*\\]: )?");
 	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
 	public static boolean hasEffectOverride = false;
@@ -2271,7 +2272,9 @@ public class Utils {
 
 	private static long lastError = -1;
 
-	public static void showOutdatedRepoNotification(String missingFile) {
+	public static void showOutdatedRepoNotification(String missingFile) { showOutdatedRepoNotification(missingFile, null); }
+
+	public static void showOutdatedRepoNotification(String missingFile, Throwable exception) {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
@@ -2291,7 +2294,7 @@ public class Utils {
 			);
 		}
 		if (System.currentTimeMillis() - lastError > 1000) {
-			System.err.println("[NEU] Repo issue: " + missingFile);
+			NotEnoughUpdates.LOGGER.error("Repo issue: " + missingFile, exception);
 			lastError = System.currentTimeMillis();
 		}
 	}
