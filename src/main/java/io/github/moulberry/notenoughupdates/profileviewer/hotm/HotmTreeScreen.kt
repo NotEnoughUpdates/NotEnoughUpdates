@@ -37,6 +37,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>) {
@@ -125,8 +126,8 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
                 )
             }
             if (renderTooltip &&
-                relX in (perk.x * gridSize..perk.x * gridSize + gridSize) &&
-                relY in (perk.y * gridSize..perk.y * gridSize + gridSize)) {
+                relX in (perk.x * gridSize + gridSpacing / 2 .. perk.x * gridSize + gridSize - gridSpacing / 2) &&
+                relY in (perk.y * gridSize + gridSpacing / 2 .. perk.y * gridSize + gridSize - gridSpacing / 2)) {
                 GlScissorStack.disableTemporary()
                 Utils.drawHoveringText(
                     tooltip,
@@ -210,7 +211,7 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
             it.replace("\\{([a-z\\-A-Z_0-9]+)\\}".toRegex()) {
                 (when (val value = values[it.groupValues[1]]) {
                     is LispData.LispString -> value.string
-                    is LispData.LispNumber -> StringUtils.formatNumber(if (it.groupValues[1] == "cost") value.value.roundToInt() else value.value)
+                    is LispData.LispNumber -> StringUtils.formatNumber(if (it.groupValues[1] == "cost") floor(value.value).toInt() else value.value)
                     else -> "<lisp-error>"
                 })
             }

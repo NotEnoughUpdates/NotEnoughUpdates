@@ -38,12 +38,12 @@ class ExtraLispMethods {
         return LispData.LispNumber(round(value))
     }
 
-    @LispBinding("floor")
+    @LispBinding("ceil")
     fun ceilFunc(value: Double): LispData.LispNumber {
         return LispData.LispNumber(ceil(value))
     }
 
-    @LispBinding("ceil")
+    @LispBinding("floor")
     fun floorFunc(value: Double): LispData.LispNumber {
         return LispData.LispNumber(floor(value))
     }

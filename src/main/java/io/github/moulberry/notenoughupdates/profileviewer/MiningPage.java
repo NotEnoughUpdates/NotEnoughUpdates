@@ -45,6 +45,7 @@ import org.lwjgl.opengl.GL11;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -54,15 +55,21 @@ public class MiningPage extends GuiProfileViewerPage {
 	private static final ResourceLocation miningPageTexture = new ResourceLocation(
 		"notenoughupdates:profile_viewer/mining/background.png");
 	private static final ItemStack hotmSkillIcon = new ItemStack(Items.iron_pickaxe);
-	private static final Map<String, EnumChatFormatting> crystalToColor = new HashMap<String, EnumChatFormatting>() {{
-		put("jade", EnumChatFormatting.GREEN);
-		put("amethyst", EnumChatFormatting.DARK_PURPLE);
-		put("amber", EnumChatFormatting.GOLD);
-		put("sapphire", EnumChatFormatting.AQUA);
-		put("topaz", EnumChatFormatting.YELLOW);
-		put("jasper", EnumChatFormatting.LIGHT_PURPLE);
-		put("ruby", EnumChatFormatting.RED);
-	}};
+	private static final Map<String, EnumChatFormatting> crystalToColor =
+		new LinkedHashMap<String, EnumChatFormatting>() {{
+			put("jade", EnumChatFormatting.GREEN);
+			put("amethyst", EnumChatFormatting.DARK_PURPLE);
+			put("amber", EnumChatFormatting.GOLD);
+			put("sapphire", EnumChatFormatting.AQUA);
+			put("topaz", EnumChatFormatting.YELLOW);
+			put("jasper", EnumChatFormatting.LIGHT_PURPLE);
+			put("ruby", EnumChatFormatting.RED);
+			put("opal", EnumChatFormatting.WHITE);
+			put("aquamarine", EnumChatFormatting.BLUE);
+			put("peridot", EnumChatFormatting.DARK_GREEN);
+			put("onyx", EnumChatFormatting.DARK_GRAY);
+			put("citrine", EnumChatFormatting.DARK_RED);
+		}};
 
 	public MiningPage(GuiProfileViewer instance) {
 		super(instance);
@@ -210,32 +217,54 @@ public class MiningPage extends GuiProfileViewerPage {
 			guiTop + yStartTop + 54,
 			115
 		);
+		{
+			// Crystals
+			int padding = 4;
+			int rectStartX = 16;
+			rectStartX += padding;
+			int rectStartY = 97;
+			rectStartY += padding;
+			int rectXSize = 214;
+			rectXSize -= padding * 2;
+			int rectYSize = 89;
+			int originalRectYSize = rectYSize;
+			rectYSize -= padding * 2;
+			int rowHeight = 10;
+			int totalColumns = 2;
+			rectYSize = rowHeight * (int) Math.ceil((((double) crystalToColor.size()) / totalColumns));
+			int totalRows = rectYSize / rowHeight;
 
-		// Crystals
-		int idx = 0;
-		for (Map.Entry<String, EnumChatFormatting> crystal : crystalToColor.entrySet()) {
-			String crystalState = Utils.getElementAsString(Utils.getElement(
-				miningCore,
-				"crystals." + crystal.getKey() + "_crystal.state"
-			), "NOT_FOUND");
-			String crystalStr = crystalState.equals("FOUND") ? "§a✔" : "§c✖";
+			int idx = 0;
+			for (Map.Entry<String, EnumChatFormatting> crystal : crystalToColor.entrySet()) {
+
+				int currentRow = idx % totalRows;
+				int currentCol = idx / totalRows;
+				int columnWidth = rectXSize / totalColumns - padding / totalColumns;
+				int columnOffset = columnWidth + padding;
+
+				String crystalState = Utils.getElementAsString(Utils.getElement(
+					miningCore,
+					"crystals." + crystal.getKey() + "_crystal.state"
+				), "NOT_FOUND");
+				String crystalStr = crystalState.equals("FOUND") ? "§a✔" : "§c✖";
+				Utils.renderAlignedString(
+					crystal.getValue() + WordUtils.capitalizeFully(crystal.getKey()) + ":",
+					EnumChatFormatting.WHITE + crystalStr,
+					guiLeft + rectStartX + currentCol * columnOffset,
+					guiTop + rectStartY + currentRow * rowHeight,
+					columnWidth
+				);
+				idx++;
+			}
+
 			Utils.renderAlignedString(
-				crystal.getValue() + WordUtils.capitalizeFully(crystal.getKey()) + " Crystal:",
-				EnumChatFormatting.WHITE + crystalStr,
-				guiLeft + xStart,
-				guiTop + yStartTop + 74 + idx * 10,
-				110
+				EnumChatFormatting.BLUE + "Nucleus Runs Completed:",
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(nucleusRunsCompleted),
+				guiLeft + rectStartX,
+				guiTop + rectStartY + originalRectYSize - padding - 1.5F * Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT,
+				rectXSize
 			);
-			idx++; // Move text down 10 px every crystal
 		}
-
-		Utils.renderAlignedString(
-			EnumChatFormatting.BLUE + "Nucleus Runs Completed:",
-			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(nucleusRunsCompleted),
-			guiLeft + xStart,
-			guiTop + yStartTop + 149,
-			110
-		);
 
 		renderHotmTree(
 			guiLeft + 249,
@@ -271,7 +300,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		}
 		if (renderer != null) {
 			var maxScroll = renderer.getYSize() * 24 - (bottom - top) - 24 / 2;
-			scroll = Math.min(maxScroll, Math.max(0, scroll));
+			scroll = Math.min(maxScroll + 4, Math.max(0, scroll));
 			renderer.renderPerks(
 				levels,
 				left + (right - left) / 2 - renderer.getXSize() * 24 / 2 + 4 / 2,
