@@ -23,8 +23,8 @@ import com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg
 import com.mojang.brigadier.builder.ArgumentBuilder
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
-import io.github.moulberry.notenoughupdates.core.util.MiscUtils
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
+import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
@@ -39,7 +39,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
 
 
 @NEUAutoSubscribe
@@ -71,7 +70,7 @@ class PackDevCommand {
                     reply("No $name found within $dist blocks")
                     return@thenArgumentExecute
                 }
-                MiscUtils.copyToClipboard(StringBuilder().also { it.appendEntityData(entity) }.toString().trim())
+                Utils.copyToClipboard(StringBuilder().also { it.appendEntityData(entity) }.toString().trim())
                 reply("Copied data to clipboard")
             }.withHelp("Find the nearest $name and copy data about them to your clipboard")
         }
@@ -85,7 +84,7 @@ class PackDevCommand {
                     entity.forEach {
                         sb.appendEntityData(it)
                     }
-                    MiscUtils.copyToClipboard(sb.toString().trim())
+                    Utils.copyToClipboard(sb.toString().trim())
 
                     reply("Copied data to clipboard")
                 }
@@ -174,7 +173,7 @@ class PackDevCommand {
                         }
                     }.toString().trim()
 
-                    MiscUtils.copyToClipboard(s)
+                    Utils.copyToClipboard(s)
                     reply("Copied data to clipboard")
                     return@thenLiteralExecute
                 }

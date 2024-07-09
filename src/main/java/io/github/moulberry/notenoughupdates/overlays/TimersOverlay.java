@@ -510,7 +510,7 @@ public class TimersOverlay extends TextTabOverlay {
 				}
 				if (godpotRemainingTimeType != null) {
 					godPotDuration +=
-						CookieWarning.getCookieTimeRemainingInMilliseconds(godpotRemainingTimeType, godpotRemainingTime);
+						CookieWarning.getEffectRemainingInMilliseconds(godpotRemainingTimeType, godpotRemainingTime);
 					hidden.godPotionDuration = godPotDuration;
 				}
 			}

@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.GuiItemCustomize;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.util.Calculator;
@@ -87,7 +88,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -1079,9 +1079,7 @@ public class NEUOverlay extends Gui {
 					BigDecimal calculate = Calculator.calculate(textField.getText(), PROVIDE_LOWEST_BIN);
 					textField.setText(calculate.toPlainString());
 					if (NotEnoughUpdates.INSTANCE.config.toolbar.copyToClipboardWhenGettingResult) {
-						Toolkit.getDefaultToolkit().getSystemClipboard()
-									 .setContents(new StringSelection(calculate.toPlainString()), null);
-
+						Utils.copyToClipboard(calculate.toPlainString());
 					}
 				} catch (Calculator.CalculatorException | IllegalStateException | HeadlessException ignored) {
 				}
@@ -1252,6 +1250,13 @@ public class NEUOverlay extends Gui {
 								.replace("[Lvl {LVL}]", "")
 								.trim());
 							NotEnoughUpdates.INSTANCE.trySendCommand("/recipe " + displayName);
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.neuCustomizeKeybind && itemstack.get() != null) {
+							String uuid = NEUManager.getUUIDFromNBT(itemstack.get().getTagCompound());
+							if (uuid != null) {
+								NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(itemstack.get(), uuid);
+							} else {
+								Utils.addChatMessage("§cThis item does not have an UUID, so it cannot be customized.");
+							}
 						}
 					}
 				}

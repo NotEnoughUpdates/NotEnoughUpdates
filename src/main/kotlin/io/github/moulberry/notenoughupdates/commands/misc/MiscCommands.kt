@@ -27,8 +27,8 @@ import io.github.moulberry.notenoughupdates.cosmetics.GuiCosmetics
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay
 import io.github.moulberry.notenoughupdates.miscgui.DynamicLightItemsEditor
-import io.github.moulberry.notenoughupdates.miscgui.GuiItemCustomize
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.GuiItemCustomize
 import io.github.moulberry.notenoughupdates.util.Calculator
 import io.github.moulberry.notenoughupdates.util.Calculator.CalculatorException
 import io.github.moulberry.notenoughupdates.util.MinecraftExecutor
@@ -103,7 +103,11 @@ class MiscCommands {
                     return@thenExecute
                 }
 
-                NotEnoughUpdates.INSTANCE.openGui = GuiItemCustomize(held, heldUUID)
+                NotEnoughUpdates.INSTANCE.openGui =
+                    GuiItemCustomize(
+                        held,
+                        heldUUID
+                    )
             }
         }.withHelp("Customize your items")
         event.command("neupronouns", "neuliberals") {

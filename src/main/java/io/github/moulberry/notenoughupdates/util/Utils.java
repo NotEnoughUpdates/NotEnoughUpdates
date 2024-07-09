@@ -75,6 +75,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -2435,5 +2440,40 @@ public class Utils {
 			.withKnownInternalName(pet.petType + ";" + rarityToBeBoostedTo.petId)
 			.resolveToItemStack(false);
 		return itemStack != null;
+	}
+
+	public static void copyToClipboard(String str) {
+		Toolkit.getDefaultToolkit().getSystemClipboard()
+					 .setContents(new StringSelection(str), null);
+	}
+
+	public static void copyToClipboard(StringSelection stringSelection, ClipboardOwner owner) {
+		Toolkit.getDefaultToolkit().getSystemClipboard()
+					 .setContents(stringSelection, owner);
+	}
+
+	private static String clipboardCache = "";
+	private static long lastClipboard = -1;
+
+	public static String getClipboard() {
+		if (System.currentTimeMillis() - lastClipboard < 500) {
+			return clipboardCache;
+		}
+		lastClipboard = System.currentTimeMillis();
+		try {
+			Transferable clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+
+			if (clipboard != null && clipboard.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				String clipboardText = (String) clipboard.getTransferData(DataFlavor.stringFlavor);
+				clipboardCache = clipboardText;
+				return clipboardText;
+			} else {
+				clipboardCache = null;
+				return null;
+			}
+		} catch (UnsupportedFlavorException | IOException | HeadlessException | IllegalStateException ignored) {
+			clipboardCache = null;
+			return null;
+		}
 	}
 }

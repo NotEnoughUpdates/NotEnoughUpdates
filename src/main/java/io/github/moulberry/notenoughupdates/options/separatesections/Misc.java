@@ -379,4 +379,12 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean hideRegenBounce = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Keybind to open /neurename",
+		desc = "Opens /neurename on the item you are hovering over"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_NONE)
+	public int neuCustomizeKeybind = Keyboard.KEY_NONE;
 }

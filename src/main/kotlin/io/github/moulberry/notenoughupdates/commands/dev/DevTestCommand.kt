@@ -23,7 +23,6 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.github.moulberry.notenoughupdates.BuildFlags
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
-import io.github.moulberry.notenoughupdates.core.util.MiscUtils
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes
@@ -253,7 +252,7 @@ class DevTestCommand {
             }
             thenLiteralExecute("copytablist") {
                 val tabList = TabListUtils.getTabList().joinToString("\n", postfix = "\n")
-                MiscUtils.copyToClipboard(tabList)
+                Utils.copyToClipboard(tabList)
                 reply("Copied tablist to clipboard!")
             }.withHelp("Copy the tab list")
             thenLiteral("useragent") {
