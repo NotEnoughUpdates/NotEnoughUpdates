@@ -28,10 +28,12 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
 
 import java.io.BufferedReader;
@@ -163,8 +165,13 @@ public class DwarvenMinesTextures implements IslandZoneSubdivider {
 		}
 	}
 
+	// Tunnels coords
+	// 130 -50 185
+	// -130 180 480
 	@Override
 	public SpecialBlockZone getSpecialZoneForBlock(String location, BlockPos pos) {
+		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(130, -50, 185, -130, 180, 480);
+		if (axisAlignedBB.isVecInside(new Vec3(pos))) return SpecialBlockZone.GLACITE_TUNNELS;
 		if (error) return null;
 		IBlockState block = getBlock(pos);
 		boolean isTitanium = isTitanium(block);
