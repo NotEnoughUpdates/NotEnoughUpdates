@@ -166,7 +166,10 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	public void onMessage(String message) {
 		if (message.equals("You uncovered a treasure chest!")) {
 			this.chestCount++;
-		} else if (message.equals("  LOOT CHEST COLLECTED ") || message.equals("  CHEST LOCKPICKED ")) {
+		} else if (message.equals("  LOOT CHEST COLLECTED ")) {
+			this.chestCount++;
+			this.openedChestCount++;
+		} else if (message.equals("  CHEST LOCKPICKED ")) {
 			this.openedChestCount++;
 		} else {
 			Matcher matcher = POWDER_PATTERN.matcher(message);
