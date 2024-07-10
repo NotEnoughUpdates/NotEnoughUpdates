@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 public class PowderGrindingOverlay extends TextTabOverlay {
 
 	private final static Pattern POWDER_PATTERN =
-		Pattern.compile("You received \\+([0-9]+(?:,\\d+)*) (Mithril|Gemstone) Powder\\.");
+		Pattern.compile(" {4}(Mithril|Gemstone) Powder x([0-9]+(?:,\\d+)*)");
 	private final static Pattern EVENT_PATTERN = Pattern.compile("PASSIVE EVENT (.+) RUNNING FOR \\d{2}:\\d{2}");
 
 	public int chestCount = 0;
@@ -166,15 +166,15 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	public void onMessage(String message) {
 		if (message.equals("You uncovered a treasure chest!")) {
 			this.chestCount++;
-		} else if (message.equals("You have successfully picked the lock on this chest!")) {
+		} else if (message.equals("  LOOT CHEST COLLECTED ") || message.equals("  CHEST LOCKPICKED ")) {
 			this.openedChestCount++;
 		} else {
 			Matcher matcher = POWDER_PATTERN.matcher(message);
 			if (matcher.matches()) {
-				String rawNumber = matcher.group(1).replace(",", "");
+				String rawNumber = matcher.group(2).replace(",", "");
 				try {
 					int amount = Integer.parseInt(rawNumber);
-					String type = matcher.group(2);
+					String type = matcher.group(1);
 					if (type.equals("Mithril")) {
 						this.mithrilPowderFound += miningEvent == MiningEvent.DOUBLE_POWDER ? amount * 2 : amount;
 					} else if (type.equals("Gemstone")) {
