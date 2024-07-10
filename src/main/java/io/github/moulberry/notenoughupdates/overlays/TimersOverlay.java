@@ -86,7 +86,7 @@ public class TimersOverlay extends TextTabOverlay {
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
 	private static final Pattern DAILY_SHOP_LIMIT = Pattern.compile(
 		"\u00a7r\u00a7cYou may only buy up to 6,?400? of this item each day!\u00a7r");
-	private static final Pattern GOD_POTION_TIME = Pattern.compile(" God Potion: ([1-5][0-9]|[0-9])([dhms])");
+	private static final Pattern GOD_POTION_TIME = Pattern.compile(" God Potion: ([1-5][0-9]|[0-9])([dhms]) ([1-5][0-9]|[0-9])([dhms])");
 
 	@SubscribeEvent
 	public void onClickItem(SlotClickEvent event) {
@@ -494,6 +494,8 @@ public class TimersOverlay extends TextTabOverlay {
 							}
 							godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
 							godpotRemainingTimeType = activeEffectsMatcher.group(i + 1);
+							godPotDuration +=
+								CookieWarning.getEffectRemainingInMilliseconds(godpotRemainingTimeType, godpotRemainingTime);
 						}
 					} catch (Exception e) {
 						if (!hasErrorMessage) {
@@ -505,12 +507,26 @@ public class TimersOverlay extends TextTabOverlay {
 					}
 				} else if (godPotionMatcher.matches()) {
 					foundGodPotText = true;
-					godpotRemainingTime = Integer.parseInt(godPotionMatcher.group(1));
-					godpotRemainingTimeType = godPotionMatcher.group(2);
+					try {
+						for (int i = 1; i < godPotionMatcher.groupCount(); i += 2) {
+							if (godPotionMatcher.group(i) == null) {
+								continue;
+							}
+							godpotRemainingTime = Integer.parseInt(godPotionMatcher.group(i));
+							godpotRemainingTimeType = godPotionMatcher.group(i + 1);
+							godPotDuration +=
+								CookieWarning.getEffectRemainingInMilliseconds(godpotRemainingTimeType, godpotRemainingTime);
+						}
+					} catch (Exception e) {
+						if (!hasErrorMessage) {
+							Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your god pot timer");
+							e.printStackTrace();
+							hasErrorMessage = true;
+						}
+						break;
+					}
 				}
 				if (godpotRemainingTimeType != null) {
-					godPotDuration +=
-						CookieWarning.getEffectRemainingInMilliseconds(godpotRemainingTimeType, godpotRemainingTime);
 					hidden.godPotionDuration = godPotDuration;
 				}
 			}
