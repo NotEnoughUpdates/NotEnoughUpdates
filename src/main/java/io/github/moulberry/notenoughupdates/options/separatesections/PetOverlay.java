@@ -20,11 +20,11 @@
 package io.github.moulberry.notenoughupdates.options.separatesections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.config.Position;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,10 +65,18 @@ public class PetOverlay {
 	@Expose
 	@ConfigOption(
 		name = "Pet Overlay Icon",
-		desc = "Show the icon of the pet you have equiped in the overlay"
+		desc = "Show the icon of the pet you have equipped in the overlay"
 	)
 	@ConfigEditorBoolean
 	public boolean petOverlayIcon = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Pet Item Icon",
+		desc = "Show the icon of the pet item you have equipped in the overlay"
+	)
+	@ConfigEditorBoolean
+	public boolean petItemIcon = false;
 
 	@Expose
 	@ConfigOption(
