@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
 public class ItemResolutionQuery {
 
 	private static final Pattern ENCHANTED_BOOK_NAME_PATTERN = Pattern.compile("^((?:§.)*)([^§]+) ([IVXL]+)$");
+	private static final Pattern PET_PATTERN = Pattern.compile(".*(\\[Lvl .*\\] )§(.).*");
 	private static final String EXTRA_ATTRIBUTES = "ExtraAttributes";
 	private static final List<String> PET_RARITIES = Arrays.asList(
 		"COMMON",
@@ -222,13 +223,35 @@ public class ItemResolutionQuery {
 		String displayName,
 		boolean mayBeMangled
 	) {
+		boolean isPet = displayName.contains("[Lvl ");
+		String petRarity = null;
+		if (isPet) {
+			Matcher matcher = PET_PATTERN.matcher(displayName);
+			if (matcher.matches()) {
+				displayName = displayName.replace(matcher.group(1), "");
+				petRarity = matcher.group(2);
+			}
+		}
 		var cleanDisplayName = StringUtils.cleanColour(displayName);
 		var manager = NotEnoughUpdates.INSTANCE.manager;
 		String bestMatch = null;
 		int bestMatchLength = -1;
 		for (String internalName : candidateInternalNames) {
-			var cleanItemDisplayName = StringUtils.cleanColour(manager.getDisplayName(internalName));
+
+			String unCleanItemDisplayName = manager.getDisplayName(internalName);
+			var cleanItemDisplayName = StringUtils.cleanColour(unCleanItemDisplayName);
 			if (cleanItemDisplayName.length() == 0) continue;
+			if (isPet) {
+				if (!cleanItemDisplayName.contains("[Lvl {LVL}] ")) continue;
+				cleanItemDisplayName = cleanItemDisplayName.replace("[Lvl {LVL}] ", "");
+				Matcher matcher = PET_PATTERN.matcher(unCleanItemDisplayName);
+				if (matcher.matches()) {
+					if (!matcher.group(2).equals(petRarity)) {
+						continue;
+					}
+				}
+			}
+
 			if (mayBeMangled
 				? !cleanDisplayName.contains(cleanItemDisplayName)
 				: !cleanItemDisplayName.equals(cleanDisplayName)) {
@@ -252,13 +275,18 @@ public class ItemResolutionQuery {
 	 * @return a list of internal neu item ids some of which may have a matching display name
 	 */
 	public static Set<String> findInternalNameCandidatesForDisplayName(String displayName) {
+		boolean isPet = displayName.contains("[Lvl ");
 		var cleanDisplayName = NEUManager.cleanForTitleMapSearch(displayName);
 		var titleWordMap = NotEnoughUpdates.INSTANCE.manager.titleWordMap;
 		var candidates = new HashSet<String>();
 		for (var partialDisplayName : cleanDisplayName.split(" ")) {
 			if ("".equals(partialDisplayName)) continue;
 			if (!titleWordMap.containsKey(partialDisplayName)) continue;
-			candidates.addAll(titleWordMap.get(partialDisplayName).keySet());
+			Set<String> c = titleWordMap.get(partialDisplayName).keySet();
+			for (String s : c) {
+				if (isPet && !s.contains(";")) continue;
+				candidates.add(s);
+			}
 		}
 		return candidates;
 	}
