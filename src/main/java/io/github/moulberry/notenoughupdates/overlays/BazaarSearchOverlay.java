@@ -123,7 +123,7 @@ public class BazaarSearchOverlay {
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
 		GlStateManager.color(1, 1, 1, 1);
-		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, h, 0, 203 / 512f, 0, h / 256f, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, 145, 0, 203 / 512f, 0, 145 / 256f, GL11.GL_NEAREST);
 
 		Minecraft.getMinecraft().fontRendererObj.drawString("Enter Query:", width / 2 - 100, topY - 10, 0xdddddd, true);
 
@@ -209,9 +209,13 @@ public class BazaarSearchOverlay {
 				0xdddddd,
 				true
 			);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+			Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160, 203, 4, 0, 203 / 512f, 160 / 256f, 163 / 256f, GL11.GL_NEAREST);
 
 			for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bzSearchHistorySize; i++) {
-				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousBazaarSearches.size()) break;
+				Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+				Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160 + 4 + i * 10, 203, 10, 0, 203 / 512f, 164 / 256f, 174 / 256f, GL11.GL_NEAREST);
+				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousBazaarSearches.size()) continue;
 
 				String s = NotEnoughUpdates.INSTANCE.config.hidden.previousBazaarSearches.get(i);
 				Minecraft.getMinecraft().fontRendererObj.drawString(
@@ -222,6 +226,10 @@ public class BazaarSearchOverlay {
 					true
 				);
 			}
+
+			int size = NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bzSearchHistorySize;
+			Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+			Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160 + 4 + size * 10, 203, 4, 0, 203 / 512f, 215 / 256f, 219 / 256f, GL11.GL_NEAREST);
 
 			if (tooltipToDisplay != null) {
 				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);

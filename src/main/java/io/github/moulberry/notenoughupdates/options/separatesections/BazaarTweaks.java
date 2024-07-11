@@ -78,7 +78,7 @@ public class BazaarTweaks {
 		desc = "Changes how many search items get stored"
 	)
 	@ConfigEditorSlider(
-		minValue = 0,
+		minValue = 1,
 		maxValue = 15,
 		minStep = 1
 	)
