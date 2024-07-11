@@ -134,7 +134,7 @@ public class AuctionSearchOverlay {
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
 		GlStateManager.color(1, 1, 1, 1);
-		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, h, 0, 203 / 512f, 0, h / 256f, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, 145, 0, 203 / 512f, 0, 145 / 256f, GL11.GL_NEAREST);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(STAR_BOARD);
 		Utils.drawTexturedRect(width / 2 + 105, topY + 27, 105, 13, GL11.GL_NEAREST);
@@ -258,9 +258,13 @@ public class AuctionSearchOverlay {
 				0xdddddd,
 				true
 			);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+			Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160, 203, 4, 0, 203 / 512f, 160 / 256f, 163 / 256f, GL11.GL_NEAREST);
 
-			for (int i = 0; i < 5; i++) {
-				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.size()) break;
+			for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.ahTweaks.ahSearchHistorySize; i++) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+				Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160 + 4 + i * 10, 203, 10, 0, 203 / 512f, 164 / 256f, 174 / 256f, GL11.GL_NEAREST);
+				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.size()) continue;
 
 				String s = NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.get(i);
 				Minecraft.getMinecraft().fontRendererObj.drawString(
@@ -271,6 +275,11 @@ public class AuctionSearchOverlay {
 					true
 				);
 			}
+
+			int size = NotEnoughUpdates.INSTANCE.config.ahTweaks.ahSearchHistorySize;
+			Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+			Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160 + 4 + size * 10, 203, 4, 0, 203 / 512f, 215 / 256f, 219 / 256f, GL11.GL_NEAREST);
+
 
 			if (tooltipToDisplay != null) {
 				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
@@ -371,7 +380,7 @@ public class AuctionSearchOverlay {
 			previousAuctionSearches.remove(searchString);
 			previousAuctionSearches.remove(searchString);
 			previousAuctionSearches.add(0, searchString);
-			while (previousAuctionSearches.size() > 5) {
+			while (previousAuctionSearches.size() > NotEnoughUpdates.INSTANCE.config.ahTweaks.ahSearchHistorySize) {
 				previousAuctionSearches.remove(previousAuctionSearches.size() - 1);
 			}
 		}
@@ -658,7 +667,7 @@ public class AuctionSearchOverlay {
 				}
 
 				if (NotEnoughUpdates.INSTANCE.config.ahTweaks.showPastSearches) {
-					for (int i = 0; i < 5; i++) {
+					for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.ahTweaks.ahSearchHistorySize; i++) {
 						if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.size()) break;
 
 						String s = NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.get(i);
