@@ -100,7 +100,10 @@ public abstract class TextOverlay {
 				overlayHeight += 3;
 				continue;
 			}
-			s = s.replaceFirst("CUSTOM", "");
+			if (s.startsWith("CUSTOM")) {
+				s = s.substring(s.indexOf(':') + 1);
+			}
+
 			for (String s2 : s.split("\n")) {
 				int sWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(s2);
 				if (sWidth > overlayWidth) {
