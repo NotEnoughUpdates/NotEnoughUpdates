@@ -210,9 +210,8 @@ public class ItemResolutionQuery {
 	 * @return the internal neu item id of that item, or null
 	 */
 	public static String findInternalNameByDisplayName(String displayName, boolean mayBeMangled) {
-		var cleanDisplayName = StringUtils.cleanColour(displayName);
 		return filterInternalNameCandidates(
-			findInternalNameCandidatesForDisplayName(cleanDisplayName),
+			findInternalNameCandidatesForDisplayName(displayName),
 			displayName,
 			mayBeMangled
 		);
