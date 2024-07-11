@@ -24,7 +24,6 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -211,7 +210,7 @@ public class BazaarSearchOverlay {
 				true
 			);
 
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bzSearchHistorySize; i++) {
 				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousBazaarSearches.size()) break;
 
 				String s = NotEnoughUpdates.INSTANCE.config.hidden.previousBazaarSearches.get(i);
@@ -320,7 +319,7 @@ public class BazaarSearchOverlay {
 			previousBazaarSearches.remove(searchString);
 			previousBazaarSearches.remove(searchString);
 			previousBazaarSearches.add(0, searchString);
-			while (previousBazaarSearches.size() > 5) {
+			while (previousBazaarSearches.size() > NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bzSearchHistorySize) {
 				previousBazaarSearches.remove(previousBazaarSearches.size() - 1);
 			}
 		}
@@ -543,7 +542,7 @@ public class BazaarSearchOverlay {
 				}
 
 				if (NotEnoughUpdates.INSTANCE.config.bazaarTweaks.showPastSearches) {
-					for (int i = 0; i < 5; i++) {
+					for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bzSearchHistorySize; i++) {
 						if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousBazaarSearches.size()) break;
 
 						String s = NotEnoughUpdates.INSTANCE.config.hidden.previousBazaarSearches.get(i);

@@ -74,6 +74,19 @@ public class BazaarTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Search History Size",
+		desc = "Changes how many search items get stored"
+	)
+	@ConfigEditorSlider(
+		minValue = 0,
+		maxValue = 15,
+		minStep = 1
+	)
+	@ConfigAccordionId(id = 0)
+	public int bzSearchHistorySize = 5;
+
+	@Expose
+	@ConfigOption(
 		name = "Bazaar Overpay Warning",
 		desc = "Warns you before you would pay more than this amount of coins for an item in the /bz"
 	)
@@ -83,7 +96,7 @@ public class BazaarTweaks {
 	@Expose
 	@ConfigOption(
 		name = "CTRL+F for search",
-		desc = "Open search GUI when pressing CTRL + F in the bazzar"
+		desc = "Open search GUI when pressing CTRL + F in the bazaar"
 	)
 	@ConfigEditorBoolean()
 	public boolean ctrlFSearch = true;
