@@ -34,7 +34,7 @@ import io.github.moulberry.notenoughupdates.mbgui.MBAnchorPoint;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiElement;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
-import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
+import io.github.moulberry.notenoughupdates.miscfeatures.AhBzKeybind;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
@@ -1219,22 +1219,14 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) {
 							NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
 							return true;
-						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind &&
-							CookieWarning.hasActiveBoosterCookie()) {
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
 							String displayName = item.get("displayname").getAsString();
-
-							String cleanName = Utils.cleanColour(displayName).replace("[Lvl {LVL}]", "]").trim();
-
-							if (displayName.endsWith("Enchanted Book")) {
-								String loreName = Utils.cleanColour(item.getAsJsonArray("lore").get(0).getAsString());
-
-								String bookName = loreName.substring(0, loreName.lastIndexOf(' '));
-								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + bookName);
-							} else if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
-								NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + cleanName);
-							} else {
-								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + cleanName);
+							JsonArray lore = item.getAsJsonArray("lore");
+							List<String> loreList = new ArrayList<>();
+							for (int i = 0; i < lore.size(); i++) {
+								loreList.add(lore.get(i).getAsString());
 							}
+							AhBzKeybind.onKeyPressed(displayName, loreList, internalname.get());
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openSkyBlockRecipeKeybind
 							&& !item.has("vanilla")
 							&& StreamExtL.filterIsInstance(
