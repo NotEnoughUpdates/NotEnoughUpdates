@@ -164,6 +164,10 @@ public class NotEnoughUpdates {
 		(new BiomeGenSnow(108, false))
 			.setColor(16777215)
 			.setBiomeName("NeuGlaciteMineshaft");
+	public static final BiomeGenBase glaciteTunnels =
+		(new BiomeGenSnow(109, false))
+			.setColor(16777215)
+			.setBiomeName("NeuGlaciteTunnels");
 	private static final long CHAT_MSG_COOLDOWN = 200;
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =
