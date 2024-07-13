@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.AhBzKeybind;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
@@ -253,6 +254,8 @@ public class GuiItemRecipe extends GuiScreen {
 					manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack));
 				} else if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
 					manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
+				} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
+					AhBzKeybind.onKeyPressed(itemStack);
 				}
 			}
 		}
