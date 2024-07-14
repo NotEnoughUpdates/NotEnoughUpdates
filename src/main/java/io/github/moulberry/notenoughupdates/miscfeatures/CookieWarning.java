@@ -79,8 +79,11 @@ public class CookieWarning {
 	}
 
 	private static long getMillisecondsRemaining(String timeLine) {
+		if ("Less than an hour".equals(timeLine)) {
+			return 10 * 60 * 1000; //Return 10 minutes, they need more cookie!
+		}
 		String clean = timeLine.replaceAll("(§.)", "");
-		clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
+		clean = clean.replaceAll("(\\d)([smhdMy])", "$1 $2");
 		String[] digits = clean.split(" ");
 		long ms = 0;
 		try {
@@ -92,7 +95,7 @@ public class CookieWarning {
 				long val = Integer.parseInt(number);
 				ms += (getEffectRemainingInMilliseconds(unit, val));
 			}
-		} catch (NumberFormatException e) {
+		} catch (Exception e) {
 			if (!hasErrorMessage) {
 				e.printStackTrace();
 				Utils.addChatMessage(EnumChatFormatting.RED +
@@ -165,6 +168,13 @@ public class CookieWarning {
 	}
 
 	public static long getEffectRemainingInMilliseconds(String remainingTimeType, long remainingTime) {
+		switch (remainingTimeType.replace(",", "")) {
+			case "months":
+			case "month":
+			case "mo":
+			case "M":
+				return remainingTime * 24 * 60 * 60 * 1000 * 30;
+		}
 		switch (remainingTimeType.toLowerCase(Locale.ROOT).replace(",", "")) {
 			case "years":
 			case "year":
