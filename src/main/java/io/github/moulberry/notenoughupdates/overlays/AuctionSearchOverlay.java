@@ -22,8 +22,10 @@ package io.github.moulberry.notenoughupdates.overlays;
 import com.google.common.base.Splitter;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -31,9 +33,10 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -49,6 +52,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@NEUAutoSubscribe
 public class AuctionSearchOverlay extends GuiScreen {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay.png");
@@ -329,7 +333,7 @@ public class AuctionSearchOverlay extends GuiScreen {
 			}
 		}
 
-		NotEnoughUpdates.INSTANCE.sendChatMessage("/ahs " + search);
+		if (!search.isEmpty()) NotEnoughUpdates.INSTANCE.sendChatMessage("/ahs " + search);
 		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) searchString = "";
 	}
 
@@ -548,9 +552,9 @@ public class AuctionSearchOverlay extends GuiScreen {
 						searchStringExtra = "";
 						close();
 					} else if (mouseX < width / 2 + 100) {
+						searchString = "";
 						searchStringExtra = "";
 						close();
-						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
 						NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("AH Tweaks");
 					}
 				}
@@ -627,6 +631,16 @@ public class AuctionSearchOverlay extends GuiScreen {
 					}
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onSlotClick(SlotClickEvent event) {
+		if (!Utils.getOpenChestName().startsWith("Auctions")) return;
+		ItemStack stack = event.slot.getStack();
+		if (event.slot.slotNumber == 48 && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
+			event.setCanceled(true);
+			NotEnoughUpdates.INSTANCE.openGui = new AuctionSearchOverlay();
 		}
 	}
 }
