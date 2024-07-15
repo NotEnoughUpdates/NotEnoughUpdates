@@ -21,8 +21,10 @@ package io.github.moulberry.notenoughupdates.miscfeatures.world;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
@@ -30,9 +32,12 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Specia
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockStone;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
@@ -72,11 +77,20 @@ public class Gregreworldernd extends GenericBlockHighlighter {
 
 	@SubscribeEvent
 	public void onTick(InputEvent.KeyInputEvent event) {
-		Minecraft mc = Minecraft.getMinecraft();
 		if (!Keyboard.getEventKeyState()) return;
 		int key = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
-		if (key != Keyboard.KEY_F) return;
+		if (key == Keyboard.KEY_F) keyF();
+		else if (key == Keyboard.KEY_G) keyG();
 
+
+
+			//thingy.add(pair);
+
+
+	}
+
+	public void keyF() {
+		Minecraft mc = Minecraft.getMinecraft();
 		if (mc.objectMouseOver != null
 			&& mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
 			&& mc.objectMouseOver.getBlockPos() != null) {
@@ -91,8 +105,11 @@ public class Gregreworldernd extends GenericBlockHighlighter {
 			ResourceLocation loc = new ResourceLocation("notenoughupdates:dwarven_data/" +
 				pair.chunkXPos + "_" + pair.chunkZPos + ".json");
 			System.out.println(loc);
-			try (Reader reader = new FileReader("C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
-				pair.chunkXPos + "_" + pair.chunkZPos + ".json")) {
+			try (
+				Reader reader = new FileReader(
+					"C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
+						pair.chunkXPos + "_" + pair.chunkZPos + ".json")
+			) {
 				Gson gson = new GsonBuilder().setPrettyPrinting().create();
 				JsonObject json = gson.fromJson(reader, JsonObject.class);
 				String pretty = gson.toJson(json);
@@ -116,8 +133,9 @@ public class Gregreworldernd extends GenericBlockHighlighter {
 				if (!found) {
 					System.out.println("not found");
 					json.add(coord, gson.toJsonTree(pos.getY()));
-					FileWriter file = new FileWriter("C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
-						pair.chunkXPos + "_" + pair.chunkZPos + ".json");
+					FileWriter file = new FileWriter(
+						"C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
+							pair.chunkXPos + "_" + pair.chunkZPos + ".json");
 					file.write(gson.toJson(json));
 					file.close();
 				} else {
@@ -163,22 +181,127 @@ public class Gregreworldernd extends GenericBlockHighlighter {
 							System.out.println(arr);
 						}
 					}*/
-					FileWriter file = new FileWriter("C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
-						pair.chunkXPos + "_" + pair.chunkZPos + ".json");
+					FileWriter file = new FileWriter(
+						"C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
+							pair.chunkXPos + "_" + pair.chunkZPos + ".json");
 					file.write(gson.toJson(json));
 					file.close();
 				}
 				if (clickedBlocks == null) clickedBlocks = new HashSet<>();
 				clickedBlocks.add(pos);
-				Utils.addChatMessage("Saved to file");
-			}
-			catch (Exception e) {
+				Utils.addChatMessage("f: Saved to file");
+			} catch (Exception e) {
 				Utils.addChatMessage("error");
 				System.out.println("error");
 			}
+		}
+	}
 
-			//thingy.add(pair);
+	public void keyG() {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.objectMouseOver != null
+			&& mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+			&& mc.objectMouseOver.getBlockPos() != null) {
+			BlockPos pos = mc.objectMouseOver.getBlockPos();
+			System.out.println(pos);
 
+			ChunkCoordIntPair pair = new ChunkCoordIntPair(
+				MathHelper.floor_float(pos.getX() / 16f),
+				MathHelper.floor_float(pos.getZ() / 16f)
+			);
+
+			ResourceLocation loc = new ResourceLocation("notenoughupdates:dwarven_data/" +
+				pair.chunkXPos + "_" + pair.chunkZPos + ".json");
+			System.out.println(loc);
+			try (
+				Reader reader = new FileReader(
+					"C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
+						pair.chunkXPos + "_" + pair.chunkZPos + ".json")
+			) {
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				JsonObject json = gson.fromJson(reader, JsonObject.class);
+				String pretty = gson.toJson(json);
+				System.out.println("\n" + pretty);
+
+				int modX = pos.getX() % 16;
+				int modZ = pos.getZ() % 16;
+				if (modX < 0) modX += 16;
+				if (modZ < 0) modZ += 16;
+				String coord = modX + ":" + modZ;
+				boolean found = false;
+				JsonElement element = null;
+				for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+					if (entry.getKey().equals(coord)) {
+						System.out.println(entry.getKey());
+						element = entry.getValue();
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					System.out.println("not found");
+					json.add(coord, gson.toJsonTree(pos.getY()));
+					FileWriter file = new FileWriter(
+						"C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
+							pair.chunkXPos + "_" + pair.chunkZPos + ".json");
+					file.write(gson.toJson(json));
+					file.close();
+				} else {
+					System.out.println("found");
+					if (element.isJsonPrimitive()) {
+						JsonPrimitive prim = element.getAsJsonPrimitive();
+						if (prim.isNumber()) {
+							json.remove(coord);
+							JsonArray arr = new JsonArray();
+							int min = Math.min(pos.getY(), prim.getAsInt());
+							int max = Math.max(pos.getY(), prim.getAsInt());
+							arr.add(gson.toJsonTree(min));
+							arr.add(gson.toJsonTree(max));
+							json.add(coord, arr);
+						}
+					} else if (element.isJsonArray()) {
+						json.remove(coord);
+						JsonArray arr = element.getAsJsonArray();
+						if (arr.size() == 1 || arr.size() == 0) {
+							arr.add(gson.toJsonTree(pos.getY()));
+							json.remove(coord);
+							json.add(coord, arr);
+						} else if (arr.size() == 2) {
+							JsonArray arr2 = new JsonArray();
+							int min = arr.get(0).getAsInt();
+							int max = arr.get(1).getAsInt();
+							if (pos.getY() < min) {
+								arr2.add(gson.toJsonTree(pos.getY()));
+								arr2.add(gson.toJsonTree(max));
+							} else if (pos.getY() > max) {
+								arr2.add(gson.toJsonTree(min));
+								arr2.add(gson.toJsonTree(pos.getY()));
+							} else {
+								Utils.addChatMessage("did nothing");
+								arr2.add(gson.toJsonTree(min));
+								arr2.add(gson.toJsonTree(max));
+							}
+							json.remove(coord);
+							json.add(coord, arr2);
+						} else {
+							Utils.addChatMessage("" + EnumChatFormatting.RED + "array error");
+							System.out.println("array error");
+							System.out.println(arr);
+						}
+					}
+					FileWriter file = new FileWriter(
+						"C:\\Users\\nopot\\IdeaProjects\\NotEnoughUpdates\\src\\main\\resources\\assets\\notenoughupdates\\dwarven_data\\" +
+							pair.chunkXPos + "_" + pair.chunkZPos + ".json");
+					file.write(gson.toJson(json));
+					file.close();
+				}
+				if (clickedBlocks == null) clickedBlocks = new HashSet<>();
+				clickedBlocks.add(pos);
+				Utils.addChatMessage("g: Saved to file");
+			} catch (Exception e) {
+				Utils.addChatMessage("error");
+				System.out.println("error");
+			}
 		}
 	}
 
@@ -198,7 +321,9 @@ public class Gregreworldernd extends GenericBlockHighlighter {
 		if (clickedBlocks != null && clickedBlocks.contains(key)) return false;
 		World w = Minecraft.getMinecraft().theWorld;
 		if (w == null) return false;
-		Block b = w.getBlockState(key).getBlock();
+		IBlockState blockState1 = w.getBlockState(key);
+		Block b = blockState1.getBlock();
+		if (b == Blocks.stone && blockState1.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH) return true;
 		return b == Blocks.prismarine || b == Blocks.wool || b == Blocks.stained_hardened_clay || b == Blocks.bedrock;
 		//SpecialBlockZone specialZone = CustomBiomes.INSTANCE.getSpecialZone(key);
 		//System.out.println(specialZone);

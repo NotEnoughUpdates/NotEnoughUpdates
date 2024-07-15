@@ -208,16 +208,6 @@ public class DwarvenMinesTextures implements IslandZoneSubdivider {
 		ChunkCoordIntPair subChunkCoordinates = new ChunkCoordIntPair(modX, modZ);
 
 		IgnoreColumn ignore = chunkData.get(subChunkCoordinates);
-		/*if (pos.getX() == 38 && pos.getZ() == -19) {
-			if (pos.getY() < 205 && pos.getY() > 200) {
-				ignore.always = false;
-				ignore.minY = 204;
-				ignore.maxY = 201;
-			*//*	System.out.println(ignore.always);
-				System.out.println(ignore.maxY);
-				System.out.println(ignore.minY);*//*
-			}
-		}*/
 		if (ignore != null) {
 			if (ignore.always) {
 				return SpecialBlockZone.DWARVEN_MINES_NON_MITHRIL;
