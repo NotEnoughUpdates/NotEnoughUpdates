@@ -36,6 +36,9 @@ class SearchCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("bzs") {
+            thenArgumentExecute("search", StringArgumentType.string()) { search ->
+                NotEnoughUpdates.INSTANCE.sendChatMessage("/bz ${this[search]}")
+            }
             thenExecute {  ->
                 NotEnoughUpdates.INSTANCE.openGui = BazaarSearchOverlay()
             }
