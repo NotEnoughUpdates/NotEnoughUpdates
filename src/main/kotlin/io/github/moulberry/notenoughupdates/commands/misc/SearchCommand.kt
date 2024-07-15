@@ -51,6 +51,10 @@ class SearchCommand {
         event.command("ah") {
             thenArgumentExecute("search", RestArgumentType) { search ->
                 val searchString = this[search]
+                if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.convertSearchCommand) {
+                    NotEnoughUpdates.INSTANCE.sendChatMessage("/ah $searchString")
+                    return@thenArgumentExecute
+                }
                 val split = searchString.split(" ")
                 if (split.size > 1) {
                     NotEnoughUpdates.INSTANCE.sendChatMessage("/ahs $searchString")

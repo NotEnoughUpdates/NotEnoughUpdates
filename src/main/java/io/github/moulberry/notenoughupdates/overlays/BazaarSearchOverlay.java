@@ -651,6 +651,7 @@ public class BazaarSearchOverlay extends GuiScreen {
 
 	@SubscribeEvent
 	public void onSlotClick(SlotClickEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.enableSearchOverlay) return;
 		if (!Utils.getOpenChestName().startsWith("Bazaar ➜")) return;
 		ItemStack stack = event.slot.getStack();
 		if (event.slot.slotNumber == 45 && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
