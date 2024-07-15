@@ -52,7 +52,7 @@ import static io.github.moulberry.notenoughupdates.miscfeatures.customblockzones
 @NEUAutoSubscribe
 public class DwarvenMinesTextures implements IslandZoneSubdivider {
 
-	private static class IgnoreColumn {
+	public static class IgnoreColumn {
 		boolean always;
 		int minY;
 		int maxY;
@@ -76,7 +76,7 @@ public class DwarvenMinesTextures implements IslandZoneSubdivider {
 		return state.getBlock() == Blocks.double_stone_slab;
 	}
 
-	private Reader getUTF8Resource(ResourceLocation location) throws IOException {
+	public static Reader getUTF8Resource(ResourceLocation location) throws IOException {
 		return new BufferedReader(new InputStreamReader(Minecraft
 			.getMinecraft()
 			.getResourceManager()
@@ -112,7 +112,7 @@ public class DwarvenMinesTextures implements IslandZoneSubdivider {
 		return ignoredChunks;
 	}
 
-	private IgnoreColumn parseIgnoreColumn(JsonElement element) {
+	public IgnoreColumn parseIgnoreColumn(JsonElement element) {
 		if (element.isJsonPrimitive()) {
 			JsonPrimitive prim = element.getAsJsonPrimitive();
 			if (prim.isBoolean()) {
@@ -208,6 +208,16 @@ public class DwarvenMinesTextures implements IslandZoneSubdivider {
 		ChunkCoordIntPair subChunkCoordinates = new ChunkCoordIntPair(modX, modZ);
 
 		IgnoreColumn ignore = chunkData.get(subChunkCoordinates);
+		/*if (pos.getX() == 38 && pos.getZ() == -19) {
+			if (pos.getY() < 205 && pos.getY() > 200) {
+				ignore.always = false;
+				ignore.minY = 204;
+				ignore.maxY = 201;
+			*//*	System.out.println(ignore.always);
+				System.out.println(ignore.maxY);
+				System.out.println(ignore.minY);*//*
+			}
+		}*/
 		if (ignore != null) {
 			if (ignore.always) {
 				return SpecialBlockZone.DWARVEN_MINES_NON_MITHRIL;

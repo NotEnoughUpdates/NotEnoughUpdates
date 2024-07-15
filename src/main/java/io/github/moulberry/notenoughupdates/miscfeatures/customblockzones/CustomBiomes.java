@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures.customblockzones;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.OnBlockBreakSoundEffect;
+import io.github.moulberry.notenoughupdates.miscfeatures.world.Gregreworldernd;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockStone;
@@ -76,7 +77,9 @@ public class CustomBiomes {
 		String location = SBInfo.getInstance().getLocation();
 		IslandZoneSubdivider subdivider = subdividers.get(location);
 		if (subdivider == null) return SpecialBlockZone.NON_SPECIAL_ZONE;
-		return subdivider.getSpecialZoneForBlock(location, pos);
+		SpecialBlockZone specialZoneForBlock = subdivider.getSpecialZoneForBlock(location, pos);
+		Gregreworldernd.getInstance().register(pos, specialZoneForBlock);
+		return specialZoneForBlock;
 	}
 
 	@SubscribeEvent

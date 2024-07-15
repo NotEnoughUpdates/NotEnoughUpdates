@@ -19,7 +19,9 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.world;
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.BlockPos;
@@ -49,7 +51,9 @@ public abstract class GenericBlockHighlighter {
 		World w = Minecraft.getMinecraft().theWorld;
 		if (w == null) return;
 		for (BlockPos blockPos : highlightedBlocks) {
-			RenderUtils.renderBoundingBox(blockPos, getColor(blockPos), event.partialTicks, true);
+			boolean mithril = Gregreworldernd.getInstance().mithril_colour.contains(blockPos);
+			int color = (!mithril) ? getColor(blockPos) : SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.crystalHollowChestColor);
+			RenderUtils.renderBoundingBox(blockPos, color, event.partialTicks, true);
 		}
 	}
 
