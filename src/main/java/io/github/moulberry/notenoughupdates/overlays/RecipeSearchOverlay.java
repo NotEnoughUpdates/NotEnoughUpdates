@@ -52,6 +52,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NEUAutoSubscribe
 public class RecipeSearchOverlay extends GuiScreen {
@@ -67,6 +69,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 	private static final Splitter SPACE_SPLITTER = Splitter.on(" ").omitEmptyStrings().trimResults();
 	private static boolean tabCompleted = false;
 	private static int tabCompletionIndex = -1;
+	private static final Pattern ENCHANTED_BOOK_PATTERN = Pattern.compile("(.*)( [IVX]+)");
 
 	private static final int AUTOCOMPLETE_HEIGHT = 118;
 
@@ -465,7 +468,13 @@ public class RecipeSearchOverlay extends GuiScreen {
 								if (searchString.contains("Enchanted Book") && str.contains(";")) {
 									String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 									if (lore != null) {
-										searchString = Utils.cleanColour(lore[0]);
+										String bookName = Utils.cleanColour(lore[0]);
+										Matcher matcher = ENCHANTED_BOOK_PATTERN.matcher(bookName);
+										if (matcher.matches()) {
+											searchString = matcher.group(1);
+										} else {
+											searchString = bookName;
+										}
 									}
 								}
 
