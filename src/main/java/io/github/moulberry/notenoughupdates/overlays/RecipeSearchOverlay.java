@@ -24,15 +24,12 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
-import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
-import io.github.moulberry.notenoughupdates.util.StreamExtL;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0DPacketCloseWindow;
@@ -50,9 +47,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
-public class RecipeSearchOverlay {
+public class RecipeSearchOverlay extends GuiScreen {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay.png");
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation(
@@ -70,27 +66,18 @@ public class RecipeSearchOverlay {
 
 	private static final Set<String> autocompletedItems = new LinkedHashSet<>();
 
-	public static boolean shouldReplace() {
-		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return false;
-		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.enableSearchOverlay) return false;
-
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiEditSign)) {
-			if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.keepPreviousSearch) searchString = "";
-			return false;
-		}
-
-		String lastContainer = Utils.getLastOpenChestName();
-		return lastContainer.equals("Craft Item") || lastContainer.contains("Recipes (");
+	public RecipeSearchOverlay() {
+		super();
 	}
 
-	public static void render() {
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		super.drawDefaultBackground();
+
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
-		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
-		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
-
-		Utils.drawGradientRect(0, 0, width, height, -1072689136, -804253680);
 
 		int h = NotEnoughUpdates.INSTANCE.config.recipeTweaks.showPastSearches ? 219 : 145;
 
