@@ -33,6 +33,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.Locale;
+
 @NEUAutoSubscribe
 public class AntiCoopAdd {
 
@@ -72,7 +74,7 @@ public class AntiCoopAdd {
 	public Boolean onPacketChatMessage(C01PacketChatMessage packet) {
 		if (!NotEnoughUpdates.INSTANCE.config.misc.coopWarning) return false;
 
-		String message = packet.getMessage().toLowerCase();
+		String message = packet.getMessage().toLowerCase(Locale.ROOT);
 		if (message.startsWith("/hypixelcommand:coopadd")) {
 			Utils.addChatMessage("§e[NEU] You just entered a malicious looking Co-op add command! If you truly want to add someone to your coop, type §e/coopadd <name>");
 			return true;

@@ -40,9 +40,11 @@ import io.github.moulberry.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorText;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.observer.Property;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 
@@ -154,14 +156,42 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 			}
 			ConfigEditorDropdown configEditorDropdown = optionField.getAnnotation(ConfigEditorDropdown.class);
 			if (configEditorDropdown != null) {
-				category.options.add(new ConfigDropdown(
-					optionField,
-					categoryInstance,
-					annotationName,
-					annotationDesc,
-					cat, subcategory,
-					2, configEditorDropdown.values()
-				));
+				if (optionField.getType() == Property.class) {
+					try {
+						Property<?> property = (Property<?>) optionField.get(categoryInstance);
+						Object value = property.get();
+						if (value instanceof Enum<?>) {
+							category.options.add(new WrappedConfigDropdown(
+								optionField,
+								categoryInstance,
+								annotationName,
+								annotationDesc,
+								cat, subcategory,
+								2, Arrays.stream(value.getClass().getEnumConstants()).map(Object::toString).toArray(String[]::new)
+							));
+						} else if (value instanceof Integer) {
+							category.options.add(new ConfigDropdown(
+								optionField,
+								categoryInstance,
+								annotationName,
+								annotationDesc,
+								cat, subcategory,
+								2, configEditorDropdown.values()
+							));
+						}
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					}
+				} else {
+					category.options.add(new ConfigDropdown(
+						optionField,
+						categoryInstance,
+						annotationName,
+						annotationDesc,
+						cat, subcategory,
+						2, configEditorDropdown.values()
+					));
+				}
 			}
 			ConfigEditorDraggableList configEditorDraggableList = optionField.getAnnotation(ConfigEditorDraggableList.class);
 			if (configEditorDraggableList != null) {

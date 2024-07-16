@@ -5,9 +5,11 @@
   "plugin": "io.github.moulberry.notenoughupdates.envcheck.NEUMixinConfigPlugin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AccessorBooleanState",
     "AccessorCommandHandler",
     "AccessorEntityAgeable",
     "AccessorEntityArmorStand",
+    "AccessorGlStateManager",
     "AccessorGuiPlayerTabOverlay",
     "MixinAbstractClientPlayer",
     "MixinContainer",

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -357,10 +357,34 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Countdown Calculations",
-		desc = "Shows a(n estimated) timestamp for when a countdown in an item's tooltip will end, relative to your timezone. Also applies to §e/neucalendar§r."
+		desc = "Shows an (estimated) timestamp for when a countdown in an item's tooltip will end, relative to your timezone. Also applies to §e/neucalendar§r."
 	)
 	@ConfigEditorDropdown(
 		values = {"Off", "AM/PM [1PM]", "24hr [13:00]"}
 	)
 	public int showWhenCountdownEnds = 1;
+
+	@Expose
+	@ConfigOption(
+		name = "Use english countdown",
+		desc = "Uses english language for countdown instead of your system's selected one"
+	)
+	@ConfigEditorBoolean
+	public boolean useEnglishCountdown = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Stop Hearts Bouncing",
+		desc = "Stops the hearts bouncing with regeneration effect"
+	)
+	@ConfigEditorBoolean
+	public boolean hideRegenBounce = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Keybind to open /neurename",
+		desc = "Opens /neurename on the item you are hovering over"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_NONE)
+	public int neuCustomizeKeybind = Keyboard.KEY_NONE;
 }

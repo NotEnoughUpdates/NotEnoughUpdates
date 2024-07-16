@@ -22,10 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import info.bliki.api.Template;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
@@ -43,16 +40,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -154,8 +146,8 @@ public class GuiEnchantColour extends GuiScreen {
 			String modifier = getColourOpIndex(colourOps, 4);
 			modifiers.put(yIndex, modifier);
 
-			if (colourCode.length() > 1) colourCode = String.valueOf(colourCode.toLowerCase().charAt(0));
-			if (comparator.length() > 1) comparator = String.valueOf(comparator.toLowerCase().charAt(0));
+			if (colourCode.length() > 1) colourCode = String.valueOf(colourCode.toLowerCase(Locale.ROOT).charAt(0));
+			if (comparator.length() > 1) comparator = String.valueOf(comparator.toLowerCase(Locale.ROOT).charAt(0));
 
 			Utils.drawStringCentered(comparator, guiLeft + 96, guiTop + 33 + 25 * yIndex, false, 4210752);
 
@@ -528,12 +520,9 @@ public class GuiEnchantColour extends GuiScreen {
 	}
 
 	private boolean validShareContents() {
-		try {
-			String base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-			return Objects.equals(TemplateUtil.getTemplatePrefix(base64), sharePrefix);
-		} catch (HeadlessException | IOException | UnsupportedFlavorException | IllegalStateException e) {
-			return false;
-		}
+		String base64 = Utils.getClipboard();
+		if (base64 == null) return false;
+		return Objects.equals(TemplateUtil.getTemplatePrefix(base64), sharePrefix);
 	}
 
 	@Override
@@ -634,13 +623,9 @@ public class GuiEnchantColour extends GuiScreen {
 		if (mouseX > guiLeft + xSize + 3 && mouseX < guiLeft + xSize + 3 + 88) {
 			if (mouseY > guiTopSidebar + 2 && mouseY < guiTopSidebar + 20 + 2) {
 
-				String base64;
 
-				try {
-					base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-				} catch (HeadlessException | IOException | UnsupportedFlavorException e) {
-					return;
-				}
+				String base64 = Utils.getClipboard();
+				if (base64 == null) return;
 				JsonArray presetArray = TemplateUtil.maybeDecodeTemplate(sharePrefix, base64, JsonArray.class);
 				ArrayList<String> presetList = new ArrayList<>();
 
@@ -667,7 +652,7 @@ public class GuiEnchantColour extends GuiScreen {
 				}
 
 				String base64String = TemplateUtil.encodeTemplate(sharePrefix, jsonArray);
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
+				Utils.copyToClipboard(base64String);
 			} else if (mouseY > guiTopSidebar + 2 + (24 * 2) && mouseY < guiTopSidebar + 20 + 2 + 24 * 2) {
 				NotEnoughUpdates.INSTANCE.config.hidden.enchantColours = NEUConfig.createDefaultEnchantColours();
 			}

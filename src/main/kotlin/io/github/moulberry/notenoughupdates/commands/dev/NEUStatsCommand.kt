@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,13 +25,11 @@ import com.sun.management.UnixOperatingSystemMXBean
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.util.DiscordMarkdownBuilder
-import io.github.moulberry.notenoughupdates.util.SBInfo
+import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteralExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
-import io.github.moulberry.notenoughupdates.util.copyToClipboard
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.command.ICommandSender
@@ -43,7 +41,6 @@ import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
-import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.lang.management.ManagementFactory
 import javax.management.JMX
@@ -61,6 +58,9 @@ class NEUStatsCommand {
                         .toString()
                 )
             }.withHelp("Copy the mod list to your clipboard")
+            thenLiteralExecute("tablist") {
+                clipboardAndSendMessage("```\n${TabListUtils.getTabList()}\n```")
+            }.withHelp("Copy the current tab list to your clipboard")
             thenLiteralExecute("repo") {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
@@ -172,8 +172,11 @@ class NEUStatsCommand {
             "Mod Version",
             Loader.instance().indexedModList[NotEnoughUpdates.MODID]!!.displayVersion
         )
+        builder.append(
+            "Version Id",
+            NotEnoughUpdates.VERSION_ID
+        )
         builder.append("SB Profile", SBInfo.getInstance().currentProfile)
-        builder.append("Has Advanced Tab", if (SBInfo.getInstance().hasNewTab) "TRUE" else "FALSE")
             .also(::appendRepoStats)
     }
 
@@ -232,7 +235,7 @@ class NEUStatsCommand {
         }
         try {
             val clipboard = StringSelection(data)
-            Toolkit.getDefaultToolkit().systemClipboard.setContents(clipboard, null)
+            Utils.copyToClipboard(clipboard, null)
             reply("${GREEN}Dev info copied to clipboard.")
         } catch (ignored: Exception) {
             reply("${DARK_RED}Could not copy to clipboard.")

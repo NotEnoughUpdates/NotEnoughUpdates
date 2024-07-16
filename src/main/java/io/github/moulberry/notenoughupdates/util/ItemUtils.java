@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -39,6 +39,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -47,6 +48,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -139,12 +141,12 @@ public class ItemUtils {
 		is.setTagCompound(tagCompound);
 	}
 
-	public static List<String> getLore(ItemStack is) {
+	public static @NotNull List<@NotNull String> getLore(@Nullable ItemStack is) {
 		if (is == null) return new ArrayList<>();
 		return getLore(is.getTagCompound());
 	}
 
-	public static List<String> getLore(NBTTagCompound tagCompound) {
+	public static @NotNull List<@NotNull String> getLore(@Nullable NBTTagCompound tagCompound) {
 		if (tagCompound == null) {
 			return Collections.emptyList();
 		}
@@ -156,7 +158,12 @@ public class ItemUtils {
 		return list;
 	}
 
-	public static String getDisplayName(NBTTagCompound compound) {
+	public static @Nullable String getDisplayName(@Nullable ItemStack itemStack) {
+		if (null == itemStack) return null;
+		return getDisplayName(itemStack.getTagCompound());
+	}
+
+	public static @Nullable String getDisplayName(@Nullable NBTTagCompound compound) {
 		if (compound == null) return null;
 		String string = compound.getCompoundTag("display").getString("Name");
 		if (string == null || string.isEmpty())
@@ -228,7 +235,7 @@ public class ItemUtils {
 			return stack;
 		}
 		String petname = currentPet.petType;
-		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase();
+		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase(Locale.ROOT);
 		String heldItem = currentPet.petItem;
 		String skin = currentPet.skin;
 		JsonObject heldItemJson = heldItem == null ? null : NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
@@ -305,7 +312,7 @@ public class ItemUtils {
 				}
 				for (int i = 0; i < newLore.size(); i++) {
 					String cleaned = Utils.cleanColour(newLore.get(i));
-					if (cleaned.equals("Right-click to add this pet to")) {
+					if (cleaned.startsWith("Right-click to add this pet to")) {
 						if (heldItem == null) newLore.remove(i + 2);
 						newLore.remove(i + 1);
 						newLore.remove(i);
@@ -389,7 +396,7 @@ public class ItemUtils {
 			NBTTagCompound display = tag.getCompoundTag("display");
 			if (display.hasKey("Lore", 9)) {
 				NBTTagList lore = display.getTagList("Lore", 8);
-				if (Utils.cleanColour(lore.getStringTagAt(0)).matches(ItemTooltipListener.petToolTipRegex) &&
+				if (ItemTooltipListener.petToolTipRegex.matcher(Utils.cleanColour(lore.getStringTagAt(0))).matches() &&
 					lore.tagCount() > 7) {
 
 					PetLeveling.PetLevel petLevel;
@@ -404,13 +411,16 @@ public class ItemUtils {
 					NBTTagList newLore = new NBTTagList();
 					int maxLvl = 100;
 					if (Constants.PETS != null && Constants.PETS.has("custom_pet_leveling") &&
-						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.toUpperCase()) &&
-						Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet.petType.toUpperCase()).has(
-							"max_level")) {
+						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.toUpperCase(Locale.ROOT)) &&
+						Constants.PETS
+							.getAsJsonObject("custom_pet_leveling")
+							.getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT))
+							.has(
+								"max_level")) {
 						maxLvl =
 							Constants.PETS
 								.getAsJsonObject("custom_pet_leveling")
-								.getAsJsonObject(pet.petType.toUpperCase())
+								.getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT))
 								.get("max_level")
 								.getAsInt();
 					}

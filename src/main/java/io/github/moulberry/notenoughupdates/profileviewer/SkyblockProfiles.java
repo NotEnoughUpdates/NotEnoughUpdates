@@ -24,13 +24,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryData;
-import io.github.moulberry.notenoughupdates.profileviewer.rift.RiftJson;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -59,6 +58,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -518,7 +518,7 @@ public class SkyblockProfiles {
 		private SoopyNetworth soopyNetworth = null;
 		private MuseumData museumData = null;
 		@Getter
-		private @Nullable RiftJson riftJson;
+		public @Nullable APIDataJson APIDataJson;
 		private final AtomicBoolean updatingMuseumData = new AtomicBoolean(false);
 
 		public class MuseumData {
@@ -702,9 +702,9 @@ public class SkyblockProfiles {
 			this.gamemode = Utils.getElementAsString(outerProfileJson.get("game_mode"), null);
 
 			try {
-				riftJson = gson.fromJson(getProfileJson().get("rift"), RiftJson.class);
+				APIDataJson = gson.fromJson(getProfileJson(), APIDataJson.class);
 			} catch (Exception exception) {
-				NotEnoughUpdates.LOGGER.error("Could not read rift data", exception);
+				NotEnoughUpdates.LOGGER.error("Could not read data", exception);
 			}
 		}
 
@@ -926,7 +926,7 @@ public class SkyblockProfiles {
 					}
 				} else {
 					skillExperience += Utils.getElementAsFloat(
-						Utils.getElement(profileJson, "player_data.experience.SKILL_" + skillName.toUpperCase()),
+						Utils.getElement(profileJson, "player_data.experience.SKILL_" + skillName.toUpperCase(Locale.ROOT)),
 						0
 					);
 				}

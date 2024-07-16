@@ -71,6 +71,19 @@ public class AHTweaks {
 	@ConfigAccordionId(id = 0)
 	public boolean escFullClose = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Search History Size",
+		desc = "Changes how many search items get stored"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 15,
+		minStep = 1
+	)
+	@ConfigAccordionId(id = 0)
+	public int ahSearchHistorySize = 5;
+
 	@ConfigOption(
 		name = "BIN Warning",
 		desc = ""
@@ -146,4 +159,11 @@ public class AHTweaks {
 	@ConfigEditorBoolean
 	public boolean enableAhSellValue = true;
 
+	@Expose
+	@ConfigOption(
+		name = "CTRL+F for search",
+		desc = "Open search GUI when pressing CTRL + F in the AH"
+	)
+	@ConfigEditorBoolean()
+	public boolean ctrlFSearch = true;
 }

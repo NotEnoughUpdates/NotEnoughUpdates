@@ -28,6 +28,8 @@ import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingFloat;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.HexPriceWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.util.OrbDisplay;
@@ -36,6 +38,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -69,6 +72,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -82,6 +86,7 @@ public class GuiCustomHex extends Gui {
 	private static final ModelBook MODEL_BOOK = new ModelBook();
 
 	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
+	private static final Pattern DISCOUNT_COST_PATTERN = Pattern.compile("\\u00a78\\u00a7m(\\d+)\\u00a73 (\\d+) Exp Levels");
 	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
 	private static final Pattern ENCHANT_NAME_PATTERN = Pattern.compile("([^IVX]*) ([IVX]*)");
 
@@ -113,7 +118,7 @@ public class GuiCustomHex extends Gui {
 				}
 			}
 			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(
-				(isUlt ? "ULTIMATE_" : "") + enchId.toUpperCase() + ";" + level);
+				(isUlt ? "ULTIMATE_" : "") + enchId.toUpperCase(Locale.ROOT) + ";" + level);
 			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
 			}
@@ -168,6 +173,15 @@ public class GuiCustomHex extends Gui {
 						}
 					}
 
+				}
+			}
+			for (String line : this.displayLore) {
+				Matcher matcher = XP_COST_PATTERN.matcher(line);
+				Matcher discount_matcher = DISCOUNT_COST_PATTERN.matcher(line);
+				if (matcher.find()) {
+					this.xpCost = Integer.parseInt(matcher.group(1));
+				} else if (discount_matcher.find()) {
+						this.xpCost = Integer.parseInt(discount_matcher.group(2));
 				}
 			}
 		}
@@ -238,8 +252,13 @@ public class GuiCustomHex extends Gui {
 		return INSTANCE;
 	}
 
+	boolean hexTurnedOffTheCalendar = false;
+
 	public boolean shouldOverride(String containerName) {
-		CalendarOverlay.ableToClickCalendar = true;
+		if (hexTurnedOffTheCalendar) {
+			CalendarOverlay.ableToClickCalendar = true;
+			hexTurnedOffTheCalendar = false;
+		}
 		if (containerName == null) {
 			shouldOverrideET = false;
 			shouldOverrideFast = false;
@@ -292,8 +311,15 @@ public class GuiCustomHex extends Gui {
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
-		CalendarOverlay.ableToClickCalendar =
-			!(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
+		ItemStack bookStack = cc.getLowerChestInventory().getStackInSlot(32);
+		boolean shouldDisableCalendar = !(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
+		if (!shouldDisableCalendar && CalendarOverlay.ableToClickCalendar) {
+			CalendarOverlay.ableToClickCalendar = false;
+			hexTurnedOffTheCalendar = true;
+		}
+		if (bookStack != null && bookStack.getItem() == Items.book) {
+			shouldOverrideGemstones = false;
+		}
 		if (hexStack != null && hexStack.getItem() == Items.experience_bottle)
 			return (shouldOverrideET || shouldOverrideFast);
 		if (!shouldOverrideFast && !shouldOverrideET && !shouldOverrideGemstones && !shouldOverrideXp) {
@@ -473,7 +499,7 @@ public class GuiCustomHex extends Gui {
 								if (enchantments != null) {
 									String enchId = Utils
 										.cleanColour(book.getDisplayName())
-										.toLowerCase()
+										.toLowerCase(Locale.ROOT)
 										.replace(" ", "_")
 										.replace("-", "_")
 										.replaceAll("[^a-z_]", "");
@@ -490,7 +516,7 @@ public class GuiCustomHex extends Gui {
 									}
 									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
 									if (levelMatcher.matches()) {
-										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
+										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase(Locale.ROOT));
 										enchId = levelMatcher.group(1);
 									}
 									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
@@ -554,8 +580,11 @@ public class GuiCustomHex extends Gui {
 				if (enchanterCurrentEnch != null && removingEnchantPlayerLevel >= 0) {
 					for (String line : enchanterCurrentEnch.displayLore) {
 						Matcher matcher = XP_COST_PATTERN.matcher(line);
+						Matcher discount_matcher = DISCOUNT_COST_PATTERN.matcher(line);
 						if (matcher.find()) {
 							enchanterCurrentEnch.xpCost = Integer.parseInt(matcher.group(1));
+						} else if (discount_matcher.find()) {
+								enchanterCurrentEnch.xpCost = Integer.parseInt(discount_matcher.group(2));
 						}
 					}
 				}
@@ -592,7 +621,7 @@ public class GuiCustomHex extends Gui {
 									if (enchantments != null) {
 										String enchId = Utils
 											.cleanColour(book.getDisplayName())
-											.toLowerCase()
+											.toLowerCase(Locale.ROOT)
 											.replace(" ", "_")
 											.replace("-", "_")
 											.replaceAll("[^a-z_]", "");
@@ -601,7 +630,7 @@ public class GuiCustomHex extends Gui {
 										String name = Utils.cleanColour(book.getDisplayName());
 
 										if (searchField.getText().trim().isEmpty() ||
-											name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+											name.toLowerCase(Locale.ROOT).contains(searchField.getText().trim().toLowerCase(Locale.ROOT))) {
 											if (name.equalsIgnoreCase("Bane of Arthropods")) {
 												name = "Bane of Arth.";
 											} else if (name.equalsIgnoreCase("Projectile Protection")) {
@@ -647,7 +676,7 @@ public class GuiCustomHex extends Gui {
 					Comparator<Enchantment> comparator = cfg.enchantingSolvers.enchantSorting == 0 ?
 						Comparator.comparingInt(e -> mult * e.xpCost) :
 						(c1, c2) -> mult *
-							c1.enchId.toLowerCase().compareTo(c2.enchId.toLowerCase());
+							c1.enchId.toLowerCase(Locale.ROOT).compareTo(c2.enchId.toLowerCase(Locale.ROOT));
 					removable.sort(comparator);
 					applicable.sort(comparator);
 				}
@@ -795,7 +824,7 @@ public class GuiCustomHex extends Gui {
 						if (ea != null) {
 							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 							if (enchantments != null) {
-								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace(
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase(Locale.ROOT).replace(" ", "_").replace(
 									"-",
 									"_"
 								);
@@ -803,7 +832,7 @@ public class GuiCustomHex extends Gui {
 								if (itemId.equalsIgnoreCase("_")) continue;
 								if (itemId.equalsIgnoreCase("Item_Maxed_Out")) continue;
 								if (searchField.getText().trim().isEmpty() ||
-									name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+									name.toLowerCase(Locale.ROOT).contains(searchField.getText().trim().toLowerCase(Locale.ROOT))) {
 									name = fixName(name);
 									/*if (playerEnchantIds.containsKey(itemId)) {
 										HexItem item = new HexItem(slotIndex, name, itemId,
@@ -963,7 +992,7 @@ public class GuiCustomHex extends Gui {
 			Comparator<HexItem> comparator = cfg.enchantingSolvers.enchantSorting == 0 ?
 				Comparator.comparingInt(e -> (int) (mult * e.price)) :
 				(c1, c2) -> mult *
-					c1.itemId.toLowerCase().compareTo(c2.itemId.toLowerCase());
+					c1.itemId.toLowerCase(Locale.ROOT).compareTo(c2.itemId.toLowerCase(Locale.ROOT));
 			removableItem.sort(comparator);
 			applicableItem.sort(comparator);
 		}
@@ -1037,7 +1066,7 @@ public class GuiCustomHex extends Gui {
 						if (ea != null) {
 							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 							if (enchantments != null) {
-								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace(
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase(Locale.ROOT).replace(" ", "_").replace(
 									"-",
 									"_"
 								);
@@ -1045,7 +1074,7 @@ public class GuiCustomHex extends Gui {
 								if (itemId.equalsIgnoreCase("_")) continue;
 								if (itemId.equalsIgnoreCase("Item_Maxed_Out")) continue;
 								if (searchField.getText().trim().isEmpty() ||
-									name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+									name.toLowerCase(Locale.ROOT).contains(searchField.getText().trim().toLowerCase(Locale.ROOT))) {
 									if (name.equalsIgnoreCase("Ultimate Enchantments")) {
 										name = "Ult Enchants";
 									}
@@ -1082,7 +1111,7 @@ public class GuiCustomHex extends Gui {
 			Comparator<HexItem> comparator = cfg.enchantingSolvers.enchantSorting == 0 ?
 				Comparator.comparingInt(e -> (int) (mult * e.price)) :
 				(c1, c2) -> mult *
-					c1.itemId.toLowerCase().compareTo(c2.itemId.toLowerCase());
+					c1.itemId.toLowerCase(Locale.ROOT).compareTo(c2.itemId.toLowerCase(Locale.ROOT));
 			removableItem.sort(comparator);
 			applicableItem.sort(comparator);
 		}
@@ -1184,7 +1213,7 @@ public class GuiCustomHex extends Gui {
 						if (ea != null) {
 							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 							if (enchantments != null) {
-								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace(
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase(Locale.ROOT).replace(" ", "_").replace(
 									"-",
 									"_"
 								);
@@ -1192,7 +1221,7 @@ public class GuiCustomHex extends Gui {
 								if (itemId.equalsIgnoreCase("_")) continue;
 								if (itemId.equalsIgnoreCase("Item_Maxed_Out")) continue;
 								if (searchField.getText().trim().isEmpty() ||
-									name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+									name.toLowerCase(Locale.ROOT).contains(searchField.getText().trim().toLowerCase(Locale.ROOT))) {
 									/*if (playerEnchantIds.containsKey(itemId)) {
 										HexItem item = new HexItem(slotIndex, name, itemId,
 											Utils.getRawTooltip(book), false, false
@@ -1244,7 +1273,7 @@ public class GuiCustomHex extends Gui {
 			Comparator<HexItem> comparator = cfg.enchantingSolvers.enchantSorting == 0 ?
 				Comparator.comparingInt(e -> (int) (mult * e.price)) :
 				(c1, c2) -> mult *
-					c1.itemId.toLowerCase().compareTo(c2.itemId.toLowerCase());
+					c1.itemId.toLowerCase(Locale.ROOT).compareTo(c2.itemId.toLowerCase(Locale.ROOT));
 			removableItem.sort(comparator);
 			applicableItem.sort(comparator);
 		}
@@ -3072,6 +3101,14 @@ public class GuiCustomHex extends Gui {
 
 			} else if (item.itemType == ItemType.OPAL_GEMSTONE) {
 				levelStr = "❂";
+			} else if (item.itemType == ItemType.ONYX_GEMSTONE) {
+				levelStr = "☠";
+			} else if (item.itemType == ItemType.AQUAMARINE_GEMSTONE) {
+				levelStr = "α";
+			} else if (item.itemType == ItemType.CITRINE_GEMSTONE) {
+				levelStr = "☘";
+			} else if (item.itemType == ItemType.PERIDOT_GEMSTONE) {
+				levelStr = "☘";
 			}
 		} else {
 			levelStr = "?";
@@ -3377,7 +3414,7 @@ public class GuiCustomHex extends Gui {
 							EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 							short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 							ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-							Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+							onClick(new C0EPacketClickWindow(
 								chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 							cancelButtonAnimTime = System.currentTimeMillis();
@@ -3389,7 +3426,7 @@ public class GuiCustomHex extends Gui {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(click);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						onClick(new C0EPacketClickWindow(
 							chest.inventorySlots.windowId, click, 0, 0, stack, transactionID));
 					}
 					return true;
@@ -3414,7 +3451,7 @@ public class GuiCustomHex extends Gui {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						onClick(new C0EPacketClickWindow(
 							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 						if (isInGemstones()) {
 							currentState = EnchantState.HAS_ITEM_IN_GEMSTONE;
@@ -3457,7 +3494,7 @@ public class GuiCustomHex extends Gui {
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 					cancelButtonAnimTime = System.currentTimeMillis();
@@ -3473,7 +3510,7 @@ public class GuiCustomHex extends Gui {
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
 						enchanterCurrentEnch.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId,
 						enchanterCurrentEnch.slotIndex, 0, 0, stack, transactionID
 					));
@@ -3556,7 +3593,7 @@ public class GuiCustomHex extends Gui {
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));*/
 
 					cancelButtonAnimTime = System.currentTimeMillis();
@@ -3574,7 +3611,7 @@ public class GuiCustomHex extends Gui {
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
 						enchanterCurrentItem.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId,
 						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
 					));
@@ -3656,7 +3693,7 @@ public class GuiCustomHex extends Gui {
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 					cancelButtonAnimTime = System.currentTimeMillis();
@@ -3674,7 +3711,7 @@ public class GuiCustomHex extends Gui {
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
 						enchanterCurrentItem.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId,
 						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
 					));
@@ -3757,7 +3794,7 @@ public class GuiCustomHex extends Gui {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						onClick(new C0EPacketClickWindow(
 							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 						cancelButtonAnimTime = System.currentTimeMillis();
@@ -3779,7 +3816,7 @@ public class GuiCustomHex extends Gui {
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
 						enchanterCurrentItem.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId,
 						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
 					));
@@ -3993,7 +4030,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(ench.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										ench.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4001,7 +4038,7 @@ public class GuiCustomHex extends Gui {
 									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 									cancelButtonAnimTime = System.currentTimeMillis();
@@ -4032,7 +4069,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										item.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4064,7 +4101,7 @@ public class GuiCustomHex extends Gui {
 								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 								ItemStack stack =
 									((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-								Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+								onClick(new C0EPacketClickWindow(
 									chest.inventorySlots.windowId,
 									item.slotIndex, 0, 0, stack, transactionID
 								));
@@ -4096,7 +4133,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										item.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4129,7 +4166,7 @@ public class GuiCustomHex extends Gui {
 								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 								ItemStack stack =
 									((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-								Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+								onClick(new C0EPacketClickWindow(
 									chest.inventorySlots.windowId,
 									item.slotIndex, 0, 0, stack, transactionID
 								));
@@ -4166,7 +4203,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(ench.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										ench.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4174,7 +4211,7 @@ public class GuiCustomHex extends Gui {
 									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 									cancelButtonAnimTime = System.currentTimeMillis();
@@ -4205,7 +4242,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										item.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4242,7 +4279,7 @@ public class GuiCustomHex extends Gui {
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 									ItemStack stack =
 										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
-									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									onClick(new C0EPacketClickWindow(
 										chest.inventorySlots.windowId,
 										item.slotIndex, 0, 0, stack, transactionID
 									));
@@ -4299,7 +4336,7 @@ public class GuiCustomHex extends Gui {
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						onClick(new C0EPacketClickWindow(
 							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 						cancelButtonAnimTime = System.currentTimeMillis();
@@ -4320,7 +4357,7 @@ public class GuiCustomHex extends Gui {
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					onClick(new C0EPacketClickWindow(
 						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 					cancelButtonAnimTime = System.currentTimeMillis();
@@ -4331,6 +4368,20 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 		return true;
+	}
+
+	public void onClick(C0EPacketClickWindow packet) {
+		var cont = Minecraft.getMinecraft().thePlayer.openContainer;
+		var clickEvent = new SlotClickEvent(
+			(GuiContainer) Minecraft.getMinecraft().currentScreen,
+			cont.getSlot(packet.getSlotId()),
+			packet.getSlotId(),
+			packet.getUsedButton(),
+			packet.getMode()
+		);
+		HexPriceWarning.INSTANCE.onClick(clickEvent);
+		if (!clickEvent.isCanceled())
+			Minecraft.getMinecraft().getNetHandler().addToSendQueue(packet);
 	}
 
 	public boolean keyboardInput() {

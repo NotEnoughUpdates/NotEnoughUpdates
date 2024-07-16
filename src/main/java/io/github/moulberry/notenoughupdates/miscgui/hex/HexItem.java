@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.util.StringUtils;
 
 import java.util.List;
+import java.util.Locale;
 
 public class HexItem {
 	public int slotIndex;
@@ -218,6 +219,10 @@ public class HexItem {
 		if (itemName.contains("Amber Gemstone")) this.itemType = ItemType.AMBER_GEMSTONE;
 		if (itemName.contains("Opal Gemstone")) this.itemType = ItemType.OPAL_GEMSTONE;
 		if (itemName.contains("Topaz Gemstone")) this.itemType = ItemType.TOPAZ_GEMSTONE;
+		if (itemName.contains("Onyx Gemstone")) this.itemType = ItemType.ONYX_GEMSTONE;
+		if (itemName.contains("Aquamarine Gemstone")) this.itemType = ItemType.AQUAMARINE_GEMSTONE;
+		if (itemName.contains("Citrine Gemstone")) this.itemType = ItemType.CITRINE_GEMSTONE;
+		if (itemName.contains("Peridot Gemstone")) this.itemType = ItemType.PERIDOT_GEMSTONE;
 		if (itemName.contains("Gemstone Slot")) this.itemType = ItemType.GEMSTONE_SLOT;
 		if (this.itemName.contains(" Gemstone")) {
 			this.itemName = this.itemName.replace(" Gemstone", "").substring(2);
@@ -255,8 +260,8 @@ public class HexItem {
 
 	public String getReforge() {
 		JsonObject reforgeStones = Constants.REFORGESTONES;
-		if (reforgeStones != null && reforgeStones.has(this.itemId.toUpperCase())) {
-			JsonObject reforgeInfo = reforgeStones.get(this.itemId.toUpperCase()).getAsJsonObject();
+		if (reforgeStones != null && reforgeStones.has(this.itemId.toUpperCase(Locale.ROOT))) {
+			JsonObject reforgeInfo = reforgeStones.get(this.itemId.toUpperCase(Locale.ROOT)).getAsJsonObject();
 			if (reforgeInfo != null) {
 				return Utils.getElementAsString(reforgeInfo.get("reforgeName"), "");
 			}
@@ -292,7 +297,9 @@ public class HexItem {
 		return itemType == ItemType.RUBY_GEMSTONE || itemType == ItemType.AMETHYST_GEMSTONE ||
 			itemType == ItemType.SAPPHIRE_GEMSTONE || itemType == ItemType.JASPER_GEMSTONE ||
 			itemType == ItemType.JADE_GEMSTONE || itemType == ItemType.AMBER_GEMSTONE ||
-			itemType == ItemType.OPAL_GEMSTONE || itemType == ItemType.TOPAZ_GEMSTONE;
+			itemType == ItemType.OPAL_GEMSTONE || itemType == ItemType.TOPAZ_GEMSTONE ||
+			itemType == ItemType.ONYX_GEMSTONE || itemType == ItemType.AQUAMARINE_GEMSTONE ||
+			itemType == ItemType.CITRINE_GEMSTONE || itemType == ItemType.PERIDOT_GEMSTONE;
 	}
 
 	public boolean isEnrichment() {

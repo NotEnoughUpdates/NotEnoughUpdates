@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -34,9 +34,11 @@ import io.github.moulberry.notenoughupdates.mbgui.MBAnchorPoint;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiElement;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
+import io.github.moulberry.notenoughupdates.miscfeatures.AhBzKeybind;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.GuiItemCustomize;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.util.Calculator;
@@ -86,7 +88,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -97,6 +98,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -568,14 +570,14 @@ public class NEUOverlay extends Gui {
 				} else if (manager.getItemInformation().containsKey(display)) {
 					render = manager.jsonToStack(manager.getItemInformation().get(display), true, true);
 				} else {
-					Item item = Item.itemRegistry.getObject(new ResourceLocation(display.toLowerCase()));
+					Item item = Item.itemRegistry.getObject(new ResourceLocation(display.toLowerCase(Locale.ROOT)));
 					if (item != null) {
 						render = new ItemStack(item);
 					}
 				}
 				if (render != null) {
 					NBTTagCompound tag = render.getTagCompound() != null ? render.getTagCompound() : new NBTTagCompound();
-					tag.setString("qc_id", quickCommandStrSplit[0].toLowerCase().trim());
+					tag.setString("qc_id", quickCommandStrSplit[0].toLowerCase(Locale.ROOT).trim());
 					render.setTagCompound(tag);
 
 					Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.quickcommand_background);
@@ -741,6 +743,7 @@ public class NEUOverlay extends Gui {
 			}
 			String internalname = item.get("internalname").getAsString();
 			String name = item.get("displayname").getAsString();
+			name = name.replace("[Lvl {LVL}] ", ""); // Remove dynamic level prefix for pets
 			if (NotEnoughUpdates.INSTANCE.config.itemlist.wikiInBrowser) {
 				Utils.openUrl(infoText);
 				Utils.addChatMessage("§e[NEU] Opening webpage in browser.");
@@ -1076,9 +1079,7 @@ public class NEUOverlay extends Gui {
 					BigDecimal calculate = Calculator.calculate(textField.getText(), PROVIDE_LOWEST_BIN);
 					textField.setText(calculate.toPlainString());
 					if (NotEnoughUpdates.INSTANCE.config.toolbar.copyToClipboardWhenGettingResult) {
-						Toolkit.getDefaultToolkit().getSystemClipboard()
-									 .setContents(new StringSelection(calculate.toPlainString()), null);
-
+						Utils.copyToClipboard(calculate.toPlainString());
 					}
 				} catch (Calculator.CalculatorException | IllegalStateException | HeadlessException ignored) {
 				}
@@ -1220,19 +1221,12 @@ public class NEUOverlay extends Gui {
 							return true;
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
 							String displayName = item.get("displayname").getAsString();
-
-							String cleanName = Utils.cleanColour(displayName).replace("[Lvl {LVL}]", "]").trim();
-
-							if (displayName.endsWith("Enchanted Book")) {
-								String loreName = Utils.cleanColour(item.getAsJsonArray("lore").get(0).getAsString());
-
-								String bookName = loreName.substring(0, loreName.lastIndexOf(' '));
-								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + bookName);
-							} else if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
-								NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + cleanName);
-							} else {
-								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + cleanName);
+							JsonArray lore = item.getAsJsonArray("lore");
+							List<String> loreList = new ArrayList<>();
+							for (int i = 0; i < lore.size(); i++) {
+								loreList.add(lore.get(i).getAsString());
 							}
+							AhBzKeybind.onKeyPressed(displayName, loreList, internalname.get());
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openSkyBlockRecipeKeybind
 							&& !item.has("vanilla")
 							&& StreamExtL.filterIsInstance(
@@ -1248,6 +1242,13 @@ public class NEUOverlay extends Gui {
 								.replace("[Lvl {LVL}]", "")
 								.trim());
 							NotEnoughUpdates.INSTANCE.trySendCommand("/recipe " + displayName);
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.neuCustomizeKeybind && itemstack.get() != null) {
+							String uuid = NEUManager.getUUIDFromNBT(itemstack.get().getTagCompound());
+							if (uuid != null) {
+								NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(itemstack.get(), uuid);
+							} else {
+								Utils.addChatMessage("§cThis item does not have an UUID, so it cannot be customized.");
+							}
 						}
 					}
 				}
@@ -1485,7 +1486,7 @@ public class NEUOverlay extends Gui {
 					if (item != null) searchedItems.add(item);
 				}
 			}
-			switch (textField.getText().toLowerCase().trim()) {
+			switch (textField.getText().toLowerCase(Locale.ROOT).trim()) {
 				case "nullzee":
 					searchedItems.add(CustomItems.NULLZEE);
 					break;
@@ -1918,14 +1919,14 @@ public class NEUOverlay extends Gui {
 			updateSearch();
 		}
 
-		if (textField.getText().toLowerCase().contains("bald")) {
+		if (textField.getText().toLowerCase(Locale.ROOT).contains("bald")) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(SUPERGEHEIMNISVERMOGEN);
 			GlStateManager.color(1, 1, 1, 1);
 			Utils.drawTexturedRect((width - 64) / 2f, (height - 64) / 2f - 114, 64, 64, GL11.GL_LINEAR);
 			GlStateManager.bindTexture(0);
 		}
 
-		if (textField.getText().toLowerCase().contains("lunar")) {
+		if (textField.getText().toLowerCase(Locale.ROOT).contains("lunar")) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(ATMOULBERRYWHYISMYLUNARCLIENTBUGGING);
 			GlStateManager.color(1, 1, 1, 1);
 			GlStateManager.translate(0, 0, 100);
@@ -1933,7 +1934,7 @@ public class NEUOverlay extends Gui {
 			GlStateManager.bindTexture(0);
 		}
 
-		SunTzu.setEnabled(textField.getText().toLowerCase().startsWith("potato"));
+		SunTzu.setEnabled(textField.getText().toLowerCase(Locale.ROOT).startsWith("potato"));
 
 		updateGuiGroupSize();
 

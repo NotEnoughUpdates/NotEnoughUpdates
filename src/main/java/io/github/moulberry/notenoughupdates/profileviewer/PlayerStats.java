@@ -40,6 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -182,7 +183,7 @@ public class PlayerStats {
 
 		int petScore = 0;
 		for (String value : highestRarityMap.values()) {
-			petScore += Utils.getElementAsFloat(Utils.getElement(bonuses, "pet_value." + value.toUpperCase()), 0);
+			petScore += Utils.getElementAsFloat(Utils.getElement(bonuses, "pet_value." + value.toUpperCase(Locale.ROOT)), 0);
 		}
 		return petScore;
 	}
@@ -522,7 +523,7 @@ public class PlayerStats {
 						float statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat();
 						float val = statMin * minMix + statMax * maxMix;
 
-						stats.addStat(entry.getKey().toLowerCase(), (int) Math.floor(val));
+						stats.addStat(entry.getKey().toLowerCase(Locale.ROOT), (int) Math.floor(val));
 					}
 				}
 
@@ -531,7 +532,7 @@ public class PlayerStats {
 					HashMap<String, Float> petStatBootsMult = GuiProfileViewer.PET_STAT_BOOSTS_MULT.get(heldItem);
 					if (petStatBoots != null) {
 						for (Map.Entry<String, Float> entryBoost : petStatBoots.entrySet()) {
-							String key = entryBoost.getKey().toLowerCase();
+							String key = entryBoost.getKey().toLowerCase(Locale.ROOT);
 							try {
 								stats.addStat(key, entryBoost.getValue());
 							} catch (Exception ignored) {}
@@ -539,7 +540,7 @@ public class PlayerStats {
 					}
 					if (petStatBootsMult != null) {
 						for (Map.Entry<String, Float> entryBoost : petStatBootsMult.entrySet()) {
-							String key = entryBoost.getKey().toLowerCase();
+							String key = entryBoost.getKey().toLowerCase(Locale.ROOT);
 							try {
 								stats.scale(key, entryBoost.getValue());
 							} catch (Exception ignored) {}
@@ -664,7 +665,7 @@ public class PlayerStats {
 			return null;
 		}
 		String selectedPower = profileInfo.get(abs).getAsJsonObject().get("selected_power").getAsString();
-		return selectedPower.substring(0, 1).toUpperCase() + selectedPower.substring(1);
+		return selectedPower.substring(0, 1).toUpperCase(Locale.ROOT) + selectedPower.substring(1);
 	}
 
 	public static @Nullable QuiverInfo getQuiverInfo(Map<String, JsonArray> inventoryInfo, JsonObject profileInfo) {

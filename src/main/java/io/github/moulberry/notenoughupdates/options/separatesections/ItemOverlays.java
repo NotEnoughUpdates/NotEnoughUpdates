@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -243,12 +243,39 @@ public class ItemOverlays {
 
 	@Expose
 	@ConfigOption(
+		name = "Hide fail text",
+		desc = "Dont display the text saying you can't TP to the block"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean hideEtherwarpFailText = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Change colour when fail",
+		desc = "Show a different colour when you can't TP to the block"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean changeEtherwarpColourWhenFailed = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Highlight Colour",
 		desc = "Change the colour of the etherwarp target block outline"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 4)
 	public String etherwarpHighlightColour = "00:70:156:8:96";
+
+	@Expose
+	@ConfigOption(
+		name = "Fail Highlight Colour",
+		desc = "Change the colour of the etherwarp target block outline when you can't TP to that block"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 4)
+	public String etherwarpFailHighlightColour = "00:70:220:40:40";
 
 	@ConfigOption(
 		name = "Bonemerang Overlay",
@@ -382,7 +409,7 @@ public class ItemOverlays {
 	public boolean enableScytheOverlay = true;
 
 	@ConfigOption(
-		name="Custom Wither Cloak",
+		name = "Custom Wither Cloak",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 8)
@@ -461,6 +488,22 @@ public class ItemOverlays {
 	)
 	@ConfigEditorInfoText()
 	public boolean customWitherCloakCredit = false;
+
+	@ConfigOption(
+		name = "Grappling hook Overlay",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 9)
+	public boolean grappleAccordion = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable grappling hook overlay",
+		desc = "Show the cooldown of grappling hook in the item durability"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 9)
+	public boolean enableGrappleOverlay = true;
 
 	@Expose
 	@ConfigOption(

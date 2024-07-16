@@ -12,7 +12,7 @@
     "category": "block",
     "sounds": [
       {
-        "name": "gemstonebreaktopaz",
+        "name": "gemstonetopazbreak",
         "stream": false
       }
     ]
@@ -21,7 +21,7 @@
     "category": "block",
     "sounds": [
       {
-        "name": "gemstonebreakruby",
+        "name": "gemstonerubybreak",
         "stream": false
       }
     ]
@@ -30,7 +30,7 @@
     "category": "block",
     "sounds": [
       {
-        "name": "gemstonebreakamber",
+        "name": "gemstoneamberbreak",
         "stream": false
       }
     ]

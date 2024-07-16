@@ -40,8 +40,7 @@ class HotmInformation {
         val gui = event.gui
         if (gui !is GuiChest) return
 
-        val containerName = (gui.inventorySlots as ContainerChest).lowerChestInventory.displayName.unformattedText
-        if (containerName == "Heart of the Mountain") {
+        if (Utils.getOpenChestName() == "Heart of the Mountain") {
             ticksTillReload = 5
         }
     }
@@ -58,12 +57,16 @@ class HotmInformation {
 
     private fun loadDataFromInventory() {
         val profileSpecific = NotEnoughUpdates.INSTANCE.config.profileSpecific ?: return
-
-        for (slot in Minecraft.getMinecraft().thePlayer.openContainer.inventorySlots) {
-            val stack = slot.stack ?: continue
-            val displayName = stack.displayName
+        val currentScreen = Minecraft.getMinecraft().currentScreen
+        if (currentScreen !is GuiChest) {
+            return
+        }
+        val container = currentScreen.inventorySlots as ContainerChest
+        for (i in 0 until container.lowerChestInventory.sizeInventory) {
+            val stack = container.lowerChestInventory.getStackInSlot(i) ?: continue
+            val displayName = ItemUtils.getDisplayName(stack) ?: continue
             val lore = ItemUtils.getLore(stack)
-            if (!lore.any { it.contains("Right click to") }) continue
+            if (!lore.any { it.contains("Right-click to") }) continue
 
             val perkName = StringUtils.cleanColour(displayName)
             profileSpecific.hotmTree[perkName] = getLevel(lore[0])

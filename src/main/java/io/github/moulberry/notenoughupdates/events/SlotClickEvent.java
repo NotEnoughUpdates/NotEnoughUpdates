@@ -22,13 +22,25 @@ package io.github.moulberry.notenoughupdates.events;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import org.jetbrains.annotations.NotNull;
 
 @Cancelable
 public class SlotClickEvent extends NEUEvent {
-	public final GuiContainer guiContainer;
-	public final Slot slot;
+	public final @NotNull GuiContainer guiContainer;
+	public final @NotNull Slot slot;
 	public final int slotId;
 	public int clickedButton;
+	/**
+	 * Click types (along with the default keybind):
+	 *
+	 * <ul>
+	 * 	 <li>0 : mouse click (either LMB or RMB)</li>
+	 * 	 <li>1 : Shift mouse click</li>
+	 * 	 <li>2 : hotbar keybind (0-9) -> see clickedButton</li>
+	 * 	 <li>3 : pick block (middle mouse button)</li>
+	 * 	 <li>4 : drop block (Q)</li>
+	 * </ul>
+	 */
 	public int clickType;
 	public boolean usePickblockInstead = false;
 

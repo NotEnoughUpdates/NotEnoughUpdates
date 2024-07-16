@@ -23,6 +23,7 @@ import net.minecraft.block.Block
 import net.minecraft.block.BlockFire
 import net.minecraft.init.Bootstrap
 import net.minecraft.item.Item
+import net.minecraft.launchwrapper.Launch
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.Extension
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -40,7 +41,8 @@ class BootstrapHook : BeforeAllCallback, Extension {
         try {
             if (!bootstrapped) {
                 bootstrapped = true
-
+                Launch.blackboard = HashMap()
+                Launch.blackboard.put("fml.deobfuscatedEnvironment", true)
                 Bootstrap::class.java.getDeclaredField("alreadyRegistered").also { it.isAccessible = true }
                     .set(null, true)
                 Block.registerBlocks()

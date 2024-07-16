@@ -28,8 +28,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import lombok.var;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -65,12 +67,19 @@ import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.common.Loader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,6 +104,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -115,6 +125,8 @@ public class Utils {
 		EnumChatFormatting.DARK_PURPLE
 	};
 	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
+	final static Pattern GUILD_OR_PARTY_MESSAGE_PATTERN = Pattern.compile(
+		"(?:Party|Guild|Officer) > (?:\\[.*\\] )?([a-zA-Z0-9_]+):? (?:\\[.*\\]: )?");
 	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
 	public static boolean hasEffectOverride = false;
@@ -581,7 +593,9 @@ public class Utils {
 		int yIndex,
 		ItemStack itemStack,
 		boolean pressed,
-		GuiProfileViewer guiProfileViewer
+		GuiProfileViewer guiProfileViewer,
+		int mouseX,
+		int mouseY
 	) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
@@ -639,6 +653,9 @@ public class Utils {
 
 		GlStateManager.enableDepth();
 		drawItemStack(itemStack, x + 8, y + 7);
+		if (mouseY > y && mouseX > x && mouseY < y + 28 && mouseX < x + 28) {
+			guiProfileViewer.tooltipToDisplay = Collections.singletonList(itemStack.getDisplayName());
+		}
 	}
 
 	public static void drawTexturedRect(float x, float y, float width, float height, int filter) {
@@ -671,7 +688,7 @@ public class Utils {
 	}
 
 	public static String prettyCase(String str) {
-		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+		return str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT);
 	}
 
 	public static String getRarityFromInt(int rarity) {
@@ -1225,6 +1242,23 @@ public class Utils {
 		drawStringScaled(str, x - fr.getStringWidth(str) * factor, y, shadow, colour, factor);
 	}
 
+	public static void drawStringScaledFillWidth(
+		String str,
+		float x, float y,
+		boolean shadow,
+		int colour,
+		int availableSpace
+	) {
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x, y, 0);
+		var fr = Minecraft.getMinecraft().fontRendererObj;
+		var width = fr.getStringWidth(str);
+		float scale = ((float) availableSpace) / width;
+		GlStateManager.scale(scale, scale, 1f);
+		fr.drawString(str, -width / 2F, 0, colour, shadow);
+		GlStateManager.popMatrix();
+	}
+
 	public static void drawStringScaledMax(
 		String str,
 		float x,
@@ -1575,6 +1609,7 @@ public class Utils {
 		if (!prim.isNumber()) return def;
 		return prim.getAsInt();
 	}
+
 	public static long getElementAsLong(JsonElement element, long def) {
 		if (element == null) return def;
 		if (!element.isJsonPrimitive()) return def;
@@ -1646,13 +1681,15 @@ public class Utils {
 	public static char getPrimaryColourCode(String displayName) {
 		int lastColourCode = -99;
 		int currentColour = 0;
+		int colourIndex = 0;
 		int[] mostCommon = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		for (int i = 0; i < displayName.length(); i++) {
 			char c = displayName.charAt(i);
 			if (c == '\u00A7') {
 				lastColourCode = i;
 			} else if (lastColourCode == i - 1) {
-				currentColour = Math.max(0, "0123456789abcdef".indexOf(c));
+				colourIndex = "0123456789abcdef".indexOf(c);
+				if (colourIndex != -1) currentColour = colourIndex;
 			} else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0) {
 				if (currentColour > 0) {
 					mostCommon[currentColour]++;
@@ -1984,6 +2021,7 @@ public class Utils {
 
 	/**
 	 * Draws a solid color rectangle with the specified coordinates and color (ARGB format). Args: x1, y1, x2, y2, color
+	 *
 	 * @see Gui#drawRect
 	 */
 	public static void drawRect(float left, float top, float right, float bottom, int color) {
@@ -1998,10 +2036,10 @@ public class Utils {
 			top = bottom;
 			bottom = i;
 		}
-		float f = (float)(color >> 24 & 0xFF) / 255.0f;
-		float g = (float)(color >> 16 & 0xFF) / 255.0f;
-		float h = (float)(color >> 8 & 0xFF) / 255.0f;
-		float j = (float)(color & 0xFF) / 255.0f;
+		float f = (float) (color >> 24 & 0xFF) / 255.0f;
+		float g = (float) (color >> 16 & 0xFF) / 255.0f;
+		float h = (float) (color >> 8 & 0xFF) / 255.0f;
+		float j = (float) (color & 0xFF) / 255.0f;
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 		GlStateManager.enableBlend();
@@ -2018,7 +2056,6 @@ public class Utils {
 		GlStateManager.disableBlend();
 	}
 
-
 	/**
 	 * Draws a default-size 16 by 16 item-overlay at <i>x</i> and <i>y</i>.
 	 *
@@ -2032,9 +2069,9 @@ public class Utils {
 	/**
 	 * Draws an item-overlay of given <i>width</i> and <i>height</i> at <i>x</i> and <i>y</i>.
 	 *
-	 * @param x position of the overlay
-	 * @param y position of the overlay
-	 * @param width width of the overlay
+	 * @param x      position of the overlay
+	 * @param y      position of the overlay
+	 * @param width  width of the overlay
 	 * @param height height of the overlay
 	 */
 	public static void drawHoverOverlay(int x, int y, int width, int height) {
@@ -2239,7 +2276,10 @@ public class Utils {
 	}
 
 	private static long lastError = -1;
-	public static void showOutdatedRepoNotification(String missingFile) {
+
+	public static void showOutdatedRepoNotification(String missingFile) { showOutdatedRepoNotification(missingFile, null); }
+
+	public static void showOutdatedRepoNotification(String missingFile, Throwable exception) {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
@@ -2259,7 +2299,7 @@ public class Utils {
 			);
 		}
 		if (System.currentTimeMillis() - lastError > 1000) {
-			System.err.println("[NEU] Repo issue: " + missingFile);
+			NotEnoughUpdates.LOGGER.error("Repo issue: " + missingFile, exception);
 			lastError = System.currentTimeMillis();
 		}
 	}
@@ -2296,7 +2336,7 @@ public class Utils {
 		return new UUID(most.longValue(), least.longValue());
 	}
 
-	public static String getOpenChestName() {
+	public static @NotNull String getOpenChestName() {
 		return SBInfo.getInstance().currentlyOpenChestName;
 	}
 
@@ -2306,24 +2346,36 @@ public class Utils {
 
 	public static String getNameFromChatComponent(IChatComponent chatComponent) {
 		String unformattedText = cleanColour(chatComponent.getSiblings().get(0).getUnformattedText());
-		String username = unformattedText.substring(unformattedText.indexOf(">") + 2, unformattedText.indexOf(":"));
-		// If the first character is a square bracket the user has a rank
-		// So we get the username from the space after the closing square bracket (end of their rank)
-		if (username.charAt(0) == '[') {
-			username = username.substring(username.indexOf(" ") + 1);
+		Matcher matcher = GUILD_OR_PARTY_MESSAGE_PATTERN.matcher(unformattedText);
+		if (matcher.matches()) {
+			return matcher.group(1);
+		} else {
+			System.out.println("[NEU] getNameFromChatComponent ERROR: " + unformattedText);
+			return "idk_bruh";
 		}
-		// If we still get any square brackets it means the user was talking in guild chat with a guild rank
-		// So we get the username up to the space before the guild rank
-		if (username.contains("[") || username.contains("]")) {
-			username = username.substring(0, username.indexOf(" "));
-		}
-		return username;
 	}
 
-	public static void addChatMessage(String message) {
+	public static void addChatMessage(@NotNull String message) {
+		addChatMessage(new ChatComponentText(message));
+	}
+
+	public static void addClickableChatMessage(
+		@NotNull String message,
+		@NotNull String command,
+		@Nullable String hoverText
+	) {
+		if (hoverText == null)
+			hoverText = "§eClick to run §a" + command;
+		addChatMessage(new ChatComponentText(message)
+			.setChatStyle(new ChatStyle()
+				.setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverText)))));
+	}
+
+	public static void addChatMessage(@NotNull IChatComponent message) {
 		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
 		if (thePlayer != null) {
-			thePlayer.addChatMessage(new ChatComponentText(message));
+			thePlayer.addChatMessage(message);
 		} else {
 			System.out.println(message);
 		}
@@ -2353,6 +2405,13 @@ public class Utils {
 		);
 	}
 
+	public static void sendMiddleMouseClick(int windowId, int slot) {
+		Minecraft.getMinecraft().playerController.windowClick(
+			windowId,
+			slot, 2, 3, Minecraft.getMinecraft().thePlayer
+		);
+	}
+
 	public static String timeSinceMillisecond(long time) {
 		Instant lastSave = Instant.ofEpochMilli(time);
 		LocalDateTime lastSaveTime = LocalDateTime.ofInstant(lastSave, TimeZone.getDefault().toZoneId());
@@ -2372,5 +2431,49 @@ public class Utils {
 			renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		}
 		return renderText;
+	}
+
+	public static boolean canPetBeTierBoosted(PetInfoOverlay.Pet pet, PetInfoOverlay.Rarity rarityToBeBoostedTo) {
+		if (rarityToBeBoostedTo == null) return false;
+		ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager
+			.createItemResolutionQuery()
+			.withKnownInternalName(pet.petType + ";" + rarityToBeBoostedTo.petId)
+			.resolveToItemStack(false);
+		return itemStack != null;
+	}
+
+	public static void copyToClipboard(String str) {
+		Toolkit.getDefaultToolkit().getSystemClipboard()
+					 .setContents(new StringSelection(str), null);
+	}
+
+	public static void copyToClipboard(StringSelection stringSelection, ClipboardOwner owner) {
+		Toolkit.getDefaultToolkit().getSystemClipboard()
+					 .setContents(stringSelection, owner);
+	}
+
+	private static String clipboardCache = "";
+	private static long lastClipboard = -1;
+
+	public static String getClipboard() {
+		if (System.currentTimeMillis() - lastClipboard < 500) {
+			return clipboardCache;
+		}
+		lastClipboard = System.currentTimeMillis();
+		try {
+			Transferable clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+
+			if (clipboard != null && clipboard.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				String clipboardText = (String) clipboard.getTransferData(DataFlavor.stringFlavor);
+				clipboardCache = clipboardText;
+				return clipboardText;
+			} else {
+				clipboardCache = null;
+				return null;
+			}
+		} catch (UnsupportedFlavorException | IOException | HeadlessException | IllegalStateException ignored) {
+			clipboardCache = null;
+			return null;
+		}
 	}
 }

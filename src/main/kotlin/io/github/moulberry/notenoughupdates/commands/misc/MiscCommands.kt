@@ -27,8 +27,8 @@ import io.github.moulberry.notenoughupdates.cosmetics.GuiCosmetics
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay
 import io.github.moulberry.notenoughupdates.miscgui.DynamicLightItemsEditor
-import io.github.moulberry.notenoughupdates.miscgui.GuiItemCustomize
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.GuiItemCustomize
 import io.github.moulberry.notenoughupdates.util.Calculator
 import io.github.moulberry.notenoughupdates.util.Calculator.CalculatorException
 import io.github.moulberry.notenoughupdates.util.MinecraftExecutor
@@ -103,7 +103,11 @@ class MiscCommands {
                     return@thenExecute
                 }
 
-                NotEnoughUpdates.INSTANCE.openGui = GuiItemCustomize(held, heldUUID)
+                NotEnoughUpdates.INSTANCE.openGui =
+                    GuiItemCustomize(
+                        held,
+                        heldUUID
+                    )
             }
         }.withHelp("Customize your items")
         event.command("neupronouns", "neuliberals") {
@@ -116,17 +120,6 @@ class MiscCommands {
                     fetchPronouns("minecraft", this[user])
                 }
             }.withHelp("Look up someones pronouns using their minecraft username")
-        }
-        event.command("neuupdate", "neuupdates", "enoughupdates") {
-            thenLiteralExecute("check") {
-                NotEnoughUpdates.INSTANCE.autoUpdater.displayUpdateMessageIfOutOfDate()
-            }.withHelp("Check for updates")
-            thenLiteralExecute("scheduledownload") {
-                NotEnoughUpdates.INSTANCE.autoUpdater.scheduleDownload()
-            }.withHelp("Queue a new version of NEU to be downloaded")
-            thenLiteralExecute("updatemodes") {
-                reply("§bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files")
-            }.withHelp("Display an explanation why you cannot auto update")
         }
         event.command("neudynamiclights", "neudli", "neudynlights", "neudynamicitems") {
             thenExecute {
@@ -164,9 +157,7 @@ class MiscCommands {
             nc.printChatMessageWithOptionalDeletion(
                 ChatComponentText("§e[NEU] Pronouns for §b$user §eon §b$platform§e:"), id
             )
-            betterPronounChoice.render().forEach {
-                nc.printChatMessage(ChatComponentText("§e[NEU] §a$it"))
-            }
+            nc.printChatMessage(ChatComponentText("§e[NEU] §a${betterPronounChoice.render()}"))
             null
         }, MinecraftExecutor.OffThread)
 

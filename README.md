@@ -3,8 +3,8 @@
 
 <div align="center">
     <!-- release -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases/latest" target="_blank">
-        <img src="https://img.shields.io/github/v/release/Moulberry/NotEnoughUpdates?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/latest" target="_blank">
+        <img src="https://img.shields.io/github/v/release/NotEnoughUpdates/NotEnoughUpdates?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
     </a>
     <!-- lines -->
     <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">
@@ -23,16 +23,12 @@
         <img src="https://img.shields.io/discord/516977525906341928?label=discord&color=informational&logo=Discord&logoColor=FFFFFF" alt="discord">
     </a>
     <!-- downloads -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases" target="_blank">
-        <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases" target="_blank">
+        <img src="https://img.shields.io/github/downloads/NotEnoughUpdates/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
     </a>
 </div>
 
 NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel Skyblock.
-
-## Active repository
-
-Ever since Moulberry has stopped working on NEU, other contributors have been working on new features and fixes for the mod. If you are interested in contributing yourself, make a pull request to [NotEnoughUpdates/NotEnoughUpdates](https://github.com/NotEnoughUpdates/NotEnoughUpdates) to contribute to the prereleases, which eventually will be merged in bulk to [Moulberry/NotEnoughUpdates](https://github.com/Moulberry/NotEnoughUpdates) for major releases.
 
 ## Getting Started
 
@@ -47,7 +43,7 @@ Ever since Moulberry has stopped working on NEU, other contributors have been wo
 
 #### Installing the NotEnoughUpdates mod
 
-1. Download the latest mod [release](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/releases). If it says `this file may harm your computer`, click `allow anyways` as all java files will be flagged by Chrome.
+1. Download the latest mod [release](https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases). If it says `this file may harm your computer`, click `allow anyways` as all java files will be flagged by Chrome.
 2. Add the NEU mod:
    - If you have java installed, double click the file, click `install`
    - If not, press the windows key + R; type `%appdata%`; click on the folder called `.minecraft`; click on the folder called `mods` and drag the mods file in here.

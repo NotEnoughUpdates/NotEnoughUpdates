@@ -22,6 +22,9 @@ package io.github.moulberry.notenoughupdates.profileviewer.level.task;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
@@ -40,6 +43,15 @@ public class EventTaskLevel extends GuiTaskLevel {
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		List<String> lore = new ArrayList<>();
 
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+		APIDataJson data = selectedProfile.getAPIDataJson();
+		if (data == null) {
+			return;
+		}
+
 		int sbXpMiningFiesta = 0;
 		int sbXpFishingFestival = 0;
 		int sbXpSpookyFestival = 0;
@@ -48,12 +60,8 @@ public class EventTaskLevel extends GuiTaskLevel {
 
 		if (object.has("leveling")) {
 			JsonObject leveling = object.getAsJsonObject("leveling");
-			int miningFiestaOresMined = 0;
-			int fishingFestivalSharksKilled = 0;
-			if (leveling.has("mining_fiesta_ores_mined"))
-				miningFiestaOresMined = leveling.get("mining_fiesta_ores_mined").getAsInt();
-			if (leveling.has("fishing_festival_sharks_killed")) fishingFestivalSharksKilled = leveling.get(
-				"fishing_festival_sharks_killed").getAsInt();
+			int miningFiestaOresMined = data.leveling.mining_fiesta_ores_mined;
+			int fishingFestivalSharksKilled = data.leveling.fishing_festival_sharks_killed;
 
 			sbXpMiningFiesta = getCapOrAmount(miningFiestaOresMined, 1_000_000, 5_000);
 			sbXpFishingFestival = getCapOrAmount(fishingFestivalSharksKilled, 5_000, 50);

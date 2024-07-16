@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.Sl
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -97,7 +98,7 @@ public class MinionHelperRepoMinionLoader {
 						}
 						case "slayer_req": {
 							String[] split = value.split("_");
-							String slayerType = split[0].toLowerCase();
+							String slayerType = split[0].toLowerCase(Locale.ROOT);
 							int tier = Integer.parseInt(split[1]);
 							minion.getRequirements().add(new SlayerRequirement(slayerType, tier));
 							break;

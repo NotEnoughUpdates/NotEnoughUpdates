@@ -22,12 +22,14 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.Line;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.Vec3Comparable;
 import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.util.NEUDebugLogger;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.event.ClickEvent;
@@ -499,7 +501,15 @@ public class CrystalWishingCompassSolver {
 	}
 
 	private boolean isKingsScentPresent() {
-		return SBInfo.getInstance().footer.getUnformattedText().contains("King's Scent I");
+		if (SBInfo.getInstance().footer.getUnformattedText().contains("King's Scent I")) {
+			return true;
+		}
+		for (String name : TabListUtils.getTabList()) {
+			if (StringUtils.cleanColour(name).contains("King's Scent I")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private EnumSet<Crystal> getFoundCrystals() {

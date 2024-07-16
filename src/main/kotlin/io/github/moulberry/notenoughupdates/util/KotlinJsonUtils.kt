@@ -45,3 +45,11 @@ fun JsonObject.getDoubleOrValue(key: String, alternative: Double): Double {
         alternative
     }
 }
+
+fun JsonObject.getLongOrValue(key: String, alternative: Long): Long {
+    return if (has(key) && get(key).isJsonPrimitive && get(key).asJsonPrimitive.isNumber) {
+        get(key).asLong
+    } else {
+        alternative
+    }
+}

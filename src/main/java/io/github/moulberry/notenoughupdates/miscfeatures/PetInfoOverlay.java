@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -308,7 +309,7 @@ public class PetInfoOverlay extends TextOverlay {
 		pet.petType = petType;
 		JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
 		pet.petXpType =
-			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
+			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase(Locale.ROOT)).getAsString().toLowerCase(Locale.ROOT) : "unknown";
 		pet.skin = skin;
 
 		return pet;
@@ -328,7 +329,7 @@ public class PetInfoOverlay extends TextOverlay {
 				"alchemy",
 				"all"
 			);
-		if (!validXpTypes.contains(xpType.toLowerCase())) return 0;
+		if (!validXpTypes.contains(xpType.toLowerCase(Locale.ROOT))) return 0;
 
 		float tamingPercent = 1.0f + (config.tamingLevel / 100f);
 		xp = xp * tamingPercent;
@@ -354,10 +355,10 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 		JsonObject pets = Constants.PETS;
 		if (pets != null && pets.has("custom_pet_leveling") &&
-			pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase()) &&
-			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().has(
+			pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase(Locale.ROOT)) &&
+			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase(Locale.ROOT)).getAsJsonObject().has(
 				"xp_multiplier")) {
-			xp *= pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().get(
+			xp *= pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase(Locale.ROOT)).getAsJsonObject().get(
 				"xp_multiplier").getAsFloat();
 		}
 		return xp;
@@ -459,7 +460,9 @@ public class PetInfoOverlay extends TextOverlay {
 		if (currentPet.petItem != null) {
 			JsonObject json = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petItem);
 			if (json != null) {
-				String name = NotEnoughUpdates.INSTANCE.manager.jsonToStack(json).getDisplayName();
+				String name;
+				if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petItemIcon) name = NotEnoughUpdates.INSTANCE.manager.jsonToStack(json).getDisplayName();
+				else name = "";
 				petItemStr = EnumChatFormatting.AQUA + "Held Item: " + name;
 			}
 		}
@@ -602,52 +605,28 @@ public class PetInfoOverlay extends TextOverlay {
 			return;
 		}
 
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
-		int mythicRarity = currentPet.rarity.petId;
-		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-			currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
+		if (NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) {
+			int mythicRarity = currentPet.rarity.petId;
+			JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+				currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
 
-		if (petItem == null && currentPet.rarity.petId == 5) {
-			petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-				currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + 4));
-		}
+			if (petItem == null && currentPet.rarity.petId == 5) {
+				petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+					currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + 4));
+			}
 
-		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight, true);
-			int x = (int) position.x;
-			int y = (int) position.y;
-
-			ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
-			GlStateManager.enableDepth();
-			GlStateManager.pushMatrix();
-			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
-
-			if (firstPetLines == 1) y -= 9;
-			if (firstPetLines == 2) y -= 3;
-
-			GlStateManager.translate(x - 2, y - 2, 0);
-			GlStateManager.scale(2, 2, 1);
-			Utils.drawItemStack(stack, 0, 0);
-			Utils.pushGuiScale(0);
-			GlStateManager.popMatrix();
-		}
-
-		Pet currentPet2 = getCurrentPet2();
-		if (currentPet2 != null) {
-			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-				currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
-			if (petItem2 != null) {
+			if (petItem != null) {
 				Vector2f position = getPosition(overlayWidth, overlayHeight, true);
 				int x = (int) position.x;
-				int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
+				int y = (int) position.y;
 
-				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
+				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
 				GlStateManager.enableDepth();
 				GlStateManager.pushMatrix();
 				Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 
-				if (secondPetLines == 1) y -= 9;
-				if (secondPetLines == 2) y -= 3;
+				if (firstPetLines == 1) y -= 9;
+				if (firstPetLines == 2) y -= 3;
 
 				GlStateManager.translate(x - 2, y - 2, 0);
 				GlStateManager.scale(2, 2, 1);
@@ -655,12 +634,103 @@ public class PetInfoOverlay extends TextOverlay {
 				Utils.pushGuiScale(0);
 				GlStateManager.popMatrix();
 			}
+
+			Pet currentPet2 = getCurrentPet2();
+			if (currentPet2 != null) {
+				JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+					currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
+				if (petItem2 != null) {
+					Vector2f position = getPosition(overlayWidth, overlayHeight, true);
+					int x = (int) position.x;
+					int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
+
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
+					GlStateManager.enableDepth();
+					GlStateManager.pushMatrix();
+					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+					if (secondPetLines == 1) y -= 9;
+					if (secondPetLines == 2) y -= 3;
+
+					GlStateManager.translate(x - 2, y - 2, 0);
+					GlStateManager.scale(2, 2, 1);
+					Utils.drawItemStack(stack, 0, 0);
+					Utils.pushGuiScale(0);
+					GlStateManager.popMatrix();
+				}
+			}
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.petOverlay.petItemIcon) {
+			int backgroundOffset = (NotEnoughUpdates.INSTANCE.config.petOverlay.petInfoOverlayStyle == 0) ? 0 : 5;
+			if (currentPet.petItem != null) {
+				JsonObject petHeldItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petItem);
+
+				if (petHeldItem != null) {
+					Vector2f position = getPosition(overlayWidth, overlayHeight, true);
+					int x = (int) position.x;
+					int y = (int) position.y;
+
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petHeldItem);
+					GlStateManager.enableDepth();
+					GlStateManager.pushMatrix();
+					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+					int counter = 0;
+					for (String line : overlayStrings) {
+						if (line.contains("Held Item:")) {
+							break;
+						}
+						counter++;
+					}
+					if (counter >= overlayStrings.size()) {
+						return;
+					}
+
+					GlStateManager.translate(x + 77, y + (10 * counter) + 2 - backgroundOffset, 0);
+					Utils.drawItemStack(stack, 0, 0);
+					Utils.pushGuiScale(0);
+					GlStateManager.popMatrix();
+				}
+			}
+
+			Pet currentPet2 = getCurrentPet2();
+			if (currentPet2 != null && currentPet2.petItem != null) {
+				JsonObject petHeldItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet2.petItem);
+
+				if (petHeldItem != null) {
+					Vector2f position = getPosition(overlayWidth, overlayHeight, true);
+					int x = (int) position.x;
+					int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
+
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petHeldItem);
+					GlStateManager.enableDepth();
+					GlStateManager.pushMatrix();
+					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+					int counter = 0;
+					for (String line : overlayStrings) {
+						if (line.contains("Held Item:")) {
+							break;
+						}
+						counter++;
+					}
+					if (counter >= overlayStrings.size()) {
+						return;
+					}
+
+					GlStateManager.translate(x + 77, y + (10 * counter) + 2 - backgroundOffset, 0);
+					Utils.drawItemStack(stack, 0, 0);
+					Utils.pushGuiScale(0);
+					GlStateManager.popMatrix();
+				}
+			}
 		}
 	}
 
 	public static float getBoostMultiplier(String boostName) {
 		if (boostName == null) return 1;
-		boostName = boostName.toLowerCase();
+		boostName = boostName.toLowerCase(Locale.ROOT);
 		if (boostName.equalsIgnoreCase("PET_ITEM_ALL_SKILLS_BOOST_COMMON")) {
 			return 1.1f;
 		} else if (boostName.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
@@ -690,7 +760,12 @@ public class PetInfoOverlay extends TextOverlay {
 
 	@SubscribeEvent
 	public void onStackClick(SlotClickEvent event) {
-		if (event.clickedButton != 0 && event.clickedButton != 1 && event.clickedButton != 2) return;
+		// 0 through 8 are the mouse as well as the keyboard buttons, allow all of those
+		if (event.clickedButton < 0 || event.clickedButton > 8) return;
+		// Ignore RMB clicks, which convert the pet to an item
+		if (event.clickedButton == 1 && event.clickType == 0) return;
+		// Ignore shift clicks, which don't work
+		if (event.clickType == 1) return;
 
 		int slotIdMod = (event.slotId - 10) % 9;
 		if (event.slotId >= 10 && event.slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
@@ -859,7 +934,7 @@ public class PetInfoOverlay extends TextOverlay {
 								String rarityString = Utils.getRarityFromInt(rarity);
 
 								String name = StringUtils.cleanColour(petStack.getDisplayName());
-								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase();
+								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase(Locale.ROOT);
 
 								float petXp = petInfoObject.get("exp").getAsFloat();
 
@@ -879,6 +954,7 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
+	// TODO: Add support for sub menus in /tab, so we can configure "Always show most recently gained skill" in the Skill tab widget
 	public void updatePetLevels() {
 		HashMap<String, XPInformation.SkillInfo> skillInfoMap = XPInformation.getInstance().getSkillInfoMap();
 
@@ -888,7 +964,7 @@ public class PetInfoOverlay extends TextOverlay {
 		for (Map.Entry<String, XPInformation.SkillInfo> entry : skillInfoMap.entrySet()) {
 			if (entry.getValue().level == 50 && entry.getValue().fromApi) continue;
 
-			float skillXp = entry.getValue().totalXp;
+			float skillXp = (float) entry.getValue().totalXp;
 			if (skillInfoMapLast.containsKey(entry.getKey())) {
 				float skillXpLast = skillInfoMapLast.get(entry.getKey());
 
@@ -997,7 +1073,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 					String pet = Utils.cleanColour(petName)
 														.replaceAll("[^\\w ]", "").trim()
-														.replace(" ", "_").toUpperCase();
+														.replace(" ", "_").toUpperCase(Locale.ROOT);
 
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
@@ -1009,9 +1085,9 @@ public class PetInfoOverlay extends TextOverlay {
 									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
 						}
 					}
-				} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(
+				} else if ((chatMessage.toLowerCase(Locale.ROOT).startsWith("you despawned your")) || (chatMessage.toLowerCase(Locale.ROOT).contains(
 					"switching to profile"))
-					|| (chatMessage.toLowerCase().contains("transferring you to a new island..."))) {
+					|| (chatMessage.toLowerCase(Locale.ROOT).contains("transferring you to a new island..."))) {
 					clearPet();
 				}
 			}

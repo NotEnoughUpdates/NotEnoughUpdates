@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -78,6 +79,7 @@ public class GuiCustomEnchant extends Gui {
 	private static final ModelBook MODEL_BOOK = new ModelBook();
 
 	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
+	private static final Pattern DISCOUNT_COST_PATTERN = Pattern.compile("\\u00a78\\u00a7m(\\d+)\\u00a73 (\\d+) Exp Levels");
 	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
 	private static final Pattern ENCHANT_NAME_PATTERN = Pattern.compile("([^IVX]*) ([IVX]*)");
 
@@ -159,6 +161,15 @@ public class GuiCustomEnchant extends Gui {
 					}
 
 				}
+			}
+			for (String line : this.displayLore) {
+					Matcher matcher = XP_COST_PATTERN.matcher(line);
+					Matcher discount_matcher = DISCOUNT_COST_PATTERN.matcher(line);
+					if (matcher.find()) {
+						this.xpCost = Integer.parseInt(matcher.group(1));
+					} else if (discount_matcher.find()) {
+							this.xpCost = Integer.parseInt(discount_matcher.group(2));
+					}
 			}
 		}
 	}
@@ -381,7 +392,7 @@ public class GuiCustomEnchant extends Gui {
 								if (enchantments != null) {
 									String enchId = Utils
 										.cleanColour(book.getDisplayName())
-										.toLowerCase()
+										.toLowerCase(Locale.ROOT)
 										.replace(" ", "_")
 										.replace("-", "_")
 										.replaceAll("[^a-z_]", "");
@@ -396,7 +407,7 @@ public class GuiCustomEnchant extends Gui {
 									}
 									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
 									if (levelMatcher.matches()) {
-										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
+										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase(Locale.ROOT));
 										enchId = levelMatcher.group(1);
 									}
 									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
@@ -431,8 +442,11 @@ public class GuiCustomEnchant extends Gui {
 				if (enchanterCurrentEnch != null && removingEnchantPlayerLevel >= 0) {
 					for (String line : enchanterCurrentEnch.displayLore) {
 						Matcher matcher = XP_COST_PATTERN.matcher(line);
+						Matcher discount_matcher = DISCOUNT_COST_PATTERN.matcher(line);
 						if (matcher.find()) {
 							enchanterCurrentEnch.xpCost = Integer.parseInt(matcher.group(1));
+						} else if (discount_matcher.find()) {
+							enchanterCurrentEnch.xpCost = Integer.parseInt(discount_matcher.group(2));
 						}
 					}
 				}
@@ -457,7 +471,7 @@ public class GuiCustomEnchant extends Gui {
 									if (enchantments != null) {
 										String enchId = Utils
 											.cleanColour(book.getDisplayName())
-											.toLowerCase()
+											.toLowerCase(Locale.ROOT)
 											.replace(" ", "_")
 											.replace("-", "_")
 											.replaceAll("[^a-z_]", "");
@@ -466,7 +480,7 @@ public class GuiCustomEnchant extends Gui {
 										String name = Utils.cleanColour(book.getDisplayName());
 
 										if (searchField.getText().trim().isEmpty() ||
-											name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+											name.toLowerCase(Locale.ROOT).contains(searchField.getText().trim().toLowerCase(Locale.ROOT))) {
 											if (name.equalsIgnoreCase("Bane of Arthropods")) {
 												name = "Bane of Arth.";
 											} else if (name.equalsIgnoreCase("Projectile Protection")) {
@@ -512,7 +526,7 @@ public class GuiCustomEnchant extends Gui {
 					Comparator<Enchantment> comparator = cfg.enchantingSolvers.enchantSorting == 0 ?
 						Comparator.comparingInt(e -> mult * e.xpCost) :
 						(c1, c2) -> mult *
-							c1.enchId.toLowerCase().compareTo(c2.enchId.toLowerCase());
+							c1.enchId.toLowerCase(Locale.ROOT).compareTo(c2.enchId.toLowerCase(Locale.ROOT));
 					removable.sort(comparator);
 					applicable.sort(comparator);
 				}

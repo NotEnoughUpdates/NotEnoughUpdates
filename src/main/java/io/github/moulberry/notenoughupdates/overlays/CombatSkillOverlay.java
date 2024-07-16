@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,6 +47,7 @@ public class CombatSkillOverlay
 	private int championXp = -1;
 	private int championXpLast = -1;
 	private final LinkedList<Integer> killQueue = new LinkedList<>();
+	private boolean hasToxophilite = false;
 
 	private XPInformation.SkillInfo skillInfo = null;
 	private XPInformation.SkillInfo skillInfoLast = null;
@@ -112,8 +114,12 @@ public class CombatSkillOverlay
 					kill = ea.getInteger("stats_book");
 					killQueue.add(0, kill);
 				}
+				hasToxophilite = false;
 				if (ea.hasKey("champion_combat_xp", 99)) {
 					championXp = (int) ea.getDouble("champion_combat_xp");
+				} else if (ea.hasKey("toxophilite_combat_xp", 99)) {
+					championXp = (int) ea.getDouble("toxophilite_combat_xp");
+					hasToxophilite = true;
 				}
 			}
 		}
@@ -173,12 +179,14 @@ public class CombatSkillOverlay
 				break;
 		}
 
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
-
 		skillInfoLast = skillInfo;
-		skillInfo = XPInformation.getInstance().getSkillInfo(skillType);
+		var s = NotEnoughUpdates.INSTANCE.config.skillOverlays.combatText;
+		skillInfo = XPInformation.getInstance().getSkillInfo(
+			skillType,
+			s.contains(1) || s.contains(2) || s.contains(3) || s.contains(4)
+		);
 		if (skillInfo != null) {
-			float totalXp = skillInfo.totalXp;
+			float totalXp = (float) skillInfo.totalXp;
 
 			if (lastTotalXp > 0) {
 				float delta = totalXp - lastTotalXp;
@@ -250,11 +258,16 @@ public class CombatSkillOverlay
 				lineMap.put(0, EnumChatFormatting.AQUA + "Kills: " + EnumChatFormatting.YELLOW + format.format(counterInterp));
 			}
 
+			String enchantText = "Champion: ";
+			if (hasToxophilite) {
+				enchantText = "Toxophilite: ";
+			}
+
 			if (championTier <= 9 && championXp >= 0) {
 				int counterInterp = (int) interp(championXp, championXpLast);
 				lineMap.put(
 					6,
-					EnumChatFormatting.AQUA + "Champion: " + EnumChatFormatting.YELLOW + format.format(counterInterp) + "/" +
+					EnumChatFormatting.AQUA + enchantText + EnumChatFormatting.YELLOW + format.format(counterInterp) + "/" +
 						championTierAmount
 				);
 			}
@@ -262,7 +275,7 @@ public class CombatSkillOverlay
 				int counterInterp = (int) interp(championXp, championXpLast);
 				lineMap.put(
 					6,
-					EnumChatFormatting.AQUA + "Champion: " + EnumChatFormatting.YELLOW + format.format(counterInterp) + " " +
+					EnumChatFormatting.AQUA + enchantText + EnumChatFormatting.YELLOW + format.format(counterInterp) + " " +
 						EnumChatFormatting.RED + championTierAmount
 				);
 			}
@@ -285,9 +298,9 @@ public class CombatSkillOverlay
 								.append(EnumChatFormatting.GRAY)
 								.append(" [");
 
-				float progress = skillInfo.currentXp / skillInfo.currentXpMax;
+				float progress = (float) (skillInfo.currentXp / skillInfo.currentXpMax);
 				if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-					progress = interp(progress, skillInfoLast.currentXp / skillInfoLast.currentXpMax);
+					progress = interp(progress, (float) (skillInfoLast.currentXp / skillInfoLast.currentXpMax));
 				}
 
 				float lines = 25;
@@ -308,7 +321,7 @@ public class CombatSkillOverlay
 
 				int current = (int) skillInfo.currentXp;
 				if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-					current = (int) interp(current, skillInfoLast.currentXp);
+					current = (int) interp(current, (float) skillInfoLast.currentXp);
 				}
 
 				int remaining = (int) (skillInfo.currentXpMax - skillInfo.currentXp);
@@ -342,7 +355,7 @@ public class CombatSkillOverlay
 			if (skillInfo != null && skillInfo.level == 60) {
 				int current = (int) skillInfo.currentXp;
 				if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-					current = (int) interp(current, skillInfoLast.currentXp);
+					current = (int) interp(current,(float)  skillInfoLast.currentXp);
 				}
 
 				lineMap.put(

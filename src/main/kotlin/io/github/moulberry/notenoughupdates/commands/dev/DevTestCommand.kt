@@ -23,7 +23,6 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.github.moulberry.notenoughupdates.BuildFlags
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
-import io.github.moulberry.notenoughupdates.core.util.MiscUtils
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes
@@ -65,7 +64,8 @@ class DevTestCommand {
             "7a9dc802-d401-4d7d-93c0-8dd1bc98c70d",  // efefury
             "bb855349-dfd8-4125-a750-5fc2cf543ad5",  // hannibal2
             "eaa5623c-8413-46b7-a74b-2d74a42b2841",  // calmwolfs
-            "e2c6f077-d45c-43ac-8322-857c7f8df3b9"   // vixid
+            "e2c6f077-d45c-43ac-8322-857c7f8df3b9",  // vixid
+            "503450fc-72c2-4e87-8243-94e264977437"   // thatgravyboat
         )
         val SPECIAL_KICK = "SPECIAL_KICK"
 
@@ -252,7 +252,7 @@ class DevTestCommand {
             }
             thenLiteralExecute("copytablist") {
                 val tabList = TabListUtils.getTabList().joinToString("\n", postfix = "\n")
-                MiscUtils.copyToClipboard(tabList)
+                Utils.copyToClipboard(tabList)
                 reply("Copied tablist to clipboard!")
             }.withHelp("Copy the tab list")
             thenLiteral("useragent") {

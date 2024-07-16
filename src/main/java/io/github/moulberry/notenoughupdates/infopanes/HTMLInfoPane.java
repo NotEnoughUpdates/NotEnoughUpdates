@@ -60,6 +60,7 @@ import java.net.URLConnection;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -128,7 +129,7 @@ public class HTMLInfoPane extends TextInfoPane {
 
 			public void parseInternalImageLink(String imageNamespace, String rawImageLink) {
 				rawImageLink = rawImageLink.replaceFirst("\\|x([0-9]+)px", "\\|$1x$1px");
-				if (!rawImageLink.split("\\|")[0].toLowerCase().endsWith(".jpg")) {
+				if (!rawImageLink.split("\\|")[0].toLowerCase(Locale.ROOT).endsWith(".jpg")) {
 					super.parseInternalImageLink(imageNamespace, rawImageLink);
 				}
 			}

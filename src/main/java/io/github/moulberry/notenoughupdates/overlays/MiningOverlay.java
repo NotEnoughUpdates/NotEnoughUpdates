@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,12 +25,15 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
+import io.github.moulberry.notenoughupdates.miscfeatures.GlaciteTunnelWaypoints;
+import io.github.moulberry.notenoughupdates.miscfeatures.HotmDesires;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.options.separatesections.Mining;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
-import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -39,25 +42,26 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static io.github.moulberry.notenoughupdates.util.Utils.showOutdatedRepoNotification;
-import static net.minecraft.util.EnumChatFormatting.BLUE;
-import static net.minecraft.util.EnumChatFormatting.BOLD;
 import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 import static net.minecraft.util.EnumChatFormatting.GOLD;
 import static net.minecraft.util.EnumChatFormatting.GREEN;
 import static net.minecraft.util.EnumChatFormatting.RED;
-import static net.minecraft.util.EnumChatFormatting.RESET;
 import static net.minecraft.util.EnumChatFormatting.YELLOW;
 
 public class MiningOverlay extends TextTabOverlay {
@@ -156,13 +160,13 @@ public class MiningOverlay extends TextTabOverlay {
 
 	private void updateCommissions(IInventory lower) {
 		// Get the location (type) of the currently shown commissions
-		ItemStack commTypeStack = lower.getStackInSlot(27);
+		ItemStack commTypeStack = lower.getStackInSlot(32);
 		if (commTypeStack == null || !commTypeStack.hasTagCompound()) {
 			return;
 		}
 
 		String name = Utils.cleanColour(commTypeStack.getDisplayName()).trim();
-		if (!name.equals("Switch Type")) {
+		if (!name.equals("Filter")) {
 			return;
 		}
 
@@ -172,11 +176,14 @@ public class MiningOverlay extends TextTabOverlay {
 			if (line == null) {
 				continue;
 			}
-			String cleanLine = Utils.cleanColour(line).trim();
+			if (!line.contains("▶")) continue;
+			String cleanLine = Utils.cleanColour(line).replace("▶", "").trim();
 			if (cleanLine.equals("Dwarven Mines")) {
 				commLocation = "mining_3";
 			} else if (cleanLine.equals("Crystal Hollows")) {
 				commLocation = "crystal_hollows";
+			} else if (cleanLine.equals("Glacite Tunnels")) {
+				commLocation = "mineshaft";
 			} else {
 				continue;
 			}
@@ -229,12 +236,27 @@ public class MiningOverlay extends TextTabOverlay {
 		"\\xA77Time Remaining: \\xA7a((?<Completed>Completed!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern timeRemainingTab = Pattern.compile(
 		".*[1-5]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
-	private static final Pattern forgesHeaderPattern = Pattern.compile(
-		"\\xa7r\\xa79\\xa7lForges \\xa7r(?:\\xa7f\\(\\+1 more\\)\\xa7r)?");
+	private static final Pattern forgeIntPattern = Pattern.compile(
+		"[^)]*([1-5])\\).*");
 
 	@Override
 	public boolean isEnabled() {
 		return NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay;
+	}
+
+	public @Nullable NEUConfig.HiddenLocationSpecific getMiningLocationSpecific() {
+		String location = SBInfo.getInstance().getLocation();
+		if (location == null || location.isEmpty()) {
+			return null;
+		}
+
+		String sideBarLoc = SBInfo.getInstance().getScoreboardLocation();
+		if (location.equals("mining_3")
+			&& (GlaciteTunnelWaypoints.INSTANCE.getGlaciteTunnelLocations().contains(sideBarLoc))) {
+			location = "mineshaft";
+		}
+		return NotEnoughUpdates.INSTANCE.config.getLocationSpecific(location);
+
 	}
 
 	@Override
@@ -245,7 +267,9 @@ public class MiningOverlay extends TextTabOverlay {
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay &&
 			NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints == 0 &&
 			!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert &&
-			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0) {
+			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0
+			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints.get() != Mining.GlaciteTunnelWaypointBehaviour.NONE
+			&& HotmDesires.wantsPowderInfo()) {
 			return;
 		}
 
@@ -253,49 +277,53 @@ public class MiningOverlay extends TextTabOverlay {
 		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
 		if (SBInfo.getInstance().getLocation() == null) return;
 		if (SBInfo.getInstance().getLocation().equals("mining_3") ||
-			SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
+			SBInfo.getInstance().getLocation().equals("crystal_hollows")
+			|| SBInfo.getInstance().getLocation().equals("mineshaft")) {
 			commissionProgress.clear();
 
 			// These strings will be displayed one after the other when the player list is disabled
-			String mithrilPowder = RED + "[NEU] Failed to get data from your tablist";
-			String gemstonePowder = RED + "Please enable player list info in your SkyBlock settings";
+			String mithrilPowder = "";
+			String gemstonePowder = "";
+			String glacitePowder = "";
 
-			int forgeInt = 0;
-			boolean commissions = false;
-			boolean forges = false;
+			List<String> powderLines = getTabLinesOrAddWarning(1, TablistAPI.WidgetNames.POWDER);
+			getTabLinesOrAddWarning(2, TablistAPI.WidgetNames.POWDER);
+			getTabLinesOrAddWarning(6, TablistAPI.WidgetNames.POWDER);
 
-			for (String name : TabListUtils.getTabList()) {
-				if (name.contains("Mithril Powder:")) {
-					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
-					continue;
+			for (String line : powderLines) {
+				if (line.contains("Mithril:")) {
+					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "")
+						+ HotmDesires.appendDesireForType("Mithril");
 				}
-
-				if (name.contains("Gemstone Powder:")) {
-					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
-					continue;
+				if (line.contains("Gemstone:")) {
+					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "")
+						+ HotmDesires.appendDesireForType("Gemstone");
 				}
-
-				Matcher forgesMatcher = forgesHeaderPattern.matcher(name);
-				if (forgesMatcher.matches() && profileConfig != null) {
-					commissions = false;
-					forges = true;
-					continue;
+				if (line.contains("Glacite: ")) {
+					glacitePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(line).replaceAll("\u00a7[f|F|r]", "")
+						+ HotmDesires.appendDesireForType("Glacite");
 				}
+			}
 
-				// Commissions appear after Forges, start enumerating Commissions instead of Forges
-				if (name.equals(RESET.toString() + BLUE + BOLD + "Commissions" + RESET) && profileConfig != null) {
-					commissions = true;
-					forges = false;
-					continue;
-				}
+			List<String> tabForgeLines = getTabLinesOrAddWarning(3, TablistAPI.WidgetNames.FORGE);
 
+			Set<Integer> foundForges = new HashSet<>();
+
+			for (String name : tabForgeLines) {
 				String cleanName = StringUtils.cleanColour(name);
-				if (forges && cleanName.startsWith(" ") && profileConfig != null) {
+				if (cleanName.startsWith(" ") && profileConfig != null) {
 					char firstChar = cleanName.trim().charAt(0);
 					if (firstChar < '0' || firstChar > '9') {
-						forges = false;
+						break;
 					} else {
-
+						int forgeInt;
+						Matcher forgeIntMatcher = forgeIntPattern.matcher(cleanName);
+						if (forgeIntMatcher.matches()) {
+							forgeInt = Integer.parseInt(forgeIntMatcher.group(1)) - 1;
+							foundForges.add(forgeInt);
+						} else {
+							continue;
+						}
 						if (name.contains("LOCKED")) {
 							ForgeItem item = new ForgeItem(forgeInt, 1, true);
 							replaceForgeOrAdd(item, profileConfig.forgeItems, true);
@@ -342,9 +370,22 @@ public class MiningOverlay extends TextTabOverlay {
 								}
 							}
 						}
-						forgeInt++;
 					}
-				} else if (commissions && cleanName.startsWith(" ") && profileConfig != null) {
+				}
+			}
+
+			if (profileConfig != null)
+				for (int i = 0; i < 5; i++) {
+					if (foundForges.contains(i)) continue;
+					ForgeItem item = new ForgeItem(i, 0, true);
+					replaceForgeOrAdd(item, profileConfig.forgeItems, true);
+				}
+
+			List<String> tabCommissionLines = getTabLinesOrAddWarning(0, TablistAPI.WidgetNames.COMMISSIONS);
+
+			for (String name : tabCommissionLines) {
+				String cleanName = StringUtils.cleanColour(name);
+				if (cleanName.startsWith(" ") && profileConfig != null) {
 					String[] split = cleanName.trim().split(": ");
 					if (split.length == 2) {
 						if (split[1].endsWith("%")) {
@@ -354,17 +395,22 @@ public class MiningOverlay extends TextTabOverlay {
 								commissionProgress.put(split[0], progress);
 							} catch (Exception ignored) {
 							}
-						} else {
+						} else if (split[1].endsWith("DONE")) {
 							commissionProgress.put(split[0], 1.0f);
 						}
 					}
-				} else {
-					commissions = false;
-					forges = false;
 				}
 			}
 
+			if (ItemCooldowns.firstLoadMillis > 0) {
+				//set cooldown on first skyblock load.
+				ItemCooldowns.pickaxeUseCooldownMillisRemaining =
+					60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
+				ItemCooldowns.firstLoadMillis = 0;
+			}
+
 			if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
+				overlayStrings = null;
 				return;
 			}
 
@@ -390,7 +436,7 @@ public class MiningOverlay extends TextTabOverlay {
 							tips = "";
 						}
 					}
-					NEUConfig.HiddenLocationSpecific locationSpecific = NotEnoughUpdates.INSTANCE.config.getLocationSpecific();
+					NEUConfig.HiddenLocationSpecific locationSpecific = getMiningLocationSpecific();
 					int max;
 					if (-1 != (max = locationSpecific.commissionMaxes.getOrDefault(entry.getKey(), -1))) {
 						commissionsStrings.add(
@@ -406,13 +452,6 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
-			if (ItemCooldowns.firstLoadMillis > 0) {
-				//set cooldown on first skyblock load.
-				ItemCooldowns.pickaxeUseCooldownMillisRemaining =
-					60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
-				ItemCooldowns.firstLoadMillis = 0;
-			}
-
 			String pickaxeCooldown;
 			if (ItemCooldowns.pickaxeUseCooldownMillisRemaining <= 0) {
 				pickaxeCooldown = DARK_AQUA + "Pickaxe CD: \u00a7aReady";
@@ -420,7 +459,6 @@ public class MiningOverlay extends TextTabOverlay {
 				pickaxeCooldown =
 					DARK_AQUA + "Pickaxe CD: \u00a7a" + (ItemCooldowns.pickaxeUseCooldownMillisRemaining / 1000) + "s";
 			}
-
 			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2) {
 				switch (index) {
@@ -428,10 +466,10 @@ public class MiningOverlay extends TextTabOverlay {
 						overlayStrings.addAll(commissionsStrings);
 						break;
 					case 1:
-						overlayStrings.add(mithrilPowder);
+						if (!mithrilPowder.isEmpty()) overlayStrings.add(mithrilPowder);
 						break;
 					case 2:
-						overlayStrings.add(gemstonePowder);
+						if (!gemstonePowder.isEmpty()) overlayStrings.add(gemstonePowder);
 						break;
 					case 3:
 						if (profileConfig != null) {
@@ -446,7 +484,10 @@ public class MiningOverlay extends TextTabOverlay {
 							DARK_AQUA + "Star Cult: " + GREEN + StarCultCalculator.getNextStarCult());
 						break;
 					case 6:
-							overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+						overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+						break;
+					case 7:
+						if (!glacitePowder.isEmpty()) overlayStrings.add(glacitePowder);
 						break;
 				}
 			}
@@ -523,6 +564,23 @@ public class MiningOverlay extends TextTabOverlay {
 		if (overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
 	}
 
+	private List<String> getTabLinesOrAddWarning(int configIndex, TablistAPI.WidgetNames widgetName) {
+		List<String> lines;
+		if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.contains(configIndex) &&
+			NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
+			lines = TablistAPI.getWidgetLinesWithoutNotification(widgetName);
+			if (lines.isEmpty() && (overlayStrings == null || !overlayStrings.contains("§l§4One or more tab widgets missing!"))) {
+				if (overlayStrings == null) overlayStrings = new ArrayList<>();
+				overlayStrings.add("§l§4One or more tab widgets missing!");
+				overlayStrings.add("§l§4Enable it in §b/tab§4!");
+			}
+		} else {
+			lines = TablistAPI.getOptionalWidgetLines(widgetName);
+		}
+
+		return lines;
+	}
+
 	private String getTipPart(String name) {
 		int settings = NotEnoughUpdates.INSTANCE.config.mining.commissionTaskTips;
 		if (settings == 0) return "";
@@ -547,7 +605,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("2x Mithril Powder Collector")) return "Collect 500 Mithril Powder during §62x Powder event";
 
 			// Slay
-			if (name.equals("Ice Walker Slayer")) return "Kill 50 Ice Walkers §b(Great Ice Wall)";
+			if (name.equals("Glacite Walker Slayer")) return "Kill 50 Glacite Walkers §b(Great Ice Wall)";
 			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Burrows)";
 			if (name.equals("Golden Goblin Slayer")) return "Kill 1 Golden Goblin (anywhere)";
 			if (name.equals("Star Sentry Puncher")) return "Damage Star Sentries 10 times (anywhere)";
@@ -569,6 +627,20 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Royal Mines Titanium")) return "Break 10 Titanium §b(Royal Mines)";
 			if (name.equals("Rampart's Quarry Titanium")) return "Break 10 Titanium §b(Rampart's Quarry)";
 			if (name.equals("Upper Mines Titanium")) return "Break 10 Titanium §b(Upper Mines)";
+
+			// Glacite Tunnels
+
+			if (name.equals("Corpse Looter")) return "Find Corpses in a Glacite Mineshaft";
+			if (name.equals("Mineshaft Explorer")) return "Discover a Glacite Mineshaft";
+			if (name.equals("Scrap Collector")) return "Break non-vanilla Ores and not Hard Stone in a Glacite Mineshaft";
+			if (name.equals("Umber Collector")) return "Break red sand/hardened clay";
+			if (name.equals("Tungsten Collector")) return "Break cobblestone/clay";
+			if (name.equals("Glacite Collector")) return "Break ice";
+			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
+			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
+			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
+			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
+			if (name.equals("Maniac Slayer")) return "Kill mobs in a Glacite Mineshaft";
 
 		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
 			if (name.equals("Chest Looter")) return "Open 3 chests";
@@ -604,6 +676,17 @@ public class MiningOverlay extends TextTabOverlay {
 				if (name.startsWith("Ruby")) return "Break red glass (anywhere)";
 				if (name.startsWith("Topaz")) return "Break yellow glass" + magma;
 			}
+		} else if (SBInfo.getInstance().getLocation().equals("mineshaft")) {
+			if (name.equals("Corpse Looter")) return "Find Corpses and click them";
+			if (name.equals("Mineshaft Explorer")) return "Discover a Glacite Mineshaft";
+			if (name.equals("Scrap Collector")) return "Break non-vanilla Ores and not Hard Stone";
+			if (name.equals("Umber Collector")) return "Break red sand/hardened clay";
+			if (name.equals("Tungsten Collector")) return "Break cobblestone/clay";
+			if (name.equals("Glacite Collector")) return "Break ice";
+			if (name.equals("Onyx Gemstone Collector")) return "Break black glass";
+			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
+			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
+			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
 		}
 
 		return null;
@@ -760,7 +843,7 @@ public class MiningOverlay extends TextTabOverlay {
 				icon = miningOverlayCommissionItems.get("Mithril");
 			} else if (beforeColon.endsWith(" Gemstone Collector")) {
 				String gemName = "ROUGH_"
-					+ beforeColon.replace(" Gemstone Collector", "").toUpperCase() + "_GEM";
+					+ beforeColon.replace(" Gemstone Collector", "").toUpperCase(Locale.ROOT) + "_GEM";
 				if (miningOverlayRoughGems.containsKey(gemName)) {
 					icon = miningOverlayRoughGems.get(gemName);
 				} else {
@@ -771,7 +854,7 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			} else if (beforeColon.endsWith(" Crystal Hunter")) {
 				String gemName = "PERFECT_"
-					+ beforeColon.replace(" Crystal Hunter", "").toUpperCase() + "_GEM";
+					+ beforeColon.replace(" Crystal Hunter", "").toUpperCase(Locale.ROOT) + "_GEM";
 				if (miningOverlayPerfectGems.containsKey(gemName)) {
 					icon = miningOverlayPerfectGems.get(gemName);
 				} else {
@@ -783,7 +866,7 @@ public class MiningOverlay extends TextTabOverlay {
 			} else if (beforeColon.contains("Titanium")) {
 				icon = miningOverlayCommissionItems.get("Titanium");
 			} else if (beforeColon.contains("Sky Mall")) {
-					icon = SkyMallDisplay.Companion.getDisplayItem();
+				icon = SkyMallDisplay.Companion.getDisplayItem();
 			}
 		}
 
@@ -816,7 +899,7 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Star Cult", "FALLEN_STAR_HAT");
 				addItem("Thyst Slayer", "THYST_MONSTER");
 				addItem("Hard Stone Miner", "HARD_STONE");
-				addItem("Ice Walker Slayer", "ENCHANTED_ICE");
+				addItem("Glacite Walker Slayer", "ENCHANTED_ICE");
 				addItem("Goblin Slayer", "GOBLIN_MONSTER");
 				addItem("Star Sentry Puncher", "NETHER_STAR");
 				addItem("Treasure Hoarder Puncher", "TREASURE_HOARDER_MONSTER");
@@ -833,8 +916,17 @@ public class MiningOverlay extends TextTabOverlay {
 				addItem("Chest Looter", "CHEST");
 				addItem("Titanium", "TITANIUM_ORE");
 				addItem("Mithril", "MITHRIL_ORE");
+				addItem("Gemstone", "ROCK_GEMSTONE");
+				addItem("Glacite", "GLACITE");
 				addItem("Forge", "ANVIL");
 				addItem("First Event", "FIREWORK");
+				addItem("Corpse Looter", "MINERAL_HELMET");
+				addItem("Mineshaft Explorer", "STORAGE_MINECART");
+				addItem("Scrap Collector", "SUSPICIOUS_SCRAP");
+				addItem("Umber Collector", "UMBER");
+				addItem("Tungsten Collector", "TUNGSTEN");
+				addItem("Glacite Collector", "GLACITE");
+				addItem("Maniac Slayer", "GLACITE_MUTT_MONSTER");
 			}
 
 			private void addItem(String eventName, String internalName) {

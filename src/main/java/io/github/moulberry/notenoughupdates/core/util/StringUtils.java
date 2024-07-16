@@ -95,7 +95,7 @@ public class StringUtils {
 
 	public static String firstUpperLetter(String text) {
 		if (text.isEmpty()) return text;
-		String firstLetter = ("" + text.charAt(0)).toUpperCase();
+		String firstLetter = ("" + text.charAt(0)).toUpperCase(Locale.ROOT);
 		return firstLetter + text.substring(1);
 	}
 

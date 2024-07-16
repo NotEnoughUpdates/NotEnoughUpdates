@@ -32,7 +32,9 @@ import io.github.moulberry.notenoughupdates.core.config.GuiOptionEditorBlocked
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.EnforcedConfigValues
 import io.github.moulberry.notenoughupdates.miscfeatures.IQTest
+import io.github.moulberry.notenoughupdates.miscfeatures.updater.ConfigVersionGuiOption
 import io.github.moulberry.notenoughupdates.options.NEUConfig
+import io.github.moulberry.notenoughupdates.options.customtypes.ConfigVersionDisplay
 import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -122,6 +124,9 @@ object SettingsCommand {
     fun createConfigElement(search: String): MoulConfigEditor<NEUConfig> {
         val processor = BlockingMoulConfigProcessor()
         BuiltinMoulConfigGuis.addProcessors(processor)
+        processor.registerConfigEditor(ConfigVersionDisplay::class.java) { option, annotation ->
+            ConfigVersionGuiOption(option)
+        }
         ConfigProcessorDriver.processConfig(
             NotEnoughUpdates.INSTANCE.config.javaClass,
             NotEnoughUpdates.INSTANCE.config,

@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
+import io.github.moulberry.notenoughupdates.miscfeatures.HotmDesires;
 import io.github.moulberry.notenoughupdates.miscfeatures.IQTest;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
@@ -39,6 +40,7 @@ import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodo;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.options.separatesections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.separatesections.AHTweaks;
+import io.github.moulberry.notenoughupdates.options.separatesections.About;
 import io.github.moulberry.notenoughupdates.options.separatesections.AccessoryBag;
 import io.github.moulberry.notenoughupdates.options.separatesections.ApiData;
 import io.github.moulberry.notenoughupdates.options.separatesections.BazaarTweaks;
@@ -82,6 +84,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,6 +105,16 @@ public class NEUConfig extends Config {
 		GuiScreen savedGui = Minecraft.getMinecraft().currentScreen;
 		Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(overlayPositions, () -> {
 		}, () -> NotEnoughUpdates.INSTANCE.openGui = savedGui));
+	}
+
+	public static GuiScreen editOverlayForCommand() {
+		final LinkedHashMap<TextOverlay, Position> overlayPositions = new LinkedHashMap<TextOverlay, Position>();
+		for (TextOverlay overlay : OverlayManager.textOverlays) {
+			overlayPositions.put(overlay, overlay.getPosition());
+		}
+		return new GuiPositionEditor(overlayPositions, () -> {
+		}, () -> {
+		});
 	}
 
 	@Override
@@ -166,7 +179,7 @@ public class NEUConfig extends Config {
 
 	@Override
 	public String getTitle() {
-		return "§7NotEnoughUpdates v" + NotEnoughUpdates.VERSION + " by §5Moulberry";
+		return "§7NotEnoughUpdates " + NotEnoughUpdates.VERSION + " by §5Moulberry";
 	}
 
 	@Override
@@ -246,6 +259,13 @@ public class NEUConfig extends Config {
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}
 	}
+
+	@Expose
+	@Category(
+		name = "About",
+		desc = ""
+	)
+	public About about = new About();
 
 	@Expose
 	@Category(
@@ -418,7 +438,7 @@ public class NEUConfig extends Config {
 	@Expose
 	@Category(
 		name = "AH Tweaks",
-		desc = "Tweaks for Hypixel's (Not NEU's) Auction House"
+		desc = "Tweaks for The Auction House"
 	)
 	public AHTweaks ahTweaks = new AHTweaks();
 
@@ -598,7 +618,7 @@ public class NEUConfig extends Config {
 		}};
 	}
 
-	public HiddenProfileSpecific getProfileSpecific() {
+	public @Nullable HiddenProfileSpecific getProfileSpecific() {
 		if (SBInfo.getInstance().currentProfile == null) {
 			return null;
 		}
@@ -628,6 +648,9 @@ public class NEUConfig extends Config {
 		public long cookieBuffRemaining = 0L;
 		@Expose
 		public List<MiningOverlay.ForgeItem> forgeItems = new ArrayList<>();
+
+		@Expose
+		public Map<String, HotmDesires.Desire> hotmDesires = new HashMap<>();
 
 		@Expose
 		public int commissionMilestone = 0;

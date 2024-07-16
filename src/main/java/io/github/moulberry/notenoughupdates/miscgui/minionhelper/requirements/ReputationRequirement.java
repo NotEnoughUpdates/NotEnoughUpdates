@@ -22,6 +22,8 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
+import java.util.Locale;
+
 public class ReputationRequirement extends MinionRequirement {
 
 	private final String reputationType;
@@ -32,7 +34,7 @@ public class ReputationRequirement extends MinionRequirement {
 		this.reputationType = reputationType;
 		this.reputation = reputation;
 
-		String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
+		String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase(Locale.ROOT));
 		description = Utils.formatNumberWithDots(reputation) + " §7" + reputationName + " Reputation";
 	}
 

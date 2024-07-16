@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.HexPriceWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.RepoExporters;
@@ -55,6 +56,7 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.ScreenReplacer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -93,12 +95,17 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -305,6 +312,8 @@ public class RenderListener {
 		}
 	}
 
+	boolean storageTurnedOffTheCalendar = false;
+
 	/**
 	 * Sets hoverInv and focusInv variables, representing whether the NEUOverlay should render behind the inventory when
 	 * (hoverInv == true) and whether mouse/kbd inputs shouldn't be sent to NEUOverlay (focusInv == true).
@@ -410,6 +419,8 @@ public class RenderListener {
 
 		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
 			GuiCustomHex.getInstance().render(event.renderPartialTicks, containerName);
+			if (HexPriceWarning.INSTANCE.shouldShow())
+				HexPriceWarning.INSTANCE.render();
 			event.setCanceled(true);
 			return;
 		}
@@ -424,9 +435,14 @@ public class RenderListener {
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 
 		if (storageOverlayActive) {
+			storageTurnedOffTheCalendar = true;
+			CalendarOverlay.ableToClickCalendar = false;
 			StorageOverlay.getInstance().render();
 			event.setCanceled(true);
 			return;
+		} else if (storageTurnedOffTheCalendar) {
+			CalendarOverlay.ableToClickCalendar = true;
+			storageTurnedOffTheCalendar = false;
 		}
 
 		if (tradeWindowActive) {
@@ -456,8 +472,33 @@ public class RenderListener {
 		}
 	}
 
+	private static final Set<String> dungeonMenuSet = new HashSet<>(Arrays.asList(
+		"Spirit Leap",
+		"Revive A Teammate",
+		"Click in order!",
+		"Click the button on time!",
+		"Correct all the panes!",
+		"Change all to same color!"
+	));
+
+	private static final NavigableSet<String> dungeonMenuStartsWithSet = new TreeSet<>(Arrays.asList(
+		"What starts with",
+		"Select all the"
+	));
+
+	private boolean isInDungeonMenu(String chestName) {
+		if (!SBInfo.getInstance().isInDungeon) {
+			return false;
+		}
+		String nearestStartsWith = dungeonMenuStartsWithSet.floor(chestName);
+		return dungeonMenuSet.contains(chestName) || (nearestStartsWith != null && chestName.startsWith(nearestStartsWith));
+	}
+
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
-		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null) {
+		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null ||
+			!NotEnoughUpdates.INSTANCE.config.inventoryButtons.enableInventoryButtons ||
+			(NotEnoughUpdates.INSTANCE.config.inventoryButtons.hideInDungeonMenus &&
+				isInDungeonMenu(Utils.getOpenChestName()))) {
 			return;
 		}
 
@@ -602,6 +643,12 @@ public class RenderListener {
 		}
 		if (!hoveringButton[0]) buttonHovered = null;
 
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.render();
+			}
+		}
+
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().render();
 		}
@@ -654,7 +701,7 @@ public class RenderListener {
 						String displayName = item.getDisplayName();
 						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
 						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
-							String type = matcher.group(1).toUpperCase();
+							String type = matcher.group(1).toUpperCase(Locale.ROOT);
 							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type);
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
 								float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
@@ -881,6 +928,14 @@ public class RenderListener {
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.mouseInput(mouseX, mouseY);
+				event.setCanceled(true);
+				return;
+			}
+		}
+
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().mouseInput(mouseX, mouseY);
 			event.setCanceled(true);
@@ -1059,6 +1114,14 @@ public class RenderListener {
 			RepoExporters.getInstance().essenceExporter2();
 			event.setCanceled(true);
 			return;
+		}
+
+		for (ScreenReplacer allScreenReplacer : ScreenReplacer.Companion.getAllScreenReplacers()) {
+			if (allScreenReplacer.shouldShow()) {
+				allScreenReplacer.keyboardInput();
+				event.setCanceled(true);
+				return;
+			}
 		}
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {

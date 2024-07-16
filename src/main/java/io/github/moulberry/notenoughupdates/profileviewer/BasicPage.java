@@ -65,6 +65,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,7 +91,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				"first_page",
 				Utils.editItemStackInfo(
 					new ItemStack(Items.paper),
-					EnumChatFormatting.GRAY + "Front Page",
+					EnumChatFormatting.GRAY + "Home",
 					true
 				)
 			);
@@ -98,7 +99,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				"second_page",
 				Utils.editItemStackInfo(
 					skull,
-					EnumChatFormatting.GRAY + "Level Page",
+					EnumChatFormatting.GRAY + "Level",
 					true
 				)
 			);
@@ -220,6 +221,9 @@ public class BasicPage extends GuiProfileViewerPage {
 					profile.getHypixelProfile().get("rank"),
 					Utils.getElementAsString(profile.getHypixelProfile().get("newPackageRank"), "NONE")
 				);
+				if (rank.equals("NORMAL")) {
+					rank = Utils.getElementAsString(profile.getHypixelProfile().get("newPackageRank"), "NONE");
+				}
 				String monthlyPackageRank = Utils.getElementAsString(
 					profile.getHypixelProfile().get("monthlyPackageRank"),
 					"NONE"
@@ -228,9 +232,9 @@ public class BasicPage extends GuiProfileViewerPage {
 					rank = monthlyPackageRank;
 				}
 				EnumChatFormatting rankPlusColorECF = EnumChatFormatting.getValueByName(
-					Utils.getElementAsString(profile.getHypixelProfile().get("rankPlusColor"), "GOLD")
+					Utils.getElementAsString(profile.getHypixelProfile().get("rankPlusColor"), "RED")
 				);
-				String rankPlusColor = EnumChatFormatting.GOLD.toString();
+				String rankPlusColor = EnumChatFormatting.RED.toString();
 				if (rankPlusColorECF != null) {
 					rankPlusColor = rankPlusColorECF.toString();
 				}
@@ -564,8 +568,44 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		GlStateManager.color(1, 1, 1, 1);
-		JsonObject petsInfo = profile.getProfile(profileName).getPetsInfo();
+		SkyblockProfiles.SkyblockProfile currentProfile = profile.getProfile(profileName);
+		JsonObject petsInfo = currentProfile.getPetsInfo();
 		if (petsInfo != null) {
+			if (currentProfile.getGamemode() != null && currentProfile.getGamemode().equals("bingo")) {
+				JsonArray pets = petsInfo.get("pets").getAsJsonArray();
+				if (pets != null) {
+					for (JsonElement pet : pets) {
+						JsonObject petJsonObject = pet.getAsJsonObject();
+						if (petJsonObject.get("type") == null) break;
+						if (petJsonObject.get("type").getAsString().equals("BINGO")) {
+							if (petJsonObject.get("tier") == null) break;
+							String tier = petJsonObject.get("tier").getAsString();
+							switch (tier) {
+								case "COMMON":
+									bingoRarity = "§7";
+									break;
+								case "UNCOMMON":
+									bingoRarity = "§a";
+									break;
+								case "RARE":
+									bingoRarity = "§9";
+									break;
+								case "EPIC":
+									bingoRarity = "§5";
+									break;
+								case "LEGENDARY":
+									bingoRarity = "§6";
+									break;
+								case "MYTHIC":
+									bingoRarity = "§d";
+									break;
+							}
+							break;
+						}
+						bingoRarity = "§7";
+					}
+				}
+			}
 			JsonElement activePetElement = petsInfo.get("active_pet");
 			if (activePetElement != null && activePetElement.isJsonObject()) {
 				JsonObject activePet = activePetElement.getAsJsonObject();
@@ -615,8 +655,8 @@ public class BasicPage extends GuiProfileViewerPage {
 		int sbLevelX = guiLeft + 162;
 		int sbLevelY = guiTop + 74;
 
-		double skyblockLevel = profile.getProfile(profileName).getSkyblockLevel();
-		EnumChatFormatting skyblockLevelColour = profile.getProfile(profileName).getSkyblockLevelColour();
+		double skyblockLevel = currentProfile.getSkyblockLevel();
+		EnumChatFormatting skyblockLevelColour = currentProfile.getSkyblockLevelColour();
 
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(sbLevelX, sbLevelY, 0);
@@ -695,7 +735,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						String totalXpS = StringUtils.formatNumber((long) level.totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
 							EnumChatFormatting.DARK_GRAY + " (" +
-							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
+							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(Locale.ROOT), level)) +
 							"% to " + level.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
 							// double drops + pelts
@@ -715,7 +755,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							tooltipToDisplay.add(" ");
 							for (String medalName : medalNames) {
 								String textWithoutFormattingCodes =
-									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase());
+									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase(Locale.ROOT));
 								if (medals_inv.has(textWithoutFormattingCodes)) {
 									int medalAmount = medals_inv.get(textWithoutFormattingCodes).getAsInt();
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
@@ -727,7 +767,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							}
 						}
 
-						String slayerNameLower = entry.getKey().toLowerCase();
+						String slayerNameLower = entry.getKey().toLowerCase(Locale.ROOT);
 						if (Weight.SLAYER_NAMES.contains(slayerNameLower)) {
 							JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
 							if (slayerToTier == null) {
@@ -764,7 +804,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			);
 		}
 
-		drawSideButtons();
+		drawSideButtons(mouseX, mouseY);
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) {
 			renderWeight(mouseX, mouseY, selectedProfile);
 		}
@@ -773,12 +813,14 @@ public class BasicPage extends GuiProfileViewerPage {
 		selectedProfile.updateBeastMasterMultiplier();
 	}
 
+	private String bingoRarity = "§7";
+
 	private String getIcon(String gameModeType) {
 		switch (gameModeType) {
 			case "island":
 				return "§a☀";
 			case "bingo":
-				return "§7Ⓑ";
+				return bingoRarity + "Ⓑ";
 			case "ironman":
 				return "§7♲";
 			default:
@@ -1019,21 +1061,21 @@ public class BasicPage extends GuiProfileViewerPage {
 		return false;
 	}
 
-	public void drawSideButtons() {
+	public void drawSideButtons(int mouseX, int mouseY) {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		if (onSecondPage) {
-			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), true, guiProfileViewer);
+			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), true, guiProfileViewer, mouseX, mouseY);
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), true, guiProfileViewer);
+			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), true, guiProfileViewer, mouseX, mouseY);
 		}
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
 		if (!onSecondPage) {
-			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), false, guiProfileViewer);
+			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), false, guiProfileViewer, mouseX, mouseY);
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), false, guiProfileViewer);
+			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), false, guiProfileViewer, mouseX, mouseY);
 		}
 		GlStateManager.disableDepth();
 	}

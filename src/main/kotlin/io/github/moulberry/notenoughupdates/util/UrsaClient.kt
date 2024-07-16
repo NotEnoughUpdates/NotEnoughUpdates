@@ -62,6 +62,8 @@ class UrsaClient(val apiUtil: ApiUtil) {
         get() = NotEnoughUpdates.INSTANCE.config.apiData.ursaApi.removeSuffix("/").takeIf { it.isNotBlank() }
             ?: "https://ursa.notenoughupdates.org"
 
+    fun hasNonStandardUrsa() = ursaRoot != "https://ursa.notenoughupdates.org"
+
     private suspend fun authorizeRequest(usedUrsaRoot: String, connection: ApiUtil.Request, t: Token?) {
         if (t != null && t.obtainedFrom == usedUrsaRoot) {
             logger.log("Authorizing request using token")

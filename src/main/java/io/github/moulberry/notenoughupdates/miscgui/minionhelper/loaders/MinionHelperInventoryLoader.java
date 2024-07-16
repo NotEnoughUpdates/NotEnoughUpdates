@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -21,10 +21,10 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
-import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -95,8 +95,8 @@ public class MinionHelperInventoryLoader {
 
 	private void checkLocalPelts() {
 		int pelts = -1;
-		for (String name : TabListUtils.getTabList()) {
-			Matcher matcher = PATTERN_PELTS.matcher(name);
+		for (String line : TablistAPI.getOptionalWidgetLines(TablistAPI.WidgetNames.TRAPPER)) {
+			Matcher matcher = PATTERN_PELTS.matcher(line);
 			if (matcher.matches()) {
 				pelts = Integer.parseInt(matcher.group(1));
 				break;

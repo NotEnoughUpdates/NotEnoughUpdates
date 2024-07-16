@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.trophy;
 
+import java.util.Locale;
 import java.util.Map;
 
 public class TrophyFish {
@@ -59,7 +60,7 @@ public class TrophyFish {
 	}
 
 	public String getInternalName() {
-		return name.toLowerCase().replace(" ", "_");
+		return name.toLowerCase(Locale.ROOT).replace(" ", "_");
 	}
 
 	public enum TrophyFishRarity {

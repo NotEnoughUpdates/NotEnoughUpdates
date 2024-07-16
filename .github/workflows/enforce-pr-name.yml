@@ -1,0 +1,19 @@
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+
+name: Naming conventions
+jobs:
+  verify-pr-name:
+    name: Check PR name
+    runs-on: ubuntu-latest
+    steps:
+      - uses: deepakputhraya/action-pr-title@master
+        with:
+          regex: '(meta: )?(Add|Fix|Remove) .+[^\\.]'
+          prefix_case_sensitive: true
+          github_token: ${{ github.token }}

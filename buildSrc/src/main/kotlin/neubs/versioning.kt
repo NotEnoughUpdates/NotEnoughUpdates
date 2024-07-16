@@ -22,15 +22,24 @@ package neubs
 import org.gradle.api.Project
 import java.io.ByteArrayOutputStream
 
-fun Project.setVersionFromEnvironment(baseVersion: String) {
+fun Project.setVersionFromEnvironment(): String {
+    val baseVersion = run {
+        val baos = ByteArrayOutputStream()
+        exec {
+            commandLine("git", "describe", "--tags", "--abbrev=0")
+            standardOutput = baos
+            isIgnoreExitValue = true
+        }
+        (baos.toByteArray()).decodeToString().trim()
+    }
     val buildExtra = mutableListOf<String>()
     val buildVersion = properties["BUILD_VERSION"] as? String
     if (buildVersion != null) buildExtra.add(buildVersion)
-    if (System.getenv("CI") == "true") buildExtra.add("ci")
+    if (System.getenv("CI") == "true" && System.getenv("NEU_RELEASE") != "true") buildExtra.add("ci")
 
     val stdout = ByteArrayOutputStream()
     val execResult = exec {
-        commandLine("git", "describe", "--always", "--first-parent", "--abbrev=7")
+        commandLine("git", "rev-parse", "--short", "HEAD")
         standardOutput = stdout
         isIgnoreExitValue = true
     }
@@ -49,6 +58,6 @@ fun Project.setVersionFromEnvironment(baseVersion: String) {
     }
 
     version = baseVersion + (if (buildExtra.isEmpty()) "" else buildExtra.joinToString(prefix = "+", separator = "."))
-
+    return baseVersion
 }
 

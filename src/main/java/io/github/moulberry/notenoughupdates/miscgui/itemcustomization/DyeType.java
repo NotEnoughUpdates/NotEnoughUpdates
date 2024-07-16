@@ -17,32 +17,43 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.profileviewer.rift;
+package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
-import com.google.gson.annotations.Expose;
+import com.google.gson.JsonArray;
 
-import java.util.List;
+public class DyeType {
 
-public class RiftJson {
+	String itemId;
+	String colour = null;
+	JsonArray colours = null;
+	String[] coloursArray = null;
+	int ticks = 2;
 
-	@Expose
-	public RiftDeadCats dead_cats;
+	public DyeType(String displayName) {
+		this.itemId = displayName;
 
-	public static class RiftDeadCats {
-		@Expose
-		public List<String> found_cats;
-		@Expose
-		public Pet montezuma;
+	}
 
-		public static class Pet {
-			@Expose
-			public String type;
-			@Expose
-			public String tier;
-			@Expose
-			public Long exp;
-			@Expose
-			public int candyUsed;
-		}
+	public DyeType(String itemID, String colour) {
+		this.itemId = itemID;
+		this.colour = colour;
+	}
+
+	public DyeType(String itemID, JsonArray colours) {
+		this.itemId = itemID;
+		this.colours = colours;
+	}
+
+	public DyeType(String[] coloursArray, int ticks) {
+		this.ticks = ticks;
+		this.coloursArray = coloursArray;
+	}
+
+	public boolean hasStaticColour() {
+		return colour != null;
+	}
+
+	public boolean hasAnimatedColour() {
+		return colours != null;
 	}
 }

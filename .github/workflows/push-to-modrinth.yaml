@@ -1,0 +1,38 @@
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  upload-to-modrinth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release file
+        run: |
+          gh release download "$TAG" -p '*.jar' --repo "$REPO"
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+      - name: Set changelog
+        run: |
+          printf %s "$CHANGELOG" > CHANGELOG.md
+        env:
+          CHANGELOG: ${{ github.event.release.body }}
+      - name: Display file tree
+        run: |
+          ls -Rla .
+          echo ::group::Changelog
+          cat CHANGELOG.md
+          echo
+          echo ::endgroup::
+      - name: Publish to Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: GGamhqbw
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: "*.jar"
+          loaders: forge
+          game-versions: 1.8.9
+          version: ${{ github.event.release.tag_name }}
+          # TODO: version-type: release

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,31 +17,28 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscfeatures.updater;
+package io.github.moulberry.notenoughupdates.miscfeatures.customblockzones;
 
-import java.io.File;
-import java.net.URL;
-import java.util.List;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 
-class LinuxBasedUpdater /* Based on what? */ extends UpdateLoader {
+public class CrimsonIsleTextures implements IslandZoneSubdivider {
 
-	LinuxBasedUpdater(AutoUpdater updater, URL url) {
-		super(updater, url);
-	}
+	//-200 123 -930
+	//-390 123 -930
+	//-200 123 -1100
+	//-200 123 -1100
+	//-200 40 -930
+	//-390 40 -930
+	//-200 40 -1100
+	//-200 40 -1100
+	//smoldering tomb
 
 	@Override
-	public void greet() {
-		updater.logProgress(
-			"Welcome Aristocrat! Your superior linux system configuration is supported for NEU auto updates.");
-	}
-
-	@Override
-	public void deleteFiles(List<File> toDelete) {
-		for (File toDel : toDelete) {
-			if (!toDel.delete()) {
-				updater.logProgress("§cCould not delete old version of NEU: " + toDel + ". Please manually delete file.");
-				state = State.FAILED;
-			}
-		}
+	public SpecialBlockZone getSpecialZoneForBlock(String location, BlockPos position) {
+		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(-390, 40, -1100, -200, 123, -930);
+		if (!axisAlignedBB.isVecInside(new Vec3(position))) return null;
+		return SpecialBlockZone.SMOLDERING_TOMB;
 	}
 }

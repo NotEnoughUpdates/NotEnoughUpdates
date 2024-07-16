@@ -20,15 +20,18 @@
 package io.github.moulberry.notenoughupdates.options.separatesections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorButton;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.observer.Property;
+import io.github.moulberry.notenoughupdates.core.config.Position;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +97,41 @@ public class Mining {
 	@ConfigAccordionId(id = 0)
 	public boolean fallenStarWaypoint = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Glacite Tunnel Waypoints",
+		desc = "Show waypoints in the Glacite Tunnels to the various gemstone locations, when you have a commission for them."
+	)
+	@ConfigEditorDropdown
+	@ConfigAccordionId(id = 0)
+	public @NotNull Property<GlaciteTunnelWaypointBehaviour> tunnelWaypoints = Property.of(GlaciteTunnelWaypointBehaviour.SHOW_ALL);
+
+	@Expose
+	@ConfigOption(
+		name = "Always show Glacite Tunnel Waypoints",
+		desc = "Always show the Gemstone waypoints in the tunnels, instead of only for your current commissions."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean alwaysShowTunnelWaypoints = false;
+
+	public enum GlaciteTunnelWaypointBehaviour {
+		SHOW_ALL("Show all"),
+		SHOW_NEAREST("Show nearest"),
+		NONE("Show none"),
+		;
+		String text;
+
+		GlaciteTunnelWaypointBehaviour(String text) {
+			this.text = text;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+
 	@ConfigOption(
 		name = "Drill Fuel Bar",
 		desc = ""
@@ -150,17 +188,18 @@ public class Mining {
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"§3Goblin Slayer: §626.5%\n§3Lucky Raffle: §c0.0%",
+			"§3Goblin Slayer: §626.5% §8(Commission)\n§3Lucky Raffle: §c0.0% §8(Commission)",
 			"§3Mithril Powder: §26,243",
 			"§3Gemstone Powder: §d6,243",
 			"§3Forge 1) §9Diamonite§7: §aReady!",
 			"§3Pickaxe CD: §a78s",
 			"§3Star Cult: §a78s",
-			"§3Sky Mall: §a5x Titanium (78s)"
+			"§3Sky Mall: §a5x Titanium (78s)",
+			"§3Glacite Powder: §b46"
 		}
 	)
 	@ConfigAccordionId(id = 2)
-	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7));
 
 	@Expose
 	public Position overlayPosition = new Position(10, 100);
@@ -298,12 +337,70 @@ public class Mining {
 
 	@Expose
 	@ConfigOption(
+		name = "Line to Solution",
+		desc = "Draw a line to the solution block."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 3)
+	public boolean metalDetectorLineToSolution = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Show Possible Blocks",
 		desc = "Show waypoints on possible locations when NEU isn't sure about what block the treasure is."
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 3)
 	public boolean metalDetectorShowPossible = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Send Title",
+		desc = "Sends a title for solution found, failed, or additional position needed."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 3)
+	public boolean metalDetectorTitle = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Found Solution Title Color",
+		desc = "The color the alert will be shown"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 3)
+	public String metalDetectorFoundColor = "0:255:255:255:85";
+
+	@Expose
+	@ConfigOption(
+		name = "Failed Solution Color",
+		desc = "The color the alert will be shown"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 3)
+	public String metalDetectorFailedColor = "0:255:255:85:85";
+
+	@Expose
+	@ConfigOption(
+		name = "Need another Position Color",
+		desc = "The color the alert will be shown"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 3)
+	public String metalDetectorMoveColor = "0:255:255:255:85";
+
+	@Expose
+	@ConfigOption(
+		name = "Title Display Time",
+		desc = "How long the display would stay for in ticks"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 200,
+		minStep = 20
+	)
+	@ConfigAccordionId(id = 3)
+	public int metalDetectorTicks = 20;
 
 	@ConfigOption(
 		name = "Crystal Hollows Overlay",
@@ -902,5 +999,21 @@ public class Mining {
 	@ConfigAccordionId(id = 8)
 	@ConfigEditorBoolean
 	public boolean mithrilSounds = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Mineshaft Exit Waypoint",
+		desc = "Show a waypoint towards the exit of a Glacite Mineshaft"
+	)
+	@ConfigEditorBoolean
+	public boolean mineshaftExitWaypoint = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Powder TODOs",
+		desc = "Click on a perk in your /hotm tree when you can't afford it to get a notification when you can."
+	)
+	@ConfigEditorBoolean
+	public boolean powderTodo = true;
 
 }

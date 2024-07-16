@@ -34,7 +34,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -421,7 +420,7 @@ public class NEUCape {
 		lastRender = System.currentTimeMillis();
 	}
 
-	public void onTick(TickEvent.ClientTickEvent event, EntityPlayer player) {
+	public void onTick(EntityPlayer player) {
 		if (player == null) return;
 		if (Minecraft.getMinecraft().isGamePaused()) return;
 
@@ -578,6 +577,10 @@ public class NEUCape {
 		float m = (y1 - y0) / (x1 - x0);
 		float b = y0 - m * x0;
 		return x * m + b;
+	}
+
+	public void resetNodes() {
+		nodes = null;
 	}
 
 	private void updateCape(EntityPlayer player) {

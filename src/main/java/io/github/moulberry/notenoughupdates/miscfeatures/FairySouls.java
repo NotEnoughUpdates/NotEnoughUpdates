@@ -46,9 +46,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -198,7 +200,7 @@ public class FairySouls {
 	}
 
 	public void markClosestSoulFound() {
-		if (!trackSouls) return;
+		if (!trackSouls || allSoulsInCurrentLocation == null || allSoulsInCurrentLocation.isEmpty()) return;
 		int closestIndex = -1;
 		double closestDistSq = 10 * 10;
 		for (int i = 0; i < allSoulsInCurrentLocation.size(); i++) {
@@ -211,7 +213,7 @@ public class FairySouls {
 				closestIndex = i;
 			}
 		}
-		if (closestIndex != -1) {
+		if (closestIndex != -1 && foundSoulsInLocation != null) {
 			foundSoulsInLocation.add(closestIndex);
 			refreshMissingSoulInfo(true);
 		}
@@ -317,11 +319,9 @@ public class FairySouls {
 	public void loadFoundSoulsForAllProfiles(File file, Gson gson) {
 		allProfilesFoundSouls = new HashMap<>();
 		String fileContent;
-		try {
-			fileContent = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
-				.lines()
-				.collect(Collectors.joining(System.lineSeparator()));
-		} catch (FileNotFoundException e) {
+		try (BufferedReader br = Files.newBufferedReader(file.toPath())) {
+			fileContent = br.lines().collect(Collectors.joining(System.lineSeparator()));
+		} catch (IOException e) {
 			// it is possible that the collected_fairy_souls.json won't exist
 			return;
 		}

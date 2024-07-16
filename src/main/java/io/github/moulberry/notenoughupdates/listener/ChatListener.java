@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -212,11 +212,8 @@ public class ChatListener {
 			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("Your profile was changed to: ".length())
 				.split(" ")[0].trim());
-		} else if (unformatted.startsWith("Player List Info is now disabled!")) {
-			SBInfo.getInstance().hasNewTab = false;
-		} else if (unformatted.startsWith("Player List Info is now enabled!")) {
-			SBInfo.getInstance().hasNewTab = true;
 		}
+
 		if (e.message.getFormattedText().equals(
 			EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "You haven't unlocked this recipe!" +
 				EnumChatFormatting.RESET)) {
@@ -287,7 +284,9 @@ public class ChatListener {
 		if (LvlMatcher.matches()) {
 			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel &&
 				NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
-				e.setCanceled(true);
+				if (!unformatted.contains(Minecraft.getMinecraft().thePlayer.getName())) {
+					e.setCanceled(true);
+				}
 			}
 		}
 

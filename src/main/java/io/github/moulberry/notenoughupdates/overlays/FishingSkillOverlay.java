@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSound;
@@ -178,9 +179,17 @@ public class FishingSkillOverlay
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
 
 		skillInfoLast = skillInfo;
-		skillInfo = XPInformation.getInstance().getSkillInfo(skillType);
+		var s = NotEnoughUpdates.INSTANCE.config.skillOverlays.fishingText;
+		skillInfo = XPInformation.getInstance().getSkillInfo(
+			skillType,
+			s.contains(1) ||
+				s.contains(2) ||
+				s.contains(3) ||
+				s.contains(4) ||
+				s.contains(5)
+		);
 		if (skillInfo != null) {
-			float totalXp = skillInfo.totalXp;
+			float totalXp = (float) skillInfo.totalXp;
 
 			if (lastTotalXp > 0) {
 				float delta = totalXp - lastTotalXp;
@@ -311,9 +320,9 @@ public class FishingSkillOverlay
 								.append(EnumChatFormatting.GRAY)
 								.append(" [");
 
-				float progress = skillInfo.currentXp / skillInfo.currentXpMax;
+				float progress = (float) (skillInfo.currentXp / skillInfo.currentXpMax);
 				if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-					progress = interp(progress, skillInfoLast.currentXp / skillInfoLast.currentXpMax);
+					progress = interp(progress, (float) (skillInfoLast.currentXp / skillInfoLast.currentXpMax));
 				}
 
 				float lines = 25;
@@ -334,7 +343,7 @@ public class FishingSkillOverlay
 
 				int current = (int) skillInfo.currentXp;
 				if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-					current = (int) interp(current, skillInfoLast.currentXp);
+					current = (int) interp(current, (float) skillInfoLast.currentXp);
 				}
 
 				int remaining = (int) (skillInfo.currentXpMax - skillInfo.currentXp);
@@ -368,7 +377,7 @@ public class FishingSkillOverlay
 			if (skillInfo != null && skillInfo.level == 50) {
 				int current = (int) skillInfo.currentXp;
 				if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-					current = (int) interp(current, skillInfoLast.currentXp);
+					current = (int) interp(current, (float) skillInfoLast.currentXp);
 				}
 
 				lineMap.put(

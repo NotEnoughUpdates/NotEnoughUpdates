@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class GuiNavigation extends GuiScreen {
@@ -114,14 +115,14 @@ public class GuiNavigation extends GuiScreen {
 	}
 
 	private void refreshResults() {
-		String text = textField.getText().toLowerCase();
+		String text = textField.getText().toLowerCase(Locale.ROOT);
 		List<String> results = NotEnoughUpdates.INSTANCE.navigation
 			.getWaypoints()
 			.values()
 			.stream()
 			.filter(it ->
-				it.get("internalname").getAsString().toLowerCase().contains(text)
-					|| it.get("displayname").getAsString().toLowerCase().contains(text))
+				it.get("internalname").getAsString().toLowerCase(Locale.ROOT).contains(text)
+					|| it.get("displayname").getAsString().toLowerCase(Locale.ROOT).contains(text))
 			.map(it -> it.get("internalname").getAsString())
 			.sorted(Comparator.comparing(String::length)
 												.thenComparing(String.CASE_INSENSITIVE_ORDER))

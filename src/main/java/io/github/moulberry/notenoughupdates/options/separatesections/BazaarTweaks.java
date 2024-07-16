@@ -23,6 +23,7 @@ import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class BazaarTweaks {
@@ -70,4 +71,33 @@ public class BazaarTweaks {
 		@ConfigEditorBoolean
 		@ConfigAccordionId(id = 0)
 		public boolean escFullClose = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Search History Size",
+		desc = "Changes how many search items get stored"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 15,
+		minStep = 1
+	)
+	@ConfigAccordionId(id = 0)
+	public int bzSearchHistorySize = 5;
+
+	@Expose
+	@ConfigOption(
+		name = "Bazaar Overpay Warning",
+		desc = "Warns you before you would pay more than this amount of coins for an item in the /bz"
+	)
+	@ConfigEditorSlider(minValue = 0, maxValue = 500_000_000, minStep = 1)
+	public double bazaarOverpayWarning = 10_000_000;
+
+	@Expose
+	@ConfigOption(
+		name = "CTRL+F for search",
+		desc = "Open search GUI when pressing CTRL + F in the bazaar"
+	)
+	@ConfigEditorBoolean()
+	public boolean ctrlFSearch = true;
 }
