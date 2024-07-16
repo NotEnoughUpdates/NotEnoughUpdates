@@ -32,12 +32,12 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -254,13 +254,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 			}
 		}
 
-		Minecraft.getMinecraft().displayGuiScreen(null);
-
 		BetterContainers.recipeSearchStackIndex = -1;
-
-		if (Minecraft.getMinecraft().currentScreen == null) {
-			Minecraft.getMinecraft().setIngameFocus();
-		}
 	}
 
 	private static boolean updateTabCompletedSearch(int key) {
@@ -330,7 +324,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 
 			HashMap<String, Set<NeuRecipe>> items = NotEnoughUpdates.INSTANCE.manager.getAllRecipes();
 
-			System.out.println(items.toString());
+			//System.out.println(items.toString());
 
 			List<String> keys = new ArrayList<>();
 
@@ -352,21 +346,24 @@ public class RecipeSearchOverlay extends GuiScreen {
 		});
 	}
 
-	public static void keyEvent() {
+	@Override
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		super.keyTyped(typedChar, keyCode);
 		boolean ignoreKey = false;
 
-		if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+		if (keyCode == Keyboard.KEY_ESCAPE) {
 			searchStringExtra = "";
-			close();
 			if (NotEnoughUpdates.INSTANCE.config.recipeTweaks.escFullClose) {
-				Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
+				Minecraft.getMinecraft().displayGuiScreen(null);
+			} else {
+				close();
 			}
 			return;
-		} else if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
+		} else if (keyCode == Keyboard.KEY_RETURN) {
 			searchStringExtra = "";
 			close();
 			return;
-		} else if (Keyboard.getEventKey() == Keyboard.KEY_TAB) {
+		} else if (keyCode == Keyboard.KEY_TAB) {
 			//autocomplete to first item in the list
 			if (!tabCompleted) {
 				tabCompleted = true;
@@ -386,7 +383,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 		if (Keyboard.getEventKeyState()) {
 			if (tabCompleted) {
 				if (!ignoreKey) {
-					boolean success = updateTabCompletedSearch(Keyboard.getEventKey());
+					boolean success = updateTabCompletedSearch(keyCode);
 					if (success) return;
 					textField.setFocus(true);
 					textField.setText(searchString);
@@ -397,14 +394,15 @@ public class RecipeSearchOverlay extends GuiScreen {
 			}
 			textField.setFocus(true);
 			textField.setText(searchString);
-			textField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+			textField.keyTyped(Keyboard.getEventCharacter(), keyCode);
 			searchString = textField.getText();
 
 			search();
 		}
 	}
 
-	public static void mouseEvent() {
+	@Override
+	public void handleMouseInput() throws IOException {
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
@@ -445,7 +443,6 @@ public class RecipeSearchOverlay extends GuiScreen {
 					} else if (mouseX < width / 2 + 100) {
 						searchStringExtra = "";
 						close();
-						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
 						NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("Recipe Tweaks");
 					}
 				}
