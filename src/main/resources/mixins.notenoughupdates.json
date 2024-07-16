@@ -12,6 +12,7 @@
     "AccessorGlStateManager",
     "AccessorGuiPlayerTabOverlay",
     "MixinAbstractClientPlayer",
+    "MixinChatComponentStyle",
     "MixinContainer",
     "MixinCrashReport",
     "MixinEffectRenderer",
