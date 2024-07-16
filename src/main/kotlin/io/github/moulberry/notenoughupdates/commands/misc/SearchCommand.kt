@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay
 import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay
+import io.github.moulberry.notenoughupdates.overlays.RecipeSearchOverlay
 import io.github.moulberry.notenoughupdates.util.brigadier.RestArgumentType
 import io.github.moulberry.notenoughupdates.util.brigadier.get
 import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
@@ -67,6 +68,14 @@ class SearchCommand {
             }
             thenExecute {
                 NotEnoughUpdates.INSTANCE.sendChatMessage("/ah")
+            }
+        }
+        event.command("recipe") {
+            thenArgumentExecute("search", StringArgumentType.string()) { search ->
+                NotEnoughUpdates.INSTANCE.sendChatMessage("/recipe ${this[search]}")
+            }
+            thenExecute {  ->
+                NotEnoughUpdates.INSTANCE.openGui = RecipeSearchOverlay()
             }
         }
     }

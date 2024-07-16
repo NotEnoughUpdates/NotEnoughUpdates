@@ -445,6 +445,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 						searchStringExtra = "";
 						close();
 					} else if (mouseX < width / 2 + 100) {
+						searchString = "";
 						searchStringExtra = "";
 						close();
 						NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("Recipe Tweaks");
