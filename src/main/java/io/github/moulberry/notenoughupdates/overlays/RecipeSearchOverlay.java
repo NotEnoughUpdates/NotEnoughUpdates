@@ -22,17 +22,22 @@ package io.github.moulberry.notenoughupdates.overlays;
 import com.google.common.base.Splitter;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -48,6 +53,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@NEUAutoSubscribe
 public class RecipeSearchOverlay extends GuiScreen {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay.png");
@@ -324,13 +330,11 @@ public class RecipeSearchOverlay extends GuiScreen {
 
 			HashMap<String, Set<NeuRecipe>> items = NotEnoughUpdates.INSTANCE.manager.getAllRecipes();
 
-			//System.out.println(items.toString());
-
 			List<String> keys = new ArrayList<>();
 
 			for (Map.Entry<String, Set<NeuRecipe>> entry : items.entrySet()) {
 				for (NeuRecipe recipe : entry.getValue()) {
-					if (recipe.isAvailable()) keys.add(entry.getKey());
+					if (recipe instanceof CraftingRecipe && recipe.isAvailable()) keys.add(entry.getKey());
 				}
 			}
 			title.retainAll(keys);
@@ -490,6 +494,16 @@ public class RecipeSearchOverlay extends GuiScreen {
 					}
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onSlotClick(SlotClickEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.enableSearchOverlay) return;
+		ItemStack stack = event.slot.getStack();
+		if ((event.slot.slotNumber == 50 || event.slot.slotNumber == 51) && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch Recipes")) {
+			event.setCanceled(true);
+			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
 		}
 	}
 }
