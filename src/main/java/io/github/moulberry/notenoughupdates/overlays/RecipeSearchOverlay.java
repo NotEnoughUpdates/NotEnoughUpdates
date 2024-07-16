@@ -97,7 +97,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
 		GlStateManager.color(1, 1, 1, 1);
-		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, h, 0, 203 / 512f, 0, h / 256f, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, 145, 0, 203 / 512f, 0, 145 / 256f, GL11.GL_NEAREST);
 
 		Minecraft.getMinecraft().fontRendererObj.drawString("Enter Query:", width / 2 - 100, topY - 10, 0xdddddd, true);
 
@@ -181,9 +181,13 @@ public class RecipeSearchOverlay extends GuiScreen {
 				0xdddddd,
 				true
 			);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+			Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160, 203, 4, 0, 203 / 512f, 160 / 256f, 163 / 256f, GL11.GL_NEAREST);
 
-			for (int i = 0; i < 5; i++) {
-				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.size()) break;
+			for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.recipeTweaks.recipeSearchHistorySize; i++) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+				Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160 + 4 + i * 10, 203, 10, 0, 203 / 512f, 164 / 256f, 174 / 256f, GL11.GL_NEAREST);
+				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.size()) continue;
 
 				String s = NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.get(i);
 				Minecraft.getMinecraft().fontRendererObj.drawString(
@@ -195,16 +199,12 @@ public class RecipeSearchOverlay extends GuiScreen {
 				);
 			}
 
+			int size = NotEnoughUpdates.INSTANCE.config.recipeTweaks.recipeSearchHistorySize;
+			Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
+			Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160 + 4 + size * 10, 203, 4, 0, 203 / 512f, 215 / 256f, 219 / 256f, GL11.GL_NEAREST);
+
 			if (tooltipToDisplay != null) {
-				Utils.drawHoveringText(
-					tooltipToDisplay,
-					mouseX,
-					mouseY,
-					width,
-					height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 			}
 		}
 
@@ -258,7 +258,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 			previousRecipeSearches.remove(searchString);
 			previousRecipeSearches.remove(searchString);
 			previousRecipeSearches.add(0, searchString);
-			while (previousRecipeSearches.size() > 5) {
+			while (previousRecipeSearches.size() > NotEnoughUpdates.INSTANCE.config.recipeTweaks.recipeSearchHistorySize) {
 				previousRecipeSearches.remove(previousRecipeSearches.size() - 1);
 			}
 		}
@@ -490,7 +490,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 				}
 
 				if (NotEnoughUpdates.INSTANCE.config.recipeTweaks.showPastSearches) {
-					for (int i = 0; i < 5; i++) {
+					for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.recipeTweaks.recipeSearchHistorySize; i++) {
 						if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.size()) break;
 
 						String s = NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.get(i);

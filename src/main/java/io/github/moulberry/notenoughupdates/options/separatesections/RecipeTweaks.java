@@ -23,6 +23,7 @@ import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class RecipeTweaks {
@@ -70,5 +71,18 @@ public class RecipeTweaks {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean escFullClose = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Search History Size",
+		desc = "Changes how many search items get stored"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 15,
+		minStep = 1
+	)
+	@ConfigAccordionId(id = 0)
+	public int recipeSearchHistorySize = 5;
 
 }
