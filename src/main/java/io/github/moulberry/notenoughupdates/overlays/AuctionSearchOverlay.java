@@ -22,26 +22,27 @@ package io.github.moulberry.notenoughupdates.overlays;
 import com.google.common.base.Splitter;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
-import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
-import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -51,7 +52,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class AuctionSearchOverlay {
+@NEUAutoSubscribe
+public class AuctionSearchOverlay extends GuiScreen {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay.png");
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation(
@@ -96,34 +98,24 @@ public class AuctionSearchOverlay {
 		return 1;
 	};
 
-	public static boolean shouldReplace() {
-		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return false;
-		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableSearchOverlay) return false;
-
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiEditSign)) {
-			if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) searchString = "";
-			return false;
-		}
-
-		String lastContainer = Utils.getLastOpenChestName();
-		if (!lastContainer.equals("Auctions Browser") && !lastContainer.startsWith("Auctions: ")) return false;
-
-		TileEntitySign tes = ((AccessorGuiEditSign) Minecraft.getMinecraft().currentScreen).getTileSign();
-
-		if (tes == null) return false;
-		if (tes.getPos().getY() != 0) return false;
-		if (!tes.signText[2].getUnformattedText().equals("^^^^^^^^^^^^^^^")) return false;
-		return tes.signText[3].getUnformattedText().equals("Enter query");
+	public AuctionSearchOverlay() {
+		super();
 	}
 
-	public static void render() {
+	static boolean isGuiOpen = false;
+	public static boolean shouldReplace() {
+		return isGuiOpen; //💀
+	}
+
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		isGuiOpen = true;
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		super.drawDefaultBackground();
+
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
-		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
-		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
-
-		Utils.drawGradientRect(0, 0, width, height, -1072689136, -804253680);
 
 		int h = NotEnoughUpdates.INSTANCE.config.ahTweaks.showPastSearches ? 219 : 145;
 
@@ -308,6 +300,7 @@ public class AuctionSearchOverlay {
 	}
 
 	public static void close() {
+		isGuiOpen = false;
 		if (tabCompleted) {
 			tabCompletionIndex = -1;
 			tabCompleted = false;
@@ -320,8 +313,6 @@ public class AuctionSearchOverlay {
 			}
 		}
 
-		TileEntitySign tes = ((AccessorGuiEditSign) Minecraft.getMinecraft().currentScreen).getTileSign();
-
 		StringBuilder stringBuilder = new StringBuilder(searchString.trim());
 		if (!searchStringExtra.isEmpty()) {
 			stringBuilder.append(searchStringExtra);
@@ -331,49 +322,6 @@ public class AuctionSearchOverlay {
 		}
 
 		String search = stringBuilder.toString();
-
-		if (search.length() <= 15) {
-			tes.signText[0] = new ChatComponentText(search.substring(0, Math.min(search.length(), 15)));
-		} else {
-			List<String> words = SPACE_SPLITTER.splitToList(search);
-
-			StringBuilder line0 = new StringBuilder();
-			StringBuilder line1 = new StringBuilder();
-
-			int currentLine = 0;
-			for (String word : words) {
-				if (currentLine == 0) {
-					if (line0.length() + word.length() > 15) {
-						currentLine++;
-					} else {
-						line0.append(word);
-						if (line0.length() >= 15) {
-							currentLine++;
-							continue;
-						} else {
-							line0.append(" ");
-						}
-					}
-				}
-				if (currentLine == 1) {
-					if (line1.length() + word.length() > 15) {
-						line1.append(word, 0, 15 - line1.length());
-						break;
-					} else {
-						line1.append(word);
-						if (line1.length() >= 15) {
-							break;
-						} else {
-							line1.append(" ");
-						}
-					}
-				}
-				if (line1.length() >= 15) break;
-			}
-
-			tes.signText[0] = new ChatComponentText(line0.toString().trim());
-			tes.signText[1] = new ChatComponentText(line1.toString().trim());
-		}
 
 		if (!searchString.trim().isEmpty()) {
 			List<String> previousAuctionSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches;
@@ -385,11 +333,8 @@ public class AuctionSearchOverlay {
 			}
 		}
 
-		Minecraft.getMinecraft().displayGuiScreen(null);
-
-		if (Minecraft.getMinecraft().currentScreen == null) {
-			Minecraft.getMinecraft().setIngameFocus();
-		}
+		if (!search.isEmpty()) NotEnoughUpdates.INSTANCE.sendChatMessage("/ahs " + search);
+		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) searchString = "";
 	}
 
 	private static boolean updateTabCompletedSearch(int key) {
@@ -483,21 +428,24 @@ public class AuctionSearchOverlay {
 		});
 	}
 
-	public static void keyEvent() {
+	@Override
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		super.keyTyped(typedChar, keyCode);
 		boolean ignoreKey = false;
 
-		if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+		if (keyCode == Keyboard.KEY_ESCAPE) {
 			searchStringExtra = "";
-			close();
 			if (NotEnoughUpdates.INSTANCE.config.ahTweaks.escFullClose) {
-				Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
+				Minecraft.getMinecraft().displayGuiScreen(null);
+			} else {
+				close();
 			}
 			return;
-		} else if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
+		} else if (keyCode == Keyboard.KEY_RETURN) {
 			searchStringExtra = "";
 			close();
 			return;
-		} else if (Keyboard.getEventKey() == Keyboard.KEY_TAB) {
+		} else if (keyCode == Keyboard.KEY_TAB) {
 			//autocomplete to first item in the list
 			if (!tabCompleted) {
 				tabCompleted = true;
@@ -517,7 +465,7 @@ public class AuctionSearchOverlay {
 		if (Keyboard.getEventKeyState()) {
 			if (tabCompleted) {
 				if (!ignoreKey) {
-					boolean success = updateTabCompletedSearch(Keyboard.getEventKey());
+					boolean success = updateTabCompletedSearch(keyCode);
 					if (success) return;
 					textField.setFocus(true);
 					textField.setText(searchString);
@@ -528,14 +476,15 @@ public class AuctionSearchOverlay {
 			}
 			textField.setFocus(true);
 			textField.setText(searchString);
-			textField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+			textField.keyTyped(Keyboard.getEventCharacter(), keyCode);
 			searchString = textField.getText();
 
 			search();
 		}
 	}
 
-	public static void mouseEvent() {
+	@Override
+	public void handleMouseInput() throws IOException {
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
@@ -603,9 +552,9 @@ public class AuctionSearchOverlay {
 						searchStringExtra = "";
 						close();
 					} else if (mouseX < width / 2 + 100) {
+						searchString = "";
 						searchStringExtra = "";
 						close();
-						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
 						NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("AH Tweaks");
 					}
 				}
@@ -682,6 +631,17 @@ public class AuctionSearchOverlay {
 					}
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onSlotClick(SlotClickEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableSearchOverlay) return;
+		if (!Utils.getOpenChestName().startsWith("Auctions")) return;
+		ItemStack stack = event.slot.getStack();
+		if (event.slot.slotNumber == 48 && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
+			event.setCanceled(true);
+			NotEnoughUpdates.INSTANCE.openGui = new AuctionSearchOverlay();
 		}
 	}
 }

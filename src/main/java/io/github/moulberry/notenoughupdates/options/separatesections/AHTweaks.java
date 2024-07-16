@@ -166,4 +166,12 @@ public class AHTweaks {
 	)
 	@ConfigEditorBoolean()
 	public boolean ctrlFSearch = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Convert Search Command",
+		desc = "Converts §e/ah arg arg2 §rinto §e/ahs arg arg2"
+	)
+	@ConfigEditorBoolean()
+	public boolean convertSearchCommand = true;
 }
