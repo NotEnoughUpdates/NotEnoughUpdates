@@ -261,6 +261,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 		}
 
 		BetterContainers.recipeSearchStackIndex = -1;
+		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.keepPreviousSearch) searchString = "";
 	}
 
 	private static boolean updateTabCompletedSearch(int key) {
