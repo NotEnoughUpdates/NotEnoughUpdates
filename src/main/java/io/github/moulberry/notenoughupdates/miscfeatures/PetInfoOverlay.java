@@ -1036,7 +1036,6 @@ public class PetInfoOverlay extends TextOverlay {
 				int seconds = 15;
 
 				if (pauseCountdown > 0 || totalGain > 0) {
-					pauseCountdown = 60;
 					long updateTime = 0;
 					if (System.currentTimeMillis() - lastPaused < 1000 * (seconds + 1)) updateTime = lastPaused;
 
@@ -1056,7 +1055,8 @@ public class PetInfoOverlay extends TextOverlay {
 						xpHourMap.put(System.currentTimeMillis(), totalGain);
 						lastXpUpdate = System.currentTimeMillis();
 					}
-					if (totalGain != 0) {
+					if (totalGain > 0) {
+						pauseCountdown = 60;
 						lastXpUpdateNonZero = System.currentTimeMillis();
 					}
 
