@@ -146,10 +146,13 @@ public class FarmingSkillOverlay extends TextOverlay {
 			for (String line : SidebarUtil.readSidebarLines()) {
 				val matcher = CONTEST_AMOUNT_PATTERN.matcher(line);
 				if (matcher.matches()) {
-					String amount = matcher.group("amount").replace(",", "");
+					String amount = matcher.group("amount");
+					// account for when the scoreboard line is too long and last digit or two are cut off
+					int lastComma = amount.lastIndexOf(',');
+					int extraZeros = lastComma != -1 ? 4 + lastComma - amount.length() : 0;
 					try {
 						inJacobContest = true;
-						cropsFarmed = Integer.parseInt(amount);
+						cropsFarmed = Integer.parseInt(amount.replace(",", "")) * (int) Math.pow(10, extraZeros);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
 					}

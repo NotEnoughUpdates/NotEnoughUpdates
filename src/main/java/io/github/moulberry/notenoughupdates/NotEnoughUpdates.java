@@ -38,7 +38,6 @@ import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.listener.WorldListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
-import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
@@ -47,6 +46,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -164,6 +164,10 @@ public class NotEnoughUpdates {
 		(new BiomeGenSnow(108, false))
 			.setColor(16777215)
 			.setBiomeName("NeuGlaciteMineshaft");
+	public static final BiomeGenBase glaciteTunnels =
+		(new BiomeGenSnow(109, false))
+			.setColor(16777215)
+			.setBiomeName("NeuGlaciteTunnels");
 	private static final long CHAT_MSG_COOLDOWN = 200;
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =

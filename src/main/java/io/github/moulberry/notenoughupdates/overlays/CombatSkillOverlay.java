@@ -47,6 +47,7 @@ public class CombatSkillOverlay
 	private int championXp = -1;
 	private int championXpLast = -1;
 	private final LinkedList<Integer> killQueue = new LinkedList<>();
+	private boolean hasToxophilite = false;
 
 	private XPInformation.SkillInfo skillInfo = null;
 	private XPInformation.SkillInfo skillInfoLast = null;
@@ -113,8 +114,12 @@ public class CombatSkillOverlay
 					kill = ea.getInteger("stats_book");
 					killQueue.add(0, kill);
 				}
+				hasToxophilite = false;
 				if (ea.hasKey("champion_combat_xp", 99)) {
 					championXp = (int) ea.getDouble("champion_combat_xp");
+				} else if (ea.hasKey("toxophilite_combat_xp", 99)) {
+					championXp = (int) ea.getDouble("toxophilite_combat_xp");
+					hasToxophilite = true;
 				}
 			}
 		}
@@ -173,8 +178,6 @@ public class CombatSkillOverlay
 				championTierAmount = "Maxed";
 				break;
 		}
-
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
 
 		skillInfoLast = skillInfo;
 		var s = NotEnoughUpdates.INSTANCE.config.skillOverlays.combatText;
@@ -255,11 +258,16 @@ public class CombatSkillOverlay
 				lineMap.put(0, EnumChatFormatting.AQUA + "Kills: " + EnumChatFormatting.YELLOW + format.format(counterInterp));
 			}
 
+			String enchantText = "Champion: ";
+			if (hasToxophilite) {
+				enchantText = "Toxophilite: ";
+			}
+
 			if (championTier <= 9 && championXp >= 0) {
 				int counterInterp = (int) interp(championXp, championXpLast);
 				lineMap.put(
 					6,
-					EnumChatFormatting.AQUA + "Champion: " + EnumChatFormatting.YELLOW + format.format(counterInterp) + "/" +
+					EnumChatFormatting.AQUA + enchantText + EnumChatFormatting.YELLOW + format.format(counterInterp) + "/" +
 						championTierAmount
 				);
 			}
@@ -267,7 +275,7 @@ public class CombatSkillOverlay
 				int counterInterp = (int) interp(championXp, championXpLast);
 				lineMap.put(
 					6,
-					EnumChatFormatting.AQUA + "Champion: " + EnumChatFormatting.YELLOW + format.format(counterInterp) + " " +
+					EnumChatFormatting.AQUA + enchantText + EnumChatFormatting.YELLOW + format.format(counterInterp) + " " +
 						EnumChatFormatting.RED + championTierAmount
 				);
 			}

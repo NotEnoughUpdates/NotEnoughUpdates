@@ -66,7 +66,7 @@ public class CookieWarning {
 		}
 		if (timeLine == null) return;
 
-		int minutes = (int) getMillisecondsRemaining(timeLine) / 60 / 1000;
+		int minutes = (int) (getMillisecondsRemaining(timeLine) / 60 / 1000);
 		if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 				"§cBooster Cookie Running Low!",
@@ -79,8 +79,11 @@ public class CookieWarning {
 	}
 
 	private static long getMillisecondsRemaining(String timeLine) {
+		if ("Less than an hour".equals(timeLine)) {
+			return 10 * 60 * 1000; //Return 10 minutes, they need more cookie!
+		}
 		String clean = timeLine.replaceAll("(§.)", "");
-		clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
+		clean = clean.replaceAll("(\\d)([smhdMy])", "$1 $2");
 		String[] digits = clean.split(" ");
 		long ms = 0;
 		try {
@@ -90,9 +93,9 @@ public class CookieWarning {
 				String number = digits[i];
 				String unit = digits[i + 1];
 				long val = Integer.parseInt(number);
-				ms += (getCookieTimeRemainingInMilliseconds(unit, val));
+				ms += (getEffectRemainingInMilliseconds(unit, val));
 			}
-		} catch (NumberFormatException e) {
+		} catch (Exception e) {
 			if (!hasErrorMessage) {
 				e.printStackTrace();
 				Utils.addChatMessage(EnumChatFormatting.RED +
@@ -164,33 +167,40 @@ public class CookieWarning {
 		lastChecked = 0;
 	}
 
-	public static long getCookieTimeRemainingInMilliseconds(String godpotRemainingTimeType, long godpotRemainingTime) {
-		switch (godpotRemainingTimeType.toLowerCase(Locale.ROOT).replace(",", "")) {
-			case "years":
-			case "year":
-			case "y":
-				return godpotRemainingTime * 24 * 60 * 60 * 1000 * 30 * 12;
+	public static long getEffectRemainingInMilliseconds(String remainingTimeType, long remainingTime) {
+		switch (remainingTimeType.replace(",", "")) {
 			case "months":
 			case "month":
 			case "mo":
-				return godpotRemainingTime * 24 * 60 * 60 * 1000 * 30;
+			case "M":
+				return remainingTime * 24 * 60 * 60 * 1000 * 30;
+		}
+		switch (remainingTimeType.toLowerCase(Locale.ROOT).replace(",", "")) {
+			case "years":
+			case "year":
+			case "y":
+				return remainingTime * 24 * 60 * 60 * 1000 * 30 * 12;
+			case "months":
+			case "month":
+			case "mo":
+				return remainingTime * 24 * 60 * 60 * 1000 * 30;
 			case "days":
 			case "day":
 			case "d":
-				return godpotRemainingTime * 24 * 60 * 60 * 1000;
+				return remainingTime * 24 * 60 * 60 * 1000;
 			case "hours":
 			case "hour":
 			case "h":
-				return godpotRemainingTime * 60 * 60 * 1000;
+				return remainingTime * 60 * 60 * 1000;
 			case "minutes":
 			case "minute":
 			case "m":
-				return godpotRemainingTime * 60 * 1000;
+				return remainingTime * 60 * 1000;
 			case "seconds":
 			case "second":
 			case "s":
-				return godpotRemainingTime * 1000;
+				return remainingTime * 1000;
 		}
-		return godpotRemainingTime;
+		return remainingTime;
 	}
 }
