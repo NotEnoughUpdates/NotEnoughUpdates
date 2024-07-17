@@ -272,4 +272,10 @@ public class APIDataJson {
 	public static class WinterPlayerData {
 		public int refined_jyrre_uses = 0;
 	}
+
+	public GardenPlayerData garden_player_data = new GardenPlayerData();
+
+	public static class GardenPlayerData {
+		public int larva_consumed = 0;
+	}
 }
