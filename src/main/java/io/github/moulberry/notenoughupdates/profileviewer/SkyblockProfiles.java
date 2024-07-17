@@ -943,7 +943,7 @@ public class SkyblockProfiles {
 					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacobs_contest.perks.farming_level_cap"), 0);
 				}
 				if (skillName.equals("taming")) {
-					maxLevel += Utils.getElement(profileJson, "pets_data.pet_care.pet_types_sacrificed").getAsJsonArray().size();
+					maxLevel += Utils.getElementOrDefault(profileJson, "pets_data.pet_care.pet_types_sacrificed", new JsonArray()).getAsJsonArray().size();
 				}
 				out.put(skillName, ProfileViewerUtils.getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
