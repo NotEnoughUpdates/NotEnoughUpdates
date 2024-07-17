@@ -61,7 +61,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -159,14 +159,11 @@ public class PetInfoOverlay extends TextOverlay {
 	private static long lastUpdate = 0;
 	private static float levelXpLast = 0;
 
-	private static final LinkedList<Float> xpGainQueue = new LinkedList<>();
 	private static float xpGainHourLast = -1;
 	private static float xpGainHour = -1;
 	private static int pauseCountdown = 0;
 
 	private static float xpGainHourSecondPet = -1;
-
-	private int xpAddTimer = 0;
 
 	public static void loadConfig(File file) {
 		config = ConfigUtil.loadConfig(PetConfig.class, file, GSON);
@@ -188,7 +185,7 @@ public class PetInfoOverlay extends TextOverlay {
 		config.selectedPet2 = config.selectedPet;
 		xpGainHourSecondPet = xpGainHour;
 		xpGainHourLast = xpGainHour;
-		xpGainQueue.clear();
+		xpHourMap.clear();
 		config.selectedPet = index;
 	}
 
@@ -459,7 +456,7 @@ public class PetInfoOverlay extends TextOverlay {
 		if (xpGain < 0) xpGain = 0;
 		String xpGainString = EnumChatFormatting.AQUA + "XP/h: " +
 			EnumChatFormatting.YELLOW + roundFloat(xpGain);
-		if (!secondPet && xpGain > 0 && levelXp != levelXpLast) {
+		if (!secondPet && xpGain > 0 && (levelXp != levelXpLast || System.currentTimeMillis() - lastXpUpdateNonZero > 3500)) {
 			if (pauseCountdown <= 0) {
 				xpGainString += EnumChatFormatting.RED + " (PAUSED)";
 			} else {
@@ -908,6 +905,11 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
+	private static HashMap<Long, Float> xpHourMap = new HashMap<>();
+	private long lastXpUpdate = -1;
+	private long lastXpUpdateNonZero = -1;
+	private long lastPaused = -1;
+
 	public void updatePetLevels() {
 		float totalGain = 0;
 
@@ -961,32 +963,43 @@ public class PetInfoOverlay extends TextOverlay {
 				currentPet.petLevel.setExpTotal(xpNumber + petExpForLevel);
 				float expTotalAfter = currentPet.petLevel.getExpTotal();
 				totalGain = expTotalAfter - expTotalBefore;
-
 				xpGainHourLast = xpGainHour;
-				if (xpAddTimer > 0 || totalGain > 0) {
-					if (totalGain > 0) {
-						xpAddTimer = 10;
-					} else {
-						xpAddTimer--;
-					}
+				int seconds = 15;
 
-					xpGainQueue.add(0, totalGain);
-					while (xpGainQueue.size() > 30) {
-						xpGainQueue.removeLast();
-					}
+				if (pauseCountdown > 0 || totalGain > 0) {
+					pauseCountdown = 60;
+					long updateTime = 0;
+					if (System.currentTimeMillis() - lastPaused < 1000 * (seconds + 1)) updateTime = lastPaused;
 
-					if (xpGainQueue.size() > 1) {
-						float tot = 0;
-						float greatest = 0;
-						for (float f : xpGainQueue) {
-							tot += f;
-							greatest = Math.max(greatest, f);
+					Iterator<Map.Entry<Long, Float>> iterator = xpHourMap.entrySet().iterator();
+					while (iterator.hasNext()) {
+						Map.Entry<Long, Float> entry = iterator.next();
+						long keyTime = entry.getKey();
+						if (updateTime > 0) {
+							keyTime = updateTime;
 						}
-
-						xpGainHour = (tot - greatest) * (60 * 60) / (xpGainQueue.size() - 1);
+						if (System.currentTimeMillis() - keyTime > seconds * 1000) {
+							iterator.remove();
+						}
 					}
+
+					if (totalGain != 0 || System.currentTimeMillis() - lastXpUpdate > 3500) {
+						xpHourMap.put(System.currentTimeMillis(), totalGain);
+						lastXpUpdate = System.currentTimeMillis();
+					}
+					if (totalGain != 0) {
+						lastXpUpdateNonZero = System.currentTimeMillis();
+					}
+
+					float averageXp = 0;
+					for (float value : xpHourMap.values()) {
+						averageXp += value;
+					}
+
+					if (!xpHourMap.isEmpty()) xpGainHour = (averageXp / xpHourMap.size()) * ((float) (60 * 60) / seconds);
+					else xpGainHour = 0;
 				} else {
-					xpGainQueue.clear();
+					lastPaused = System.currentTimeMillis();
 				}
 
 				currentPet.petLevel = petLadder.getPetLevel(currentPet.petLevel.getExpTotal());
