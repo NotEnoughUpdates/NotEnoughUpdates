@@ -63,6 +63,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.getSelectedProfile;
+
 public class SkyblockProfiles {
 	private static final String defaultNbtData = "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=";
 	private static final String moulberryUuid = "d0e05de76067454dbeaec6d19d886191";
@@ -941,6 +943,9 @@ public class SkyblockProfiles {
 				int maxLevel = ProfileViewerUtils.getLevelingCap(leveling, skillName);
 				if (skillName.equals("farming")) {
 					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacobs_contest.perks.farming_level_cap"), 0);
+				}
+				if (skillName.equals("taming")) {
+					maxLevel += Utils.getElement(profileJson, "pets_data.pet_care.pet_types_sacrificed").getAsJsonArray().size();
 				}
 				out.put(skillName, ProfileViewerUtils.getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
