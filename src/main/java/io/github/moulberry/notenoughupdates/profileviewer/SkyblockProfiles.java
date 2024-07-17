@@ -63,8 +63,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.getSelectedProfile;
-
 public class SkyblockProfiles {
 	private static final String defaultNbtData = "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=";
 	private static final String moulberryUuid = "d0e05de76067454dbeaec6d19d886191";
