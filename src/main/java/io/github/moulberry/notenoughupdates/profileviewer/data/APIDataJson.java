@@ -278,4 +278,10 @@ public class APIDataJson {
 	public static class GardenPlayerData {
 		public int larva_consumed = 0;
 	}
+
+	public GlacitePlayerData glacite_player_data = new GlacitePlayerData();
+
+	public static class GlacitePlayerData {
+		public List<String> fossils_donated = new ArrayList<>();
+	}
 }
