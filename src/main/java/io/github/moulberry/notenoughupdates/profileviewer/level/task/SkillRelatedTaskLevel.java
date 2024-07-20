@@ -120,6 +120,9 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel {
 				}
 		}
 
+		int sbXpFossilResearch =
+			data.glacite_player_data.fossils_donated.size() * miningObj.get("fossil_research_xp").getAsInt();
+
 		// rock mines
 		float pet_milestone_ores_mined = data.player_stats.pets.milestone.ores_mined;
 
@@ -197,6 +200,12 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel {
 			false
 		));
 		lore.add(levelPage.buildLore("Peak of the Mountain", sbXpPotmTier, miningObj.get("potm").getAsInt(), false));
+		lore.add(levelPage.buildLore(
+			"Fossil Resarch",
+			sbXpFossilResearch,
+			miningObj.get("fossil_research").getAsInt(),
+			false
+		));
 		lore.add(levelPage.buildLore("Trophy Fish", sbXpTrophyFish, fishingObj.get("trophy_fish").getAsInt(), false));
 		lore.add(levelPage.buildLore("Rock Milestone", sbXpRockPet, miningObj.get("rock_milestone").getAsInt(), false));
 		lore.add(levelPage.buildLore(
@@ -208,7 +217,7 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel {
 
 		int totalXp =
 			(int) (sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
-				sbXpDolphinPet + sbXpNucleus);
+				sbXpDolphinPet + sbXpNucleus + sbXpFossilResearch);
 		levelPage.renderLevelBar(
 			"Skill Related Task",
 			new ItemStack(Items.diamond_sword),
