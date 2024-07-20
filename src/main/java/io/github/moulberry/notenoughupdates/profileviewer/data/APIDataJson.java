@@ -243,6 +243,7 @@ public class APIDataJson {
 			public int rabbit_barn_capacity_level = 1;
 			public int rabbit_rarity_upgrades = 0;
 			public long last_viewed_chocolate_factory = 0;
+			public int refined_dark_cacao_truffles = 0;
 
 			public static class EmployeeData {
 				public int rabbit_bro = 0;
