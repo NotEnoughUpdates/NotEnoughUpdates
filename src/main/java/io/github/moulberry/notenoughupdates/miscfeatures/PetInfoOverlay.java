@@ -668,7 +668,8 @@ public class PetInfoOverlay extends TextOverlay {
 
 				if (petHeldItem != null) {
 					Vector2f position = getPosition(overlayWidth, overlayHeight, true);
-					int x = (int) position.x;
+					int xOffset = NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon ? 0 : 25;
+					int x = (int) position.x - xOffset;
 					int y = (int) position.y;
 
 					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petHeldItem);
