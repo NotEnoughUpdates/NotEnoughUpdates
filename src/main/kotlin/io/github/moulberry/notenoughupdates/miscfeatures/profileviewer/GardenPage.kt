@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Level
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
+import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson
 import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.MC
 import io.github.moulberry.notenoughupdates.util.UrsaClient
@@ -53,6 +54,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var gardenData: GardenData? = null
     private var currentlyFetching = false
     private lateinit var repoData: GardenRepoJson
+    private var apiData: APIDataJson? = null
 
     private var tooltipToDisplay = listOf<String>()
 
@@ -90,6 +92,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             Utils.drawStringCentered("§cMissing Profile Data", guiLeft + 220, guiTop + 101, true, 0)
             return
         }
+        val selectedProfile = GuiProfileViewer.getSelectedProfile() ?: return
+        apiData = selectedProfile.APIDataJson ?: return
 
         MC.textureManager.bindTexture(background)
         Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), instance.sizeX.toFloat(), instance.sizeY.toFloat(), GL11.GL_NEAREST)
@@ -246,6 +250,9 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         }
         Utils.renderShadowedString("§2Garden §f${level.level.toInt()}", left + 45, top, 80)
         Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 5)
+
+        val copper = apiData?.garden_player_data?.copper ?: 0
+        Utils.renderShadowedString("§cCopper: §f$copper", left + 32, top + 20, 80)
     }
 
     private fun getLevel(experienceList: List<Int>, currentExp: Long?): Level {
