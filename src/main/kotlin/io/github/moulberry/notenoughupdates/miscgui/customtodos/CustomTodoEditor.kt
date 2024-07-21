@@ -46,6 +46,9 @@ class CustomTodoEditor(
     var timer: String = from.timer.toString()
 
     @field:Bind
+    var showWhen: String = from.showWhen.toString()
+
+    @field:Bind
     var trigger: String = from.trigger
 
     @field:Bind
@@ -53,6 +56,9 @@ class CustomTodoEditor(
 
     @field:Bind
     var isResetOffset: Boolean = from.isResetOffset
+
+    @field:Bind
+    var showOnlyWhenReady: Boolean = from.showOnlyWhenReady
 
     var target = from.triggerTarget
     var matchMode = from.triggerMatcher
@@ -64,6 +70,8 @@ class CustomTodoEditor(
             trigger,
             icon,
             isResetOffset,
+            showWhen.toIntOrNull() ?: 0,
+            showOnlyWhenReady,
             target, matchMode,
             from.readyAt,
             from.enabled.toMutableMap().also { it[SBInfo.getInstance().currentProfile ?: return@also] = enabled }
@@ -176,7 +184,7 @@ class CustomTodoEditor(
     }
 
     @Bind
-    fun getFancyTime(): String {
+    fun getFancyTimeTimer(): String {
         val tint = timer.toIntOrNull() ?: return "§3Invalid Time"
         val timeFormat = Utils.prettyTime(tint * 1000L)
         if (isResetOffset) {
@@ -185,38 +193,85 @@ class CustomTodoEditor(
         return "Reset $timeFormat after completion"
     }
 
+    @Bind
+    fun getFancyTimeShowWhen(): String {
+        if (showOnlyWhenReady) {
+            return "Shown only when task is ready"
+        }
+        val tint = showWhen.toIntOrNull() ?: return "§3Invalid Time"
+        val timeFormat = Utils.prettyTime(tint * 1000L)
+        if (tint == 0) {
+            return "Always shown"
+        }
+        return "Show if less than $timeFormat until ready"
+    }
+
     fun changeTimer(value: Int) {
         timer = ((timer.toIntOrNull() ?: 0) + value).coerceAtLeast(0).toString()
     }
 
+    fun changeShowWhen(value: Int) {
+        showWhen = ((showWhen.toIntOrNull() ?: 0) + value).coerceAtLeast(0).toString()
+    }
+
     @Bind
-    fun plusDay() {
+    fun plusDayTimer() {
         changeTimer(60 * 60 * 24)
     }
 
     @Bind
-    fun minusDay() {
+    fun minusDayTimer() {
         changeTimer(-60 * 60 * 24)
     }
 
     @Bind
-    fun minusHour() {
+    fun minusHourTimer() {
         changeTimer(-60 * 60)
     }
 
     @Bind
-    fun plusHour() {
+    fun plusHourTimer() {
         changeTimer(60 * 60)
     }
 
     @Bind
-    fun plusMinute() {
+    fun plusMinuteTimer() {
         changeTimer(60)
     }
 
     @Bind
-    fun minusMinute() {
+    fun minusMinuteTimer() {
         changeTimer(-60)
+    }
+
+    @Bind
+    fun plusDayShowWhen() {
+        changeShowWhen(60 * 60 * 24)
+    }
+
+    @Bind
+    fun minusDayShowWhen() {
+        changeShowWhen(-60 * 60 * 24)
+    }
+
+    @Bind
+    fun minusHourShowWhen() {
+        changeShowWhen(-60 * 60)
+    }
+
+    @Bind
+    fun plusHourShowWhen() {
+        changeShowWhen(60 * 60)
+    }
+
+    @Bind
+    fun plusMinuteShowWhen() {
+        changeShowWhen(60)
+    }
+
+    @Bind
+    fun minusMinuteShowWhen() {
+        changeShowWhen(-60)
     }
 
     @Bind
