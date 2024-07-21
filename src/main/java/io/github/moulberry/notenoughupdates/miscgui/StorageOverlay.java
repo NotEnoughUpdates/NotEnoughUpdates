@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.core.GuiElement;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
+import io.github.moulberry.notenoughupdates.miscfeatures.AhBzKeybind;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
@@ -2128,29 +2129,35 @@ public class StorageOverlay extends GuiElement {
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
 		GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
 
-		if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+		int keyPressed = Keyboard.getEventKey();
+		if (keyPressed == Keyboard.KEY_ESCAPE) {
 			clearSearch();
 			return false;
 		}
-		if (Keyboard.getEventKey() == Minecraft.getMinecraft().gameSettings.keyBindScreenshot.getKeyCode()) {
+		if (keyPressed == Minecraft.getMinecraft().gameSettings.keyBindScreenshot.getKeyCode()) {
 			return false;
 		}
-		if (Keyboard.getEventKey() == Minecraft.getMinecraft().gameSettings.keyBindFullscreen.getKeyCode()) {
+		if (keyPressed == Minecraft.getMinecraft().gameSettings.keyBindFullscreen.getKeyCode()) {
 			return false;
 		}
 
 		if (!searchBar.getFocus() && !renameStorageField.getFocus() &&
-			(Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode() ||
-				Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode())) {
+			(keyPressed == manager.keybindViewRecipe.getKeyCode() ||
+				keyPressed == manager.keybindViewUsages.getKeyCode() ||
+				keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind)) {
 			for (Slot slot : container.inventorySlots.inventorySlots) {
 				if (slot != null && ((AccessorGuiContainer) container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
+					ItemStack stack = slot.getStack();
 					String internalName =
-						manager.createItemResolutionQuery().withItemStack(slot.getStack()).resolveInternalName();
+						manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 					if (internalName == null) continue;
 					JsonObject item = manager.getItemInformation().get(internalName);
-					if (Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode()) manager.showRecipe(item);
-					if (Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode()) manager.displayGuiItemUsages(
+					if (keyPressed == manager.keybindViewRecipe.getKeyCode()) manager.showRecipe(item);
+					if (keyPressed == manager.keybindViewUsages.getKeyCode()) manager.displayGuiItemUsages(
 						internalName);
+					if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
+						AhBzKeybind.onKeyPressed(stack);
+					}
 				}
 			}
 		}
@@ -2170,7 +2177,7 @@ public class StorageOverlay extends GuiElement {
 			}
 
 			if (editingNameId >= 0) {
-				if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
+				if (keyPressed == Keyboard.KEY_RETURN) {
 					editingNameId = -1;
 					return true;
 				}
@@ -2178,7 +2185,7 @@ public class StorageOverlay extends GuiElement {
 				String prevText = renameStorageField.getText();
 				renameStorageField.setFocus(true);
 				searchBar.setFocus(false);
-				renameStorageField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+				renameStorageField.keyTyped(Keyboard.getEventCharacter(), keyPressed);
 				if (!prevText.equals(renameStorageField.getText())) {
 					StorageManager.StoragePage page = StorageManager.getInstance().getPage(editingNameId, false);
 					if (page != null) {
@@ -2190,7 +2197,7 @@ public class StorageOverlay extends GuiElement {
 				String prevText = searchBar.getText();
 				searchBar.setFocus(true);
 				renameStorageField.setFocus(false);
-				searchBar.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+				searchBar.keyTyped(Keyboard.getEventCharacter(), keyPressed);
 				if (!prevText.equals(searchBar.getText())) {
 					StorageManager.getInstance().searchDisplay(searchBar.getText());
 					dirty = true;
@@ -2199,7 +2206,7 @@ public class StorageOverlay extends GuiElement {
 					searchBar.getText().isEmpty()) {
 					searchBar.setFocus(false);
 				}
-			} else return Keyboard.getEventKey() != Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode();
+			} else return keyPressed != Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode();
 
 		}
 

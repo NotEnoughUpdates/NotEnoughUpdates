@@ -23,7 +23,7 @@ TARGET_NAME="build/libs/NotEnoughUpdates-$GITHUB_REF_NAME.jar"
 mv build/libs/*.jar "$TARGET_NAME"
 
 read -r -d '' extra_notes <<EOF
-Modrinth download: TBD
+Modrinth download: https://modrinth.com/mod/notenoughupdates/version/$GITHUB_REF_NAME
 
 Do **NOT** trust any mod just because they publish a checksum associated with it. These check sums are meant to verify only that two files are identical. They are not a certificate of origin, or a guarantee for the author of these files.
 

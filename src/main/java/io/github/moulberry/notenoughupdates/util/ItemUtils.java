@@ -396,7 +396,7 @@ public class ItemUtils {
 			NBTTagCompound display = tag.getCompoundTag("display");
 			if (display.hasKey("Lore", 9)) {
 				NBTTagList lore = display.getTagList("Lore", 8);
-				if (Utils.cleanColour(lore.getStringTagAt(0)).matches(ItemTooltipListener.petToolTipRegex) &&
+				if (ItemTooltipListener.petToolTipRegex.matcher(Utils.cleanColour(lore.getStringTagAt(0))).matches() &&
 					lore.tagCount() > 7) {
 
 					PetLeveling.PetLevel petLevel;
@@ -412,8 +412,11 @@ public class ItemUtils {
 					int maxLvl = 100;
 					if (Constants.PETS != null && Constants.PETS.has("custom_pet_leveling") &&
 						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.toUpperCase(Locale.ROOT)) &&
-						Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT)).has(
-							"max_level")) {
+						Constants.PETS
+							.getAsJsonObject("custom_pet_leveling")
+							.getAsJsonObject(pet.petType.toUpperCase(Locale.ROOT))
+							.has(
+								"max_level")) {
 						maxLvl =
 							Constants.PETS
 								.getAsJsonObject("custom_pet_leveling")

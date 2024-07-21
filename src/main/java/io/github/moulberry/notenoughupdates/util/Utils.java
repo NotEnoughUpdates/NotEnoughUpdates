@@ -28,6 +28,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import lombok.var;
@@ -74,6 +75,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -119,6 +125,8 @@ public class Utils {
 		EnumChatFormatting.DARK_PURPLE
 	};
 	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
+	final static Pattern GUILD_OR_PARTY_MESSAGE_PATTERN = Pattern.compile(
+		"(?:Party|Guild|Officer) > (?:\\[.*\\] )?([a-zA-Z0-9_]+):? (?:\\[.*\\]: )?");
 	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
 	public static boolean hasEffectOverride = false;
@@ -2269,7 +2277,9 @@ public class Utils {
 
 	private static long lastError = -1;
 
-	public static void showOutdatedRepoNotification(String missingFile) {
+	public static void showOutdatedRepoNotification(String missingFile) { showOutdatedRepoNotification(missingFile, null); }
+
+	public static void showOutdatedRepoNotification(String missingFile, Throwable exception) {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
@@ -2289,7 +2299,7 @@ public class Utils {
 			);
 		}
 		if (System.currentTimeMillis() - lastError > 1000) {
-			System.err.println("[NEU] Repo issue: " + missingFile);
+			NotEnoughUpdates.LOGGER.error("Repo issue: " + missingFile, exception);
 			lastError = System.currentTimeMillis();
 		}
 	}
@@ -2336,18 +2346,13 @@ public class Utils {
 
 	public static String getNameFromChatComponent(IChatComponent chatComponent) {
 		String unformattedText = cleanColour(chatComponent.getSiblings().get(0).getUnformattedText());
-		String username = unformattedText.substring(unformattedText.indexOf(">") + 2, unformattedText.indexOf(":"));
-		// If the first character is a square bracket the user has a rank
-		// So we get the username from the space after the closing square bracket (end of their rank)
-		if (username.charAt(0) == '[') {
-			username = username.substring(username.indexOf(" ") + 1);
+		Matcher matcher = GUILD_OR_PARTY_MESSAGE_PATTERN.matcher(unformattedText);
+		if (matcher.matches()) {
+			return matcher.group(1);
+		} else {
+			System.out.println("[NEU] getNameFromChatComponent ERROR: " + unformattedText);
+			return "idk_bruh";
 		}
-		// If we still get any square brackets it means the user was talking in guild chat with a guild rank
-		// So we get the username up to the space before the guild rank
-		if (username.contains("[") || username.contains("]")) {
-			username = username.substring(0, username.indexOf(" "));
-		}
-		return username;
 	}
 
 	public static void addChatMessage(@NotNull String message) {
@@ -2426,5 +2431,49 @@ public class Utils {
 			renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		}
 		return renderText;
+	}
+
+	public static boolean canPetBeTierBoosted(PetInfoOverlay.Pet pet, PetInfoOverlay.Rarity rarityToBeBoostedTo) {
+		if (rarityToBeBoostedTo == null) return false;
+		ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager
+			.createItemResolutionQuery()
+			.withKnownInternalName(pet.petType + ";" + rarityToBeBoostedTo.petId)
+			.resolveToItemStack(false);
+		return itemStack != null;
+	}
+
+	public static void copyToClipboard(String str) {
+		Toolkit.getDefaultToolkit().getSystemClipboard()
+					 .setContents(new StringSelection(str), null);
+	}
+
+	public static void copyToClipboard(StringSelection stringSelection, ClipboardOwner owner) {
+		Toolkit.getDefaultToolkit().getSystemClipboard()
+					 .setContents(stringSelection, owner);
+	}
+
+	private static String clipboardCache = "";
+	private static long lastClipboard = -1;
+
+	public static String getClipboard() {
+		if (System.currentTimeMillis() - lastClipboard < 500) {
+			return clipboardCache;
+		}
+		lastClipboard = System.currentTimeMillis();
+		try {
+			Transferable clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+
+			if (clipboard != null && clipboard.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				String clipboardText = (String) clipboard.getTransferData(DataFlavor.stringFlavor);
+				clipboardCache = clipboardText;
+				return clipboardText;
+			} else {
+				clipboardCache = null;
+				return null;
+			}
+		} catch (UnsupportedFlavorException | IOException | HeadlessException | IllegalStateException ignored) {
+			clipboardCache = null;
+			return null;
+		}
 	}
 }

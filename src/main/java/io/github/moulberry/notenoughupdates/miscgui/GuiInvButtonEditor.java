@@ -45,10 +45,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -171,6 +167,8 @@ public class GuiInvButtonEditor extends GuiScreen {
 		put("arachne sanctuary", "skull:35e248da2e108f09813a6b848a0fcef111300978180eda41d3d1a7a8e4dba3c3");
 		put("garden", "skull:f4880d2c1e7b86e87522e20882656f45bafd42f94932b2c5e0d6ecaa490cb4c");
 		put("winter", "skull:6dd663136cafa11806fdbca6b596afd85166b4ec02142c8d5ac8941d89ab7");
+		put("wizard tower", "skull:838564e28aba98301dbda5fafd86d1da4e2eaeef12ea94dcf440b883e559311c");
+		put("dwarven mines base camp", "skull:2461ec3bd654f62ca9a393a32629e21b4e497c877d3f3380bcf2db0e20fc0244");
 	}};
 
 	private static LinkedHashMap<String, List<NEUConfig.InventoryButton>> presets = null;
@@ -680,19 +678,16 @@ public class GuiInvButtonEditor extends GuiScreen {
 	}
 
 	private boolean validShareContents() {
+		String base64 = Utils.getClipboard();
+		if (base64 == null) return false;
+
+		if (base64.length() <= sharePrefix.length()) return false;
+
+		base64 = base64.trim();
+
 		try {
-			String base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-
-			if (base64.length() <= sharePrefix.length()) return false;
-
-			base64 = base64.trim();
-
-			try {
-				return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
-			} catch (IllegalArgumentException e) {
-				return false;
-			}
-		} catch (HeadlessException | IOException | UnsupportedFlavorException | IllegalStateException e) {
+			return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
+		} catch (IllegalArgumentException e) {
 			return false;
 		}
 	}
@@ -806,13 +801,8 @@ public class GuiInvButtonEditor extends GuiScreen {
 		if (mouseX > guiLeft - 2 - 88 - 22 && mouseX < guiLeft - 2 - 22) {
 			if (mouseY > guiTop + 2 && mouseY < guiTop + 22) {
 
-				String base64;
-
-				try {
-					base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-				} catch (HeadlessException | IOException | UnsupportedFlavorException e) {
-					return;
-				}
+				String base64 = Utils.getClipboard();
+				if (base64 == null) return;
 
 				if (base64.length() <= sharePrefix.length()) return;
 
@@ -871,7 +861,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 				}
 				String base64String = Base64.getEncoder().encodeToString((sharePrefix +
 					jsonArray).getBytes(StandardCharsets.UTF_8));
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
+				Utils.copyToClipboard(base64String);
 				return;
 			}
 		}

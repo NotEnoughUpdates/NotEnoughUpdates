@@ -82,10 +82,13 @@ public class OverlayManager {
 			}));
 
 		List<String> miningDummy = Lists.newArrayList(
-			"\u00a73Goblin Slayer: \u00a7626.5%\n\u00a73Lucky Raffle: \u00a7c0.0%",
-			"\u00a73Mithril Powder: \u00a726,243",
-			"\u00a73Forge 1) \u00a79Diamonite\u00a77: \u00a7aReady!",
-			"\u00a73Forge 2) \u00a77EMPTY\n\u00a73Forge 3) \u00a77EMPTY\n\u00a73Forge 4) \u00a77EMPTY"
+			"§3Goblin Slayer: §626.5%\n§3Lucky Raffle: §c0.0%",
+			"§3Mithril: §26,243\n§3Gemstone: §d37,354",
+			"§3Forge 1) §9Diamonite§7: §aReady!",
+			"§3Forge 2) §7EMPTY",
+			"§3Pickaxe CD: §a43s",
+			"§3Star Cult: §a1h14m48s",
+			"§3Sky Mall: §a5x §9Titanium drops §a(14m2s)"
 		);
 		miningOverlay = new MiningOverlay(NotEnoughUpdates.INSTANCE.config.mining.overlayPosition, () -> {
 			List<String> strings = new ArrayList<>();

@@ -20,11 +20,15 @@
 package io.github.moulberry.notenoughupdates.profileviewer.data;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static io.github.moulberry.notenoughupdates.profileviewer.rift.RiftPage.readBase64;
 
@@ -132,42 +136,12 @@ public class APIDataJson {
 	public static class MiningCore {
 		public float powder_mithril = 0;
 		public float powder_gemstone = 0;
+		public float powder_glacite = 0;
 		public float powder_spent_mithril = 0;
 		public float powder_spent_gemstone = 0;
+		public float powder_spent_glacite = 0;
 
-		public Nodes nodes = new Nodes();
-
-		public static class Nodes {
-			public int mining_fortune = 0;
-			public int mining_speed = 0;
-			public int daily_powder = 0;
-			public int efficient_miner = 0;
-			public int titanium_insanium = 0;
-			public int random_event = 0;
-			public int mining_madness = 0;
-			public int daily_effect = 0;
-			public int goblin_killer = 0;
-			public int mining_experience = 0;
-			public int forge_time = 0;
-			public int front_loaded = 0;
-			public int experience_orbs = 0;
-			public int fallen_star_bonus = 0;
-			public int professional = 0;
-			public int great_explorer = 0;
-			public int fortunate = 0;
-			public int lonesome_miner = 0;
-			public int mining_fortune_2 = 0;
-			public int mining_speed_2 = 0;
-			public int mining_speed_boost = 0;
-			public int vein_seeker = 0;
-			public int powder_buff = 0;
-			public int special_0 = 0;
-			public int precision_mining = 0;
-			public int star_powder = 0;
-			public int pickaxe_toss = 0;
-			public int maniac_miner = 0;
-			public int mole = 0;
-		}
+		public Map<String, JsonElement> nodes = new HashMap<>();
 	}
 
 	public @Nullable Rift rift;
@@ -269,6 +243,7 @@ public class APIDataJson {
 			public int rabbit_barn_capacity_level = 1;
 			public int rabbit_rarity_upgrades = 0;
 			public long last_viewed_chocolate_factory = 0;
+			public int refined_dark_cacao_truffles = 0;
 
 			public static class EmployeeData {
 				public int rabbit_bro = 0;
@@ -286,6 +261,7 @@ public class APIDataJson {
 				public long last_charge_time = 0;
 				public long activation_time = 0;
 			}
+
 			public static class HoppityShoppity {
 				public long chocolate_spent = 0;
 			}
@@ -296,5 +272,17 @@ public class APIDataJson {
 
 	public static class WinterPlayerData {
 		public int refined_jyrre_uses = 0;
+	}
+
+	public GardenPlayerData garden_player_data = new GardenPlayerData();
+
+	public static class GardenPlayerData {
+		public int larva_consumed = 0;
+	}
+
+	public GlacitePlayerData glacite_player_data = new GlacitePlayerData();
+
+	public static class GlacitePlayerData {
+		public List<String> fossils_donated = new ArrayList<>();
 	}
 }

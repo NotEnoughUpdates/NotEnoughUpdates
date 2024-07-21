@@ -80,21 +80,30 @@ public class GlScissorStack {
 		} else {
 			boundsStack.push(boundsStack.peek().createSubBound(left, top, right, bottom));
 		}
-		if (!boundsStack.isEmpty()) {
+		refresh(scaledResolution);
+	}
+
+	/**
+	 * Disable scissors temporarily. Can be reenabled with {@link #refresh(ScaledResolution)}
+	 */
+	public static void disableTemporary() {
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+	}
+
+	public static void refresh(ScaledResolution scaledResolution) {
+		if (boundsStack.isEmpty()) {
+			GL11.glDisable(GL11.GL_SCISSOR_TEST);
+		} else {
 			boundsStack.peek().set(scaledResolution);
+			GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		}
-		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 	}
 
 	public static void pop(ScaledResolution scaledResolution) {
 		if (!boundsStack.isEmpty()) {
 			boundsStack.pop();
 		}
-		if (boundsStack.isEmpty()) {
-			GL11.glDisable(GL11.GL_SCISSOR_TEST);
-		} else {
-			boundsStack.peek().set(scaledResolution);
-		}
+		refresh(scaledResolution);
 	}
 
 	public static void clear() {
