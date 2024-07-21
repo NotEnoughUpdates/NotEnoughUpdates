@@ -31,6 +31,11 @@ import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.UrsaClient
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines
+import net.minecraft.client.Minecraft
+import net.minecraft.init.Blocks
+import net.minecraft.item.ItemStack
+import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
 
 class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance) {
     private val manager get() = NotEnoughUpdates.INSTANCE.manager
@@ -43,9 +48,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var currentlyFetching = false
     private var repoData: GardenRepoJson? = null
 
+    val background: ResourceLocation = ResourceLocation("notenoughupdates:profile_viewer/garden/background.png.png")
+
     override fun drawPage(mouseX: Int, mouseY: Int, partialTicks: Float) {
         guiLeft = GuiProfileViewer.getGuiLeft()
         guiTop = GuiProfileViewer.getGuiTop()
+        Minecraft.getMinecraft().textureManager.bindTexture(background)
+        Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), 0f, 0f, 0f, 1f, 0f, 1f, GL11.GL_NEAREST)
 
         if (currentlyFetching) {
             Utils.drawStringCentered("§eLoading Data", guiLeft + 220, guiTop + 101, true, 0)
@@ -70,6 +79,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             return
         }
 
+        renderPlots()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
@@ -103,5 +113,21 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         override fun read(reader: JsonReader): CropType? {
             return CropType.fromApiName(reader.nextString())
         }
+    }
+
+    private fun renderPlots() {
+        Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
+        Utils.drawTexturedRect(
+            (guiLeft + 200).toFloat(),
+            (guiTop + 100).toFloat(),
+            20f,
+            20f,
+            0f,
+            20 / 256f,
+            0f,
+            20 / 256f,
+            GL11.GL_NEAREST
+        )
+        Utils.drawItemStack(ItemStack(Blocks.grass), guiLeft + 202, guiTop + 102)
     }
 }
