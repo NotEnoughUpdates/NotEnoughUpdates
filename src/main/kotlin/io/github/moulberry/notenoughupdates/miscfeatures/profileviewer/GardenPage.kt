@@ -19,13 +19,16 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.profileviewer
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.MC
@@ -82,6 +85,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), instance.sizeX.toFloat(), instance.sizeY.toFloat(), GL11.GL_NEAREST)
 
         renderPlots()
+        renderGardenLevel()
         renderCropUpgrades()
     }
 
@@ -180,5 +184,20 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             Utils.drawItemStack(itemStack, xPos + 2, yPos)
             Utils.renderAlignedString("§e${crop.displayName}", "§f$upgradeLevel", (xPos + 20).toFloat(), (yPos + 5).toFloat(), 50)
         }
+    }
+
+    private fun renderGardenLevel() {
+        val top = guiTop + 20
+        val left = guiLeft + 160
+        val gson = Gson()
+        val gardenJsonArray = JsonArray()
+        repoData.gardenExperience.forEach { gardenJsonArray.add(gson.toJsonTree(it)) }
+        val level = ProfileViewerUtils.getLevel(
+            gardenJsonArray,
+            (gardenData?.gardenExperience ?: 0).toFloat(),
+            repoData.gardenExperience.size,
+            false
+        )
+        instance.renderBar(top.toFloat(), (left + 6).toFloat(), 80f, level.level % 1)
     }
 }
