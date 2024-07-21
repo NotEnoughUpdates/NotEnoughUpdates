@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
+import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.UrsaClient
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines
@@ -40,6 +41,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var currentProfile: SkyblockProfiles.SkyblockProfile? = null
     private var gardenData: GardenData? = null
     private var currentlyFetching = false
+    private var repoData: GardenRepoJson? = null
 
     override fun drawPage(mouseX: Int, mouseY: Int, partialTicks: Float) {
         guiLeft = GuiProfileViewer.getGuiLeft()
@@ -54,6 +56,12 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         if (newProfile != currentProfile) {
             getData()
             currentProfile = selectedProfile
+            return
+        }
+
+        if (repoData == null) {
+            Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 220, guiTop + 101, true, 0)
+            Utils.showOutdatedRepoNotification("garden.json")
             return
         }
 
@@ -83,6 +91,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val data = manager.ursaClient.get(UrsaClient.gardenForProfile(profileId)).get()
 
         val gson = GsonBuilder().setPrettyPrinting().registerTypeAdapter(CropType::class.java, cropTypeAdapter.nullSafe()).create()
+        repoData = gson.fromJson(Constants.GARDEN, GardenRepoJson::class.java)
         return gson.fromJson(data, GardenDataJson::class.java).garden
     }
 

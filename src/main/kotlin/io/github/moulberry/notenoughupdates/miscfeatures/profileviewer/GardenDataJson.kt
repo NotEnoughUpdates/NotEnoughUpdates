@@ -56,6 +56,25 @@ data class ComposterUpgrades(
     @SerializedName("cost_reduction") val costReduction: Int,
 )
 
+data class GardenRepoJson(
+    @SerializedName("garden_exp") val gardenExperience: List<Int>,
+    @SerializedName("crop_milestones") val cropMilestones: Map<CropType, List<Int>>,
+    @SerializedName("visitors") val visitors: Map<String, VisitorRarity>,
+    val plots: Map<String, PlotData>,
+    @SerializedName("plot_costs") val plotCosts: Map<String, List<PlotCost>>,
+)
+
+data class PlotData(
+    val name: String,
+    val x: Int,
+    val y: Int,
+)
+
+data class PlotCost(
+    val item: String,
+    val amount: Int,
+)
+
 enum class CropType(val itemId: String, val apiName: String) {
     WHEAT("ENCHANTED_HAY_BLOCK", "WHEAT"),
     NETHER_WART("ENCHANTED_NETHER_STALK", "NETHER_STALK"),
@@ -71,7 +90,17 @@ enum class CropType(val itemId: String, val apiName: String) {
 
     companion object {
         fun fromApiName(apiName: String): CropType? {
-            return values().firstOrNull { it.apiName == apiName }
+            val fromApiName = values().firstOrNull { it.apiName == apiName }
+            if (fromApiName != null) return fromApiName
+            return values().firstOrNull { it.name == apiName }
         }
     }
+}
+
+enum class VisitorRarity {
+    UNCOMMON,
+    RARE,
+    LEGENDARY,
+    MYTHIC,
+    SPECIAL,
 }
