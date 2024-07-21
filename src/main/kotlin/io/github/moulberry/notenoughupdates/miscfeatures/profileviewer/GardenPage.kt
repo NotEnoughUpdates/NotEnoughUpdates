@@ -48,14 +48,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var currentlyFetching = false
     private var repoData: GardenRepoJson? = null
 
-    val background: ResourceLocation = ResourceLocation("notenoughupdates:profile_viewer/garden/background.png.png")
+    val background: ResourceLocation = ResourceLocation("notenoughupdates:profile_viewer/garden/background.png")
 
     override fun drawPage(mouseX: Int, mouseY: Int, partialTicks: Float) {
         guiLeft = GuiProfileViewer.getGuiLeft()
         guiTop = GuiProfileViewer.getGuiTop()
         Minecraft.getMinecraft().textureManager.bindTexture(background)
-        Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), 0f, 0f, 0f, 1f, 0f, 1f, GL11.GL_NEAREST)
-
+        Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), instance.sizeX.toFloat(), instance.sizeY.toFloat(), GL11.GL_NEAREST)
         if (currentlyFetching) {
             Utils.drawStringCentered("§eLoading Data", guiLeft + 220, guiTop + 101, true, 0)
             return
@@ -117,6 +116,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderPlots() {
         Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
+        for ()
         Utils.drawTexturedRect(
             (guiLeft + 200).toFloat(),
             (guiTop + 100).toFloat(),
