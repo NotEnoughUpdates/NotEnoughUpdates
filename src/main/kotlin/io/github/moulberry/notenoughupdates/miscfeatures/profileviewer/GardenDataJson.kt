@@ -27,7 +27,6 @@ data class GardenDataJson(
 )
 
 data class GardenData(
-    // todo repo to map these locations + plot id?
     @SerializedName("unlocked_plots_ids") val unlockedPlotIds: List<String>,
     @SerializedName("commission_data") val commissionData: VisitorCommissions,
     @SerializedName("resources_collected") val resourcesCollected: Map<CropType, Int>,

@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.util.Constants
+import io.github.moulberry.notenoughupdates.util.MC
 import io.github.moulberry.notenoughupdates.util.UrsaClient
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines
@@ -46,17 +47,22 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var currentProfile: SkyblockProfiles.SkyblockProfile? = null
     private var gardenData: GardenData? = null
     private var currentlyFetching = false
-    private var repoData: GardenRepoJson? = null
+    private lateinit var repoData: GardenRepoJson
 
     val background: ResourceLocation = ResourceLocation("notenoughupdates:profile_viewer/garden/background.png")
 
     override fun drawPage(mouseX: Int, mouseY: Int, partialTicks: Float) {
         guiLeft = GuiProfileViewer.getGuiLeft()
         guiTop = GuiProfileViewer.getGuiTop()
-        Minecraft.getMinecraft().textureManager.bindTexture(background)
-        Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), instance.sizeX.toFloat(), instance.sizeY.toFloat(), GL11.GL_NEAREST)
+
         if (currentlyFetching) {
             Utils.drawStringCentered("§eLoading Data", guiLeft + 220, guiTop + 101, true, 0)
+            return
+        }
+
+        if (Constants.GARDEN == null) {
+            Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 220, guiTop + 101, true, 0)
+            Utils.showOutdatedRepoNotification("garden.json")
             return
         }
 
@@ -67,16 +73,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             return
         }
 
-        if (repoData == null) {
-            Utils.drawStringCentered("§cMissing Repo Data", guiLeft + 220, guiTop + 101, true, 0)
-            Utils.showOutdatedRepoNotification("garden.json")
-            return
-        }
-
         if (gardenData == null || gardenData?.gardenExperience == 0) {
             Utils.drawStringCentered("§cMissing Profile Data", guiLeft + 220, guiTop + 101, true, 0)
             return
         }
+
+        MC.textureManager.bindTexture(background)
+        Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), instance.sizeX.toFloat(), instance.sizeY.toFloat(), GL11.GL_NEAREST)
 
         renderPlots()
     }
@@ -129,5 +132,9 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             GL11.GL_NEAREST
         )
         Utils.drawItemStack(ItemStack(Blocks.grass), guiLeft + 202, guiTop + 102)
+    }
+
+    private fun renderCropUpgrades() {
+        return
     }
 }
