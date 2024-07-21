@@ -41,7 +41,6 @@ import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 
@@ -247,20 +246,23 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         } else {
             instance.renderBar(left.toFloat(), (top + 10).toFloat(), 80f, level.level % 1)
         }
+
         val maxXp = level.maxXpForLevel.toInt()
         val totalXpS = StringUtils.formatNumber(level.totalXp.toLong())
-        drawAlignedStringWithHover("§2Garden", "§f${level.level.toInt()}", left + 20, top, 60, listOf("§2Garden",
-            EnumChatFormatting.GRAY.toString() +
-                    "Progress: " +
-                    EnumChatFormatting.DARK_PURPLE +
+        val gardenTooltip = ArrayList<String>()
+        gardenTooltip.add("§2Garden")
+        if (level.maxed) {
+            gardenTooltip.add("§7Progress: §6MAXED!");
+        } else {
+            gardenTooltip.add("§7Progress: §5" +
                     StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
                     "/" +
-                    StringUtils.shortNumberFormat(maxXp),
-            EnumChatFormatting.GRAY.toString() + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
-                    EnumChatFormatting.DARK_GRAY + " (" +
-                    StringUtils.formatToTenths(instance.getPercentage("garden", level)) +
-                    "% to " + level.maxLevel + ")"
-        ))
+                    StringUtils.shortNumberFormat(maxXp))
+        }
+        gardenTooltip.add("§7Total XP: §5${totalXpS}§8 (" +
+                StringUtils.formatToTenths(instance.getPercentage("garden", level)) +
+                "% to ${level.maxLevel})")
+        drawAlignedStringWithHover("§2Garden", "§f${level.level.toInt()}", left + 20, top, 60, gardenTooltip)
         Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 5)
 
         val copper = apiData?.garden_player_data?.copper ?: 0
