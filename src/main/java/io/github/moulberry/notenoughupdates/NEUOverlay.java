@@ -1426,7 +1426,8 @@ public class NEUOverlay extends Gui {
 				"DUNGEON GLOVES",
 				"DUNGEON CLOAK",
 				"DUNGEON NECKLACE",
-				"DUNGEON BRACELET"
+				"DUNGEON BRACELET",
+				"CARNIVAL MASK"
 			) >= 0;
 		} else if (getSortMode() == SORT_MODE_ACCESSORY) {
 			return checkItemType(item.get("lore").getAsJsonArray(), "ACCESSORY", "HATCESSORY", "DUNGEON ACCESSORY") >= 0;
