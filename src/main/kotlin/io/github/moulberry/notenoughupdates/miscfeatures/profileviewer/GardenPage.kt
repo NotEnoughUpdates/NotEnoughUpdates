@@ -252,7 +252,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 5)
 
         val copper = apiData?.garden_player_data?.copper ?: 0
-        Utils.renderShadowedString("§cCopper: §f$copper", left + 32, top + 20, 80)
+        Utils.renderAlignedString("§cCopper:", "§f" + StringUtils.formatNumber(copper), (left).toFloat(), (top + 20).toFloat(), 80)
     }
 
     private fun getLevel(experienceList: List<Int>, currentExp: Long?): Level {
