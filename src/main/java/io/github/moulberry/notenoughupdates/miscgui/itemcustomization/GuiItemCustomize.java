@@ -1028,6 +1028,7 @@ public class GuiItemCustomize extends GuiScreen {
 				mouseY <= topOffset + 15) {
 				if (dyes.get(i).hasAnimatedColour()) {
 					animatedLeatherColours.clear();
+					dyeMode = DyeMode.ANIMATED;
 					for (JsonElement colour : dyes.get(i).colours) {
 						String string = colour.getAsString();
 						Color colourFromHex = ItemCustomizationUtils.getColourFromHex(string);
@@ -1035,6 +1036,7 @@ public class GuiItemCustomize extends GuiScreen {
 						animatedLeatherColours.add(special);
 					}
 				} else if ((dyes.get(i).hasStaticColour())) {
+					dyeMode = DyeMode.ANIMATED;
 					animatedLeatherColours.clear();
 					Color colourFromHex = ItemCustomizationUtils.getColourFromHex(dyes.get(i).colour);
 					String special = SpecialColour.special(0, 0, colourFromHex.getRGB());
