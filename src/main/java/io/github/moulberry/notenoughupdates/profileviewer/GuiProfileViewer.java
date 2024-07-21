@@ -1248,6 +1248,8 @@ public class GuiProfileViewer extends GuiScreen {
 			return (level.totalXp / 1000000) * 100;
 		} else if (skillName.equalsIgnoreCase("social")) {
 			return (level.totalXp / 272800) * 100;
+		} else if (skillName.equalsIgnoreCase("garden")) {
+			return (level.totalXp / 60120) * 100;
 		} else {
 			if (level.maxLevel == 60) {
 				return (level.totalXp / SkillsWeight.SKILLS_LEVEL_60) * 100;

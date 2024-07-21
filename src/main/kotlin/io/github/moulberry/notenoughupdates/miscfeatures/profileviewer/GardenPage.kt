@@ -41,6 +41,7 @@ import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
+import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 
@@ -232,8 +233,6 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 xPos + 20,
                 yPos + 5,
                 50,
-                mouseX,
-                mouseY,
                 listOf("§7Farmed: §f$formattedAmount")
             )
         }
@@ -248,7 +247,20 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         } else {
             instance.renderBar(left.toFloat(), (top + 10).toFloat(), 80f, level.level % 1)
         }
-        Utils.renderShadowedString("§2Garden §f${level.level.toInt()}", left + 45, top, 80)
+        val maxXp = level.maxXpForLevel.toInt()
+        val totalXpS = StringUtils.formatNumber(level.totalXp.toLong())
+        drawAlignedStringWithHover("§2Garden", "§f${level.level.toInt()}", left + 20, top, 60, listOf("§2Garden",
+            EnumChatFormatting.GRAY.toString() +
+                    "Progress: " +
+                    EnumChatFormatting.DARK_PURPLE +
+                    StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
+                    "/" +
+                    StringUtils.shortNumberFormat(maxXp),
+            EnumChatFormatting.GRAY.toString() + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
+                    EnumChatFormatting.DARK_GRAY + " (" +
+                    StringUtils.formatToTenths(instance.getPercentage("garden", level)) +
+                    "% to " + level.maxLevel + ")"
+        ))
         Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 5)
 
         val copper = apiData?.garden_player_data?.copper ?: 0
@@ -268,8 +280,6 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         x: Int,
         y: Int,
         length: Int,
-        mouseX: Int,
-        mouseY: Int,
         hover: List<String>,
     ) {
         Utils.renderAlignedString(first, second, x.toFloat(), y.toFloat(), length)
