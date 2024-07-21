@@ -82,6 +82,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), instance.sizeX.toFloat(), instance.sizeY.toFloat(), GL11.GL_NEAREST)
 
         renderPlots()
+        renderCropUpgrades()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
@@ -121,7 +122,6 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val top = guiTop + 80
         val left = guiLeft + 160
         for (value in repoData.plots) {
-            println(gardenData)
             val contains = gardenData?.unlockedPlotIds?.contains(value.key)
             contains ?: continue
             if (!contains) continue
@@ -143,6 +143,24 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderCropUpgrades() {
-        return
+        val startHeight = guiTop + 100
+        var yPos = startHeight
+        var xPos = guiLeft + 6
+
+        Utils.renderShadowedString("§eCrop Upgrades", xPos + 70, yPos, 105)
+
+        for ((index, crop) in CropType.values().withIndex()) {
+            if (index == 5) {
+                yPos = startHeight
+                xPos += 70
+            }
+            yPos += 14
+
+            val upgradeLevel = gardenData?.cropUpgradeLevels?.get(crop) ?: 0
+
+            val itemStack = manager.createItem(crop.itemId)
+            Utils.drawItemStack(itemStack, xPos + 2, yPos)
+            Utils.renderAlignedString("§e${crop.displayName}", "§f$upgradeLevel", (xPos + 20).toFloat(), (yPos + 5).toFloat(), 50)
+        }
     }
 }

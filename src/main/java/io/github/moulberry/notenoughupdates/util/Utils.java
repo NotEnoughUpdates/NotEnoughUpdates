@@ -1121,6 +1121,10 @@ public class Utils {
 		drawStringCenteredScaledMaxWidth(str, x, y + 4, false, maxLength, 421075);
 	}
 
+	public static void renderShadowedString(String str, int x, int y, int maxLength) {
+		renderShadowedString(str, (float) x, (float) y, maxLength);
+	}
+
 	public static void renderAlignedString(String first, String second, float x, float y, int length) {
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 		if (fontRendererObj.getStringWidth(first + " " + second) >= length) {
