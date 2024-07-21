@@ -147,9 +147,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val top = guiTop + 80
         val left = guiLeft + 160
         for (value in repoData.plots) {
-            val contains = gardenData?.unlockedPlotIds?.contains(value.key)
-            contains ?: continue
-            if (!contains) continue
+            if (gardenData?.unlockedPlotIds?.contains(value.key) != true) continue
             Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
             Utils.drawTexturedRect(
                 (left + value.value.x * 22).toFloat(),

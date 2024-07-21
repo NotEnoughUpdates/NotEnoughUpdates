@@ -97,10 +97,10 @@ enum class CropType(val itemId: String, val apiName: String, val displayName: St
     }
 }
 
-enum class VisitorRarity {
-    UNCOMMON,
-    RARE,
-    LEGENDARY,
-    MYTHIC,
-    SPECIAL,
+enum class VisitorRarity(val displayName: String, var visits: Int = 0, var completed: Int = 0) {
+    UNCOMMON("§aUncommon"),
+    RARE("§9Rare"),
+    LEGENDARY("§6Legendary"),
+    MYTHIC("§dMythic"),
+    SPECIAL("§cSpecial"),
 }
