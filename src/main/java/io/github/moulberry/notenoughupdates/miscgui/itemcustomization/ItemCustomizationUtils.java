@@ -86,7 +86,10 @@ public class ItemCustomizationUtils {
 
 	public static List<String> speedGuide = Lists.newArrayList(
 		EnumChatFormatting.AQUA + "This is how fast the dyes will cycle, in ticks",
-		EnumChatFormatting.GRAY + "Hypixel dyes cycle every 2 ticks"
+		EnumChatFormatting.GRAY + "§6Hypixel §7dyes cycle every 2 ticks",
+		EnumChatFormatting.GRAY + "",
+		EnumChatFormatting.GRAY + "In the §dgradient mode §7this is how many colours between colours",
+		EnumChatFormatting.GRAY + "This means if speed is set to 1 it's the same as §aanimated mode"
 	);
 
 	public static ItemStack copy(ItemStack stack, GuiItemCustomize instance) {
@@ -197,7 +200,18 @@ public class ItemCustomizationUtils {
 		return null;
 	}
 
-	public static int getAnimatedDyeColour(String[] dyeColours, int ticks) {
+	public static int getAnimatedDyeColour(String[] dyeColours, int ticks, DyeMode dyeMode) {
+		if (dyeMode == DyeMode.GRADIENT) {
+			int i = (Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length;
+			int dyeColour1 = ChromaColour.specialToChromaRGB(dyeColours[i]);
+			if (i == dyeColours.length - 1) {
+				i = 0;
+			} else {
+				i++;
+			}
+			int dyeColour2 = ChromaColour.specialToChromaRGB(dyeColours[i]);
+			return blendColors(dyeColour1, dyeColour2, (float) (Minecraft.getMinecraft().thePlayer.ticksExisted % ticks) / ticks);
+		}
 		return ChromaColour.specialToChromaRGB(
 			dyeColours[(Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length]);
 	}
@@ -342,5 +356,23 @@ public class ItemCustomizationUtils {
 		}
 
 		return jsonString;
+	}
+
+	public static int blendColors(int startColorInt, int endColorInt, float ratio) {
+		Color startColour = new Color(startColorInt);
+		Color endColour = new Color(endColorInt);
+		int redStart = startColour.getRed();
+		int greenStart = startColour.getGreen();
+		int blueStart = startColour.getBlue();
+
+		int redEnd = endColour.getRed();
+		int greenEnd = endColour.getGreen();
+		int blueEnd = endColour.getBlue();
+
+		int red = (int) (redStart + (redEnd - redStart) * ratio);
+		int green = (int) (greenStart + (greenEnd - greenStart) * ratio);
+		int blue = (int) (blueStart + (blueEnd - blueStart) * ratio);
+
+		return (red << 16) | (green << 8) | blue;
 	}
 }

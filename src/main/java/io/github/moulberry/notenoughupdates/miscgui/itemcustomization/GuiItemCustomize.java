@@ -79,6 +79,7 @@ public class GuiItemCustomize extends GuiScreen {
 	String customLeatherColour = null;
 	ArrayList<String> animatedLeatherColours = new ArrayList<>();
 	int animatedDyeTicks = 2;
+	DyeMode dyeMode = DyeMode.ANIMATED;
 	private int lastTicks = 2;
 	boolean supportCustomLeatherColour;
 	private String lastCustomItem = "";
@@ -122,6 +123,7 @@ public class GuiItemCustomize extends GuiScreen {
 					this.animatedDyeTicks = data.animatedDyeTicks;
 				}
 				this.textFieldTickSpeed.setText("" + this.animatedDyeTicks);
+				this.dyeMode = data.dyeMode;
 			} else {
 				this.animatedLeatherColours = new ArrayList<>();
 				this.textFieldTickSpeed.setText("2");
@@ -225,6 +227,8 @@ public class GuiItemCustomize extends GuiScreen {
 				}
 			}
 		}
+
+		data.dyeMode = dyeMode;
 
 		if (!this.textFieldRename.getText().isEmpty()) {
 			data.customName = this.textFieldRename.getText();
@@ -469,6 +473,13 @@ public class GuiItemCustomize extends GuiScreen {
 		Gui.drawRect(xCenter - 40, yTop + 2, xCenter - 2, yTop + 16, 0xff101016);
 		Gui.drawRect(xCenter - 39, yTop + 3, xCenter - 3, yTop + 16, 0xff000000 | 0xff6955);
 		Utils.renderShadowedString("§c§lClear", xCenter - 20, yTop + 6, xCenter * 2);
+
+		String dyeModeText = dyeMode == DyeMode.ANIMATED ? "§a§lAnimated" : "§d§lGradient";
+		int backgroundColour = dyeMode == DyeMode.ANIMATED ? 0x0aff00 : 0xff00ef;
+		Gui.drawRect(xCenter + 10, yTop + 2, xCenter + 68, yTop + 19, 0x70000000);
+		Gui.drawRect(xCenter + 10, yTop + 2, xCenter + 68, yTop + 16, 0xff101016);
+		Gui.drawRect(xCenter + 11, yTop + 3, xCenter + 67, yTop + 16, 0xff000000 | backgroundColour);
+		Utils.renderShadowedString(dyeModeText, xCenter + 39, yTop + 6, xCenter * 2);
 
 		yTop += 25;
 
@@ -934,6 +945,13 @@ public class GuiItemCustomize extends GuiScreen {
 						this.animatedLeatherColours = new ArrayList<>(Arrays.asList(dyeType.coloursArray));
 						dataForItem.animatedLeatherColours =
 							Arrays.stream(dataForItem.animatedLeatherColours).filter(Objects::nonNull).toArray(String[]::new);
+						if (dyeType.dyeMode != null) {
+							this.dyeMode = dyeType.dyeMode;
+							dataForItem.dyeMode = dyeType.dyeMode;
+						} else {
+							this.dyeMode = DyeMode.ANIMATED;
+							dataForItem.dyeMode = DyeMode.ANIMATED;
+						}
 						ItemCustomizeManager.putItemData(itemUUID, dataForItem);
 						NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
 					}
@@ -941,7 +959,7 @@ public class GuiItemCustomize extends GuiScreen {
 			} else if (mouseY >= yTop + 72 && mouseY <= yTop + 72 + 20) {
 				ItemCustomizationUtils.shareContents(
 					"NEUANIMATED",
-					gson.toJson(new DyeType(dataForItem.animatedLeatherColours, dataForItem.animatedDyeTicks))
+					gson.toJson(new DyeType(dataForItem.animatedLeatherColours, dataForItem.animatedDyeTicks, dataForItem.dyeMode))
 				);
 			}
 		}
@@ -975,6 +993,12 @@ public class GuiItemCustomize extends GuiScreen {
 		if (mouseX >= xCenter - 23 - 15 && mouseX <= xCenter + 23 / 2 - 15 &&
 			mouseY >= topOffset && mouseY <= topOffset + 20) {
 			animatedLeatherColours.clear();
+			updateData();
+		}
+
+		if (mouseX >= xCenter - 23 - 15 + 50 && mouseX <= xCenter + 23 / 2 - 15 + 70 &&
+			mouseY >= topOffset && mouseY <= topOffset + 20) {
+			dyeMode = dyeMode == DyeMode.ANIMATED ? DyeMode.GRADIENT : DyeMode.ANIMATED;
 			updateData();
 		}
 

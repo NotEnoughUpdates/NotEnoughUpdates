@@ -84,7 +84,7 @@ public abstract class MixinLayerArmorBase<T extends ModelBase> {
 
 		ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
 		if (data != null && data.animatedLeatherColours != null && data.animatedDyeTicks > 0 && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
-			return ItemCustomizationUtils.getAnimatedDyeColour(data.animatedLeatherColours, data.animatedDyeTicks);
+			return ItemCustomizationUtils.getAnimatedDyeColour(data.animatedLeatherColours, data.animatedDyeTicks, data.dyeMode);
 		} else if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
 			return ChromaColour.specialToChromaRGB(data.customLeatherColour);
 		}
