@@ -140,6 +140,24 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             Utils.drawItemStack(ItemStack(Blocks.grass), left + value.value.x * 22 + 2, top + value.value.y * 22 + 2)
         }
 
+        Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
+        Utils.drawTexturedRect(
+            (left + 2 * 22).toFloat(),
+            (top + 2 * 22).toFloat(),
+            20f,
+            20f,
+            0f,
+            20 / 256f,
+            0f,
+            20 / 256f,
+            GL11.GL_NEAREST
+        )
+        repoData.barn[gardenData?.selectedBarnSkin]?.let {
+            val itemStack =
+                NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(it)
+                    .resolveToItemStack()
+            Utils.drawItemStack(itemStack, left + 2 * 22 + 2, top + 2 * 22 + 2)
+        } ?: Utils.drawItemStack(ItemStack(Blocks.grass), left + 2 * 22 + 2, top + 2 * 22 + 2)
     }
 
     private fun renderCropUpgrades() {
