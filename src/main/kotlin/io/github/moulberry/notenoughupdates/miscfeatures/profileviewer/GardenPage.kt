@@ -26,8 +26,10 @@ import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Level
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.util.Constants
@@ -52,11 +54,19 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var currentlyFetching = false
     private lateinit var repoData: GardenRepoJson
 
+    private var tooltipToDisplay = listOf<String>()
+
+    private var mouseX: Int = 0
+    private var mouseY: Int = 0
+
     val background: ResourceLocation = ResourceLocation("notenoughupdates:profile_viewer/garden/background.png")
 
     override fun drawPage(mouseX: Int, mouseY: Int, partialTicks: Float) {
         guiLeft = GuiProfileViewer.getGuiLeft()
         guiTop = GuiProfileViewer.getGuiTop()
+
+        this.mouseX = mouseX
+        this.mouseY = mouseY
 
         if (currentlyFetching) {
             Utils.drawStringCentered("§eLoading Data", guiLeft + 220, guiTop + 101, true, 0)
@@ -87,6 +97,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         renderPlots()
         renderGardenLevel()
         renderCropUpgrades()
+        renderCropMilestones()
+
+        if (tooltipToDisplay.isNotEmpty()) {
+            tooltipToDisplay = tooltipToDisplay.map { "§7$it" }
+            Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, instance.width, instance.height, -1)
+            tooltipToDisplay = listOf()
+        }
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
@@ -169,7 +186,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         var yPos = startHeight
         var xPos = guiLeft + 6
 
-        Utils.renderShadowedString("§eCrop Upgrades", xPos + 70, yPos, 105)
+        Utils.renderShadowedString("§eCrop Upgrades", xPos + 70, yPos + 5, 105)
 
         for ((index, crop) in CropType.values().withIndex()) {
             if (index == 5) {
@@ -186,18 +203,42 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         }
     }
 
+    private fun renderCropMilestones() {
+        val startHeight = guiTop + 10
+        var yPos = startHeight
+        var xPos = guiLeft + 6
+
+        Utils.renderShadowedString("§eCrop Milestones", xPos + 70, yPos + 5, 105)
+
+        for ((index, crop) in CropType.values().withIndex()) {
+            if (index == 5) {
+                yPos = startHeight
+                xPos += 70
+            }
+            yPos += 14
+
+            val levelsInfo = repoData.cropMilestones[crop] ?: continue
+            val currentCollection = gardenData?.resourcesCollected?.get(crop) ?: 0
+            val levelInfo = getLevel(levelsInfo, currentCollection)
+            val collectionLevel = levelInfo.level.toInt()
+            val formattedAmount = StringUtils.formatNumber(currentCollection.toDouble())
+            drawAlignedStringWithHover(
+                "§e${crop.displayName}",
+                "§f$collectionLevel",
+                xPos + 20,
+                yPos + 5,
+                50,
+                mouseX,
+                mouseY,
+                listOf("§7Farmed: §f$formattedAmount")
+            )
+        }
+    }
+
     private fun renderGardenLevel() {
         val top = guiTop + 20
         val left = guiLeft + 155
-        val gson = Gson()
-        val gardenJsonArray = JsonArray()
-        repoData.gardenExperience.forEach { gardenJsonArray.add(gson.toJsonTree(it)) }
-        val level = ProfileViewerUtils.getLevel(
-            gardenJsonArray,
-            (gardenData?.gardenExperience ?: 0).toFloat(),
-            repoData.gardenExperience.size,
-            false
-        )
+        val level = getLevel(repoData.gardenExperience, gardenData?.gardenExperience?.toLong())
         if (level.maxed) {
             instance.renderGoldBar((left).toFloat(), (top + 10).toFloat(), 80f)
         } else {
@@ -205,5 +246,28 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         }
         Utils.renderShadowedString("§2Garden §f${level.level.toInt()}", left + 45, top, 80)
         Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 5)
+    }
+
+    private fun getLevel(experienceList: List<Int>, currentExp: Long?): Level {
+        val gson = Gson()
+        val array = JsonArray()
+        experienceList.forEach { array.add(gson.toJsonTree(it)) }
+        return ProfileViewerUtils.getLevel(array, (currentExp ?: 0).toFloat(), experienceList.size, false)
+    }
+
+    private fun drawAlignedStringWithHover(
+        first: String,
+        second: String,
+        x: Int,
+        y: Int,
+        length: Int,
+        mouseX: Int,
+        mouseY: Int,
+        hover: List<String>,
+    ) {
+        Utils.renderAlignedString(first, second, x.toFloat(), y.toFloat(), length)
+        if (mouseX in x..(x + length) && mouseY in y..(y + 13)) {
+            tooltipToDisplay = hover
+        }
     }
 }
