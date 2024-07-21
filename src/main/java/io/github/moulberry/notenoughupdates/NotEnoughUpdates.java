@@ -253,6 +253,9 @@ public class NotEnoughUpdates {
 			if (config.profileViewer.pageLayout.size() == 12) {
 				config.profileViewer.pageLayout.add(12);
 			}
+			if (config.profileViewer.pageLayout.size() == 13) {
+				config.profileViewer.pageLayout.add(13);
+			}
 
 			if ((config.apiData.repoUser.isEmpty() || config.apiData.repoName.isEmpty() || config.apiData.repoBranch.isEmpty()) && config.apiData.autoupdate_new) {
 				config.apiData.repoUser = "NotEnoughUpdates";

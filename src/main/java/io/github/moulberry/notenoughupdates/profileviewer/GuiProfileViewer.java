@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.GardenPage;
 import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.rift.RiftPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishPage;
@@ -220,6 +221,7 @@ public class GuiProfileViewer extends GuiScreen {
 			pages.put(ProfileViewerPage.CRIMSON_ISLE, new CrimsonIslePage(this));
 			pages.put(ProfileViewerPage.MUSEUM, new MuseumPage(this));
 			pages.put(ProfileViewerPage.RIFT, new RiftPage(this));
+			pages.put(ProfileViewerPage.GARDEN, new GardenPage(this));
 		} catch (Exception ex) {
 			pages.put(ProfileViewerPage.CRASH_RECOVERY, new CrashRecoveryPage(this, ex, currentPage));
 			currentPage = ProfileViewerPage.CRASH_RECOVERY;
@@ -1290,7 +1292,8 @@ public class GuiProfileViewer extends GuiScreen {
 		BESTIARY(9, Items.iron_sword, "§cBestiary"),
 		CRIMSON_ISLE(10, Item.getItemFromBlock(Blocks.netherrack), "§4Crimson Isle"),
 		MUSEUM(11, Items.leather_chestplate, "§6Museum"),
-		RIFT(12, Items.ender_eye, "§5Rift");
+		RIFT(12, Items.ender_eye, "§5Rift"),
+		GARDEN(13, Item.getItemFromBlock(Blocks.grass), "§2Garden");
 
 		public final ItemStack stack;
 		public final int id;
