@@ -118,20 +118,28 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderPlots() {
-        Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
-        for ()
-        Utils.drawTexturedRect(
-            (guiLeft + 200).toFloat(),
-            (guiTop + 100).toFloat(),
-            20f,
-            20f,
-            0f,
-            20 / 256f,
-            0f,
-            20 / 256f,
-            GL11.GL_NEAREST
-        )
-        Utils.drawItemStack(ItemStack(Blocks.grass), guiLeft + 202, guiTop + 102)
+        val top = guiTop + 80
+        val left = guiLeft + 160
+        for (value in repoData.plots) {
+            println(gardenData)
+            val contains = gardenData?.unlockedPlotIds?.contains(value.key)
+            contains ?: continue
+            if (!contains) continue
+            Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
+            Utils.drawTexturedRect(
+                (left + value.value.x * 22).toFloat(),
+                (top + value.value.y * 22).toFloat(),
+                20f,
+                20f,
+                0f,
+                20 / 256f,
+                0f,
+                20 / 256f,
+                GL11.GL_NEAREST
+            )
+            Utils.drawItemStack(ItemStack(Blocks.grass), left + value.value.x * 22 + 2, top + value.value.y * 22 + 2)
+        }
+
     }
 
     private fun renderCropUpgrades() {
