@@ -188,7 +188,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderGardenLevel() {
         val top = guiTop + 20
-        val left = guiLeft + 160
+        val left = guiLeft + 155
         val gson = Gson()
         val gardenJsonArray = JsonArray()
         repoData.gardenExperience.forEach { gardenJsonArray.add(gson.toJsonTree(it)) }
@@ -198,6 +198,12 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             repoData.gardenExperience.size,
             false
         )
-        instance.renderBar(top.toFloat(), (left + 6).toFloat(), 80f, level.level % 1)
+        if (level.maxed) {
+            instance.renderGoldBar((left).toFloat(), (top + 10).toFloat(), 80f)
+        } else {
+            instance.renderBar(left.toFloat(), (top + 10).toFloat(), 80f, level.level % 1)
+        }
+        Utils.renderShadowedString("§2Garden §f${level.level.toInt()}", left + 45, top, 80)
+        Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 5)
     }
 }
