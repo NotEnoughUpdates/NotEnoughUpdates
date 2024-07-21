@@ -29,7 +29,7 @@ data class GardenDataJson(
 data class GardenData(
     @SerializedName("unlocked_plots_ids") val unlockedPlotIds: List<String>,
     @SerializedName("commission_data") val commissionData: VisitorCommissions,
-    @SerializedName("resources_collected") val resourcesCollected: Map<CropType, Int>,
+    @SerializedName("resources_collected") val resourcesCollected: Map<CropType, Long>,
     @SerializedName("garden_experience") val gardenExperience: Int,
     @SerializedName("composter_data") val composterData: ComposterData,
     @SerializedName("selected_barn_skin") val selectedBarnSkin: String,
