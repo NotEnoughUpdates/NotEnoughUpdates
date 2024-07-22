@@ -44,15 +44,21 @@ data class VisitorCommissions(
 )
 
 data class ComposterData(
-    val upgrades: ComposterUpgrades,
+    val upgrades: APIComposterUpgrades,
 )
 
-data class ComposterUpgrades(
+data class APIComposterUpgrades(
     val speed: Int,
     @SerializedName("multi_drop") val multiDrop: Int,
     @SerializedName("fuel_cap") val fuelCap: Int,
     @SerializedName("organic_matter_cap") val organicMatterCap: Int,
     @SerializedName("cost_reduction") val costReduction: Int,
+)
+
+data class ComposterUpgrade(
+    val upgrade: Int,
+    val items: Map<String, Int>,
+    val copper: Int,
 )
 
 data class GardenRepoJson(
@@ -63,6 +69,7 @@ data class GardenRepoJson(
     @SerializedName("plot_costs") val plotCosts: Map<String, List<PlotCost>>,
     @SerializedName("barn") val barn: Map<String, BarnSkin>,
     @SerializedName("crop_upgrades") val cropUpgrades: List<Int>,
+    @SerializedName("composter_upgrades") val composterUpgrades: Map<String, Map<Int, ComposterUpgrade>>,
 )
 
 data class PlotData(

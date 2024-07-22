@@ -199,9 +199,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val y = top + 2 * 22 + 2
         var error = true
         repoData.barn[gardenData?.selectedBarnSkin]?.let {
-            val itemStack =
-                NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(it.item)
-                    .resolveToItemStack()
+            val itemStack = manager.createItem(it.name)
             Utils.drawItemStack(itemStack, x, y)
             if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
                 instance.tooltipToDisplay =
@@ -369,24 +367,53 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         yPos += 12
 
         val (speed, multiDrop, fuelCap, organicMatterCap, costReduction) = gardenData?.composterData?.upgrades ?: return
-        for (i in 1..5) {
+        for (i in 0..4) {
             val upgradeName = when(i) {
-                1 -> "§aSpeed"
-                2 -> "§aMulti Drop"
-                3 -> "§aFuel Cap"
-                4 -> "§aOrganic Matter Cap"
-                5 -> "§aCost Reduction"
+                0 -> "§aSpeed"
+                1 -> "§aMulti Drop"
+                2 -> "§aFuel Cap"
+                3 -> "§aOrganic Matter Cap"
+                4 -> "§aCost Reduction"
                 else -> 0
             }
             val upgradeAmount = when(i) {
-                1 -> speed
-                2 -> multiDrop
-                3 -> fuelCap
-                4 -> organicMatterCap
-                5 -> costReduction
+                0 -> speed
+                1 -> multiDrop
+                2 -> fuelCap
+                3 -> organicMatterCap
+                4 -> costReduction
                 else -> 0
             }
-            drawAlignedStringWithHover("§e$upgradeName", "§f$upgradeAmount", xPos, yPos, 80, listOf("ergikkejnrhggerkjn bhrten hertmhemtghtehrtehert"))
+            val repoName = when(i) {
+                0 -> "speed"
+                1 -> "multi_drop"
+                2 -> "fuel_cap"
+                3 -> "organic_matter_cap"
+                4 -> "cost_reduction"
+                else -> 0
+            }
+            val tooltip = ArrayList<String>()
+            val upgradeValues = repoData.composterUpgrades[repoName]?.get(upgradeAmount + 1)
+            val upgradeValuesCurrent = repoData.composterUpgrades[repoName]?.get(upgradeAmount)?.upgrade ?: 0
+            val upgradeValuesCurrentSt = StringUtils.formatNumber(upgradeValuesCurrent)
+            if (upgradeValues != null) {
+                tooltip.add("§a$upgradeValuesCurrentSt -> ${StringUtils.formatNumber(upgradeValues?.upgrade)}")
+                for (item in upgradeValues.items) {
+                    val itemStack = manager.createItem(item.key.uppercase())
+                    if (itemStack == null) {
+                        println("Item not found: ${item.key}")
+                        tooltip.add("§cUnknown Item: ${item.key}")
+                    } else {
+                        tooltip.add("§7${item.value}x ${itemStack.displayName}")
+                    }
+                }
+                tooltip.add("§7${upgradeValues.copper} §cCopper")
+            } else {
+                tooltip.add("§a$upgradeValuesCurrentSt")
+                tooltip.add("§6Maxed")
+            }
+
+            drawAlignedStringWithHover("§e$upgradeName", "§f$upgradeAmount", xPos, yPos, 80, tooltip)
             yPos += 12
         }
     }
