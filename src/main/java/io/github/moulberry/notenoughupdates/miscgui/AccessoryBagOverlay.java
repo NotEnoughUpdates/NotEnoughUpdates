@@ -33,11 +33,11 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
@@ -73,10 +73,8 @@ import static io.github.moulberry.notenoughupdates.util.GuiTextures.accessory_ba
 public class AccessoryBagOverlay {
 	private static final int TAB_BASIC = 0;
 	private static final int TAB_TOTAL = 1;
-	private static final int TAB_BONUS = 2;
-	private static final int TAB_DUP = 3;
-	private static final int TAB_MISSING = 4;
-	private static final int TAB_OPTIMIZER = 5;
+	private static final int TAB_DUP = 2;
+	private static final int TAB_MISSING = 3;
 
 	public static final AccessoryBagOverlay INSTANCE = new AccessoryBagOverlay();
 
@@ -101,20 +99,12 @@ public class AccessoryBagOverlay {
 		Utils.createItemStack(Items.diamond_sword, EnumChatFormatting.DARK_AQUA + "Total Stat Bonuses",
 			0
 		),
-		Utils.createItemStack(
-			Item.getItemFromBlock(Blocks.anvil),
-			EnumChatFormatting.DARK_AQUA + "Total Stat Bonuses (from reforges)",
-			0
-		),
 		Utils.createItemStack(Items.dye, EnumChatFormatting.DARK_AQUA + "Duplicates",
 			8
 		),
 		Utils.createItemStack(Item.getItemFromBlock(Blocks.barrier), EnumChatFormatting.DARK_AQUA + "Missing",
 			0
-		),
-		Utils.createItemStack(Item.getItemFromBlock(Blocks.redstone_block), EnumChatFormatting.DARK_AQUA + "Optimizer",
-			0
-		),
+		)
 	};
 
 	private static int currentTab = TAB_BASIC;
@@ -175,36 +165,6 @@ public class AccessoryBagOverlay {
 				if (currentTab > TAB_MISSING) currentTab = TAB_MISSING;
 			}
 
-			if (currentTab == TAB_OPTIMIZER) {
-				int x = guiLeft + xSize + 3;
-				int y = guiTop;
-
-				if (mouseY > y + 92 && mouseY < y + 103) {
-					if (mouseX > x + 5 && mouseX < x + 75) {
-						mainWeapon = (int) Math.floor((mouseX - x - 5) / 70f * 9);
-						if (mainWeapon < 1) {
-							mainWeapon = 1;
-						} else if (mainWeapon > 9) {
-							mainWeapon = 9;
-						}
-					}
-				}
-
-				if (mouseX > x + 5 && mouseX < x + 35 || mouseX > x + 45 && mouseX < x + 75) {
-					boolean set = mouseX > x + 5 && mouseX < x + 35;
-
-					if (mouseY > y + 32 && mouseY < y + 43) {
-						forceCC = set;
-					} else if (mouseY > y + 52 && mouseY < y + 63) {
-						forceAS = set;
-					} else if (mouseY > y + 72 && mouseY < y + 83) {
-						useGodPot = set;
-					} else if (mouseY > y + 92 && mouseY < y + 103) {
-						allowShaded = set;
-					}
-				}
-			}
-
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -216,7 +176,6 @@ public class AccessoryBagOverlay {
 		pagesVisited = new HashSet<>();
 		talismanCountRarity = null;
 		totalStats = null;
-		reforgeStats = null;
 		duplicates = null;
 		missing = null;
 	}
@@ -298,46 +257,6 @@ public class AccessoryBagOverlay {
 		}
 	}
 
-	private static PlayerStats.Stats reforgeStats = null;
-
-	public static void renderReforgeStatsOverlay(int x, int y) {
-		if (reforgeStats == null) {
-			reforgeStats = new PlayerStats.Stats();
-			for (ItemStack stack : accessoryStacks) {
-				if (stack != null) reforgeStats.add(getStatForItem(stack, STAT_PATTERN_MAP_BONUS, false));
-			}
-		}
-
-		drawString(x, y, "Reforge Stats");
-		int yIndex = 0;
-		for (int i = 0; i < PlayerStats.defaultStatNames.length; i++) {
-			String statName = PlayerStats.defaultStatNames[i];
-			String statNamePretty = PlayerStats.defaultStatNamesPretty[i];
-
-			int val = Math.round(reforgeStats.get(statName));
-
-			if (Math.abs(val) < 1E-5) continue;
-
-			GlStateManager.color(1, 1, 1, 1);
-			GlStateManager.enableBlend();
-			GL14.glBlendFuncSeparate(
-				GL11.GL_SRC_ALPHA,
-				GL11.GL_ONE_MINUS_SRC_ALPHA,
-				GL11.GL_ONE,
-				GL11.GL_ONE_MINUS_SRC_ALPHA
-			);
-			Utils.renderAlignedString(
-				statNamePretty,
-				EnumChatFormatting.WHITE.toString() + val,
-				x + 5,
-				y + 20 + 11 * yIndex,
-				70
-			);
-
-			yIndex++;
-		}
-	}
-
 	private static Set<ItemStack> duplicates = null;
 
 	public static void renderDuplicatesOverlay(int x, int y) {
@@ -358,7 +277,8 @@ public class AccessoryBagOverlay {
 
 			Set<String> prevInternalnames = new HashSet<>();
 			for (ItemStack stack : accessoryStacks) {
-				String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+				String internalname =
+					NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 
 				if (prevInternalnames.contains(internalname)) {
 					duplicates.add(stack);
@@ -370,7 +290,10 @@ public class AccessoryBagOverlay {
 					JsonArray upgrades = talisman_upgrades.get(internalname).getAsJsonArray();
 					for (ItemStack stack2 : accessoryStacks) {
 						if (stack != stack2) {
-							String internalname2 = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack2);
+							String internalname2 = NotEnoughUpdates.INSTANCE.manager
+								.createItemResolutionQuery()
+								.withItemStack(stack2)
+								.resolveInternalName();
 							for (int j = 0; j < upgrades.size(); j++) {
 								String upgrade = upgrades.get(j).getAsString();
 								if (internalname2.equals(upgrade)) {
@@ -453,7 +376,8 @@ public class AccessoryBagOverlay {
 			}
 
 			for (ItemStack stack : accessoryStacks) {
-				String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+				String internalname =
+					NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 				missingInternal.remove(internalname);
 
 				for (Map.Entry<String, JsonElement> talisman_upgrade_element : talisman_upgrades.entrySet()) {
@@ -607,81 +531,6 @@ public class AccessoryBagOverlay {
 		Utils.drawStringCenteredScaledMaxWidth(abc, x + 40, y + 12, false, 70, gray());
 	}
 
-	private static boolean forceCC = false;
-	private static boolean forceAS = false;
-	private static boolean useGodPot = true;
-	private static boolean allowShaded = true;
-	private static int mainWeapon = 1;
-
-	public static void renderOptimizerOverlay(int x, int y) {
-		Utils.drawStringCenteredScaledMaxWidth("Optimizer", x + 40, y + 12, false, 70, gray());
-
-		int light = new Color(220, 220, 220).getRGB();
-		int dark = new Color(170, 170, 170).getRGB();
-
-		Gui.drawRect(x + 5, y + 32, x + 35, y + 43, forceCC ? dark : light);
-		Gui.drawRect(x + 45, y + 32, x + 75, y + 43, forceCC ? light : dark);
-
-		Gui.drawRect(x + 5, y + 52, x + 35, y + 63, forceAS ? dark : light);
-		Gui.drawRect(x + 45, y + 52, x + 75, y + 63, forceAS ? light : dark);
-
-		Gui.drawRect(x + 5, y + 72, x + 35, y + 83, useGodPot ? dark : light);
-		Gui.drawRect(x + 45, y + 72, x + 75, y + 83, useGodPot ? light : dark);
-
-		Gui.drawRect(x + 5, y + 92, x + 35, y + 103, allowShaded ? dark : light);
-		Gui.drawRect(x + 45, y + 92, x + 75, y + 103, allowShaded ? light : dark);
-
-		Gui.drawRect(x + 5, y + 102, x + 75, y + 113, light);
-		Gui.drawRect(
-			x + 5 + (int) ((mainWeapon - 1) / 9f * 70),
-			y + 102,
-			x + 5 + (int) (mainWeapon / 9f * 70),
-			y + 113,
-			dark
-		);
-
-		Utils.drawStringCenteredScaledMaxWidth("Force 100% CC", x + 40, y + 27, false, 70, gray());
-		Utils.drawStringCenteredScaledMaxWidth(
-			(forceCC ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES", x + 20, y + 37, true, 30, gray()
-		);
-		Utils.drawStringCenteredScaledMaxWidth(
-			(forceCC ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
-			x + 60, y + 37, true, 30, gray()
-		);
-
-		Utils.drawStringCenteredScaledMaxWidth("Force 100% ATKSPEED", x + 40, y + 47, false, 70, gray());
-		Utils.drawStringCenteredScaledMaxWidth(
-			(forceAS ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
-			x + 20, y + 57, true, 30, gray()
-		);
-		Utils.drawStringCenteredScaledMaxWidth(
-			(forceAS ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
-			x + 60, y + 57, true, 30, gray()
-		);
-
-		Utils.drawStringCenteredScaledMaxWidth("Use God Potion", x + 40, y + 67, false, 70, gray());
-		Utils.drawStringCenteredScaledMaxWidth(
-			(useGodPot ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
-			x + 20, y + 77, true, 30, gray()
-		);
-		Utils.drawStringCenteredScaledMaxWidth(
-			(useGodPot ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
-			x + 60, y + 77, true, 30, gray()
-		);
-
-		Utils.drawStringCenteredScaledMaxWidth("Use God Potion", x + 40, y + 87, false, 70, gray());
-		Utils.drawStringCenteredScaledMaxWidth((allowShaded ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
-			x + 20, y + 97, true, 30, gray()
-		);
-		Utils.drawStringCenteredScaledMaxWidth((allowShaded ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
-			x + 60, y + 97,
-			true, 30, gray()
-		);
-
-		Utils.drawStringCenteredScaledMaxWidth("Main Weapon", x + 40, y + 107, false, 70, gray());
-		Utils.drawStringCenteredScaled("1 2 3 4 5 6 7 8 9", x + 40, y + 117, true, 70, gray());
-	}
-
 	private static int gray() {
 		return new Color(80, 80, 80).getRGB();
 	}
@@ -813,6 +662,7 @@ public class AccessoryBagOverlay {
 							Utils.drawTexturedRect(guiLeft + xSize + 169, guiTop + 20 * i, 25, 22,
 								168 / 196f, 1f, 0f, 22 / 128f, GL11.GL_NEAREST
 							);
+							RenderHelper.enableGUIStandardItemLighting();
 							Utils.drawItemStack(TAB_STACKS[i], guiLeft + xSize + 168 + 4, guiTop + 20 * i + 3);
 						}
 					}
@@ -821,7 +671,7 @@ public class AccessoryBagOverlay {
 					Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
 					Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 168, 128, 0, 168 / 196f, 0, 1f, GL11.GL_NEAREST);
 
-					if (pagesVisited.size() < 1) {
+					if (pagesVisited.isEmpty()) {
 						renderVisitOverlay(guiLeft + xSize + 3, guiTop);
 						return;
 					}
@@ -830,6 +680,7 @@ public class AccessoryBagOverlay {
 					Utils.drawTexturedRect(guiLeft + xSize + 169, guiTop + 20 * currentTab, 28, 22,
 						168 / 196f, 1f, 22 / 128f, 44 / 128f, GL11.GL_NEAREST
 					);
+					RenderHelper.enableGUIStandardItemLighting();
 					Utils.drawItemStack(TAB_STACKS[currentTab], guiLeft + xSize + 168 + 8, guiTop + 20 * currentTab + 3);
 
 					switch (currentTab) {
@@ -839,18 +690,11 @@ public class AccessoryBagOverlay {
 						case TAB_TOTAL:
 							renderTotalStatsOverlay(guiLeft + xSize + 3, guiTop);
 							return;
-						case TAB_BONUS:
-							renderReforgeStatsOverlay(guiLeft + xSize + 3, guiTop);
-							return;
 						case TAB_DUP:
 							renderDuplicatesOverlay(guiLeft + xSize + 3, guiTop);
 							return;
 						case TAB_MISSING:
 							renderMissingOverlay(guiLeft + xSize + 3, guiTop);
-							return;
-						case TAB_OPTIMIZER:
-							renderOptimizerOverlay(guiLeft + xSize + 3, guiTop);
-							return;
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -858,23 +702,6 @@ public class AccessoryBagOverlay {
 			}
 		}
 	}
-
-	private static final HashMap<String, Pattern> STAT_PATTERN_MAP_BONUS = new HashMap<String, Pattern>() {{
-		String STAT_PATTERN_BONUS_END = ": (?:\\+|-)[0-9]+(?:\\.[0-9]+)?\\%? \\(((?:\\+|-)[0-9]+)%?";
-		put("health", Pattern.compile("^Health" + STAT_PATTERN_BONUS_END));
-		put("defence", Pattern.compile("^Defense" + STAT_PATTERN_BONUS_END));
-		put("strength", Pattern.compile("^Strength" + STAT_PATTERN_BONUS_END));
-		put("speed", Pattern.compile("^Speed" + STAT_PATTERN_BONUS_END));
-		put("crit_chance", Pattern.compile("^Crit Chance" + STAT_PATTERN_BONUS_END));
-		put("crit_damage", Pattern.compile("^Crit Damage" + STAT_PATTERN_BONUS_END));
-		put("bonus_attack_speed", Pattern.compile("^Bonus Attack Speed" + STAT_PATTERN_BONUS_END));
-		put("intelligence", Pattern.compile("^Intelligence" + STAT_PATTERN_BONUS_END));
-		put("sea_creature_chance", Pattern.compile("^Sea Creature Chance" + STAT_PATTERN_BONUS_END));
-		put("ferocity", Pattern.compile("^Ferocity" + STAT_PATTERN_BONUS_END));
-		put("mining_fortune", Pattern.compile("^Mining Fortune" + STAT_PATTERN_BONUS_END));
-		put("mining_speed", Pattern.compile("^Mining Speed" + STAT_PATTERN_BONUS_END));
-		put("magic_find", Pattern.compile("^Magic Find" + STAT_PATTERN_BONUS_END));
-	}};
 
 	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {{
 		String STAT_PATTERN_END = ": ((?:\\+|-)([0-9]+(\\.[0-9]+)?))%?";
@@ -898,7 +725,8 @@ public class AccessoryBagOverlay {
 		HashMap<String, Pattern> patternMap,
 		boolean addExtras
 	) {
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+		String internalname =
+			NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 		NBTTagCompound tag = stack.getTagCompound();
 		PlayerStats.Stats stats = new PlayerStats.Stats();
 
@@ -942,7 +770,7 @@ public class AccessoryBagOverlay {
 						NBTTagList items = contents_nbt.getTagList("i", 10);
 						HashSet<Integer> cakes = new HashSet<>();
 						for (int j = 0; j < items.tagCount(); j++) {
-							if (items.getCompoundTagAt(j).getKeySet().size() > 0) {
+							if (!items.getCompoundTagAt(j).getKeySet().isEmpty()) {
 								NBTTagCompound nbt = items.getCompoundTagAt(j).getCompoundTag("tag");
 								if (nbt != null && nbt.hasKey("ExtraAttributes", 10)) {
 									NBTTagCompound ea2 = nbt.getCompoundTag("ExtraAttributes");
@@ -963,21 +791,6 @@ public class AccessoryBagOverlay {
 		}
 		return stats;
 	}
-
-	// private static String[] rarityArr = new String[] {
-	//         "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC", "SPECIAL", "VERY SPECIAL", "SUPREME"
-	// };
-	// private static String[] rarityArrC = new String[] {
-	//         EnumChatFormatting.WHITE+EnumChatFormatting.BOLD.toString()+"COMMON",
-	//         EnumChatFormatting.GREEN+EnumChatFormatting.BOLD.toString()+"UNCOMMON",
-	//         EnumChatFormatting.BLUE+EnumChatFormatting.BOLD.toString()+"RARE",
-	//         EnumChatFormatting.DARK_PURPLE+EnumChatFormatting.BOLD.toString()+"EPIC",
-	//         EnumChatFormatting.GOLD+EnumChatFormatting.BOLD.toString()+"LEGENDARY",
-	//         EnumChatFormatting.LIGHT_PURPLE+EnumChatFormatting.BOLD.toString()+"MYTHIC",
-	//         EnumChatFormatting.RED+EnumChatFormatting.BOLD.toString()+"SPECIAL",
-	//         EnumChatFormatting.RED+EnumChatFormatting.BOLD.toString()+"VERY SPECIAL",
-	//         EnumChatFormatting.DARK_RED+EnumChatFormatting.BOLD.toString()+"SUPREME",
-	// };
 
 	public static int checkItemType(ItemStack stack, boolean contains, String... typeMatches) {
 		NBTTagCompound tag = stack.getTagCompound();
