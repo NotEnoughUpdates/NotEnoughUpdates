@@ -125,4 +125,13 @@ enum class VisitorRarity(val displayName: String, var visits: Int = 0, var compl
             TOTAL.completed += completed
         }
     }
+
+    companion object {
+        fun reset() {
+            values().forEach {
+                it.visits = 0
+                it.completed = 0
+            }
+        }
+    }
 }

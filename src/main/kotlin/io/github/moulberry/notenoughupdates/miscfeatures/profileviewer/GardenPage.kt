@@ -108,6 +108,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         renderGardenLevel()
         renderCropUpgrades()
         renderCropMilestones()
+        renderVisitorStats()
 
         if (tooltipToDisplay.isNotEmpty()) {
             tooltipToDisplay = tooltipToDisplay.map { "§7$it" }
@@ -132,6 +133,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun getVisitorData() {
+        VisitorRarity.reset()
         for ((visitor, amount) in gardenData?.commissionData?.visits ?: return) {
             val rarity = repoData.visitors[visitor] ?: continue
             rarity.addVisits(amount)
@@ -289,24 +291,30 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderVisitorStats() {
-        val xPos = guiLeft + 250
+        val xPos = guiLeft + 300
         var yPos = guiTop + 20
 
-        Utils.renderShadowedString("§eVisitors", xPos, yPos, 80)
+        Utils.renderShadowedString("§eVisitors", xPos + 40, yPos, 80)
 
         // todo progress bar?
         Utils.renderAlignedString(
             "§eUnique Visitors",
-            "${gardenData?.commissionData?.uniqueNpcsServed ?: 0}/${repoData.visitors.size}",
+            "§f${gardenData?.commissionData?.uniqueNpcsServed ?: 0}/${repoData.visitors.size}",
             xPos.toFloat(),
             (yPos + 10).toFloat(),
             80
         )
-        yPos += 16
+        yPos += 20
 
         for (rarity in VisitorRarity.values()) {
-            Utils.renderAlignedString("${rarity.displayName}: ", "§f${rarity.completed} / ${rarity.visits}", xPos.toFloat(), yPos.toFloat(), 80)
-
+            val formattedVisits = StringUtils.formatNumber(rarity.visits)
+            val formattedCompleted = StringUtils.formatNumber(rarity.completed)
+            val tooltip = listOf(
+                "§7Visits: §f$formattedVisits",
+                "§7Completed: §f$formattedCompleted",
+            )
+            val rarityStats = "§f$formattedCompleted/$formattedVisits"
+            drawAlignedStringWithHover(rarity.displayName, rarityStats, xPos, yPos, 80, tooltip)
             yPos += 14
         }
     }
