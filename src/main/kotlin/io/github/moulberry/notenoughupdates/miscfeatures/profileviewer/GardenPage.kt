@@ -274,6 +274,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             }
             yPos += 14
 
+            val itemStack = manager.createItem(crop.itemId)
+            Utils.drawItemStack(itemStack, xPos + 2, yPos)
             val levelsInfo = repoData.cropMilestones[crop] ?: continue
             val currentCollection = gardenData?.resourcesCollected?.get(crop) ?: 0
             val levelInfo = getLevel(levelsInfo, currentCollection)
