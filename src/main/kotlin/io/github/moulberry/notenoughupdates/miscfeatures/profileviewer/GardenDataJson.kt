@@ -108,4 +108,20 @@ enum class VisitorRarity(val displayName: String, var visits: Int = 0, var compl
     LEGENDARY("§6Legendary"),
     MYTHIC("§dMythic"),
     SPECIAL("§cSpecial"),
+    TOTAL("§7Total"),
+    ;
+
+    fun addVisits(visits: Int) {
+        this.visits += visits
+        if (this != TOTAL) {
+            TOTAL.visits += visits
+        }
+    }
+
+    fun addCompleted(completed: Int) {
+        this.completed += completed
+        if (this != TOTAL) {
+            TOTAL.completed += completed
+        }
+    }
 }

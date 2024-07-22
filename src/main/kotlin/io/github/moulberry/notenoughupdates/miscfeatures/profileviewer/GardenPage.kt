@@ -96,7 +96,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         apiData = selectedProfile.APIDataJson ?: return
 
         MC.textureManager.bindTexture(background)
-        Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), instance.sizeX.toFloat(), instance.sizeY.toFloat(), GL11.GL_NEAREST)
+        Utils.drawTexturedRect(
+            guiLeft.toFloat(),
+            guiTop.toFloat(),
+            instance.sizeX.toFloat(),
+            instance.sizeY.toFloat(),
+            GL11.GL_NEAREST
+        )
 
         renderPlots()
         renderGardenLevel()
@@ -120,7 +126,19 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val profileId = selectedProfile?.outerProfileJson?.get("profile_id")?.asString?.replace("-", "")
         Coroutines.launchCoroutine {
             gardenData = loadGardenData(profileId)
+            getVisitorData()
             currentlyFetching = false
+        }
+    }
+
+    private fun getVisitorData() {
+        for ((visitor, amount) in gardenData?.commissionData?.visits ?: return) {
+            val rarity = repoData.visitors[visitor] ?: continue
+            rarity.addVisits(amount)
+        }
+        for ((visitor, amount) in gardenData?.commissionData?.completed ?: return) {
+            val rarity = repoData.visitors[visitor] ?: continue
+            rarity.addCompleted(amount)
         }
     }
 
@@ -128,7 +146,9 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         profileId ?: return null
         val data = manager.ursaClient.get(UrsaClient.gardenForProfile(profileId)).get()
 
-        val gson = GsonBuilder().setPrettyPrinting().registerTypeAdapter(CropType::class.java, cropTypeAdapter.nullSafe()).create()
+        val gson =
+            GsonBuilder().setPrettyPrinting().registerTypeAdapter(CropType::class.java, cropTypeAdapter.nullSafe())
+                .create()
         repoData = gson.fromJson(Constants.GARDEN, GardenRepoJson::class.java)
         return gson.fromJson(data, GardenDataJson::class.java).garden
     }
@@ -184,14 +204,22 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                     .resolveToItemStack()
             Utils.drawItemStack(itemStack, x, y)
             if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
-                Utils.drawHoveringText(listOf("§7Barn Skin: ${it.name}"), mouseX, mouseY, instance.width, instance.height, -1)
+                Utils.drawHoveringText(
+                    listOf("§7Barn Skin: ${it.name}"),
+                    mouseX,
+                    mouseY,
+                    instance.width,
+                    instance.height,
+                    -1
+                )
             }
             error = false
         }
         if (error) {
             Utils.drawItemStack(ItemStack(Blocks.barrier), x, y)
             if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
-                instance.tooltipToDisplay = listOf("§cUnknown barn Skin: ${gardenData?.selectedBarnSkin}",
+                instance.tooltipToDisplay = listOf(
+                    "§cUnknown barn Skin: ${gardenData?.selectedBarnSkin}",
                     "§cIf you expected it to be there please send a message in",
                     "§c§l#neu-support §r§con §ldiscord.gg/moulberry"
                 )
@@ -218,7 +246,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
             val itemStack = manager.createItem(crop.itemId)
             Utils.drawItemStack(itemStack, xPos + 2, yPos)
-            Utils.renderAlignedString("§e${crop.displayName}", "§f$upgradeLevel", (xPos + 20).toFloat(), (yPos + 5).toFloat(), 50)
+            Utils.renderAlignedString(
+                "§e${crop.displayName}",
+                "§f$upgradeLevel",
+                (xPos + 20).toFloat(),
+                (yPos + 5).toFloat(),
+                50
+            )
         }
     }
 
@@ -252,6 +286,29 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         }
     }
 
+    private fun renderVisitorStats() {
+        val xPos = guiLeft + 250
+        var yPos = guiTop + 20
+
+        Utils.renderShadowedString("§eVisitors", xPos, yPos, 80)
+
+        // todo progress bar?
+        Utils.renderAlignedString(
+            "§eUnique Visitors",
+            "${gardenData?.commissionData?.uniqueNpcsServed ?: 0}/${repoData.visitors.size}",
+            xPos.toFloat(),
+            (yPos + 10).toFloat(),
+            80
+        )
+        yPos += 16
+
+        for (rarity in VisitorRarity.values()) {
+            Utils.renderAlignedString("${rarity.displayName}: ", "§f${rarity.completed} / ${rarity.visits}", xPos.toFloat(), yPos.toFloat(), 80)
+
+            yPos += 14
+        }
+    }
+
     private fun renderGardenLevel() {
         val top = guiTop + 20
         val left = guiLeft + 155
@@ -269,19 +326,29 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         if (level.maxed) {
             gardenTooltip.add("§7Progress: §6MAXED!");
         } else {
-            gardenTooltip.add("§7Progress: §5" +
-                    StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
-                    "/" +
-                    StringUtils.shortNumberFormat(maxXp))
+            gardenTooltip.add(
+                "§7Progress: §5" +
+                        StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
+                        "/" +
+                        StringUtils.shortNumberFormat(maxXp)
+            )
         }
-        gardenTooltip.add("§7Total XP: §5${totalXpS}§8 (" +
-                StringUtils.formatToTenths(instance.getPercentage("garden", level)) +
-                "% to ${level.maxLevel})")
+        gardenTooltip.add(
+            "§7Total XP: §5${totalXpS}§8 (" +
+                    StringUtils.formatToTenths(instance.getPercentage("garden", level)) +
+                    "% to ${level.maxLevel})"
+        )
         drawAlignedStringWithHover("§2Garden", "§f${level.level.toInt()}", left + 20, top, 60, gardenTooltip)
         Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 5)
 
         val copper = apiData?.garden_player_data?.copper ?: 0
-        Utils.renderAlignedString("§cCopper:", "§f" + StringUtils.formatNumber(copper), (left).toFloat(), (top + 20).toFloat(), 80)
+        Utils.renderAlignedString(
+            "§cCopper:",
+            "§f" + StringUtils.formatNumber(copper),
+            (left).toFloat(),
+            (top + 20).toFloat(),
+            80
+        )
     }
 
     private fun getLevel(experienceList: List<Int>, currentExp: Long?): Level {
