@@ -296,7 +296,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
         Utils.renderShadowedString("§eVisitors", xPos + 40, yPos, 80)
 
-        // todo progress bar?
+        // todo progress bar!
         Utils.renderAlignedString(
             "§eUnique Visitors",
             "§f${gardenData?.commissionData?.uniqueNpcsServed ?: 0}/${repoData.visitors.size}",
