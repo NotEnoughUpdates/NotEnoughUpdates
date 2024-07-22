@@ -62,6 +62,7 @@ data class GardenRepoJson(
     val plots: Map<String, PlotData>,
     @SerializedName("plot_costs") val plotCosts: Map<String, List<PlotCost>>,
     @SerializedName("barn") val barn: Map<String, BarnSkin>,
+    @SerializedName("crop_upgrades") val cropUpgrades: List<Int>,
 )
 
 data class PlotData(
