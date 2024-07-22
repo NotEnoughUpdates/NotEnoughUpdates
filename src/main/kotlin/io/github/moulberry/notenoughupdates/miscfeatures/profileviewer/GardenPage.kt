@@ -109,6 +109,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         renderCropUpgrades()
         renderCropMilestones()
         renderVisitorStats()
+        renderCompost()
 
         if (tooltipToDisplay.isNotEmpty()) {
             tooltipToDisplay = tooltipToDisplay.map { "§7$it" }
@@ -317,7 +318,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             )
             val rarityStats = "§f$formattedCompleted/$formattedVisits"
             drawAlignedStringWithHover(rarity.displayName, rarityStats, xPos, yPos, 80, tooltip)
-            yPos += 14
+            yPos += 12
         }
     }
 
@@ -361,6 +362,36 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             (top + 20).toFloat(),
             80
         )
+    }
+
+    private fun renderCompost()  {
+        val xPos = guiLeft + 300
+        var yPos = guiTop + 115
+
+        Utils.renderShadowedString("§eCompost Upgrades", xPos + 40, yPos, 80)
+        yPos += 12
+
+        val (speed, multiDrop, fuelCap, organicMatterCap, costReduction) = gardenData?.composterData?.upgrades ?: return
+        for (i in 1..5) {
+            val upgradeName = when(i) {
+                1 -> "§aSpeed"
+                2 -> "§aMulti Drop"
+                3 -> "§aFuel Cap"
+                4 -> "§aOrganic Matter Cap"
+                5 -> "§aCost Reduction"
+                else -> 0
+            }
+            val upgradeAmount = when(i) {
+                1 -> speed
+                2 -> multiDrop
+                3 -> fuelCap
+                4 -> organicMatterCap
+                5 -> costReduction
+                else -> 0
+            }
+            drawAlignedStringWithHover("§e$upgradeName", "§f$upgradeAmount", xPos, yPos, 80, listOf("ergikkejnrhggerkjn bhrten hertmhemtghtehrtehert"))
+            yPos += 12
+        }
     }
 
     private fun getLevel(experienceList: List<Int>, currentExp: Long?): Level {
