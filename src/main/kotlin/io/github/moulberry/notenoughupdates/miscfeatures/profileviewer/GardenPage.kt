@@ -175,12 +175,29 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             20 / 256f,
             GL11.GL_NEAREST
         )
+        val x = left + 2 * 22 + 2
+        val y = top + 2 * 22 + 2
+        var error = true
         repoData.barn[gardenData?.selectedBarnSkin]?.let {
             val itemStack =
-                NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(it)
+                NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(it.item)
                     .resolveToItemStack()
-            Utils.drawItemStack(itemStack, left + 2 * 22 + 2, top + 2 * 22 + 2)
-        } ?: Utils.drawItemStack(ItemStack(Blocks.grass), left + 2 * 22 + 2, top + 2 * 22 + 2)
+            Utils.drawItemStack(itemStack, x, y)
+            if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
+                Utils.drawHoveringText(listOf("§7Barn Skin: ${it.name}"), mouseX, mouseY, instance.width, instance.height, -1)
+            }
+            error = false
+        }
+        if (error) {
+            Utils.drawItemStack(ItemStack(Blocks.barrier), x, y)
+            if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
+                instance.tooltipToDisplay = listOf("§cUnknown barn Skin: ${gardenData?.selectedBarnSkin}",
+                    "§cIf you expected it to be there please send a message in",
+                    "§c§l#neu-support §r§con §ldiscord.gg/moulberry"
+                )
+            }
+        }
+
     }
 
     private fun renderCropUpgrades() {

@@ -61,7 +61,7 @@ data class GardenRepoJson(
     @SerializedName("visitors") val visitors: Map<String, VisitorRarity>,
     val plots: Map<String, PlotData>,
     @SerializedName("plot_costs") val plotCosts: Map<String, List<PlotCost>>,
-    @SerializedName("barn") val barn: Map<String, String>,
+    @SerializedName("barn") val barn: Map<String, BarnSkin>,
 )
 
 data class PlotData(
@@ -73,6 +73,11 @@ data class PlotData(
 data class PlotCost(
     val item: String,
     val amount: Int,
+)
+
+data class BarnSkin(
+    val name: String,
+    val item: String,
 )
 
 enum class CropType(val itemId: String, val apiName: String, val displayName: String) {
