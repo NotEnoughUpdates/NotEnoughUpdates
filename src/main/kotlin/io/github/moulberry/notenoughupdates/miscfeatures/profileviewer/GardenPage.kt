@@ -199,7 +199,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val y = top + 2 * 22 + 2
         var error = true
         repoData.barn[gardenData?.selectedBarnSkin]?.let {
-            val itemStack = manager.createItem(it.name)
+            val itemStack =  NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(it.item)
+                .resolveToItemStack()
             Utils.drawItemStack(itemStack, x, y)
             if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
                 instance.tooltipToDisplay =
