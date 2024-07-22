@@ -86,6 +86,7 @@ public class GuiItemCustomize extends GuiScreen {
 
 	JsonObject animatedDyes = null;
 	JsonObject staticDyes = null;
+	JsonObject vanillaDyes = null;
 	ArrayList<DyeType> dyes = new ArrayList<>();
 	boolean repoError = false;
 
@@ -157,6 +158,7 @@ public class GuiItemCustomize extends GuiScreen {
 			animatedDyes = dyesConst.get("animated").getAsJsonObject();
 			DyeType animatedHeader = new DyeType("Animated Dyes");
 			dyes.add(animatedHeader);
+
 			animatedDyes.entrySet().forEach(entry -> {
 				String key = entry.getKey();
 				JsonArray value = entry.getValue().getAsJsonArray();
@@ -171,6 +173,19 @@ public class GuiItemCustomize extends GuiScreen {
 			dyes.add(staticHeader);
 
 			staticDyes.entrySet().forEach(entry -> {
+				String key = entry.getKey();
+				String value = entry.getValue().getAsString();
+				DyeType dyeType = new DyeType(key, value);
+				dyes.add(dyeType);
+			});
+		}
+
+		if (dyesConst.has("vanilla")) {
+			vanillaDyes = dyesConst.get("vanilla").getAsJsonObject();
+			DyeType staticHeader = new DyeType("Vanilla Dyes");
+			dyes.add(staticHeader);
+
+			vanillaDyes.entrySet().forEach(entry -> {
 				String key = entry.getKey();
 				String value = entry.getValue().getAsString();
 				DyeType dyeType = new DyeType(key, value);
