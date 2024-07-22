@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -166,10 +166,10 @@ public class AccessoryBagOverlay {
 				"field_147009_r"
 			);
 
-			if (mouseX < guiLeft + xSize + 3 || mouseX > guiLeft + xSize + 80 + 28) return false;
-			if (mouseY < guiTop || mouseY > guiTop + 166) return false;
+			if (mouseX < guiLeft + xSize + 3 || mouseX > guiLeft + xSize + 168 + 28) return false;
+			if (mouseY < guiTop || mouseY > guiTop + 128) return false;
 
-			if (mouseX > guiLeft + xSize + 83 && mouseY < guiTop + 20 * TAB_MISSING + 22) {
+			if (mouseX > guiLeft + xSize + 168 + 3 && mouseY < guiTop + 20 * TAB_MISSING + 22) {
 				currentTab = (mouseY - guiTop) / 20;
 				if (currentTab < 0) currentTab = 0;
 				if (currentTab > TAB_MISSING) currentTab = TAB_MISSING;
@@ -225,8 +225,8 @@ public class AccessoryBagOverlay {
 	private static Set<Integer> pagesVisited = new HashSet<>();
 
 	public static void renderVisitOverlay(int x, int y) {
-		Utils.drawStringCenteredScaledMaxWidth("Please visit all", x + 40, y + 78, true, 70, -1);
-		Utils.drawStringCenteredScaledMaxWidth("pages of the bag", x + 40, y + 86, true, 70, -1);
+		Utils.drawStringCenteredScaledMaxWidth("Please visit all", x + 80, y + 60, true, 140, -1);
+		Utils.drawStringCenteredScaledMaxWidth("pages of the bag", x + 80, y + 72, true, 140, -1);
 	}
 
 	private static TreeMap<Integer, Integer> talismanCountRarity = null;
@@ -779,17 +779,8 @@ public class AccessoryBagOverlay {
 						if (Integer.parseInt(second) > pagesVisited.size()) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
-							Utils.drawTexturedRect(
-								guiLeft + xSize + 3,
-								guiTop,
-								80,
-								149,
-								0,
-								80 / 256f,
-								0,
-								149 / 256f,
-								GL11.GL_NEAREST
-							);
+							GlStateManager.disableLighting();
+							Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 168, 128, 0, 168 / 196f, 0, 1f, GL11.GL_NEAREST);
 
 							renderVisitOverlay(guiLeft + xSize + 3, guiTop);
 							return;
@@ -819,16 +810,16 @@ public class AccessoryBagOverlay {
 						if (i != currentTab) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
-							Utils.drawTexturedRect(guiLeft + xSize + 80, guiTop + 20 * i, 25, 22,
-								80 / 256f, 105 / 256f, 0, 22 / 256f, GL11.GL_NEAREST
+							Utils.drawTexturedRect(guiLeft + xSize + 169, guiTop + 20 * i, 25, 22,
+								168 / 196f, 1f, 0f, 22 / 128f, GL11.GL_NEAREST
 							);
-							Utils.drawItemStack(TAB_STACKS[i], guiLeft + xSize + 80 + 5, guiTop + 20 * i + 3);
+							Utils.drawItemStack(TAB_STACKS[i], guiLeft + xSize + 168 + 4, guiTop + 20 * i + 3);
 						}
 					}
 
 					GlStateManager.color(1, 1, 1, 1);
 					Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
-					Utils.drawTexturedRect(guiLeft + xSize + 3, guiTop, 80, 149, 0, 80 / 256f, 0, 149 / 256f, GL11.GL_NEAREST);
+					Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 168, 128, 0, 168 / 196f, 0, 1f, GL11.GL_NEAREST);
 
 					if (pagesVisited.size() < 1) {
 						renderVisitOverlay(guiLeft + xSize + 3, guiTop);
@@ -836,10 +827,10 @@ public class AccessoryBagOverlay {
 					}
 
 					Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
-					Utils.drawTexturedRect(guiLeft + xSize + 80, guiTop + 20 * currentTab, 28, 22,
-						80 / 256f, 108 / 256f, 22 / 256f, 44 / 256f, GL11.GL_NEAREST
+					Utils.drawTexturedRect(guiLeft + xSize + 169, guiTop + 20 * currentTab, 28, 22,
+						168 / 196f, 1f, 22 / 128f, 44 / 128f, GL11.GL_NEAREST
 					);
-					Utils.drawItemStack(TAB_STACKS[currentTab], guiLeft + xSize + 80 + 8, guiTop + 20 * currentTab + 3);
+					Utils.drawItemStack(TAB_STACKS[currentTab], guiLeft + xSize + 168 + 8, guiTop + 20 * currentTab + 3);
 
 					switch (currentTab) {
 						case TAB_BASIC:
@@ -867,9 +858,6 @@ public class AccessoryBagOverlay {
 			}
 		}
 	}
-
-
-
 
 	private static final HashMap<String, Pattern> STAT_PATTERN_MAP_BONUS = new HashMap<String, Pattern>() {{
 		String STAT_PATTERN_BONUS_END = ": (?:\\+|-)[0-9]+(?:\\.[0-9]+)?\\%? \\(((?:\\+|-)[0-9]+)%?";
