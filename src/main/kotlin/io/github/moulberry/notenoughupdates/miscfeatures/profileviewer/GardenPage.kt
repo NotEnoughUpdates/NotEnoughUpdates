@@ -184,7 +184,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                     .resolveToItemStack()
             Utils.drawItemStack(itemStack, x, y)
             if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
-                Utils.drawHoveringText(listOf("§7Barn Skin: ${it.name}"), mouseX, mouseY, instance.width, instance.height, -1)
+                instance.tooltipToDisplay = listOf("§7Barn Skin: ${it.name}")
             }
             error = false
         }
@@ -219,6 +219,14 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             val itemStack = manager.createItem(crop.itemId)
             Utils.drawItemStack(itemStack, xPos + 2, yPos)
             Utils.renderAlignedString("§e${crop.displayName}", "§f$upgradeLevel", (xPos + 20).toFloat(), (yPos + 5).toFloat(), 50)
+
+            if (mouseX >= xPos + 20 && mouseX <= xPos + 70 && mouseY >= yPos && mouseY <= yPos + 20) {
+                if (repoData.cropUpgrades.size == upgradeLevel) {
+                    instance.tooltipToDisplay = listOf("§6Maxed")
+                } else {
+                    instance.tooltipToDisplay = listOf("§7${repoData.cropUpgrades[upgradeLevel]} §cCopper to upgrade")
+                }
+            }
         }
     }
 
