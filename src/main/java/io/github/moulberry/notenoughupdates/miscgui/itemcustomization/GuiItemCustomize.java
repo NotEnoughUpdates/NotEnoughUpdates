@@ -583,7 +583,7 @@ public class GuiItemCustomize extends GuiScreen {
 				//Utils.drawItemStack(itemStack, xCenter - 90, yTop);
 				GlStateManager.enableDepth();
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(xCenter - 90, yTop, 0);
+				GlStateManager.translate(xCenter - 89, yTop, 0);
 				GlStateManager.scale(.9, .9, 1);
 				Utils.drawItemStack(itemStack, 0, 0);
 				GlStateManager.popMatrix();
