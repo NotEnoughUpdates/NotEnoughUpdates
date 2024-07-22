@@ -56,8 +56,6 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private lateinit var repoData: GardenRepoJson
     private var apiData: APIDataJson? = null
 
-    private var tooltipToDisplay = listOf<String>()
-
     private var mouseX: Int = 0
     private var mouseY: Int = 0
 
@@ -110,12 +108,6 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         renderCropMilestones()
         renderVisitorStats()
         renderCompost()
-
-        if (tooltipToDisplay.isNotEmpty()) {
-            tooltipToDisplay = tooltipToDisplay.map { "§7$it" }
-            Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, instance.width, instance.height, -1)
-            tooltipToDisplay = listOf()
-        }
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
@@ -172,9 +164,11 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         for (value in repoData.plots) {
             if (gardenData?.unlockedPlotIds?.contains(value.key) != true) continue
             Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
+            val x = left + value.value.x * 22
+            val y = top + value.value.y * 22
             Utils.drawTexturedRect(
-                (left + value.value.x * 22).toFloat(),
-                (top + value.value.y * 22).toFloat(),
+                x.toFloat(),
+                y.toFloat(),
                 20f,
                 20f,
                 0f,
@@ -183,7 +177,10 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 20 / 256f,
                 GL11.GL_NEAREST
             )
-            Utils.drawItemStack(ItemStack(Blocks.grass), left + value.value.x * 22 + 2, top + value.value.y * 22 + 2)
+            Utils.drawItemStack(ItemStack(Blocks.grass), x + 2, y + 2)
+            if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
+                instance.tooltipToDisplay = listOf(value.value.name)
+            }
         }
 
         Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
@@ -411,7 +408,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     ) {
         Utils.renderAlignedString(first, second, x.toFloat(), y.toFloat(), length)
         if (mouseX in x..(x + length) && mouseY in y..(y + 13)) {
-            tooltipToDisplay = hover
+            instance.tooltipToDisplay = hover
         }
     }
 }
