@@ -168,7 +168,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderPlots() {
         val top = guiTop + 80
-        val left = guiLeft + 160
+        val left = guiLeft + 180
         for (value in repoData.plots) {
             if (gardenData?.unlockedPlotIds?.contains(value.key) != true) continue
             Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
@@ -228,7 +228,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private fun renderCropUpgrades() {
         val startHeight = guiTop + 100
         var yPos = startHeight
-        var xPos = guiLeft + 6
+        var xPos = guiLeft + 26
 
         Utils.renderShadowedString("§eCrop Upgrades", xPos + 70, yPos + 5, 105)
 
@@ -264,7 +264,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private fun renderCropMilestones() {
         val startHeight = guiTop + 10
         var yPos = startHeight
-        var xPos = guiLeft + 6
+        var xPos = guiLeft + 26
 
         Utils.renderShadowedString("§eCrop Milestones", xPos + 70, yPos + 5, 105)
 
@@ -294,7 +294,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderVisitorStats() {
-        val xPos = guiLeft + 300
+        val xPos = guiLeft + 320
         var yPos = guiTop + 20
 
         Utils.renderShadowedString("§eVisitors", xPos + 40, yPos, 80)
@@ -324,7 +324,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderGardenLevel() {
         val top = guiTop + 20
-        val left = guiLeft + 155
+        val left = guiLeft + 175
         val level = getLevel(repoData.gardenExperience, gardenData?.gardenExperience?.toLong())
         if (level.maxed) {
             instance.renderGoldBar((left).toFloat(), (top + 10).toFloat(), 80f)
@@ -365,7 +365,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderCompost()  {
-        val xPos = guiLeft + 300
+        val xPos = guiLeft + 320
         var yPos = guiTop + 115
 
         Utils.renderShadowedString("§eCompost Upgrades", xPos + 40, yPos, 80)
