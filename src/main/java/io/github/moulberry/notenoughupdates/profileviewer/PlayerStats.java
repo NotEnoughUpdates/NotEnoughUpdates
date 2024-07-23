@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -727,6 +727,10 @@ public class PlayerStats {
 				sea_creature_chance, magic_find, pet_luck
 			);
 		}*/
+
+		public int size() {
+			return statsJson.entrySet().size();
+		}
 
 		public float get(String statName) {
 			if (statsJson.has(statName)) {

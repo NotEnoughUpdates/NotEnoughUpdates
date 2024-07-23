@@ -25,7 +25,6 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
-import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
@@ -85,7 +84,7 @@ public class AccessoryBagOverlay {
 				new Rectangle(
 					event.getGuiBaseRect().getRight(),
 					event.getGuiBaseRect().getTop(),
-					80 /*pane*/ + 24 /*tabs*/ + 4 /*space*/, 150
+					150 /*pane*/ + 24 /*tabs*/ + 4 /*space*/, 128
 				),
 				ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
 			);
@@ -201,7 +200,7 @@ public class AccessoryBagOverlay {
 			}
 		}
 
-		drawString(x, y, "# By Rarity");
+		drawTitle(x, y, "Total Counts By Rarity");
 
 		int yIndex = 0;
 		for (Map.Entry<Integer, Integer> entry : talismanCountRarity.descendingMap().entrySet()) {
@@ -209,9 +208,9 @@ public class AccessoryBagOverlay {
 			Utils.renderAlignedString(
 				rarityName,
 				EnumChatFormatting.WHITE.toString() + entry.getValue(),
-				x + 5,
-				y + 20 + 11 * yIndex,
-				70
+				x + 34,
+				y + 25 + 11 * yIndex,
+				100
 			);
 			yIndex++;
 		}
@@ -227,7 +226,7 @@ public class AccessoryBagOverlay {
 			}
 		}
 
-		drawString(x, y, "Total Stats");
+		drawTitle(x, y, "Total Stats");
 		int yIndex = 0;
 		for (int i = 0; i < PlayerStats.defaultStatNames.length; i++) {
 			String statName = PlayerStats.defaultStatNames[i];
@@ -245,13 +244,21 @@ public class AccessoryBagOverlay {
 				GL11.GL_ONE,
 				GL11.GL_ONE_MINUS_SRC_ALPHA
 			);
-			Utils.renderAlignedString(
-				statNamePretty,
-				EnumChatFormatting.WHITE.toString() + val,
-				x + 5,
-				y + 20 + 11 * yIndex,
-				70
-			);
+			if (totalStats.size() < 10) {
+				Utils.renderAlignedString(
+					statNamePretty,
+					EnumChatFormatting.WHITE.toString() + val,
+					x + 34,
+					y + 20 + 11 * yIndex, 100
+				);
+			} else {
+				Utils.renderAlignedString(
+					statNamePretty,
+					EnumChatFormatting.WHITE.toString() + val,
+					x + (yIndex < 9 ? 10 : 87),
+					y + 20 + 11 * (yIndex < 9 ? yIndex : yIndex - 9), 75
+				);
+			}
 
 			yIndex++;
 		}
@@ -263,12 +270,12 @@ public class AccessoryBagOverlay {
 		if (duplicates == null) {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
-				drawString(x, y, "Duplicates: ERROR");
+				drawTitle(x, y, "Duplicates: ERROR");
 				return;
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
-				drawString(x, y, "Duplicates: ERROR");
+				drawTitle(x, y, "Duplicates: ERROR");
 				return;
 			}
 			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
@@ -307,30 +314,28 @@ public class AccessoryBagOverlay {
 			}
 		}
 		if (duplicates.isEmpty()) {
-			drawString(x, y, "No Duplicates");
+			drawTitle(x, y, "No Duplicates");
 		} else {
-			drawString(x, y, "Duplicates: " + duplicates.size());
+			drawTitle(x, y, "Duplicates: " + duplicates.size());
 
 			int yIndex = 0;
 			for (ItemStack duplicate : duplicates) {
 				String s = duplicate.getDisplayName();
-				Utils.renderShadowedString(s, x + 40, y + 20 + 11 * yIndex, 70);
-				if (duplicates.size() > 11) {
-					if (++yIndex >= 10) break;
-				} else {
-					if (++yIndex >= 11) break;
-				}
+				Utils.renderShadowedString(s, x + 84, y + 20 + 11 * yIndex, 158);
+				if (++yIndex >= 8 && duplicates.size() > 9) break;
 			}
 
-			if (duplicates.size() > 11) {
+			if (duplicates.size() > 9) {
 				Utils.drawStringCenteredScaledMaxWidth(
-					"+" + (duplicates.size() - 10) + " More",
-					x + 40, y + 16 + 121,
+					"+" + (duplicates.size() - 8) + " More (Show All)",
+					x + 84, y + 20 + 95,
 					false,
-					70,
+					158,
 					gray()
 				);
 			}
+
+			drawTooltipAtPosition(x, y, 25, 140, 105, 125, getFormattedTooltip(new ArrayList<>(duplicates), false));
 		}
 	}
 
@@ -340,12 +345,12 @@ public class AccessoryBagOverlay {
 		if (missing == null) {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
-				drawString(x, y, "Duplicates: ERROR");
+				drawTitle(x, y, "Missing: ERROR");
 				return;
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
-				drawString(x, y, "Duplicates: ERROR");
+				drawTitle(x, y, "Missing: ERROR");
 				return;
 			}
 			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
@@ -423,112 +428,37 @@ public class AccessoryBagOverlay {
 			}
 		}
 		if (missing.isEmpty()) {
-			drawString(x, y, "No Missing");
+			drawTitle(x, y, "No Missing");
 		} else {
-			drawString(x, y, "Missing: " + missing.size());
+			drawTitle(x, y, "Missing: " + missing.size());
 
 			int yIndex = 0;
-			long currentTime = System.currentTimeMillis();
 			for (ItemStack missingStack : missing) {
 				String s = missingStack.getDisplayName();
-
-				s = Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(s, 70);
-
-				String clean = StringUtils.cleanColourNotModifiers(s);
-				for (int xO = -1; xO <= 1; xO++) {
-					for (int yO = -1; yO <= 1; yO++) {
-						int col = 0xff202020;
-						//if(xO != 0 && yO != 0) col = 0xff252525;
-						Minecraft.getMinecraft().fontRendererObj.drawString(
-							clean,
-							x + 5 + xO,
-							y + 20 + 11 * yIndex + yO,
-							col,
-							false
-						);
-					}
-				}
-				Minecraft.getMinecraft().fontRendererObj.drawString(s, x + 5, y + 20 + 11 * yIndex, 0xffffff, false);
-				if (missing.size() > 11) {
-					if (++yIndex >= 10) break;
-				} else {
-					if (++yIndex >= 11) break;
-				}
+				Utils.renderAlignedString(s, "§6" + Utils.shortNumberFormat(getItemPrice(NotEnoughUpdates.INSTANCE.manager
+					.createItemResolutionQuery()
+					.withItemStack(missingStack)
+					.resolveInternalName()), 0) + " Coins", x + 5, y + 20 + 11 * yIndex, 158);
+				if (++yIndex >= 8 && missing.size() > 9) break;
 			}
 
-			if (missing.size() > 11) {
-				Utils.drawStringCenteredScaledMaxWidth("Show All", x + 40, y + 16 + 121, false, 70, gray());
+			if (missing.size() > 9) {
+				Utils.drawStringCenteredScaledMaxWidth(
+					"+" + (missing.size() - 8) + " More (Show All)",
+					x + 84,
+					y + 20 + 95,
+					false,
+					158,
+					gray()
+				);
 
-				final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
-				final int scaledWidth = scaledresolution.getScaledWidth();
-				final int scaledHeight = scaledresolution.getScaledHeight();
-				int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
-				int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
-
-				if (mouseX > x && mouseX < x + 80 &&
-					mouseY > y + 11 + 121 && mouseY < y + 21 + 121) {
-					List<String> text = new ArrayList<>();
-					StringBuilder line = new StringBuilder();
-					int leftMaxSize = 0;
-					int middleMaxSize = 0;
-					for (int i = 0; i < missing.size(); i += 3) {
-						leftMaxSize = Math.max(leftMaxSize, Minecraft.getMinecraft().fontRendererObj.
-							getStringWidth(missing.get(i).getDisplayName()));
-					}
-					for (int i = 1; i < missing.size(); i += 3) {
-						middleMaxSize = Math.max(middleMaxSize, Minecraft.getMinecraft().fontRendererObj.
-							getStringWidth(missing.get(i).getDisplayName()));
-					}
-					for (int i = 0; i < missing.size(); i++) {
-						if (i % 3 == 0 && i > 0) {
-							text.add(line.toString());
-							line = new StringBuilder();
-						}
-						StringBuilder name = new StringBuilder(missing.get(i).getDisplayName());
-						int nameLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(name.toString());
-
-						int padSize = -1;
-						if (i % 3 == 0) padSize = leftMaxSize;
-						if (i % 3 == 1) padSize = middleMaxSize;
-						if (padSize > 0) {
-							float padNum = (padSize - nameLen) / 4.0f;
-							int remainder = (int) ((padNum % 1) * 4);
-							while (padNum >= 1) {
-								if (remainder > 0) {
-									name.append(EnumChatFormatting.BOLD).append(" ");
-									remainder--;
-								} else {
-									name.append(EnumChatFormatting.RESET).append(" ");
-								}
-								padNum--;
-							}
-						}
-						line.append('\u00A7').append(Utils.getPrimaryColourCode(missing.get(i).getDisplayName()));
-						if (i < 9) {
-							line.append((char) ('\u2776' + i)).append(' ');
-						} else {
-							line.append("\u2b24 ");
-						}
-						line.append(name);
-						if (i % 3 < 2) line.append("  ");
-					}
-
-					GlStateManager.pushMatrix();
-					GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
-					Utils.drawHoveringText(text,
-						mouseX * scaledresolution.getScaleFactor() / 2,
-						mouseY * scaledresolution.getScaleFactor() / 2,
-						scaledWidth * scaledresolution.getScaleFactor() / 2,
-						scaledHeight * scaledresolution.getScaleFactor() / 2, -1
-					);
-					GlStateManager.popMatrix();
-				}
+				drawTooltipAtPosition(x, y, 25, 140, 105, 125, getFormattedTooltip(missing, true));
 			}
 		}
 	}
 
-	private static void drawString(int x, int y, String abc) {
-		Utils.drawStringCenteredScaledMaxWidth(abc, x + 40, y + 12, false, 70, gray());
+	private static void drawTitle(int x, int y, String abc) {
+		Utils.drawStringCenteredScaledMaxWidth(abc, x + 84, y + 12, false, 158, gray());
 	}
 
 	private static int gray() {
@@ -537,28 +467,8 @@ public class AccessoryBagOverlay {
 
 	private static Comparator<String> getItemComparator() {
 		return (o1, o2) -> {
-			double cost1;
-			JsonObject o1Auc = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(o1);
-			if (o1Auc != null && o1Auc.has("price")) {
-				cost1 = o1Auc.get("price").getAsFloat();
-			} else {
-				APIManager.CraftInfo info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(o1);
-				if (info != null)
-					cost1 = info.craftCost;
-				else
-					cost1 = -1;
-			}
-			double cost2;
-			JsonObject o2Auc = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(o2);
-			if (o2Auc != null && o2Auc.has("price")) {
-				cost2 = o2Auc.get("price").getAsFloat();
-			} else {
-				APIManager.CraftInfo info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(o2);
-				if (info != null)
-					cost2 = info.craftCost;
-				else
-					cost2 = -1;
-			}
+			double cost1 = getItemPrice(o1);
+			double cost2 = getItemPrice(o2);
 
 			if (cost1 == -1 && cost2 == -1) return o1.compareTo(o2);
 			if (cost1 == -1) return 1;
@@ -859,5 +769,83 @@ public class AccessoryBagOverlay {
 			}
 		}
 		return -1;
+	}
+
+	public static List<String> getFormattedTooltip(List<ItemStack> itemStacks, boolean sorted) {
+		List<String> text = new ArrayList<>();
+		StringBuilder line = new StringBuilder();
+		int leftMaxSize = 0;
+		int middleMaxSize = 0;
+		for (int i = 0; i < itemStacks.size(); i += 3) {
+			leftMaxSize = Math.max(leftMaxSize, Minecraft.getMinecraft().fontRendererObj.
+				getStringWidth(itemStacks.get(i).getDisplayName()));
+		}
+		for (int i = 1; i < itemStacks.size(); i += 3) {
+			middleMaxSize = Math.max(middleMaxSize, Minecraft.getMinecraft().fontRendererObj.
+				getStringWidth(itemStacks.get(i).getDisplayName()));
+		}
+		for (int i = 0; i < itemStacks.size(); i++) {
+			if (i % 3 == 0 && i > 0) {
+				text.add(line.toString());
+				line = new StringBuilder();
+			}
+			StringBuilder name = new StringBuilder(itemStacks.get(i).getDisplayName());
+			int nameLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(name.toString());
+
+			int padSize = -1;
+			if (i % 3 == 0) padSize = leftMaxSize;
+			if (i % 3 == 1) padSize = middleMaxSize;
+			if (padSize > 0) {
+				float padNum = (padSize - nameLen) / 4.0f;
+				int remainder = (int) ((padNum % 1) * 4);
+				while (padNum >= 1) {
+					if (remainder > 0) {
+						name.append(EnumChatFormatting.BOLD).append(" ");
+						remainder--;
+					} else {
+						name.append(EnumChatFormatting.RESET).append(" ");
+					}
+					padNum--;
+				}
+			}
+			line.append('\u00A7').append(Utils.getPrimaryColourCode(itemStacks.get(i).getDisplayName()));
+			if (i < 9 && sorted) {
+				line.append((char) ('\u2776' + i)).append(' ');
+			} else {
+				line.append("\u2b24 ");
+			}
+			line.append(name);
+			if (i % 3 < 2) line.append("  ");
+		}
+
+		return text;
+	}
+
+	public static void drawTooltipAtPosition(int x, int y, int xMin, int xMax, int yMin, int yMax, List<String> lines) {
+		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
+		final int scaledWidth = scaledresolution.getScaledWidth();
+		final int scaledHeight = scaledresolution.getScaledHeight();
+		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
+		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
+
+		Rectangle rect = new Rectangle(x + 25, y + 105, 115, 20);
+		if (rect.contains(mouseX, mouseY)) {
+			GlStateManager.pushMatrix();
+			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
+			Utils.drawHoveringText(lines,
+				mouseX * scaledresolution.getScaleFactor() / 2,
+				mouseY * scaledresolution.getScaleFactor() / 2,
+				scaledWidth * scaledresolution.getScaleFactor() / 2,
+				scaledHeight * scaledresolution.getScaleFactor() / 2, -1
+			);
+			GlStateManager.popMatrix();
+		}
+	}
+
+	public static double getItemPrice(String internal) {
+		APIManager.CraftInfo info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internal);
+		double bin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internal);
+		if (info == null) return bin;
+		return Math.min(info.craftCost, bin);
 	}
 }
