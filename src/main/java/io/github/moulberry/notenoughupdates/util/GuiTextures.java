@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -55,7 +55,7 @@ public class GuiTextures {
 		new ResourceLocation("notenoughupdates:FSR_do_not_texture_this_please.png");
 
 	public static final ResourceLocation accessory_bag_overlay =
-		new ResourceLocation("notenoughupdates:accessory_bag_overlay.png");
+		new ResourceLocation("notenoughupdates:accessory_bag_overlay.png_v2");
 
 	public static final ResourceLocation quickcommand_background =
 		new ResourceLocation("notenoughupdates:quickcommand_background.png");

@@ -659,11 +659,11 @@ public class AccessoryBagOverlay {
 						if (i != currentTab) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
-							Utils.drawTexturedRect(guiLeft + xSize + 169, guiTop + 20 * i, 25, 22,
+							Utils.drawTexturedRect(guiLeft + xSize + 170, guiTop + 20 * i, 25, 22,
 								168 / 196f, 1f, 0f, 22 / 128f, GL11.GL_NEAREST
 							);
 							RenderHelper.enableGUIStandardItemLighting();
-							Utils.drawItemStack(TAB_STACKS[i], guiLeft + xSize + 168 + 4, guiTop + 20 * i + 3);
+							Utils.drawItemStack(TAB_STACKS[i], guiLeft + xSize + 168 + 5, guiTop + 20 * i + 3);
 						}
 					}
 
