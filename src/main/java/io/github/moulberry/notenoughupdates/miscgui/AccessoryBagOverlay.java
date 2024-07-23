@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
@@ -65,6 +66,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.accessory_bag_overlay;
 
@@ -76,6 +78,11 @@ public class AccessoryBagOverlay {
 	private static final int TAB_MISSING = 3;
 
 	public static final AccessoryBagOverlay INSTANCE = new AccessoryBagOverlay();
+
+	private static int dupePageActive = 0;
+	private static int dupePagesTotal = 0;
+	private static int missingPageActive = 0;
+	private static int missingPagesTotal = 0;
 
 	@SubscribeEvent
 	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
@@ -163,6 +170,23 @@ public class AccessoryBagOverlay {
 				if (currentTab < 0) currentTab = 0;
 				if (currentTab > TAB_MISSING) currentTab = TAB_MISSING;
 			}
+
+			if (currentTab == TAB_DUP) ArrowPagesUtils.onPageSwitchMouse(
+				guiLeft + xSize + 3,
+				guiTop,
+				new int[]{60, 110},
+				dupePageActive,
+				dupePagesTotal,
+				integer -> dupePageActive = integer
+			);
+			if (currentTab == TAB_MISSING) ArrowPagesUtils.onPageSwitchMouse(
+				guiLeft + xSize + 3,
+				guiTop,
+				new int[]{60, 110},
+				missingPageActive,
+				missingPagesTotal,
+				integer -> missingPageActive = integer
+			);
 
 			return true;
 		} catch (Exception e) {
@@ -319,23 +343,20 @@ public class AccessoryBagOverlay {
 			drawTitle(x, y, "Duplicates: " + duplicates.size());
 
 			int yIndex = 0;
-			for (ItemStack duplicate : duplicates) {
+			List<ItemStack> sortedDupes =
+				duplicates.stream().sorted((Comparator.comparing(ItemStack::getDisplayName))).collect(Collectors.toList());
+
+			for (ItemStack duplicate : sortedDupes.subList(dupePageActive * 8, sortedDupes.size() - 1)) {
 				String s = duplicate.getDisplayName();
 				Utils.renderShadowedString(s, x + 84, y + 20 + 11 * yIndex, 158);
-				if (++yIndex >= 8 && duplicates.size() > 9) break;
+				if (++yIndex >= 8 && sortedDupes.size() > 9) break;
 			}
 
-			if (duplicates.size() > 9) {
-				Utils.drawStringCenteredScaledMaxWidth(
-					"+" + (duplicates.size() - 8) + " More (Show All)",
-					x + 84, y + 20 + 95,
-					false,
-					158,
-					gray()
-				);
+			if (sortedDupes.size() > 9) {
+				dupePagesTotal = (int) Math.ceil(sortedDupes.size() / 8.0);
+				GlStateManager.color(1f, 1f, 1f, 1f);
+				ArrowPagesUtils.onDraw(x, y, new int[]{60, 110}, dupePageActive, dupePagesTotal);
 			}
-
-			drawTooltipAtPosition(x, y, 25, 140, 105, 125, getFormattedTooltip(new ArrayList<>(duplicates), false));
 		}
 	}
 
@@ -433,26 +454,28 @@ public class AccessoryBagOverlay {
 			drawTitle(x, y, "Missing: " + missing.size());
 
 			int yIndex = 0;
-			for (ItemStack missingStack : missing) {
+			for (ItemStack missingStack : missing.subList(missingPageActive * 8, missing.size() - 1)) {
 				String s = missingStack.getDisplayName();
-				Utils.renderAlignedString(s, "§6" + Utils.shortNumberFormat(getItemPrice(NotEnoughUpdates.INSTANCE.manager
+				double price = getItemPrice(NotEnoughUpdates.INSTANCE.manager
 					.createItemResolutionQuery()
 					.withItemStack(missingStack)
-					.resolveInternalName()), 0) + " Coins", x + 5, y + 20 + 11 * yIndex, 158);
+					.resolveInternalName());
+				Utils.renderAlignedString(
+					s,
+					price != -1
+						? "§6" + Utils.shortNumberFormat(price, 0) + " Coins"
+						: "§c" + "NO DATA",
+					x + 5,
+					y + 20 + 11 * yIndex,
+					158
+				);
 				if (++yIndex >= 8 && missing.size() > 9) break;
 			}
 
 			if (missing.size() > 9) {
-				Utils.drawStringCenteredScaledMaxWidth(
-					"+" + (missing.size() - 8) + " More (Show All)",
-					x + 84,
-					y + 20 + 95,
-					false,
-					158,
-					gray()
-				);
-
-				drawTooltipAtPosition(x, y, 25, 140, 105, 125, getFormattedTooltip(missing, true));
+				missingPagesTotal = (int) Math.ceil(missing.size() / 8.0);
+				GlStateManager.color(1f, 1f, 1f, 1f);
+				ArrowPagesUtils.onDraw(x, y, new int[]{60, 110}, missingPageActive, missingPagesTotal);
 			}
 		}
 	}
@@ -769,77 +792,6 @@ public class AccessoryBagOverlay {
 			}
 		}
 		return -1;
-	}
-
-	public static List<String> getFormattedTooltip(List<ItemStack> itemStacks, boolean sorted) {
-		List<String> text = new ArrayList<>();
-		StringBuilder line = new StringBuilder();
-		int leftMaxSize = 0;
-		int middleMaxSize = 0;
-		for (int i = 0; i < itemStacks.size(); i += 3) {
-			leftMaxSize = Math.max(leftMaxSize, Minecraft.getMinecraft().fontRendererObj.
-				getStringWidth(itemStacks.get(i).getDisplayName()));
-		}
-		for (int i = 1; i < itemStacks.size(); i += 3) {
-			middleMaxSize = Math.max(middleMaxSize, Minecraft.getMinecraft().fontRendererObj.
-				getStringWidth(itemStacks.get(i).getDisplayName()));
-		}
-		for (int i = 0; i < itemStacks.size(); i++) {
-			if (i % 3 == 0 && i > 0) {
-				text.add(line.toString());
-				line = new StringBuilder();
-			}
-			StringBuilder name = new StringBuilder(itemStacks.get(i).getDisplayName());
-			int nameLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(name.toString());
-
-			int padSize = -1;
-			if (i % 3 == 0) padSize = leftMaxSize;
-			if (i % 3 == 1) padSize = middleMaxSize;
-			if (padSize > 0) {
-				float padNum = (padSize - nameLen) / 4.0f;
-				int remainder = (int) ((padNum % 1) * 4);
-				while (padNum >= 1) {
-					if (remainder > 0) {
-						name.append(EnumChatFormatting.BOLD).append(" ");
-						remainder--;
-					} else {
-						name.append(EnumChatFormatting.RESET).append(" ");
-					}
-					padNum--;
-				}
-			}
-			line.append('\u00A7').append(Utils.getPrimaryColourCode(itemStacks.get(i).getDisplayName()));
-			if (i < 9 && sorted) {
-				line.append((char) ('\u2776' + i)).append(' ');
-			} else {
-				line.append("\u2b24 ");
-			}
-			line.append(name);
-			if (i % 3 < 2) line.append("  ");
-		}
-
-		return text;
-	}
-
-	public static void drawTooltipAtPosition(int x, int y, int xMin, int xMax, int yMin, int yMax, List<String> lines) {
-		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
-		final int scaledWidth = scaledresolution.getScaledWidth();
-		final int scaledHeight = scaledresolution.getScaledHeight();
-		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
-		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
-
-		Rectangle rect = new Rectangle(x + 25, y + 105, 115, 20);
-		if (rect.contains(mouseX, mouseY)) {
-			GlStateManager.pushMatrix();
-			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
-			Utils.drawHoveringText(lines,
-				mouseX * scaledresolution.getScaleFactor() / 2,
-				mouseY * scaledresolution.getScaleFactor() / 2,
-				scaledWidth * scaledresolution.getScaleFactor() / 2,
-				scaledHeight * scaledresolution.getScaleFactor() / 2, -1
-			);
-			GlStateManager.popMatrix();
-		}
 	}
 
 	public static double getItemPrice(String internal) {
