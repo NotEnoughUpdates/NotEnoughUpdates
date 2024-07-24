@@ -22,17 +22,21 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -42,6 +46,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -57,6 +62,7 @@ import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,10 +85,17 @@ public class AccessoryBagOverlay {
 
 	public static final AccessoryBagOverlay INSTANCE = new AccessoryBagOverlay();
 
+	// Arrow pages variables
 	private static int dupePageActive = 0;
 	private static int dupePagesTotal = 0;
 	private static int missingPageActive = 0;
 	private static int missingPagesTotal = 0;
+
+	// Page-specific button variables
+	private static boolean dupe_highlight = false;
+	private static boolean dupe_showPersonal = false;
+	private static boolean missing_showAllTiers = true;
+	private static boolean missing_useMP = true;
 
 	@SubscribeEvent
 	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
@@ -129,14 +142,6 @@ public class AccessoryBagOverlay {
 
 		if (!Mouse.getEventButtonState()) return false;
 		try {
-			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-
-			int width = scaledResolution.getScaledWidth();
-			int height = scaledResolution.getScaledHeight();
-
-			int mouseX = Mouse.getX() / scaledResolution.getScaleFactor();
-			int mouseY = height - Mouse.getY() / scaledResolution.getScaleFactor();
-
 			int xSize = (int) Utils.getField(
 				GuiContainer.class,
 				Minecraft.getMinecraft().currentScreen,
@@ -162,31 +167,53 @@ public class AccessoryBagOverlay {
 				"field_147009_r"
 			);
 
-			if (mouseX < guiLeft + xSize + 3 || mouseX > guiLeft + xSize + 168 + 28) return false;
-			if (mouseY < guiTop || mouseY > guiTop + 128) return false;
+			if (mouseX() < guiLeft + xSize + 3 || mouseX() > guiLeft + xSize + 168 + 28) return false;
+			if (mouseY() < guiTop || mouseY() > guiTop + 128) return false;
 
-			if (mouseX > guiLeft + xSize + 168 + 3 && mouseY < guiTop + 20 * TAB_MISSING + 22) {
-				currentTab = (mouseY - guiTop) / 20;
+			if (mouseX() > guiLeft + xSize + 168 + 3 && mouseY() < guiTop + 20 * TAB_MISSING + 22) {
+				currentTab = (mouseY() - guiTop) / 20;
 				if (currentTab < 0) currentTab = 0;
 				if (currentTab > TAB_MISSING) currentTab = TAB_MISSING;
 			}
 
-			if (currentTab == TAB_DUP) ArrowPagesUtils.onPageSwitchMouse(
-				guiLeft + xSize + 3,
-				guiTop,
-				new int[]{60, 110},
-				dupePageActive,
-				dupePagesTotal,
-				integer -> dupePageActive = integer
-			);
-			if (currentTab == TAB_MISSING) ArrowPagesUtils.onPageSwitchMouse(
-				guiLeft + xSize + 3,
-				guiTop,
-				new int[]{60, 110},
-				missingPageActive,
-				missingPagesTotal,
-				integer -> missingPageActive = integer
-			);
+			if (currentTab == TAB_DUP) {
+				ArrowPagesUtils.onPageSwitchMouse(
+					guiLeft + xSize + 3,
+					guiTop,
+					new int[]{60, 110},
+					dupePageActive,
+					dupePagesTotal,
+					integer -> dupePageActive = integer
+				);
+
+				if (new Rectangle(guiLeft + xSize + 3 + 120, guiTop + 108, 16, 16).contains(mouseX(), mouseY())) {
+					dupe_highlight = !dupe_highlight;
+				}
+
+				if (new Rectangle(guiLeft + xSize + 3 + 141, guiTop + 108, 16, 16).contains(mouseX(), mouseY())) {
+					dupe_showPersonal = !dupe_showPersonal;
+				}
+
+			}
+			if (currentTab == TAB_MISSING) {
+				ArrowPagesUtils.onPageSwitchMouse(
+					guiLeft + xSize + 3,
+					guiTop,
+					new int[]{60, 110},
+					missingPageActive,
+					missingPagesTotal,
+					integer -> missingPageActive = integer
+				);
+
+				if (new Rectangle(guiLeft + xSize + 3 + 120, guiTop + 108, 16, 16).contains(mouseX(), mouseY())) {
+					missing_useMP = !missing_useMP;
+					missing = null;
+				}
+				if (new Rectangle(guiLeft + xSize + 3 + 141, guiTop + 108, 16, 16).contains(mouseX(), mouseY())) {
+					missing_showAllTiers = !missing_showAllTiers;
+					missing = null;
+				}
+			}
 
 			return true;
 		} catch (Exception e) {
@@ -349,6 +376,8 @@ public class AccessoryBagOverlay {
 			for (ItemStack duplicate : sortedDupes.subList(dupePageActive * 8, sortedDupes.size() - 1)) {
 				String s = duplicate.getDisplayName();
 				Utils.renderShadowedString(s, x + 84, y + 20 + 11 * yIndex, 158);
+				Rectangle rect = new Rectangle(x + 5, y + 20 + 11 * yIndex, 168, 11);
+				renderAccessoryHover(rect, duplicate);
 				if (++yIndex >= 8 && sortedDupes.size() > 9) break;
 			}
 
@@ -358,6 +387,41 @@ public class AccessoryBagOverlay {
 				ArrowPagesUtils.onDraw(x, y, new int[]{60, 110}, dupePageActive, dupePagesTotal);
 			}
 		}
+
+		List<String> highlightTooltip = new ArrayList<>();
+		if (dupe_highlight) {
+			highlightTooltip.add("§aHighlight dupes");
+			highlightTooltip.add("§7Will highlight accessories");
+			highlightTooltip.add("§7you have duplicates of.");
+		} else {
+			highlightTooltip.add("§cDon't highlight dupes");
+			highlightTooltip.add("§7Will not highlight accessories");
+			highlightTooltip.add("§7you have duplicates of.");
+		}
+		renderButton(
+			new ItemStack(dupe_highlight ? Items.ender_eye : Items.ender_pearl),
+			x + 120,
+			y + 107,
+			highlightTooltip
+		);
+
+		List<String> compDeletorTooltip = new ArrayList<>();
+		if (dupe_showPersonal) {
+			compDeletorTooltip.add("§aHighlight Compactors & Deletors");
+			compDeletorTooltip.add("§7Will highlight all duplicates.");
+		} else {
+			compDeletorTooltip.add("§cDon't highlight Compactors & Deletors");
+			compDeletorTooltip.add("§7Duplicates allow you to specify");
+			compDeletorTooltip.add("§7more things to compact and delete,");
+			compDeletorTooltip.add("§7but they do not give more MP!");
+		}
+		renderButton(
+			NotEnoughUpdates.INSTANCE.manager.createItem(dupe_showPersonal ? "PERSONAL_DELETOR_4000" : "DISPENSER"),
+			x + 141,
+			y + 107,
+			compDeletorTooltip
+		);
+
 	}
 
 	private static List<ItemStack> missing = null;
@@ -417,8 +481,7 @@ public class AccessoryBagOverlay {
 					}
 				}
 			}
-
-			missingInternal.sort(getItemComparator());
+			missingInternal.sort(getItemComparator(missing_useMP));
 
 			Set<String> missingDisplayNames = new HashSet<>();
 			for (String internal : missingInternal) {
@@ -443,6 +506,7 @@ public class AccessoryBagOverlay {
 				missingDisplayNames.add(stack.getDisplayName());
 
 				if (hasDup) {
+					if (!missing_showAllTiers) continue;
 					stack.setStackDisplayName(stack.getDisplayName() + "*");
 				}
 				missing.add(stack);
@@ -477,6 +541,30 @@ public class AccessoryBagOverlay {
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				ArrowPagesUtils.onDraw(x, y, new int[]{60, 110}, missingPageActive, missingPagesTotal);
 			}
+
+			List<String> mpTooltip = new ArrayList<>();
+			if (missing_useMP) {
+				mpTooltip.add("§bSort by Magical Power");
+				mpTooltip.add("§7Will sort the accessories");
+				mpTooltip.add("§7by the best MP gain.");
+			} else {
+				mpTooltip.add("§6Sort by Coins");
+				mpTooltip.add("§7Will sort the accessories");
+				mpTooltip.add("§7by the cheapest options.");
+			}
+			renderButton(ItemUtils.getCoinItemStack(missing_useMP ? 10_000_000 : 100_000), x + 120, y + 107, mpTooltip);
+
+			List<String> tieredTooltip = new ArrayList<>();
+			if (missing_showAllTiers) {
+				tieredTooltip.add("§aShow all tiers");
+				tieredTooltip.add("§7Will show all the tiers");
+				tieredTooltip.add("§7to get the cheapest options.");
+			} else {
+				tieredTooltip.add("§6Show highest tier");
+				tieredTooltip.add("§7Will show only the highest tier");
+				tieredTooltip.add("§7to avoid wasting money on lower ones.");
+			}
+			renderButton(new ItemStack(missing_showAllTiers ? Items.coal : Items.diamond), x + 141, y + 107, tieredTooltip);
 		}
 	}
 
@@ -488,10 +576,14 @@ public class AccessoryBagOverlay {
 		return new Color(80, 80, 80).getRGB();
 	}
 
-	private static Comparator<String> getItemComparator() {
+	private static Comparator<String> getItemComparator(boolean accountMP) {
 		return (o1, o2) -> {
 			double cost1 = getItemPrice(o1);
 			double cost2 = getItemPrice(o2);
+			if (accountMP) {
+				cost1 /= cost1 != -1 ? getMagicalPowerForItem(o1) : -1E-99; // Artificially push items with -1 price to the end
+				cost2 /= cost2 != -1 ? getMagicalPowerForItem(o2) : -1E-99; // since they would be put at the start otherwise
+			}
 
 			if (cost1 == -1 && cost2 == -1) return o1.compareTo(o2);
 			if (cost1 == -1) return 1;
@@ -592,8 +684,8 @@ public class AccessoryBagOverlay {
 						if (i != currentTab) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
-							Utils.drawTexturedRect(guiLeft + xSize + 170, guiTop + 20 * i, 25, 22,
-								168 / 196f, 1f, 0f, 22 / 128f, GL11.GL_NEAREST
+							Utils.drawTexturedRect(guiLeft + xSize + 168, guiTop + 20 * i, 25, 22,
+								168 / 196f, 193f / 196f, 0f, 22 / 128f, GL11.GL_NEAREST
 							);
 							RenderHelper.enableGUIStandardItemLighting();
 							Utils.drawItemStack(TAB_STACKS[i], guiLeft + xSize + 168 + 5, guiTop + 20 * i + 3);
@@ -610,11 +702,13 @@ public class AccessoryBagOverlay {
 					}
 
 					Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
-					Utils.drawTexturedRect(guiLeft + xSize + 169, guiTop + 20 * currentTab, 28, 22,
+					Utils.drawTexturedRect(guiLeft + xSize + 168, guiTop + 20 * currentTab, 28, 22,
 						168 / 196f, 1f, 22 / 128f, 44 / 128f, GL11.GL_NEAREST
 					);
 					RenderHelper.enableGUIStandardItemLighting();
 					Utils.drawItemStack(TAB_STACKS[currentTab], guiLeft + xSize + 168 + 8, guiTop + 20 * currentTab + 3);
+
+					if (dupe_highlight) highlightDuplicates(guiLeft + xSize + 3, guiTop);
 
 					switch (currentTab) {
 						case TAB_BASIC:
@@ -798,6 +892,155 @@ public class AccessoryBagOverlay {
 		APIManager.CraftInfo info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internal);
 		double bin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internal);
 		if (info == null) return bin;
+		if (bin == -1) return info.craftCost;
 		return Math.min(info.craftCost, bin);
+	}
+
+	public static ScaledResolution getScaledResolution() {
+		return new ScaledResolution(Minecraft.getMinecraft());
+	}
+
+	public static int mouseX() {
+		return Mouse.getX() / getScaledResolution().getScaleFactor();
+	}
+
+	public static int mouseY() {
+		return getScaledResolution().getScaledHeight() - Mouse.getY() / getScaledResolution().getScaleFactor();
+	}
+
+	public static int getMagicalPowerForItem(String internal) {
+		int abi = 0;
+		JsonObject jsonStack = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(
+			NotEnoughUpdates.INSTANCE.manager.
+				createItemResolutionQuery().
+				withKnownInternalName(internal).
+				resolveToItemStack());
+		int rarity = Utils.getRarityFromLore(jsonStack.get("lore").getAsJsonArray());
+
+		if (internal.equals("HEGEMONY_ARTIFACT")) {
+			switch (rarity) {
+				case 4:
+					return 16;
+				case 5:
+					return 22;
+			}
+		}
+
+		if (internal.contains("ABICASE")) {
+			try {
+				JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
+				if (profileInfo.has("nether_island_player_data")) {
+					JsonObject data = profileInfo.get("nether_island_player_data").getAsJsonObject();
+					if (data.has("abiphone") && data.get("abiphone").getAsJsonObject().has("active_contacts")) { // BatChest
+						int contact = data.get("abiphone").getAsJsonObject().get("active_contacts").getAsJsonArray().size();
+						abi = contact / 2;
+					}
+				}
+			} catch (NullPointerException e) {
+			}
+		}
+
+		switch (rarity) {
+			case 0:
+			case 6:
+				return abi + 3;
+			case 1:
+			case 7:
+				return abi + 5;
+			case 2:
+				return abi + 8;
+			case 3:
+				return abi + 12;
+			case 4:
+				return abi + 16;
+			case 5:
+				return abi + 22;
+		}
+
+		return 0;
+	}
+
+	public static void renderButton(ItemStack stack, int x, int y, List<String> tooltip) {
+		GlStateManager.color(1, 1, 1, 1);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
+		RenderHelper.enableGUIStandardItemLighting();
+		Utils.drawTexturedRect(x, y, 17, 17, 168f / 196f, 184f / 196f, 112f / 128f, 1f, GL11.GL_NEAREST);
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(stack, x, y);
+		if (new Rectangle(x, y, 16, 16).contains(mouseX(), mouseY())) {
+			Utils.drawHoveringText(
+				tooltip,
+				mouseX(), mouseY(),
+				getScaledResolution().getScaledWidth(),
+				getScaledResolution().getScaledHeight(),
+				-1
+			);
+		}
+	}
+
+	public static void highlightDuplicates(int x, int y) {
+		int guiLeft = (int) Utils.getField(
+			GuiContainer.class,
+			Minecraft.getMinecraft().currentScreen,
+			"guiLeft",
+			"field_147003_i"
+		);
+		int guiTop = (int) Utils.getField(
+			GuiContainer.class,
+			Minecraft.getMinecraft().currentScreen,
+			"guiTop",
+			"field_147009_r"
+		);
+
+		for (Slot slot : Minecraft.getMinecraft().thePlayer.openContainer.inventorySlots) {
+			ItemStack stack = slot.getStack();
+			if (stack != null && isAccessory(stack)) {
+				if (NotEnoughUpdates.INSTANCE.manager
+					.createItemResolutionQuery()
+					.withItemStack(stack)
+					.resolveInternalName()
+					.matches("PERSONAL_(DELETOR|COMPACTOR)_[0-9]+") && !dupe_showPersonal) continue;
+				if (duplicates != null && duplicates
+					.stream()
+					.map(ItemStack::getDisplayName)
+					.collect(Collectors.toList())
+					.contains(stack.getDisplayName())) {
+					GlStateManager.translate(0, 0, 50);
+					GuiScreen.drawRect(
+						guiLeft + slot.xDisplayPosition,
+						guiTop + slot.yDisplayPosition,
+						guiLeft + slot.xDisplayPosition + 16,
+						guiTop + slot.yDisplayPosition + 16,
+						0xBBFF0000
+					);
+					GlStateManager.translate(0, 0, -50);
+				}
+			}
+		}
+	}
+
+	public static void renderAccessoryHover(Rectangle rect, ItemStack stack) {
+		if (rect.contains(mouseX(), mouseY())) {
+			List<String> list = Arrays.asList(
+				stack.getDisplayName(),
+				"",
+				"§eClick to show in item viewer!"
+			);
+			if (Mouse.isButtonDown(0)) {
+				NEUOverlay.getTextField().setText("id:" +
+					NotEnoughUpdates.INSTANCE.manager
+						.createItemResolutionQuery()
+						.withItemStack(stack)
+						.resolveInternalName());
+				NotEnoughUpdates.INSTANCE.overlay.updateSearch();
+			}
+
+			Utils.drawHoveringText(
+				list,
+				mouseX(), mouseY(),
+				getScaledResolution().getScaledWidth(),
+				getScaledResolution().getScaledHeight(),
+				-1
+			);
+		}
 	}
 }
