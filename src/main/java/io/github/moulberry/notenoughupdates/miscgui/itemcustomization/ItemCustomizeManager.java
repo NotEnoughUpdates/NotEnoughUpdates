@@ -409,7 +409,7 @@ public class ItemCustomizeManager {
 				newStack.getTagCompound().setTag("SkullOwner", customSkull);
 			}
 		}
-		if (armorSlot != 4 && newStack.getItem() instanceof ItemArmor)
+		if (armorSlot != 4 && !(newStack.getItem() instanceof ItemArmor))
 			// Remove non armor from any slot except heads
 			newStack = stack;
 
