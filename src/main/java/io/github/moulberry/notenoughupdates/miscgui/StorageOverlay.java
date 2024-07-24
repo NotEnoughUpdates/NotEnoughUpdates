@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
@@ -2151,9 +2150,9 @@ public class StorageOverlay extends GuiElement {
 					String internalName =
 						manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 					if (internalName == null) continue;
-					JsonObject item = manager.getItemInformation().get(internalName);
-					if (keyPressed == manager.keybindViewRecipe.getKeyCode()) manager.showRecipe(item);
-					if (keyPressed == manager.keybindViewUsages.getKeyCode()) manager.displayGuiItemUsages(
+					if (keyPressed == manager.keybindViewRecipe.getKeyCode()) manager.displayGuiItemRecipeKeybind(
+						internalName);
+					if (keyPressed == manager.keybindViewUsages.getKeyCode()) manager.displayGuiItemUsagesKeybind(
 						internalName);
 					if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
 						AhBzKeybind.onKeyPressed(stack);
