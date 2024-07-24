@@ -533,6 +533,8 @@ public class AccessoryBagOverlay {
 					y + 20 + 11 * yIndex,
 					158
 				);
+				Rectangle rect = new Rectangle(x + 5, y + 20 + 11 * yIndex, 168, 11);
+				renderAccessoryHover(rect, missingStack);
 				if (++yIndex >= 8 && missing.size() > 9) break;
 			}
 
@@ -963,9 +965,10 @@ public class AccessoryBagOverlay {
 	public static void renderButton(ItemStack stack, int x, int y, List<String> tooltip) {
 		GlStateManager.color(1, 1, 1, 1);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
+		GlStateManager.disableLighting();
+		Utils.drawTexturedRect(x, y, 17, 17, 168f / 196f, 184f / 196f, 112f / 128f, 1f, GL11.GL_NEAREST); // slot
 		RenderHelper.enableGUIStandardItemLighting();
-		Utils.drawTexturedRect(x, y, 17, 17, 168f / 196f, 184f / 196f, 112f / 128f, 1f, GL11.GL_NEAREST);
-		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(stack, x, y);
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(stack, x, y); // item
 		if (new Rectangle(x, y, 16, 16).contains(mouseX(), mouseY())) {
 			Utils.drawHoveringText(
 				tooltip,
@@ -1020,18 +1023,19 @@ public class AccessoryBagOverlay {
 
 	public static void renderAccessoryHover(Rectangle rect, ItemStack stack) {
 		if (rect.contains(mouseX(), mouseY())) {
+			String internal = NotEnoughUpdates.INSTANCE.manager
+				.createItemResolutionQuery()
+				.withItemStack(stack)
+				.resolveInternalName();
 			List<String> list = Arrays.asList(
 				stack.getDisplayName(),
 				"",
-				"§eClick to show in item viewer!"
+				internal != null ? "§eClick to show in item viewer!" : "§cCan't show in item viewer :("
 			);
 			if (Mouse.isButtonDown(0)) {
-				NEUOverlay.getTextField().setText("id:" +
-					NotEnoughUpdates.INSTANCE.manager
-						.createItemResolutionQuery()
-						.withItemStack(stack)
-						.resolveInternalName());
+				NEUOverlay.getTextField().setText("id:" + internal);
 				NotEnoughUpdates.INSTANCE.overlay.updateSearch();
+				NotEnoughUpdates.INSTANCE.overlay.setSearchBarFocus(true);
 			}
 
 			Utils.drawHoveringText(
