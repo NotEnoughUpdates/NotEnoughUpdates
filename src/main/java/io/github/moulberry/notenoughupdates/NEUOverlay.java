@@ -1168,13 +1168,13 @@ public class NEUOverlay extends Gui {
 					JsonObject item = manager.getItemInformation().get(internalname.get());
 					if (item != null) {
 						if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
-							manager.displayGuiItemUsages(internalname.get());
+							manager.displayGuiItemUsagesKeybind(internalname.get());
 							return true;
 						} else if (keyPressed == manager.keybindFavourite.getKeyCode()) {
-							toggleFavourite(item.get("internalname").getAsString());
+							toggleFavourite(internalname.get());
 							return true;
 						} else if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
-							manager.showRecipe(item);
+							manager.displayGuiItemRecipeKeybind(internalname.get());
 							return true;
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint &&
 							NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(item)) {
