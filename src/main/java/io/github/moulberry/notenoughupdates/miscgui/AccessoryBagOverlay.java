@@ -96,6 +96,7 @@ public class AccessoryBagOverlay {
 	private static boolean dupe_showPersonal = false;
 	private static boolean missing_showAllTiers = true;
 	private static boolean missing_useMP = true;
+	private static List<String> tooltipToDisplay = null;
 
 	@SubscribeEvent
 	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
@@ -728,6 +729,10 @@ public class AccessoryBagOverlay {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				if (tooltipToDisplay != null) {
+					Utils.drawHoveringText(tooltipToDisplay, mouseX(), mouseY(), eventGui.width, eventGui.height, -1);
+					tooltipToDisplay = null;
+				}
 			}
 		}
 	}
@@ -1028,7 +1033,7 @@ public class AccessoryBagOverlay {
 				.withItemStack(stack)
 				.resolveInternalName();
 			List<String> list = Arrays.asList(
-				stack.getDisplayName(),
+				stack.getDisplayName().replace("*", ""),
 				"",
 				internal != null ? "§eClick to show in item viewer!" : "§cCan't show in item viewer :("
 			);
@@ -1038,13 +1043,7 @@ public class AccessoryBagOverlay {
 				NotEnoughUpdates.INSTANCE.overlay.setSearchBarFocus(true);
 			}
 
-			Utils.drawHoveringText(
-				list,
-				mouseX(), mouseY(),
-				getScaledResolution().getScaledWidth(),
-				getScaledResolution().getScaledHeight(),
-				-1
-			);
+			tooltipToDisplay = list;
 		}
 	}
 }
