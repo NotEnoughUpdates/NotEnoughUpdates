@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.core.util;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
@@ -74,6 +75,7 @@ public class ArrowPagesUtils {
 			BUTTON_HEIGHT
 		);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(resourcePacksTexture);
+		GlStateManager.color(1f, 1f, 1f, 1f);
 
 		if (currentPage != 0)
 			Utils.drawTexturedRect(
