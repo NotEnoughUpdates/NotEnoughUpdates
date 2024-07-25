@@ -1037,7 +1037,7 @@ public class AccessoryBagOverlay {
 				"",
 				internal != null ? "§eClick to show in item viewer!" : "§cCan't show in item viewer :("
 			);
-			if (Mouse.isButtonDown(0)) {
+			if (Mouse.isButtonDown(0) && internal != null) {
 				NEUOverlay.getTextField().setText("id:" + internal);
 				NotEnoughUpdates.INSTANCE.overlay.updateSearch();
 				NotEnoughUpdates.INSTANCE.overlay.setSearchBarFocus(true);
