@@ -96,7 +96,9 @@ public class AccessoryBagOverlay {
 	private static boolean dupe_showPersonal = false;
 	private static boolean missing_showAllTiers = true;
 	private static boolean missing_useMP = true;
+
 	private static List<String> tooltipToDisplay = null;
+	private static boolean offsetButtons = false;
 
 	@SubscribeEvent
 	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
@@ -105,7 +107,7 @@ public class AccessoryBagOverlay {
 				new Rectangle(
 					event.getGuiBaseRect().getRight(),
 					event.getGuiBaseRect().getTop(),
-					150 /*pane*/ + 24 /*tabs*/ + 4 /*space*/, 128
+					168 /*pane*/ + (offsetButtons ? 24 : 0) /*tabs*/ + 4 /*space*/, 128
 				),
 				ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
 			);
@@ -607,6 +609,7 @@ public class AccessoryBagOverlay {
 
 	public static void renderOverlay() {
 		inAccessoryBag = false;
+		offsetButtons = false;
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
 			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
@@ -682,6 +685,7 @@ public class AccessoryBagOverlay {
 					}
 
 					GlStateManager.disableLighting();
+					offsetButtons = true;
 
 					for (int i = 0; i <= TAB_MISSING; i++) {
 						if (i != currentTab) {
