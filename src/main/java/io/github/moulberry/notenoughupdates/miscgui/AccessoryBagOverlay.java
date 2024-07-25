@@ -107,7 +107,7 @@ public class AccessoryBagOverlay {
 				new Rectangle(
 					event.getGuiBaseRect().getRight(),
 					event.getGuiBaseRect().getTop(),
-					168 /*pane*/ + (offsetButtons ? 24 : 0) /*tabs*/ + 4 /*space*/, 128
+					168 /*pane*/ + (offsetButtons ? 24 : 0) /*tabs*/ + 5 /*space*/, 128
 				),
 				ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
 			);
