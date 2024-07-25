@@ -376,7 +376,7 @@ public class AccessoryBagOverlay {
 			List<ItemStack> sortedDupes =
 				duplicates.stream().sorted((Comparator.comparing(ItemStack::getDisplayName))).collect(Collectors.toList());
 
-			for (ItemStack duplicate : sortedDupes.subList(dupePageActive * 8, sortedDupes.size() - 1)) {
+			for (ItemStack duplicate : sortedDupes.subList(dupePageActive * 8, sortedDupes.size())) {
 				String s = duplicate.getDisplayName();
 				Utils.renderShadowedString(s, x + 84, y + 20 + 11 * yIndex, 158);
 				Rectangle rect = new Rectangle(x, y + 20 + 11 * yIndex, 168, 11);
@@ -521,7 +521,7 @@ public class AccessoryBagOverlay {
 			drawTitle(x, y, "Missing: " + missing.size());
 
 			int yIndex = 0;
-			for (ItemStack missingStack : missing.subList(missingPageActive * 8, missing.size() - 1)) {
+			for (ItemStack missingStack : missing.subList(missingPageActive * 8, missing.size())) {
 				String s = missingStack.getDisplayName();
 				double price = getItemPrice(NotEnoughUpdates.INSTANCE.manager
 					.createItemResolutionQuery()
