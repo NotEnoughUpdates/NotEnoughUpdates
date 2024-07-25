@@ -377,7 +377,7 @@ public class AccessoryBagOverlay {
 			for (ItemStack duplicate : sortedDupes.subList(dupePageActive * 8, sortedDupes.size() - 1)) {
 				String s = duplicate.getDisplayName();
 				Utils.renderShadowedString(s, x + 84, y + 20 + 11 * yIndex, 158);
-				Rectangle rect = new Rectangle(x + 5, y + 20 + 11 * yIndex, 168, 11);
+				Rectangle rect = new Rectangle(x, y + 20 + 11 * yIndex, 168, 11);
 				renderAccessoryHover(rect, duplicate);
 				if (++yIndex >= 8 && sortedDupes.size() > 9) break;
 			}
@@ -534,7 +534,7 @@ public class AccessoryBagOverlay {
 					y + 20 + 11 * yIndex,
 					158
 				);
-				Rectangle rect = new Rectangle(x + 5, y + 20 + 11 * yIndex, 168, 11);
+				Rectangle rect = new Rectangle(x, y + 20 + 11 * yIndex, 168, 11);
 				renderAccessoryHover(rect, missingStack);
 				if (++yIndex >= 8 && missing.size() > 9) break;
 			}
