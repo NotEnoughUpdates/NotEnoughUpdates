@@ -322,12 +322,12 @@ public class AccessoryBagOverlay {
 		if (duplicates == null) {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
-				drawTitle(x, y, "Duplicates: ERROR");
+				drawTitle(x, y, "Duplicates: REPO ERROR");
 				return;
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
-				drawTitle(x, y, "Duplicates: ERROR");
+				drawTitle(x, y, "Duplicates: REPO ERROR");
 				return;
 			}
 			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
@@ -431,12 +431,12 @@ public class AccessoryBagOverlay {
 		if (missing == null) {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
-				drawTitle(x, y, "Missing: ERROR");
+				drawTitle(x, y, "Missing: REPO ERROR");
 				return;
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
-				drawTitle(x, y, "Missing: ERROR");
+				drawTitle(x, y, "Missing: REPO ERROR");
 				return;
 			}
 			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
