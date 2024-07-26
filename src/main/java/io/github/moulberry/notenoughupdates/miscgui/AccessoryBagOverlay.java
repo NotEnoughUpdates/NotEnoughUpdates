@@ -378,9 +378,7 @@ public class AccessoryBagOverlay {
 
 			for (ItemStack duplicate : sortedDupes.subList(dupePageActive * 8, sortedDupes.size())) {
 				String s = duplicate.getDisplayName();
-				Utils.renderShadowedString(s, x + 84, y + 20 + 11 * yIndex, 158);
-				Rectangle rect = new Rectangle(x, y + 20 + 11 * yIndex, 168, 11);
-				renderAccessoryHover(rect, duplicate);
+				Utils.renderShadowedString(s.substring(0, Math.min(s.length(), 35)), x + 84, y + 20 + 11 * yIndex, 158);
 				if (++yIndex >= 8 && sortedDupes.size() > 9) break;
 			}
 
@@ -532,7 +530,7 @@ public class AccessoryBagOverlay {
 				Utils.renderAlignedString(
 					s,
 					price != -1
-						? "§6" + Utils.shortNumberFormat(price, 0) + " Coins"
+						? "§6" + Utils.shortNumberFormat(price, 0)
 						: "§c" + "NO DATA",
 					x + 5,
 					y + 20 + 11 * yIndex,
