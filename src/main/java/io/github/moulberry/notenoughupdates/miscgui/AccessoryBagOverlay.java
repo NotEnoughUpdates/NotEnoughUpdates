@@ -523,10 +523,12 @@ public class AccessoryBagOverlay {
 			int yIndex = 0;
 			for (ItemStack missingStack : missing.subList(missingPageActive * 8, missing.size())) {
 				String s = missingStack.getDisplayName();
-				double price = getItemPrice(NotEnoughUpdates.INSTANCE.manager
+				String internal = NotEnoughUpdates.INSTANCE.manager
 					.createItemResolutionQuery()
 					.withItemStack(missingStack)
-					.resolveInternalName());
+					.resolveInternalName();
+				if (internal.equals("RIFT_PRISM") && hasConsuedRiftPrism()) continue;
+				double price = getItemPrice(internal);
 				Utils.renderAlignedString(
 					s,
 					price != -1
@@ -1048,6 +1050,19 @@ public class AccessoryBagOverlay {
 			}
 
 			tooltipToDisplay = list;
+		}
+	}
+
+	public static boolean hasConsuedRiftPrism() {
+		try {
+			JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
+			if (profileInfo.has("rift") && profileInfo.getAsJsonObject("rift").has("access") && profileInfo.getAsJsonObject(
+				"rift").getAsJsonObject("access").has("consumed_prism")) {
+				return true;
+			}
+			return false;
+		} catch (NullPointerException e) {
+			return false;
 		}
 	}
 }
