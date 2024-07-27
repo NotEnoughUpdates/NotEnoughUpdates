@@ -608,10 +608,20 @@ public class AccessoryBagOverlay {
 		return inAccessoryBag && NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay;
 	}
 
+	static boolean reder = false;
+
 	public static void renderOverlay() {
 		inAccessoryBag = false;
 		offsetButtons = false;
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
+			//System.out.println(RenderListener.inventoryLoaded);
+			if (RenderListener.inventoryLoaded) {
+				//if (!reder) Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(ScreenShotHelper.saveScreenshot(Minecraft.getMinecraft().mcDataDir, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight,Minecraft.getMinecraft().getFramebuffer()));
+				reder = false;
+			} else {
+				reder = true;
+				return;
+			}
 			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
@@ -636,7 +646,7 @@ public class AccessoryBagOverlay {
 						String first = containerName.trim().split("\\(")[1].split("/")[0];
 						Integer currentPageNumber = Integer.parseInt(first);
 						//System.out.println("current:"+currentPageNumber);
-						if (!pagesVisited.contains(currentPageNumber)) {
+						//if (!pagesVisited.contains(currentPageNumber)) {
 							boolean hasStack = false;
 							if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest) {
 								IInventory inv =
@@ -646,14 +656,29 @@ public class AccessoryBagOverlay {
 									if (stack != null) {
 										hasStack = true;
 										if (isAccessory(stack)) {
-											accessoryStacks.add(stack);
+											boolean toAdd = true;
+											for (ItemStack accessoryStack : accessoryStacks) {
+												String s = NotEnoughUpdates.INSTANCE.manager
+													.createItemResolutionQuery()
+													.withItemStack(accessoryStack)
+													.resolveInternalName();
+												String ss = NotEnoughUpdates.INSTANCE.manager
+													.createItemResolutionQuery()
+													.withItemStack(stack)
+													.resolveInternalName();
+												if (ss != null && ss.equals(s)) {
+													toAdd = false;
+													break;
+												}
+											}
+											if (toAdd) accessoryStacks.add(stack);
 										}
 									}
 								}
 							}
 
 							if (hasStack) pagesVisited.add(currentPageNumber);
-						}
+						//}
 
 						String second = containerName.trim().split("/")[1].split("\\)")[0];
 						//System.out.println(second + ":" + pagesVisited.size());
