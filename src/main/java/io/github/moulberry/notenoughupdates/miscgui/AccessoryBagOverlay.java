@@ -79,10 +79,9 @@ import static io.github.moulberry.notenoughupdates.util.GuiTextures.accessory_ba
 
 @NEUAutoSubscribe
 public class AccessoryBagOverlay {
-	private static final int TAB_BASIC = 0;
-	private static final int TAB_TOTAL = 1;
-	private static final int TAB_DUP = 2;
-	private static final int TAB_MISSING = 3;
+	private enum Tabs {
+		TAB_BASIC, TAB_TOTAL, TAB_DUP, TAB_MISSING
+	}
 
 	public static final AccessoryBagOverlay INSTANCE = new AccessoryBagOverlay();
 
@@ -130,7 +129,7 @@ public class AccessoryBagOverlay {
 		)
 	};
 
-	private static int currentTab = TAB_BASIC;
+	private static Tabs currentTab = Tabs.TAB_BASIC;
 
 	public static boolean mouseClick() {
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
@@ -154,13 +153,13 @@ public class AccessoryBagOverlay {
 			if (mouseX() < guiLeft + xSize + 3 || mouseX() > guiLeft + xSize + 168 + 28) return false;
 			if (mouseY() < guiTop || mouseY() > guiTop + 128) return false;
 
-			if (mouseX() > guiLeft + xSize + 168 + 3 && mouseY() < guiTop + 20 * TAB_MISSING + 22) {
-				currentTab = (mouseY() - guiTop) / 20;
-				if (currentTab < 0) currentTab = 0;
-				if (currentTab > TAB_MISSING) currentTab = TAB_MISSING;
+			if (mouseX() > guiLeft + xSize + 168 + 3 && mouseY() < guiTop + 20 * Tabs.values().length + 22) {
+				int tabClicked = (mouseY() - guiTop) / 20;
+				tabClicked = Math.min(Math.max(0, tabClicked), Tabs.values().length - 1);
+				currentTab = Tabs.values()[tabClicked];
 			}
 
-			if (currentTab == TAB_DUP) {
+			if (currentTab == Tabs.TAB_DUP) {
 				ArrowPagesUtils.onPageSwitchMouse(
 					guiLeft + xSize + 3,
 					guiTop,
@@ -179,7 +178,7 @@ public class AccessoryBagOverlay {
 				}
 
 			}
-			if (currentTab == TAB_MISSING) {
+			if (currentTab == Tabs.TAB_MISSING) {
 				ArrowPagesUtils.onPageSwitchMouse(
 					guiLeft + xSize + 3,
 					guiTop,
@@ -668,8 +667,8 @@ public class AccessoryBagOverlay {
 					GlStateManager.disableLighting();
 					offsetButtons = true;
 
-					for (int i = 0; i <= TAB_MISSING; i++) {
-						if (i != currentTab) {
+					for (int i = 0; i <= Tabs.values().length - 1; i++) {
+						if (i != currentTab.ordinal()) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
 							Utils.drawTexturedRect(guiLeft + xSize + 168, guiTop + 20 * i, 25, 22,
@@ -690,11 +689,15 @@ public class AccessoryBagOverlay {
 					}
 
 					Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
-					Utils.drawTexturedRect(guiLeft + xSize + 168, guiTop + 20 * currentTab, 28, 22,
+					Utils.drawTexturedRect(guiLeft + xSize + 168, guiTop + 20 * currentTab.ordinal(), 28, 22,
 						168 / 196f, 1f, 22 / 128f, 44 / 128f, GL11.GL_NEAREST
 					);
 					RenderHelper.enableGUIStandardItemLighting();
-					Utils.drawItemStack(TAB_STACKS[currentTab], guiLeft + xSize + 168 + 8, guiTop + 20 * currentTab + 3);
+					Utils.drawItemStack(
+						TAB_STACKS[currentTab.ordinal()],
+						guiLeft + xSize + 168 + 8,
+						guiTop + 20 * currentTab.ordinal() + 3
+					);
 
 					if (dupe_highlight) highlightDuplicates();
 
