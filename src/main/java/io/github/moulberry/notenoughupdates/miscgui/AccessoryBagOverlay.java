@@ -54,6 +54,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -1036,18 +1037,28 @@ public class AccessoryBagOverlay {
 				.createItemResolutionQuery()
 				.withItemStack(stack)
 				.resolveInternalName();
-			List<String> list = Arrays.asList(
+			tooltipToDisplay = Arrays.asList(
 				stack.getDisplayName().replace("*", ""),
 				"",
-				internal != null ? "§eClick to show in item viewer!" : "§cCan't show in item viewer :("
+				"§eClick to learn more!",
+				"§eCtrl+Click to learn more!"
 			);
-			if (Mouse.isButtonDown(0) && internal != null) {
-				NEUOverlay.getTextField().setText("id:" + internal);
-				NotEnoughUpdates.INSTANCE.overlay.updateSearch();
-				NotEnoughUpdates.INSTANCE.overlay.setSearchBarFocus(true);
-			}
+			handleAccessoryClick(stack, internal);
+		}
+	}
 
-			tooltipToDisplay = list;
+	public static void handleAccessoryClick(ItemStack stack, String internal) {
+		if (Mouse.isButtonDown(0) && internal != null) {
+			if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				if (!NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(internal)) {
+					NEUOverlay.getTextField().setText("id:" + internal);
+					NotEnoughUpdates.INSTANCE.overlay.updateSearch();
+					NotEnoughUpdates.INSTANCE.overlay.setSearchBarFocus(true);
+				}
+			} else {
+				String displayname = Utils.cleanColour(stack.getDisplayName());
+				NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + displayname);
+			}
 		}
 	}
 
