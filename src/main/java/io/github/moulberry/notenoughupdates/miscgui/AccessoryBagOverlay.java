@@ -257,7 +257,7 @@ public class AccessoryBagOverlay {
 		if (totalStats == null) {
 			totalStats = new PlayerStats.Stats();
 			for (ItemStack stack : accessoryStacks) {
-				if (stack != null) totalStats.add(getStatForItem(stack, STAT_PATTERN_MAP, true));
+				if (stack != null) totalStats.add(getStatForItem(stack, PlayerStats.getFullStatPatternMap(), true));
 			}
 		}
 
