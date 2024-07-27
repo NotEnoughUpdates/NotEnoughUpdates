@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -506,7 +507,7 @@ public class AccessoryBagOverlay {
 					.createItemResolutionQuery()
 					.withItemStack(missingStack)
 					.resolveInternalName();
-				if (internal.equals("RIFT_PRISM") && hasConsuedRiftPrism()) continue;
+				if (internal.equals("RIFT_PRISM") && hasConsumedRiftPrism()) continue;
 				double price = getItemPrice(internal);
 				Utils.renderAlignedString(
 					s,
@@ -925,17 +926,7 @@ public class AccessoryBagOverlay {
 		}
 
 		if (internal.contains("ABICASE")) {
-			try {
-				JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
-				if (profileInfo.has("nether_island_player_data")) {
-					JsonObject data = profileInfo.get("nether_island_player_data").getAsJsonObject();
-					if (data.has("abiphone") && data.get("abiphone").getAsJsonObject().has("active_contacts")) { // BatChest
-						int contact = data.get("abiphone").getAsJsonObject().get("active_contacts").getAsJsonArray().size();
-						abi = contact / 2;
-					}
-				}
-			} catch (NullPointerException e) {
-			}
+			abi = getAbiphoneMagicPower();
 		}
 
 		switch (rarity) {
@@ -1039,16 +1030,34 @@ public class AccessoryBagOverlay {
 		}
 	}
 
-	public static boolean hasConsuedRiftPrism() {
+	public static boolean hasConsumedRiftPrism() {
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (profileSpecific == null) return false;
 		try {
 			JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
-			if (profileInfo.has("rift") && profileInfo.getAsJsonObject("rift").has("access") && profileInfo.getAsJsonObject(
-				"rift").getAsJsonObject("access").has("consumed_prism")) {
-				return true;
+			if (profileInfo.has("rift") && profileInfo.getAsJsonObject("rift").has("access")) {
+				profileSpecific.hasConsumedRiftPrism = profileInfo.getAsJsonObject(
+					"rift").getAsJsonObject("access").has("consumed_prism");
 			}
-			return false;
-		} catch (NullPointerException e) {
-			return false;
+		} catch (NullPointerException ignored) {
 		}
+		return profileSpecific.hasConsumedRiftPrism;
+	}
+
+	public static int getAbiphoneMagicPower() {
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (profileSpecific == null) return 0;
+		try {
+			JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
+			if (profileInfo.has("nether_island_player_data")) {
+				JsonObject data = profileInfo.get("nether_island_player_data").getAsJsonObject();
+				if (data.has("abiphone") && data.get("abiphone").getAsJsonObject().has("active_contacts")) { // BatChest
+					int contact = data.get("abiphone").getAsJsonObject().get("active_contacts").getAsJsonArray().size();
+					profileSpecific.abiphoneMagicPower = contact / 2;
+				}
+			}
+		} catch (NullPointerException ignored) {
+		}
+		return profileSpecific.abiphoneMagicPower;
 	}
 }

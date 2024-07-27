@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -719,6 +719,13 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public Map<String, Integer> hotmTree = new HashMap<>();
+
+		@Expose
+		public boolean hasConsumedRiftPrism = false;
+
+		@Expose
+		public int abiphoneMagicPower = 0;
+
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {
