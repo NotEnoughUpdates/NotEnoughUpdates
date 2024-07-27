@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -39,7 +40,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
@@ -146,30 +146,10 @@ public class AccessoryBagOverlay {
 
 		if (!Mouse.getEventButtonState()) return false;
 		try {
-			int xSize = (int) Utils.getField(
-				GuiContainer.class,
-				Minecraft.getMinecraft().currentScreen,
-				"xSize",
-				"field_146999_f"
-			);
-			int ySize = (int) Utils.getField(
-				GuiContainer.class,
-				Minecraft.getMinecraft().currentScreen,
-				"ySize",
-				"field_147000_g"
-			);
-			int guiLeft = (int) Utils.getField(
-				GuiContainer.class,
-				Minecraft.getMinecraft().currentScreen,
-				"guiLeft",
-				"field_147003_i"
-			);
-			int guiTop = (int) Utils.getField(
-				GuiContainer.class,
-				Minecraft.getMinecraft().currentScreen,
-				"guiTop",
-				"field_147009_r"
-			);
+			AccessorGuiContainer accessor = (AccessorGuiContainer) Minecraft.getMinecraft().currentScreen;
+			int xSize = accessor.getXSize();
+			int guiLeft = accessor.getGuiLeft();
+			int guiTop = accessor.getGuiTop();
 
 			if (mouseX() < guiLeft + xSize + 3 || mouseX() > guiLeft + xSize + 168 + 28) return false;
 			if (mouseY() < guiTop || mouseY() > guiTop + 128) return false;
@@ -619,10 +599,10 @@ public class AccessoryBagOverlay {
 				!containerName.contains("Upgrades")) {
 				inAccessoryBag = true;
 				try {
-					int xSize = (int) Utils.getField(GuiContainer.class, eventGui, "xSize", "field_146999_f");
-					int ySize = (int) Utils.getField(GuiContainer.class, eventGui, "ySize", "field_147000_g");
-					int guiLeft = (int) Utils.getField(GuiContainer.class, eventGui, "guiLeft", "field_147003_i");
-					int guiTop = (int) Utils.getField(GuiContainer.class, eventGui, "guiTop", "field_147009_r");
+					AccessorGuiContainer accessor = (AccessorGuiContainer) Minecraft.getMinecraft().currentScreen;
+					int xSize = accessor.getXSize();
+					int guiLeft = accessor.getGuiLeft();
+					int guiTop = accessor.getGuiTop();
 
 					if (accessoryStacks.isEmpty()) {
 						for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
@@ -716,7 +696,7 @@ public class AccessoryBagOverlay {
 					RenderHelper.enableGUIStandardItemLighting();
 					Utils.drawItemStack(TAB_STACKS[currentTab], guiLeft + xSize + 168 + 8, guiTop + 20 * currentTab + 3);
 
-					if (dupe_highlight) highlightDuplicates(guiLeft + xSize + 3, guiTop);
+					if (dupe_highlight) highlightDuplicates();
 
 					switch (currentTab) {
 						case TAB_BASIC:
@@ -992,19 +972,10 @@ public class AccessoryBagOverlay {
 		}
 	}
 
-	public static void highlightDuplicates(int x, int y) {
-		int guiLeft = (int) Utils.getField(
-			GuiContainer.class,
-			Minecraft.getMinecraft().currentScreen,
-			"guiLeft",
-			"field_147003_i"
-		);
-		int guiTop = (int) Utils.getField(
-			GuiContainer.class,
-			Minecraft.getMinecraft().currentScreen,
-			"guiTop",
-			"field_147009_r"
-		);
+	public static void highlightDuplicates() {
+		AccessorGuiContainer accessor = (AccessorGuiContainer) Minecraft.getMinecraft().currentScreen;
+		int guiLeft = accessor.getGuiLeft();
+		int guiTop = accessor.getGuiTop();
 
 		for (Slot slot : Minecraft.getMinecraft().thePlayer.openContainer.inventorySlots) {
 			ItemStack stack = slot.getStack();
