@@ -1043,7 +1043,7 @@ public class AccessoryBagOverlay {
 				stack.getDisplayName().replace("*", ""),
 				"",
 				"§eClick to learn more!",
-				"§eCtrl+Click to learn more!"
+				"§eCtrl+Click to search on ah!"
 			);
 			handleAccessoryClick(stack, internal);
 		}
