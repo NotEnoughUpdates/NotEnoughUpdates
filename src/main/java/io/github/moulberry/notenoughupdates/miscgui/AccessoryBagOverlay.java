@@ -499,6 +499,7 @@ public class AccessoryBagOverlay {
 			drawTitle(x, y, "Missing: " + missing.size());
 
 			int yIndex = 0;
+			missingPageActive = Math.min(missingPageActive, missing.size() / 8);
 			for (ItemStack missingStack : missing.subList(missingPageActive * 8, missing.size())) {
 				String s = missingStack.getDisplayName();
 				String internal = NotEnoughUpdates.INSTANCE.manager
