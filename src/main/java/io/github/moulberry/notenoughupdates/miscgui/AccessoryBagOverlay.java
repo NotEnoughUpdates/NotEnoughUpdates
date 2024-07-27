@@ -753,10 +753,12 @@ public class AccessoryBagOverlay {
 		put("bonus_attack_speed", Pattern.compile("^Bonus Attack Speed" + STAT_PATTERN_END));
 		put("intelligence", Pattern.compile("^Intelligence" + STAT_PATTERN_END));
 		put("sea_creature_chance", Pattern.compile("^Sea Creature Chance" + STAT_PATTERN_END));
+		put("magic_find", Pattern.compile("^Magic Find" + STAT_PATTERN_END));
+		put("pet_luck", Pattern.compile("^Pet Luck" + STAT_PATTERN_END));
 		put("ferocity", Pattern.compile("^Ferocity" + STAT_PATTERN_END));
+		put("ability_damage", Pattern.compile("^Ability Damage" + STAT_PATTERN_END));
 		put("mining_fortune", Pattern.compile("^Mining Fortune" + STAT_PATTERN_END));
 		put("mining_speed", Pattern.compile("^Mining Speed" + STAT_PATTERN_END));
-		put("magic_find", Pattern.compile("^Magic Find" + STAT_PATTERN_END));
 	}};
 
 	private static PlayerStats.Stats getStatForItem(
