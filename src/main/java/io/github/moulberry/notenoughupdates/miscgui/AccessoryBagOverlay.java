@@ -1059,7 +1059,7 @@ public class AccessoryBagOverlay {
 				}
 			} else {
 				String displayname = Utils.cleanColour(stack.getDisplayName());
-				NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + displayname);
+				NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + displayname.replace("*", ""));
 			}
 		}
 	}
