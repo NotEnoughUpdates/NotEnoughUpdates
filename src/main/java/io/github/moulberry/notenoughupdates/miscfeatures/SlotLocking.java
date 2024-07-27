@@ -805,4 +805,13 @@ public class SlotLocking {
 		if (eventSlotNumber == 36 && pairingSlotNumber == 8) return true;
 		return false;
 	}
+
+	public void resetSlotLocking() {
+		String profileName = SBInfo.getInstance().currentProfile;
+		if (profileName == null) profileName = "generic";
+		SlotLockProfile slotLockProfile = config.profileData.get(profileName);
+		if (slotLockProfile != null) {
+			slotLockProfile.slotLockData[0] = new SlotLockData();
+		}
+	}
 }

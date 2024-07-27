@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.options.separatesections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorButton;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorInfoText;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
@@ -117,4 +118,15 @@ public class SlotLocking {
 		minStep = 1
 	)
 	public float slotLockSoundVol = 20;
+
+	@Expose
+	@ConfigOption(
+		name = "Resets Locked Slots",
+		desc = "Runs §e/neuresetslotlocking"
+	)
+	@ConfigEditorButton(
+		runnableId = 28,
+		buttonText = "Reset"
+	)
+	public float resetSlotLocking = 39;
 }
