@@ -54,10 +54,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -84,13 +85,15 @@ public class AccessoryBagOverlay {
 	public static final AccessoryBagOverlay INSTANCE = new AccessoryBagOverlay();
 
 	// Arrow pages variables
+	private static int statsPageActive = 0;
+	private static int statsPagesTotal = 0;
 	private static int dupePageActive = 0;
 	private static int dupePagesTotal = 0;
 	private static int missingPageActive = 0;
 	private static int missingPagesTotal = 0;
 
 	// Page-specific button variables
-	private static boolean dupe_highlight = false;
+	private static boolean dupe_highlight = true;
 	private static boolean dupe_showPersonal = false;
 	private static boolean missing_showAllTiers = true;
 	private static boolean missing_useMP = true;
@@ -157,6 +160,16 @@ public class AccessoryBagOverlay {
 				currentTab = Tabs.values()[tabClicked];
 			}
 
+			if (currentTab == Tabs.TAB_TOTAL) {
+				ArrowPagesUtils.onPageSwitchMouse(
+					guiLeft + xSize + 3,
+					guiTop,
+					new int[]{60, 110},
+					statsPageActive,
+					statsPagesTotal,
+					integer -> statsPageActive = integer
+				);
+			}
 			if (currentTab == Tabs.TAB_DUP) {
 				ArrowPagesUtils.onPageSwitchMouse(
 					guiLeft + xSize + 3,
@@ -260,39 +273,30 @@ public class AccessoryBagOverlay {
 
 		drawTitle(x, y, "Total Stats");
 		int yIndex = 0;
+		List<Pair<String, Integer>> statPairs = new ArrayList<>();
 		for (int i = 0; i < PlayerStats.defaultStatNames.length; i++) {
 			String statName = PlayerStats.defaultStatNames[i];
 			String statNamePretty = PlayerStats.defaultStatNamesPretty[i];
 
 			int val = Math.round(totalStats.get(statName));
 
-			if (Math.abs(val) < 1E-5) continue;
+			if (Math.abs(val) >= 1E-5) statPairs.add(new ImmutablePair<>(statNamePretty, val));
+		}
 
-			GlStateManager.color(1, 1, 1, 1);
-			GlStateManager.enableBlend();
-			GL14.glBlendFuncSeparate(
-				GL11.GL_SRC_ALPHA,
-				GL11.GL_ONE_MINUS_SRC_ALPHA,
-				GL11.GL_ONE,
-				GL11.GL_ONE_MINUS_SRC_ALPHA
+		for (Pair<String, Integer> pair : statPairs.subList(statsPageActive * 8, statPairs.size())) {
+			Utils.renderAlignedString(
+				pair.getKey(),
+				EnumChatFormatting.WHITE.toString() + pair.getValue(),
+				x + 6,
+				y + 20 + 11 * yIndex, 158
 			);
-			if (totalStats.size() < 10) {
-				Utils.renderAlignedString(
-					statNamePretty,
-					EnumChatFormatting.WHITE.toString() + val,
-					x + 34,
-					y + 20 + 11 * yIndex, 100
-				);
-			} else {
-				Utils.renderAlignedString(
-					statNamePretty,
-					EnumChatFormatting.WHITE.toString() + val,
-					x + (yIndex < 9 ? 10 : 87),
-					y + 20 + 11 * (yIndex < 9 ? yIndex : yIndex - 9), 75
-				);
-			}
+			if (yIndex++ >= 7 && statPairs.size() > 9) break;
+		}
 
-			yIndex++;
+		if (statPairs.size() > 9) {
+			statsPagesTotal = (int) Math.ceil(statPairs.size() / 8.0);
+			GlStateManager.color(1f, 1f, 1f, 1f);
+			ArrowPagesUtils.onDraw(x, y, new int[]{60, 110}, statsPageActive, statsPagesTotal);
 		}
 	}
 
@@ -723,25 +727,6 @@ public class AccessoryBagOverlay {
 			}
 		}
 	}
-
-	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {{
-		String STAT_PATTERN_END = ": ((?:\\+|-)([0-9]+(\\.[0-9]+)?))%?";
-		put("health", Pattern.compile("^Health" + STAT_PATTERN_END));
-		put("defence", Pattern.compile("^Defense" + STAT_PATTERN_END));
-		put("strength", Pattern.compile("^Strength" + STAT_PATTERN_END));
-		put("speed", Pattern.compile("^Speed" + STAT_PATTERN_END));
-		put("crit_chance", Pattern.compile("^Crit Chance" + STAT_PATTERN_END));
-		put("crit_damage", Pattern.compile("^Crit Damage" + STAT_PATTERN_END));
-		put("bonus_attack_speed", Pattern.compile("^Bonus Attack Speed" + STAT_PATTERN_END));
-		put("intelligence", Pattern.compile("^Intelligence" + STAT_PATTERN_END));
-		put("sea_creature_chance", Pattern.compile("^Sea Creature Chance" + STAT_PATTERN_END));
-		put("magic_find", Pattern.compile("^Magic Find" + STAT_PATTERN_END));
-		put("pet_luck", Pattern.compile("^Pet Luck" + STAT_PATTERN_END));
-		put("ferocity", Pattern.compile("^Ferocity" + STAT_PATTERN_END));
-		put("ability_damage", Pattern.compile("^Ability Damage" + STAT_PATTERN_END));
-		put("mining_fortune", Pattern.compile("^Mining Fortune" + STAT_PATTERN_END));
-		put("mining_speed", Pattern.compile("^Mining Speed" + STAT_PATTERN_END));
-	}};
 
 	private static PlayerStats.Stats getStatForItem(
 		ItemStack stack,
