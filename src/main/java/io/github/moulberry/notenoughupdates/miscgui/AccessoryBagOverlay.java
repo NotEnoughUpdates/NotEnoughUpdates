@@ -674,8 +674,8 @@ public class AccessoryBagOverlay {
 						guiTop + 20 * currentTab.ordinal() + 3
 					);
 
+					if (duplicates == null) fillDuplicates();
 					if (dupe_highlight) {
-						if (duplicates == null) fillDuplicates();
 						highlightDuplicates();
 					}
 
