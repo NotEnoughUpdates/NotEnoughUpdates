@@ -173,6 +173,8 @@ public class SlotLocking {
 			String openChestName = Utils.getOpenChestName();
 			if (openChestName.trim().equals("Storage")) return null;
 
+			openChestName = Utils.cleanColour(openChestName);
+
 			Matcher matcher = WINDOW_REGEX.matcher(openChestName);
 			Matcher matcherEchest = ECHEST_WINDOW_REGEX.matcher(openChestName);
 
