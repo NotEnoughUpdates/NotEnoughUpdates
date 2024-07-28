@@ -306,10 +306,6 @@ public class GuiCustomHex extends Gui {
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
 		ItemStack bookStack = cc.getLowerChestInventory().getStackInSlot(32);
-		boolean shouldDisableCalendar = !(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
-		if (!shouldDisableCalendar) {
-			CalendarOverlay.suppressCalendarClicks();
-		}
 		if (bookStack != null && bookStack.getItem() == Items.book) {
 			shouldOverrideGemstones = false;
 		}

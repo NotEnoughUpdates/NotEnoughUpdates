@@ -91,7 +91,6 @@ public class CalendarOverlay {
 
 	private static boolean enabled = false;
 
-	private static boolean ableToClickCalendar = true;
 	private boolean isTimerRendered = false;
 
 	long thunderStormEpoch = 1692826500000L;
@@ -128,10 +127,6 @@ public class CalendarOverlay {
 	List<Tuple<Long, SBEvent>> specialEvents = new ArrayList<>();
 
 	private boolean drawTimerForeground = false;
-
-	public static void suppressCalendarClicks() {
-		ableToClickCalendar = true;
-	}
 
 	private static long spookyStart = 0;
 

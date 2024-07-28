@@ -425,7 +425,6 @@ public class RenderListener {
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 
 		if (storageOverlayActive) {
-			CalendarOverlay.suppressCalendarClicks();
 			StorageOverlay.getInstance().render();
 			event.setCanceled(true);
 			return;
