@@ -501,20 +501,19 @@ public class SlotLocking {
 
 			int from, to;
 			int id = slotClickEvent.slot.getSlotIndex();
-			id += size - 45; // adjust the id of the clicked slot to align with the current inventory's number of slots
+			int idChest = id + (size - 45); // adjust the id of the clicked slot to align with the current inventory's number of slots
 
-			if (id >= 9 && 0 <= locked.boundTo && locked.boundTo < 8 && !boundLocked.locked) {
-				from = id;
+			if (idChest >= 9 && 0 <= locked.boundTo && locked.boundTo < 8 && !boundLocked.locked) {
+				from = idChest;
 				to = locked.boundTo;
 				if (boundLocked == DEFAULT_LOCKED_SLOT) {
 					LockedSlot[] lockedSlots = getDataForProfile();
 					lockedSlots[locked.boundTo] = new LockedSlot();
-					lockedSlots[locked.boundTo].boundTo = id;
+					lockedSlots[locked.boundTo].boundTo = idChest;
 				} else {
 					boundLocked.boundTo = id;
 				}
 			} else if (0 <= id && id < 8 && locked.boundTo >= 9 && locked.boundTo <= 39) {
-				// There is an issue where clicking an item in your hotbar while a chest is open will just put it in the chest, I was not able to fix it
 				if (boundLocked.locked || boundLocked.boundTo != id) {
 					locked.boundTo = -1;
 					return;
