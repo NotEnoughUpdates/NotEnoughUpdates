@@ -38,7 +38,6 @@ import io.github.moulberry.notenoughupdates.util.MC
 import io.github.moulberry.notenoughupdates.util.UrsaClient
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines
-import io.github.moulberry.notenoughupdates.util.kotlin.fromJson
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
@@ -472,7 +471,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             val upgradeValuesCurrent = repoData.composterUpgrades[repoName]?.get(upgradeAmount)?.upgrade ?: 0
             val upgradeValuesCurrentSt = StringUtils.formatNumber(upgradeValuesCurrent)
             if (upgradeValues != null) {
-                tooltip.add("§a$upgradeValuesCurrentSt -> ${StringUtils.formatNumber(upgradeValues.upgrade)}")
+                repoData.composterTooltips[repoName]?.replace("{}", "$upgradeValuesCurrentSt -> ${StringUtils.formatNumber(upgradeValues.upgrade)}")
+                    ?.let { tooltip.add(it) }
                 for (item in upgradeValues.items) {
                     val itemStack = manager.createItem(item.key.uppercase())
                     if (itemStack == null) {
@@ -484,7 +484,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 }
                 tooltip.add("§7${upgradeValues.copper} §cCopper")
             } else {
-                tooltip.add("§a$upgradeValuesCurrentSt")
+                repoData.composterTooltips[repoName]?.replace("{}", upgradeValuesCurrentSt)
+                    ?.let { tooltip.add(it) }
                 tooltip.add("§6Maxed")
             }
 

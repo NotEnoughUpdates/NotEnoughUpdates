@@ -70,6 +70,7 @@ data class GardenRepoJson(
     @SerializedName("barn") val barn: Map<String, BarnSkin>,
     @SerializedName("crop_upgrades") val cropUpgrades: List<Int>,
     @SerializedName("composter_upgrades") val composterUpgrades: Map<String, Map<Int, ComposterUpgrade>>,
+    @SerializedName("composter_tooltips") val composterTooltips: Map<String, String>,
 )
 
 data class PlotData(
