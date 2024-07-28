@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.util.MC
 import io.github.moulberry.notenoughupdates.util.UrsaClient
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines
+import io.github.moulberry.notenoughupdates.util.kotlin.fromJson
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -52,6 +53,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private var currentProfile: SkyblockProfiles.SkyblockProfile? = null
     private var gardenData: GardenData? = null
+    private var eliteData: EliteWeightJson? = null
     private var currentlyFetching = false
     private lateinit var repoData: GardenRepoJson
     private var apiData: APIDataJson? = null
@@ -60,6 +62,22 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var mouseY: Int = 0
 
     val background: ResourceLocation = ResourceLocation("notenoughupdates:profile_viewer/garden/background.png")
+
+    companion object {
+        private val cropTypeAdapter = object : TypeAdapter<CropType>() {
+            override fun write(writer: JsonWriter, value: CropType) {
+                writer.value(value.name)
+            }
+
+            override fun read(reader: JsonReader): CropType? {
+                return CropType.fromApiName(reader.nextString())
+            }
+        }
+
+        val gson: Gson =
+            GsonBuilder().setPrettyPrinting().registerTypeAdapter(CropType::class.java, cropTypeAdapter.nullSafe())
+                .create()
+    }
 
     override fun drawPage(mouseX: Int, mouseY: Int, partialTicks: Float) {
         guiLeft = GuiProfileViewer.getGuiLeft()
@@ -104,15 +122,11 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
         renderPlots()
         renderGardenLevel()
+        renderFarmingWeight()
         renderCropUpgrades()
         renderCropMilestones()
         renderVisitorStats()
         renderCompost()
-    }
-
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
-
-        return false
     }
 
     private fun getData() {
@@ -123,6 +137,16 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             getVisitorData()
             currentlyFetching = false
         }
+        Coroutines.launchCoroutine {
+            eliteData = loadFarmingWeight(GuiProfileViewer.getProfile()?.uuid, profileId)
+        }
+    }
+
+    private fun loadGardenData(profileId: String?): GardenData? {
+        profileId ?: return null
+        val data = manager.ursaClient.get(UrsaClient.gardenForProfile(profileId)).get()
+        repoData = gson.fromJson(Constants.GARDEN, GardenRepoJson::class.java)
+        return gson.fromJson(data, GardenDataJson::class.java).garden
     }
 
     private fun getVisitorData() {
@@ -141,25 +165,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         }
     }
 
-    private fun loadGardenData(profileId: String?): GardenData? {
+    private fun loadFarmingWeight(uuid: String?, profileId: String?): EliteWeightJson? {
+        uuid ?: return null
         profileId ?: return null
-        val data = manager.ursaClient.get(UrsaClient.gardenForProfile(profileId)).get()
-
-        val gson =
-            GsonBuilder().setPrettyPrinting().registerTypeAdapter(CropType::class.java, cropTypeAdapter.nullSafe())
-                .create()
-        repoData = gson.fromJson(Constants.GARDEN, GardenRepoJson::class.java)
-        return gson.fromJson(data, GardenDataJson::class.java).garden
-    }
-
-    private val cropTypeAdapter = object : TypeAdapter<CropType>() {
-        override fun write(writer: JsonWriter, value: CropType) {
-            writer.value(value.name)
-        }
-
-        override fun read(reader: JsonReader): CropType? {
-            return CropType.fromApiName(reader.nextString())
-        }
+        val data = manager.apiUtils.request()
+            .url("https://api.elitebot.dev/weight/$uuid/$profileId")
+            .requestJson().get()
+        return gson.fromJson(data, EliteWeightJson::class.java)
     }
 
     private fun renderPlots() {
@@ -203,7 +215,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val y = top + 2 * 22 + 2
         var error = true
         repoData.barn[gardenData?.selectedBarnSkin]?.let {
-            val itemStack =  NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(it.item)
+            val itemStack = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(it.item)
                 .resolveToItemStack()
             Utils.drawItemStack(itemStack, x, y)
             if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
@@ -337,7 +349,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val gardenTooltip = ArrayList<String>()
         gardenTooltip.add("§2Garden")
         if (level.maxed) {
-            gardenTooltip.add("§7Progress: §6MAXED!");
+            gardenTooltip.add("§7Progress: §6MAXED!")
         } else {
             gardenTooltip.add(
                 "§7Progress: §5" +
@@ -364,7 +376,32 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         )
     }
 
-    private fun renderCompost()  {
+    private fun renderFarmingWeight() {
+        val top = guiTop + 55
+        val left = guiLeft + 195
+
+        if (eliteData == null) {
+            drawAlignedStringWithHover("§eFarming Weight", "§eLoading...", left, top, 100, listOf("§eLoading...", "§eTry again soon!"))
+            return
+        }
+
+        val totalWeight = eliteData?.totalWeight ?: 0.0
+        val bonusWeight = eliteData?.bonusWeight?.values?.sum() ?: 0.0
+
+        val tooltip = buildList{
+            add("§7Total Weight: §f${StringUtils.formatNumber(totalWeight)}")
+            add("§7Bonus Weight: §f${StringUtils.formatNumber(bonusWeight)}")
+
+            for (crop in CropType.values()) {
+                val cropWeight = eliteData?.cropWeight?.get(crop) ?: 0.0
+                add("§7${crop.displayName}: §f${StringUtils.formatNumber(cropWeight)}")
+            }
+        }
+
+        drawAlignedStringWithHover("§eFarming Weight", "§f${StringUtils.formatNumber(totalWeight)}", left, top, 100, tooltip)
+    }
+
+    private fun renderCompost() {
         val xPos = guiLeft + 320
         var yPos = guiTop + 115
 
@@ -373,7 +410,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
         val (speed, multiDrop, fuelCap, organicMatterCap, costReduction) = gardenData?.composterData?.upgrades ?: return
         for (i in 0..4) {
-            val upgradeName = when(i) {
+            val upgradeName = when (i) {
                 0 -> "§aSpeed"
                 1 -> "§aMulti Drop"
                 2 -> "§aFuel Cap"
@@ -381,7 +418,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 4 -> "§aCost Reduction"
                 else -> 0
             }
-            val upgradeAmount = when(i) {
+            val upgradeAmount = when (i) {
                 0 -> speed
                 1 -> multiDrop
                 2 -> fuelCap
@@ -389,7 +426,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 4 -> costReduction
                 else -> 0
             }
-            val repoName = when(i) {
+            val repoName = when (i) {
                 0 -> "speed"
                 1 -> "multi_drop"
                 2 -> "fuel_cap"
@@ -402,7 +439,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             val upgradeValuesCurrent = repoData.composterUpgrades[repoName]?.get(upgradeAmount)?.upgrade ?: 0
             val upgradeValuesCurrentSt = StringUtils.formatNumber(upgradeValuesCurrent)
             if (upgradeValues != null) {
-                tooltip.add("§a$upgradeValuesCurrentSt -> ${StringUtils.formatNumber(upgradeValues?.upgrade)}")
+                tooltip.add("§a$upgradeValuesCurrentSt -> ${StringUtils.formatNumber(upgradeValues.upgrade)}")
                 for (item in upgradeValues.items) {
                     val itemStack = manager.createItem(item.key.uppercase())
                     if (itemStack == null) {
@@ -424,7 +461,6 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun getLevel(experienceList: List<Int>, currentExp: Long?): Level {
-        val gson = Gson()
         val array = JsonArray()
         experienceList.forEach { array.add(gson.toJsonTree(it)) }
         return ProfileViewerUtils.getLevel(array, (currentExp ?: 0).toFloat(), experienceList.size, false)

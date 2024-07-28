@@ -88,6 +88,12 @@ data class BarnSkin(
     val item: String,
 )
 
+data class EliteWeightJson(
+    val totalWeight: Double,
+    val cropWeight: Map<CropType, Double>,
+    val bonusWeight: Map<String, Double>,
+)
+
 enum class CropType(val itemId: String, val apiName: String, val displayName: String) {
     WHEAT("ENCHANTED_HAY_BLOCK", "WHEAT", "Wheat"),
     NETHER_WART("ENCHANTED_NETHER_STALK", "NETHER_STALK", "Nether Wart"),
@@ -103,9 +109,10 @@ enum class CropType(val itemId: String, val apiName: String, val displayName: St
 
     companion object {
         fun fromApiName(apiName: String): CropType? {
-            val fromApiName = values().firstOrNull { it.apiName == apiName }
+            val fixedInput = apiName.uppercase().replace(" ", "_")
+            val fromApiName = values().firstOrNull { it.apiName == fixedInput }
             if (fromApiName != null) return fromApiName
-            return values().firstOrNull { it.name == apiName }
+            return values().firstOrNull { it.name == fixedInput }
         }
     }
 }
