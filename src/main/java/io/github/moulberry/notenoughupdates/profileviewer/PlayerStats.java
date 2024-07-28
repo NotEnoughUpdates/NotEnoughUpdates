@@ -213,7 +213,7 @@ public class PlayerStats {
 		EnumChatFormatting.DARK_GREEN + "ൠ Bonus Pest Chance"
 	};
 
-	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {
+	public static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {
 		{
 			put(HEALTH, Pattern.compile("^Health" + STAT_PATTERN_END));
 			put(DEFENCE, Pattern.compile("^Defence" + STAT_PATTERN_END));
@@ -878,10 +878,6 @@ public class PlayerStats {
 		);
 
 		return quiverInfo;
-	}
-
-	public static HashMap<String, Pattern> getFullStatPatternMap() {
-		return STAT_PATTERN_MAP;
 	}
 
 	public static class Stats {

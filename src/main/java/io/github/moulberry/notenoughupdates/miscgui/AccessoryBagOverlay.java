@@ -50,7 +50,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
@@ -61,8 +60,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -257,7 +254,7 @@ public class AccessoryBagOverlay {
 		if (totalStats == null) {
 			totalStats = new PlayerStats.Stats();
 			for (ItemStack stack : accessoryStacks) {
-				if (stack != null) totalStats.add(getStatForItem(stack, PlayerStats.getFullStatPatternMap(), true));
+				if (stack != null) totalStats.add(getStatForItem(stack, PlayerStats.STAT_PATTERN_MAP, true));
 			}
 		}
 
@@ -773,6 +770,20 @@ public class AccessoryBagOverlay {
 							stats.addStat(entry.getKey(), bonus);
 						}
 					}
+					if (line.startsWith(EnumChatFormatting.GRAY + "Current Bonus: ")) {
+						for (Map.Entry<String, Pattern> entry : patternMap.entrySet()) {
+							String prettyStatName = Utils.cleanColour(
+								PlayerStats.defaultStatNamesPretty[Arrays
+									.asList(PlayerStats.defaultStatNames)
+									.indexOf(entry.getKey())]);
+							if (line.contains(prettyStatName)) {
+								float bonus = Float.parseFloat(
+									line.split(prettyStatName)[0]
+										.replaceAll("§7Current Bonus: §.", ""));
+								stats.addStat(entry.getKey(), bonus);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -782,38 +793,6 @@ public class AccessoryBagOverlay {
 		if (internalname.equals("DAY_CRYSTAL") || internalname.equals("NIGHT_CRYSTAL")) {
 			stats.addStat(PlayerStats.STRENGTH, 2.5f);
 			stats.addStat(PlayerStats.DEFENCE, 2.5f);
-		}
-
-		if (internalname.equals("NEW_YEAR_CAKE_BAG") && tag != null && tag.hasKey("ExtraAttributes", 10)) {
-			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
-
-			byte[] bytes = null;
-			for (String key : ea.getKeySet()) {
-				if (key.endsWith("backpack_data") || key.equals("new_year_cake_bag_data")) {
-					bytes = ea.getByteArray(key);
-					try {
-						NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
-						NBTTagList items = contents_nbt.getTagList("i", 10);
-						HashSet<Integer> cakes = new HashSet<>();
-						for (int j = 0; j < items.tagCount(); j++) {
-							if (!items.getCompoundTagAt(j).getKeySet().isEmpty()) {
-								NBTTagCompound nbt = items.getCompoundTagAt(j).getCompoundTag("tag");
-								if (nbt != null && nbt.hasKey("ExtraAttributes", 10)) {
-									NBTTagCompound ea2 = nbt.getCompoundTag("ExtraAttributes");
-									if (ea2.hasKey("new_years_cake")) {
-										cakes.add(ea2.getInteger("new_years_cake"));
-									}
-								}
-							}
-						}
-						stats.addStat(PlayerStats.HEALTH, cakes.size());
-					} catch (IOException e) {
-						e.printStackTrace();
-						return stats;
-					}
-					break;
-				}
-			}
 		}
 		return stats;
 	}
