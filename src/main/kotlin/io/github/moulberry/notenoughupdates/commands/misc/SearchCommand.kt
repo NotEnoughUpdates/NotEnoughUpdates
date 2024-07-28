@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.util.brigadier.RestArgumentType
 import io.github.moulberry.notenoughupdates.util.brigadier.get
 import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
@@ -38,19 +39,19 @@ class SearchCommand {
         event.command("bzs") {
             thenArgumentExecute("search", StringArgumentType.string()) { search ->
                 NotEnoughUpdates.INSTANCE.sendChatMessage("/bz ${this[search]}")
-            }
-            thenExecute {  ->
+            }.withHelp("Search directly without opening the GUI")
+            thenExecute {
                 NotEnoughUpdates.INSTANCE.openGui = BazaarSearchOverlay()
             }
-        }
+        }.withHelp("Search the bazaar directly with a custom search GUI")
         event.command("ahs") {
             thenArgumentExecute("search", StringArgumentType.string()) { search ->
                 NotEnoughUpdates.INSTANCE.sendChatMessage("/ahs ${this[search]}")
-            }
-            thenExecute {  ->
+            }.withHelp("Search directly without opening the GUI")
+            thenExecute {
                 NotEnoughUpdates.INSTANCE.openGui = AuctionSearchOverlay()
             }
-        }
+        }.withHelp("Search the auction house directly with a custom search GUI")
         event.command("ah") {
             thenArgumentExecute("search", RestArgumentType) { search ->
                 val searchString = this[search]
