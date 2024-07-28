@@ -254,6 +254,9 @@ public class NEUConfig extends Config {
 			case 27:
 				IQTest.testIQ();
 				return;
+			case 28:
+				executeRunnableCommand("/neuresetslotlocking");
+				return;
 			default:
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}
