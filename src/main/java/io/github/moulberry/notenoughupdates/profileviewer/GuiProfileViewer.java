@@ -707,7 +707,7 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawItemStack(stack, x + 6, y + 9);
 	}
 
-	private static String getDisplayName() {
+	public static String getDisplayName() {
 		return Utils.getElementOrDefault(
 			profile.getHypixelProfile(),
 			"displayname",
@@ -1240,6 +1240,8 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 		if (skillName.contains("catacombs")) {
 			return (level.totalXp / DungeonsWeight.CATACOMBS_LEVEL_50_XP) * 100;
+		} else if (skillName.equalsIgnoreCase("vampire")) {
+			return (level.totalXp / 2400) * 100;
 		} else if (Weight.SLAYER_NAMES.contains(skillName)) {
 			return (level.totalXp / 1000000) * 100;
 		} else if (skillName.equalsIgnoreCase("social")) {

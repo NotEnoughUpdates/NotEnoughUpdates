@@ -149,7 +149,7 @@ public class ProfileViewerUtils {
 				}
 			}
 
-			if (entry.getKey().startsWith("PARTY_HAT")) {
+			if (entry.getKey().startsWith("PARTY_HAT") || entry.getKey().startsWith("BALLOON_HAT")) {
 				if (countedCrabHat) continue;
 				countedCrabHat = true;
 			}

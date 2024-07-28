@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.level.task;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
@@ -35,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SkillRelatedTaskLevel extends GuiTaskLevel{
+public class SkillRelatedTaskLevel extends GuiTaskLevel {
 
 	public SkillRelatedTaskLevel(LevelPage levelPage) {
 		super(levelPage);
@@ -96,7 +97,7 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		int sbXpPotmTier = 0;
 		JsonArray potmXpArray = miningObj.get("potm_xp").getAsJsonArray();
 
-		int potm = (data.mining_core.nodes.special_0);
+		int potm = (data.mining_core.nodes.getOrDefault("special_0", new JsonPrimitive(0)).getAsInt());
 		for (int i = 1; i <= potm; i++) {
 			sbXpPotmTier += potmXpArray.get(i - 1).getAsInt();
 		}
@@ -118,6 +119,9 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 					}
 				}
 		}
+
+		int sbXpFossilResearch =
+			data.glacite_player_data.fossils_donated.size() * miningObj.get("fossil_research_xp").getAsInt();
 
 		// rock mines
 		float pet_milestone_ores_mined = data.player_stats.pets.milestone.ores_mined;
@@ -174,11 +178,11 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		int sbXpNucleus = 0;
 		int nucleusRuns = data.leveling.completions.NUCLEUS_RUNS;
 		JsonElement nucleusXp = miningObj.get("crystal_nucleus_xp");
-			if (nucleusXp == null) {
-				Utils.showOutdatedRepoNotification("crystal_nucleus_xp from sblevels.json");
-			} else {
-				sbXpNucleus += nucleusRuns * nucleusXp.getAsInt();
-			}
+		if (nucleusXp == null) {
+			Utils.showOutdatedRepoNotification("crystal_nucleus_xp from sblevels.json");
+		} else {
+			sbXpNucleus += nucleusRuns * nucleusXp.getAsInt();
+		}
 
 		List<String> lore = new ArrayList<>();
 		lore.add(levelPage.buildLore("Heart of the Mountain", sbXpHotmTier, miningObj.get("hotm").getAsInt(), false));
@@ -196,13 +200,24 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 			false
 		));
 		lore.add(levelPage.buildLore("Peak of the Mountain", sbXpPotmTier, miningObj.get("potm").getAsInt(), false));
+		lore.add(levelPage.buildLore(
+			"Fossil Resarch",
+			sbXpFossilResearch,
+			miningObj.get("fossil_research").getAsInt(),
+			false
+		));
 		lore.add(levelPage.buildLore("Trophy Fish", sbXpTrophyFish, fishingObj.get("trophy_fish").getAsInt(), false));
 		lore.add(levelPage.buildLore("Rock Milestone", sbXpRockPet, miningObj.get("rock_milestone").getAsInt(), false));
-		lore.add(levelPage.buildLore("Dolphin Milestone", sbXpDolphinPet, fishingObj.get("dolphin_milestone").getAsInt(), false));
+		lore.add(levelPage.buildLore(
+			"Dolphin Milestone",
+			sbXpDolphinPet,
+			fishingObj.get("dolphin_milestone").getAsInt(),
+			false
+		));
 
 		int totalXp =
 			(int) (sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
-				sbXpDolphinPet + sbXpNucleus);
+				sbXpDolphinPet + sbXpNucleus + sbXpFossilResearch);
 		levelPage.renderLevelBar(
 			"Skill Related Task",
 			new ItemStack(Items.diamond_sword),

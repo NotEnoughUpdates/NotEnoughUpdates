@@ -66,6 +66,8 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		int sbXpUnlockedPowers = 0;
 		int sbXpAbiphone = 0;
 		int sbXpRefinedJyrre = 0;
+		int sbXpWrigglingLarva = 0;
+		int sbXpRefinedDarkCacaoTruffle = 0;
 		if (data.accessory_bag_storage != null && data.accessory_bag_storage.unlocked_powers != null) {
 			sbXpAccessoryUpgrade = data.accessory_bag_storage.bag_upgrades_purchased * miscellaneousTask.get(
 				"accessory_bag_upgrades_xp").getAsInt();
@@ -74,6 +76,9 @@ public class MiscTaskLevel extends GuiTaskLevel {
 				"unlocking_powers_xp").getAsInt();
 			sbXpRefinedJyrre =
 				data.winter_player_data.refined_jyrre_uses * miscellaneousTask.get("refined_jyrre_xp").getAsInt();
+			sbXpWrigglingLarva = data.garden_player_data.larva_consumed * miscellaneousTask.get("wriggling_larva_xp").getAsInt();
+			sbXpRefinedDarkCacaoTruffle = data.events.easter.refined_dark_cacao_truffles * miscellaneousTask.get(
+				"refined_dark_cacao_truffles_xp").getAsInt();
 		}
 
 		int sbXpDojo = 0;
@@ -188,7 +193,8 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		lore.add(levelPage.buildLore("Accessory Bag Upgrades",
 			sbXpAccessoryUpgrade, 0, true
 		));
-		int xpConsumableItems = sbXpReaperPeppers + sbXpBurger + sbXpSerum + sbXpRefinedJyrre;
+		int xpConsumableItems =
+			sbXpReaperPeppers + sbXpBurger + sbXpSerum + sbXpRefinedJyrre + sbXpWrigglingLarva + sbXpRefinedDarkCacaoTruffle;
 		lore.add(levelPage.buildLore("Consumable Items",
 			xpConsumableItems, miscellaneousTask.get("consumable_items").getAsInt(), false
 		));

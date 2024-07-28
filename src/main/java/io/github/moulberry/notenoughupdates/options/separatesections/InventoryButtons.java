@@ -29,6 +29,14 @@ import io.github.moulberry.moulconfig.annotations.ConfigOption;
 public class InventoryButtons {
 	@Expose
 	@ConfigOption(
+		name = "Enable Inventory Buttons",
+		desc = "Quick Toggle to Enable/Disable All Inventory Buttons"
+	)
+	@ConfigEditorBoolean
+	public boolean enableInventoryButtons = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Open Button Editor",
 		desc = "Open button editor GUI (/neubuttons)"
 	)
@@ -42,6 +50,14 @@ public class InventoryButtons {
 	)
 	@ConfigEditorBoolean
 	public boolean hideCrafting = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Hide Buttons in Dungeon Menus",
+		desc = "Hide Inventory Buttons in Dungeon Menus."
+	)
+	@ConfigEditorBoolean
+	public boolean hideInDungeonMenus = false;
 
 	@Expose
 	@ConfigOption(

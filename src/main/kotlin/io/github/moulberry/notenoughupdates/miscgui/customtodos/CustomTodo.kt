@@ -31,6 +31,8 @@ data class CustomTodo(
     @Expose var trigger: String,
     @Expose var icon: String,
     @Expose var isResetOffset: Boolean,
+    @Expose var showWhen: Int = 0,
+    @Expose var showOnlyWhenReady: Boolean = false,
     @Expose var triggerTarget: TriggerTarget = TriggerTarget.CHAT,
     @Expose var triggerMatcher: TriggerMatcher = TriggerMatcher.CONTAINS,
     @Expose var readyAt: MutableMap<String, Long> = mutableMapOf(),

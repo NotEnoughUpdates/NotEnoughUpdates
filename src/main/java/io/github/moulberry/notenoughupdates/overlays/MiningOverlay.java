@@ -395,7 +395,7 @@ public class MiningOverlay extends TextTabOverlay {
 								commissionProgress.put(split[0], progress);
 							} catch (Exception ignored) {
 							}
-						} else {
+						} else if (split[1].endsWith("DONE")) {
 							commissionProgress.put(split[0], 1.0f);
 						}
 					}
@@ -647,7 +647,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Hard Stone Miner")) return "Break 1,000 Hard Stone";
 
 			String jungle = " §a(Jungle)";
-			String goblin = " §6(Golbin Holdout)";
+			String goblin = " §6(Goblin Holdout)";
 			String mithril = " §b(Mithril Deposits)";
 			String precursor = " §8(Precursor Remenants)";
 			String magma = " §c(Magma Fields)";

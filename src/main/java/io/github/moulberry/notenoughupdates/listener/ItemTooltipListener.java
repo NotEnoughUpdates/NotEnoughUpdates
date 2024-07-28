@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -27,7 +27,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -48,10 +47,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,15 +60,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ItemTooltipListener {
-	public static final String petToolTipRegex =
-		"((Farming)|(Combat)|(Fishing)|(Mining)|(Foraging)|(Enchanting)|(Alchemy)) ((Mount)|(Pet)|(Morph)).*";
+	public static final Pattern petToolTipRegex =
+		Pattern.compile(
+			"((Farming)|(Combat)|(Fishing)|(Mining)|(Foraging)|(Enchanting)|(Alchemy)) ((Mount)|(Pet)|(Morph)).*");
+	public final Pattern gemstoneRegex =
+		Pattern.compile(
+			"(ROUGH|FLAWED|FINE|FLAWLESS|PERFECT)_(RUBY|AMBER|SAPPHIRE|JADE|AMETHYST|TOPAZ|JASPER|OPAL|AQUAMARINE|CITRINE|ONYX|PERIDOT)_GEM");
 	private final NotEnoughUpdates neu;
 	private final Pattern xpLevelPattern = Pattern.compile("(.*) (\\xA7e(.*)\\xA76/\\xA7e(.*))");
 	private final HashSet<String> percentStats = new HashSet<>();
 	DecimalFormat myFormatter = new DecimalFormat("#,###,###.###");
 	private String currentRarity = "COMMON";
+	private String currentGemstoneRarity = "COMMON";
 	private boolean copied = false;
 	private boolean showReforgeStoneStats = true;
+	private boolean showGemstoneStats = true;
 	private boolean pressedArrowLast = false;
 	private boolean pressedShiftLast = false;
 
@@ -247,7 +250,7 @@ public class ItemTooltipListener {
 							newTooltip.add("");
 						}
 
-						newTooltip.add(EnumChatFormatting.BLUE + "Stats for " + rarityFormatted + "§9: [§l§m< §9Switch§l➡§9]");
+						newTooltip.add(EnumChatFormatting.BLUE + "Stats for " + rarityFormatted + "§9: [§l§m< §9Switch§l§m >§9]");
 
 						if (statsE != null && statsE.isJsonObject()) {
 							JsonObject stats = statsE.getAsJsonObject();
@@ -305,7 +308,98 @@ public class ItemTooltipListener {
 
 					continue;
 				}
+			} else if (gemstoneRegex.matcher(internalName).matches() &&
+				NotEnoughUpdates.INSTANCE.config.tooltipTweaks.showGemstoneStats) {
+				String[] splitInternal = internalName.split("_");
+				String gemstoneTier = splitInternal[0];
+				String gemstoneType = splitInternal[1];
 
+				JsonObject gemstones = Constants.GEMSTONES;
+				if (gemstones != null && gemstones.getAsJsonObject("gemstoneTypes").has(gemstoneType) &&
+					gemstones.getAsJsonObject("gemstoneTypes").getAsJsonObject(gemstoneType).getAsJsonObject("stats").has(
+						gemstoneTier)) {
+					int lineToInject = event.toolTip.get(1).contains("Collection Item") ? 3 : 1;
+
+					if (k == lineToInject) {
+						boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+						if (!pressedShiftLast && shift) {
+							showGemstoneStats = !showGemstoneStats;
+						}
+						pressedShiftLast = shift;
+
+						if (!showGemstoneStats) {
+							newTooltip.add(EnumChatFormatting.DARK_GRAY + "[Press SHIFT to show extra info]");
+						} else {
+							newTooltip.add(EnumChatFormatting.DARK_GRAY + "[Press SHIFT to hide extra info]");
+						}
+
+						JsonObject gemstoneInfo = gemstones.getAsJsonObject("gemstoneTypes").getAsJsonObject(gemstoneType);
+						JsonObject statNums = gemstoneInfo.getAsJsonObject("stats").getAsJsonObject(gemstoneTier);
+
+						List<Map.Entry<String, JsonElement>> validRarities = new ArrayList<>(statNums.entrySet());
+						int rarityIndex = validRarities.size() - 1;
+						String rarity = validRarities.get(rarityIndex).getKey();
+						for (int i = 0; i < validRarities.size(); i++) {
+							String rar = validRarities.get(i).getKey();
+							if (rar.equalsIgnoreCase(currentGemstoneRarity)) {
+								rarity = rar;
+								rarityIndex = i;
+								break;
+							}
+						}
+
+						if (showGemstoneStats) {
+							boolean left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
+							boolean right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
+							if (!pressedArrowLast && (left || right)) {
+								if (left) {
+									rarityIndex--;
+								} else {
+									rarityIndex++;
+								}
+								if (rarityIndex < 0) rarityIndex = 0;
+								if (rarityIndex >= validRarities.size()) rarityIndex = validRarities.size() - 1;
+								currentGemstoneRarity = validRarities.get(rarityIndex).getKey();
+								rarity = currentGemstoneRarity;
+							}
+							pressedArrowLast = left || right;
+
+							String rarityFormatted = Utils.rarityArrMap.getOrDefault(rarity, rarity);
+							String statName = gemstoneInfo.get("statName").getAsString();
+							double statNum = validRarities.get(rarityIndex).getValue().getAsDouble();
+							int removalCost = gemstones.getAsJsonObject("removalCosts").get(gemstoneTier).getAsInt();
+
+							String formattedStatNum = "";
+							if (statNum == 0) formattedStatNum = "???";
+							else if (statNum % 1 == 0) formattedStatNum += Math.round(statNum);
+							else formattedStatNum += statNum;
+
+							if (gemstoneInfo.has("chiselBonus")) {
+								String chiselBonus = gemstoneInfo.get("chiselBonus").getAsString();
+								String formattedChiselBonus = chiselBonus.replace(
+									"{}",
+									gemstones.getAsJsonObject("chiselPercentages").get(gemstoneTier).getAsString()
+								);
+
+								newTooltip.add("");
+								String text = EnumChatFormatting.BLUE + "Chisel bonus: " + formattedChiselBonus;
+								boolean first = true;
+								for (String s : Minecraft.getMinecraft().fontRendererObj.listFormattedStringToWidth(text, 150)) {
+									newTooltip.add((first ? "" : "  ") + s);
+									first = false;
+								}
+								newTooltip.add("");
+							}
+							newTooltip.add("§9Stats for " + rarityFormatted + "§9: [§l§m< §9Switch§l§m >§9]");
+							newTooltip.add("  §7" + statName + ": §a+" + formattedStatNum);
+							newTooltip.add("");
+							newTooltip.add(
+								"§9Removal Cost: §6" + StringUtils.formatNumber(removalCost) + (removalCost == 1 ? " coin" : " coins"));
+							newTooltip.add("§8Combinable in Gemstone Grinder or The Hex");
+							newTooltip.add("");
+						}
+					}
+				}
 			} else if (line.contains("\u00A7cR\u00A76a\u00A7ei\u00A7an\u00A7bb\u00A79o\u00A7dw\u00A79 Rune")) {
 				line = line.replace(
 					"\u00A7cR\u00A76a\u00A7ei\u00A7an\u00A7bb\u00A79o\u00A7dw\u00A79 Rune",
@@ -549,7 +643,7 @@ public class ItemTooltipListener {
 		//7 is just a random number i chose, prob no pets with less lines than 7
 		if (event.toolTip.size() < 7) return;
 		if (event.itemStack.getTagCompound().hasKey("NEUHIDEPETTOOLTIP")) return;
-		if (Utils.cleanColour(event.toolTip.get(1)).matches(petToolTipRegex)) {
+		if (petToolTipRegex.matcher(Utils.cleanColour(event.toolTip.get(1))).matches()) {
 			PetLeveling.PetLevel petLevel;
 
 			int xpLine = -1;
@@ -578,7 +672,8 @@ public class ItemTooltipListener {
 
 			event.toolTip.add(
 				xpLine + 1,
-				EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW + myFormatter.format(petLevel.getExpInCurrentLevel()) +
+				EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW +
+					myFormatter.format(petLevel.getExpInCurrentLevel()) +
 					EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
 					myFormatter.format(petLevel.getExpRequiredForNextLevel())
 			);
@@ -655,7 +750,7 @@ public class ItemTooltipListener {
 				if (!copied) {
 					copied = true;
 					StringSelection selection = new StringSelection(sb.toString().replace("§r§7", ""));
-					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
+					Utils.copyToClipboard(selection, selection);
 				}
 			} else {
 				copied = false;
@@ -676,14 +771,14 @@ public class ItemTooltipListener {
 			boolean b = Keyboard.isKeyDown(Keyboard.KEY_B);
 
 			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-				MiscUtils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
+				Utils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
 			}
 
 			event.toolTip.add(
 				EnumChatFormatting.AQUA + "Internal Name: " + EnumChatFormatting.GRAY + internal + EnumChatFormatting.GOLD +
 					" [K]");
 			if (!copied && k) {
-				MiscUtils.copyToClipboard(internal);
+				Utils.copyToClipboard(internal);
 			}
 
 			if (event.itemStack.getTagCompound() != null) {
@@ -692,7 +787,7 @@ public class ItemTooltipListener {
 				event.toolTip.add(EnumChatFormatting.AQUA + "NBT: " + EnumChatFormatting.GRAY + "[...]" +
 					EnumChatFormatting.GOLD + " [B]");
 				if (!copied && b) {
-					MiscUtils.copyToClipboard(tag.toString());
+					Utils.copyToClipboard(tag.toString());
 				}
 
 				if (tag.hasKey("SkullOwner", 10)) {
@@ -702,7 +797,7 @@ public class ItemTooltipListener {
 						event.toolTip.add(EnumChatFormatting.AQUA + "Skull UUID: " + EnumChatFormatting.GRAY + gameprofile.getId() +
 							EnumChatFormatting.GOLD + " [M]");
 						if (!copied && m) {
-							MiscUtils.copyToClipboard(gameprofile.getId().toString());
+							Utils.copyToClipboard(gameprofile.getId().toString());
 						}
 
 						Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map =
@@ -715,7 +810,7 @@ public class ItemTooltipListener {
 									EnumChatFormatting.GOLD + " [N]");
 
 							if (!copied && n) {
-								MiscUtils.copyToClipboard(profTex.getUrl());
+								Utils.copyToClipboard(profTex.getUrl());
 							}
 						}
 					}

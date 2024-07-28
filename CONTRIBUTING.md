@@ -1,11 +1,11 @@
 # Contributing
 
 ## Quick Note
-Ever since Moulberry has stopped working on NEU, other contributors have been working on new features and fixes for the mod. If you are interested in contributing yourself, make a pull request to [NotEnoughUpdates/NotEnoughUpdates](https://github.com/NotEnoughUpdates/NotEnoughUpdates) to contribute to the prereleases, which eventually will be merged in bulk to [Moulberry/NotEnoughUpdates](https://github.com/Moulberry/NotEnoughUpdates) for major releases. 
+Ever since Moulberry stopped working on NEU, other contributors have been working on new features and fixes for the mod. If you are interested in contributing yourself, make a pull request to [NotEnoughUpdates/NotEnoughUpdates](https://github.com/NotEnoughUpdates/NotEnoughUpdates).
 
 ## Before you contribute
 
-- Please check your feature / bug wasn't already fixed in one of our pre-releases, on the [development branch](https://github.com/NotEnoughUpdates/NotEnoughUpdates/tree/master/) or in an open [pull request](https://github.com/NotEnoughUpdates/NotEnoughUpdates/pulls)  
+- Please check your feature / bug wasn't already fixed in one of our releases, on the [development branch](https://github.com/NotEnoughUpdates/NotEnoughUpdates/tree/master/) or in an open [pull request](https://github.com/NotEnoughUpdates/NotEnoughUpdates/pulls)  
 - Consider joining our [Discord](https://discord.gg/moulberry) to check in on the newest developments by other people, or to get help with problems you encounter.
 - Please check that your feature idea complies with the [Hypixel Rules](https://hypixel.net/rules). (See these Hypixel forum posts for extra information: [Mods in SkyBlock](https://hypixel.net/threads/regarding-the-recent-announcement-with-mods-in-skyblock.4045481/), [QoL Modifications](https://hypixel.net/threads/update-to-disallowed-modifications-qol-modifications.4043482/), [Modifications Sending Invalid Clicks](https://hypixel.net/threads/update-regarding-modifications-sending-invalid-clicks.5130489/)) 
 - Make sure that your feature idea is not already implemented in another non-paid mod. (E.g. Dungeon Solver)
@@ -28,7 +28,8 @@ Ever since Moulberry has stopped working on NEU, other contributors have been wo
 - Import that folder as a Gradle Project in your IDE (IntelliJ should autodetect it as Gradle if you select the `NotEnoughUpdates` folder in the Open dialog)
 - Set your project SDK to your 1.8 JDK. This can be done in the modules settings (CTRL+ALT+SHIFT+S) in IntelliJ.
 - Set your gradle JVM to your 1.17 JDK. This can be done by searching for `gradle jvm` in the CTRL+SHIFT+A dialog in IntelliJ.
-- Run the `gen<IntelliJ/Eclipse>Runs` gradle task. In IntelliJ that can be done in the Gradle tab on the right side of your IDE.
+- The `Minecraft Client` task should appear automatically after gradle loads.
+  - If it doesn't you can run the `genIntelliJRuns` or `genEclipseRuns` gradle task. In IntelliJ that can be done in the Gradle tab on the right side of your IDE.
 - Optionally, run the `genSources` gradle task.
 - Run the `Minecraft Client` to make sure that everything works.
   - Note: if you are using macOS, remove the `XstartOnFirstThread` JVM option

@@ -71,6 +71,19 @@ public class AHTweaks {
 	@ConfigAccordionId(id = 0)
 	public boolean escFullClose = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Search History Size",
+		desc = "Changes how many search items get stored"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 15,
+		minStep = 1
+	)
+	@ConfigAccordionId(id = 0)
+	public int ahSearchHistorySize = 5;
+
 	@ConfigOption(
 		name = "BIN Warning",
 		desc = ""

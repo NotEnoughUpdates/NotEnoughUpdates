@@ -127,17 +127,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		// Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
-		if (mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 &&
-			mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 &&
-			mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
-			getInstance().killDeathSearchTextField.mouseClicked(mouseX, mouseY, mouseButton);
-			getInstance().playerNameTextField.otherComponentClick();
-			return true;
-		}
-
-		getInstance().killDeathSearchTextField.otherComponentClick();
-
 		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
 			case 1:
@@ -150,6 +139,21 @@ public class ExtraPage extends GuiProfileViewerPage {
 			default:
 				break;
 		}
+
+		if (onHoppityPage) {
+			return hoppityPage.mouseClicked(mouseX, mouseY, mouseButton);
+		}
+
+		// Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
+		if (mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 &&
+			mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 &&
+			mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
+			getInstance().killDeathSearchTextField.mouseClicked(mouseX, mouseY, mouseButton);
+			getInstance().playerNameTextField.otherComponentClick();
+			return true;
+		}
+
+		getInstance().killDeathSearchTextField.otherComponentClick();
 
 		return false;
 	}

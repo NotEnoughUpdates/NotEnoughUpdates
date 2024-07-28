@@ -57,8 +57,10 @@ object TablistAPI {
             }
 
             if (list.isNotEmpty()) {
-                // Empty line, the widget ends here.
-                if (entry == "§r") {
+                // Empty line
+                // Or there is no spacing between two widgets
+                // The widget ends here.
+                if (entry == "§r" || entry.startsWith("§r§")) {
                     break
                 }
 
@@ -143,7 +145,9 @@ object TablistAPI {
         TRAPPER(null),
         FORGE(Regex("Forges:( \\(\\d/\\d\\))?")),
         POWDER(Regex.fromLiteral("Powders:")),
-        PROFILE(Regex("Profile: ([A-Za-z]+)( .*)?"))
+        PROFILE(Regex("Profile: ([A-Za-z]+)( .*)?")),
+        ACTIVE_EFFECTS(Regex("Active Effects(: \\(\\d+\\))?")),
+        COOKIE_BUFF(Regex("Cookie Buff")),
         ;
 
         override fun toString(): String {

@@ -112,24 +112,24 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	private int purpleCandyCount = -1;
 
 	public static final HashMap<String, String> apiStatNames = new HashMap<String, String>() {{
-			put("health","§c❤ Health");
-			put("defense","§a❈ Defense");
-			put("walk_speed","§f✦ Speed");
-			put("strength","§c❁ Strength");
-			put("critical_damage","§9☠ Crit Damage");
-			put("critical_chance","§9☣ Crit Chance");
-			put("attack_speed","§e⚔ Bonus Attack Speed");
-			put("intelligence","§b✎ Intelligence");
+		put("health", "§c❤ Health");
+		put("defense", "§a❈ Defense");
+		put("walk_speed", "§f✦ Speed");
+		put("strength", "§c❁ Strength");
+		put("critical_damage", "§9☠ Crit Damage");
+		put("critical_chance", "§9☣ Crit Chance");
+		put("attack_speed", "§e⚔ Bonus Attack Speed");
+		put("intelligence", "§b✎ Intelligence");
 	}};
 	public static final HashMap<String, Float> tuningCoefficients = new HashMap<String, Float>() {{
-		put("health",5f);
-		put("defense",1f);
-		put("walk_speed",1.5f);
-		put("strength",1f);
-		put("critical_damage",1f);
-		put("critical_chance",0.2f);
-		put("attack_speed",0.3f);
-		put("intelligence",2f);
+		put("health", 5f);
+		put("defense", 1f);
+		put("walk_speed", 1.5f);
+		put("strength", 1f);
+		put("critical_damage", 1f);
+		put("critical_chance", 0.2f);
+		put("attack_speed", 0.3f);
+		put("intelligence", 2f);
 	}};
 
 	private boolean onSacksPage;
@@ -231,11 +231,11 @@ public class InventoriesPage extends GuiProfileViewerPage {
 							);
 
 						LinkedHashMap<String, Integer> tuningInfo = getSelectedProfile().getTuningInfo();
-						if(tuningInfo != null && tuningInfo.size() > 0) {
+						if (tuningInfo != null && tuningInfo.size() > 0) {
 							getInstance().tooltipToDisplay.add("");
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "Tuning:");
 							tuningInfo.forEach((statName, statPoints) -> {
-								if(statPoints != 0) {
+								if (statPoints != 0) {
 									getInstance().tooltipToDisplay.add(
 										"  " + apiStatNames.get(statName) + ": +" +
 											new DecimalFormat("#.#").format(statPoints * tuningCoefficients.getOrDefault(statName, 1.0f)) +
@@ -487,6 +487,16 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			);
 		}
 
+		if (inventories.length > 1) {
+			String text = "Page " + (currentInventoryIndex + 1) + "/" + inventories.length;
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				text,
+				guiLeft + 320 - Minecraft.getMinecraft().fontRendererObj.getStringWidth(text) / 2,
+				staticSelectorHeight - 10,
+				9737364
+			);
+		}
+
 		Minecraft
 			.getMinecraft()
 			.fontRendererObj.drawString(
@@ -599,7 +609,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				i++;
 			}
 
-		 	SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+			SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
 			if (selectedProfile == null) {
 				return;
 			}

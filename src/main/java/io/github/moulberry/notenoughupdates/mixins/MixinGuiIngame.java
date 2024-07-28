@@ -20,9 +20,9 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;

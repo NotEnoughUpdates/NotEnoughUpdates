@@ -460,7 +460,9 @@ public class PetInfoOverlay extends TextOverlay {
 		if (currentPet.petItem != null) {
 			JsonObject json = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petItem);
 			if (json != null) {
-				String name = NotEnoughUpdates.INSTANCE.manager.jsonToStack(json).getDisplayName();
+				String name;
+				if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petItemIcon) name = NotEnoughUpdates.INSTANCE.manager.jsonToStack(json).getDisplayName();
+				else name = "";
 				petItemStr = EnumChatFormatting.AQUA + "Held Item: " + name;
 			}
 		}
@@ -603,58 +605,126 @@ public class PetInfoOverlay extends TextOverlay {
 			return;
 		}
 
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
-		int mythicRarity = currentPet.rarity.petId;
-		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-			currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
+		if (NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) {
+			int mythicRarity = currentPet.rarity.petId;
+			JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+				currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
 
-		if (petItem == null && currentPet.rarity.petId == 5) {
-			petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-				currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + 4));
-		}
+			if (petItem == null && currentPet.rarity.petId == 5) {
+				petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+					currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + 4));
+			}
 
-		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight, true);
-			int x = (int) position.x;
-			int y = (int) position.y;
-
-			ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
-			GlStateManager.enableDepth();
-			GlStateManager.pushMatrix();
-			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
-
-			if (firstPetLines == 1) y -= 9;
-			if (firstPetLines == 2) y -= 3;
-
-			GlStateManager.translate(x - 2, y - 2, 0);
-			GlStateManager.scale(2, 2, 1);
-			Utils.drawItemStack(stack, 0, 0);
-			Utils.pushGuiScale(0);
-			GlStateManager.popMatrix();
-		}
-
-		Pet currentPet2 = getCurrentPet2();
-		if (currentPet2 != null) {
-			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-				currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
-			if (petItem2 != null) {
+			if (petItem != null) {
 				Vector2f position = getPosition(overlayWidth, overlayHeight, true);
 				int x = (int) position.x;
-				int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
+				int y = (int) position.y;
 
-				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
+				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
 				GlStateManager.enableDepth();
 				GlStateManager.pushMatrix();
 				Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 
-				if (secondPetLines == 1) y -= 9;
-				if (secondPetLines == 2) y -= 3;
+				if (firstPetLines == 1) y -= 9;
+				if (firstPetLines == 2) y -= 3;
 
 				GlStateManager.translate(x - 2, y - 2, 0);
 				GlStateManager.scale(2, 2, 1);
 				Utils.drawItemStack(stack, 0, 0);
 				Utils.pushGuiScale(0);
 				GlStateManager.popMatrix();
+			}
+
+			Pet currentPet2 = getCurrentPet2();
+			if (currentPet2 != null) {
+				JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+					currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
+				if (petItem2 != null) {
+					Vector2f position = getPosition(overlayWidth, overlayHeight, true);
+					int x = (int) position.x;
+					int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
+
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
+					GlStateManager.enableDepth();
+					GlStateManager.pushMatrix();
+					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+					if (secondPetLines == 1) y -= 9;
+					if (secondPetLines == 2) y -= 3;
+
+					GlStateManager.translate(x - 2, y - 2, 0);
+					GlStateManager.scale(2, 2, 1);
+					Utils.drawItemStack(stack, 0, 0);
+					Utils.pushGuiScale(0);
+					GlStateManager.popMatrix();
+				}
+			}
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.petOverlay.petItemIcon) {
+			int backgroundOffset = (NotEnoughUpdates.INSTANCE.config.petOverlay.petInfoOverlayStyle == 0) ? 0 : 5;
+			if (currentPet.petItem != null) {
+				JsonObject petHeldItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petItem);
+
+				if (petHeldItem != null) {
+					Vector2f position = getPosition(overlayWidth, overlayHeight, true);
+					int xOffset = NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon ? 0 : 25;
+					int x = (int) position.x - xOffset;
+					int y = (int) position.y;
+
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petHeldItem);
+					GlStateManager.enableDepth();
+					GlStateManager.pushMatrix();
+					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+					int counter = 0;
+					for (String line : overlayStrings) {
+						if (line.contains("Held Item:")) {
+							break;
+						}
+						counter++;
+					}
+					if (counter >= overlayStrings.size()) {
+						return;
+					}
+
+					GlStateManager.translate(x + 77, y + (10 * counter) + 2 - backgroundOffset, 0);
+					Utils.drawItemStack(stack, 0, 0);
+					Utils.pushGuiScale(0);
+					GlStateManager.popMatrix();
+				}
+			}
+
+			Pet currentPet2 = getCurrentPet2();
+			if (currentPet2 != null && currentPet2.petItem != null) {
+				JsonObject petHeldItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet2.petItem);
+
+				if (petHeldItem != null) {
+					Vector2f position = getPosition(overlayWidth, overlayHeight, true);
+					int x = (int) position.x;
+					int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
+
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petHeldItem);
+					GlStateManager.enableDepth();
+					GlStateManager.pushMatrix();
+					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+					int counter = 0;
+					for (String line : overlayStrings) {
+						if (line.contains("Held Item:")) {
+							break;
+						}
+						counter++;
+					}
+					if (counter >= overlayStrings.size()) {
+						return;
+					}
+
+					GlStateManager.translate(x + 77, y + (10 * counter) + 2 - backgroundOffset, 0);
+					Utils.drawItemStack(stack, 0, 0);
+					Utils.pushGuiScale(0);
+					GlStateManager.popMatrix();
+				}
 			}
 		}
 	}

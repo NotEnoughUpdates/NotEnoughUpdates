@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
-import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
@@ -138,7 +137,7 @@ public class Minion extends OverviewLine {
 				String bazaarName = resource.get().getKey();
 				int totalAmount = resource.get().getValue();
 
-				MiscUtils.copyToClipboard(String.valueOf(totalAmount));
+				Utils.copyToClipboard(String.valueOf(totalAmount));
 				ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager).withKnownInternalName(
 					bazaarName).resolveToItemStack();
 				if (itemStack != null) {

@@ -104,10 +104,12 @@ object CustomTodoHud {
             .forEach {
                 val readyAt = it.readyAtOnCurrentProfile ?: (System.currentTimeMillis() - 1000L)
                 val until = readyAt - System.currentTimeMillis()
+                if ((!it.showOnlyWhenReady && it.showWhen > 0) && until - (it.showWhen * 1000) > 0) return@forEach
+                if (it.showOnlyWhenReady && until >= 0) return@forEach
                 strings.add(
                     encodeCustomItem(it.icon) + ":§3" + it.label + ": " +
                             if (until <= 0)
-                                EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour].toString() + "Ready"
+                                EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour].toString() + "Ready!"
                             else if (until < 60 * 30 * 1000L)
                                 EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour].toString()
                                         + Utils.prettyTime(until)

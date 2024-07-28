@@ -38,7 +38,6 @@ import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.listener.WorldListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
-import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
@@ -47,6 +46,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -156,6 +156,18 @@ public class NotEnoughUpdates {
 			.setBiomeName("NeuCrystalHollowsCrystalNucleus")
 			.setFillerBlockMetadata(5470985)
 			.setTemperatureRainfall(0.95F, 0.9F);
+	public static final BiomeGenBase smolderingTomb =
+		(new BiomeGenHell(107))
+			.setColor(16777215)
+			.setBiomeName("NeuSmolderingTomb");
+	public static final BiomeGenBase glaciteMineshaft =
+		(new BiomeGenSnow(108, false))
+			.setColor(16777215)
+			.setBiomeName("NeuGlaciteMineshaft");
+	public static final BiomeGenBase glaciteTunnels =
+		(new BiomeGenSnow(109, false))
+			.setColor(16777215)
+			.setBiomeName("NeuGlaciteTunnels");
 	private static final long CHAT_MSG_COOLDOWN = 200;
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =
@@ -260,14 +272,9 @@ public class NotEnoughUpdates {
 				config.apiData.repoBranch = "master";
 			}
 
-			// Remove after 2.1 ig
-			if ("dangerous".equals(config.apiData.repoBranch)) {
-				config.apiData.repoBranch = "prerelease";
-			}
-
-			// Remove before 2.1.1 release
-			if ("master".equals(config.apiData.repoBranch)) {
-				config.apiData.repoBranch = "prerelease";
+			// When this is changed next, also change it in the build gradle
+			if ("prerelease".equals(config.apiData.repoBranch)) {
+				config.apiData.repoBranch = "master";
 			}
 
 			if (config.apiData.moulberryCodesApi.isEmpty()) {

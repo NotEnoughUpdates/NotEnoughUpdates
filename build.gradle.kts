@@ -18,13 +18,11 @@
  */
 
 
-import neubs.CustomSignTask
-import neubs.NEUBuildFlags
-import neubs.applyPublishingInformation
-import neubs.setVersionFromEnvironment
+import neubs.*
 import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.net.URL
+import com.xpdustry.ksr.kotlinRelocate
 
 plugins {
 	idea
@@ -38,6 +36,7 @@ plugins {
 	id("io.gitlab.arturbosch.detekt") version "1.23.0"
 	id("com.google.devtools.ksp") version "1.8.21-1.0.11"
 	id("net.kyori.blossom") version "2.1.0"
+	id("com.xpdustry.ksr") version "1.0.0"
 }
 
 
@@ -164,6 +163,9 @@ dependencies {
 
 	shadowImplementation("com.mojang:brigadier:1.0.18")
 	shadowImplementation("moe.nea:libautoupdate:1.3.1")
+	shadowImplementation(libs.nealisp) {
+		exclude("org.jetbrains.kotlin")
+	}
 
 	mixinRTDependencies("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 		isTransitive = false // Dependencies of mixin are already bundled by minecraft
@@ -259,18 +261,9 @@ val mixinDependencyCollectionJar by tasks.creating(Zip::class) {
 	into("neu-mixin-libraries-wrapped")
 }
 
-tasks.register("includeBackupRepo") {
-	doLast {
-		val url = URL("https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/archive/refs/heads/prerelease.zip")
-		val destinationFolder = project.buildDir.resolve("classes/java/main/assets/notenoughupdates/")
-		destinationFolder.mkdirs()
-		val destination = destinationFolder.resolve("repo.zip")
-		destination.createNewFile()
-
-		destination.outputStream().use {
-			url.openStream().copyTo(it)
-		}
-	}
+val includeBackupRepo by tasks.registering(DownloadBackupRepo::class) {
+	this.branch.set("master")
+	this.outputDirectory.set(layout.buildDirectory.dir("downloadedRepo"))
 }
 
 
@@ -291,10 +284,11 @@ tasks.shadowJar {
 	from(mixinDependencyCollectionJar)
 	dependsOn(kotlinDependencyCollectionJar)
 	dependsOn(mixinDependencyCollectionJar)
-	fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
+	fun relocate(name: String) = kotlinRelocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
 	relocate("com.mojang.brigadier")
 	relocate("io.github.moulberry.moulconfig")
 	relocate("moe.nea.libautoupdate")
+	relocate("moe.nea.lisp")
 	mergeServiceFiles()
 }
 
@@ -302,6 +296,7 @@ tasks.assemble.get().dependsOn(remapJar)
 
 tasks.processResources {
 	from(tasks["generateBuildFlags"])
+	from(includeBackupRepo)
 	filesMatching(listOf("mcmod.info", "fabric.mod.json", "META-INF/mods.toml")) {
 		expand(
 			"version" to project.version, "mcversion" to "1.8.9"

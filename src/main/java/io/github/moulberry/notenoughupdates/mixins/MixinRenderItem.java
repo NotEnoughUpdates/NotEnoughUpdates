@@ -24,7 +24,8 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
-import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizationUtils;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -133,7 +134,9 @@ public abstract class MixinRenderItem {
 	public int renderItem_renderByItem(Item item, ItemStack stack, int renderPass) {
 		if (renderPass == 0) {
 			ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
-			if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
+			if (data != null && data.animatedLeatherColours != null && data.animatedDyeTicks > 0 && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
+				return ItemCustomizationUtils.getAnimatedDyeColour(data.animatedLeatherColours, data.animatedDyeTicks);
+			} else if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
 				return ChromaColour.specialToChromaRGB(data.customLeatherColour);
 			}
 		}

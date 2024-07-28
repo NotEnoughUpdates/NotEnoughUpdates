@@ -92,12 +92,17 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -304,6 +309,8 @@ public class RenderListener {
 		}
 	}
 
+	boolean storageTurnedOffTheCalendar = false;
+
 	/**
 	 * Sets hoverInv and focusInv variables, representing whether the NEUOverlay should render behind the inventory when
 	 * (hoverInv == true) and whether mouse/kbd inputs shouldn't be sent to NEUOverlay (focusInv == true).
@@ -420,9 +427,14 @@ public class RenderListener {
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 
 		if (storageOverlayActive) {
+			storageTurnedOffTheCalendar = true;
+			CalendarOverlay.ableToClickCalendar = false;
 			StorageOverlay.getInstance().render();
 			event.setCanceled(true);
 			return;
+		} else if (storageTurnedOffTheCalendar) {
+			CalendarOverlay.ableToClickCalendar = true;
+			storageTurnedOffTheCalendar = false;
 		}
 
 		if (tradeWindowActive) {
@@ -452,8 +464,33 @@ public class RenderListener {
 		}
 	}
 
+	private static final Set<String> dungeonMenuSet = new HashSet<>(Arrays.asList(
+		"Spirit Leap",
+		"Revive A Teammate",
+		"Click in order!",
+		"Click the button on time!",
+		"Correct all the panes!",
+		"Change all to same color!"
+	));
+
+	private static final NavigableSet<String> dungeonMenuStartsWithSet = new TreeSet<>(Arrays.asList(
+		"What starts with",
+		"Select all the"
+	));
+
+	private boolean isInDungeonMenu(String chestName) {
+		if (!SBInfo.getInstance().isInDungeon) {
+			return false;
+		}
+		String nearestStartsWith = dungeonMenuStartsWithSet.floor(chestName);
+		return dungeonMenuSet.contains(chestName) || (nearestStartsWith != null && chestName.startsWith(nearestStartsWith));
+	}
+
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
-		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null) {
+		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null ||
+			!NotEnoughUpdates.INSTANCE.config.inventoryButtons.enableInventoryButtons ||
+			(NotEnoughUpdates.INSTANCE.config.inventoryButtons.hideInDungeonMenus &&
+				isInDungeonMenu(Utils.getOpenChestName()))) {
 			return;
 		}
 
