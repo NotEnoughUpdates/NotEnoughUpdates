@@ -309,45 +309,6 @@ public class AccessoryBagOverlay {
 				drawTitle(x, y, "Duplicates: REPO ERROR");
 				return;
 			}
-			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
-			if (talisman_upgrades_element == null) {
-				drawTitle(x, y, "Duplicates: REPO ERROR");
-				return;
-			}
-			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
-
-			duplicates = new HashSet<>();
-
-			Set<String> prevInternalnames = new HashSet<>();
-			for (ItemStack stack : accessoryStacks) {
-				String internalname =
-					NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
-
-				if (prevInternalnames.contains(internalname)) {
-					duplicates.add(stack);
-					continue;
-				}
-				prevInternalnames.add(internalname);
-
-				if (talisman_upgrades.has(internalname)) {
-					JsonArray upgrades = talisman_upgrades.get(internalname).getAsJsonArray();
-					for (ItemStack stack2 : accessoryStacks) {
-						if (stack != stack2) {
-							String internalname2 = NotEnoughUpdates.INSTANCE.manager
-								.createItemResolutionQuery()
-								.withItemStack(stack2)
-								.resolveInternalName();
-							for (int j = 0; j < upgrades.size(); j++) {
-								String upgrade = upgrades.get(j).getAsString();
-								if (internalname2.equals(upgrade)) {
-									duplicates.add(stack);
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
 		}
 		if (duplicates.isEmpty()) {
 			drawTitle(x, y, "No Duplicates");
@@ -702,7 +663,10 @@ public class AccessoryBagOverlay {
 						guiTop + 20 * currentTab.ordinal() + 3
 					);
 
-					if (dupe_highlight) highlightDuplicates();
+					if (dupe_highlight) {
+						if (duplicates == null) fillDuplicates();
+						highlightDuplicates();
+					}
 
 					switch (currentTab) {
 						case TAB_BASIC:
@@ -958,6 +922,46 @@ public class AccessoryBagOverlay {
 						0xBBFF0000
 					);
 					GlStateManager.translate(0, 0, -50);
+				}
+			}
+		}
+	}
+
+	public static void fillDuplicates() {
+		JsonObject misc = Constants.MISC;
+		JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
+		if (talisman_upgrades_element == null) return;
+		JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
+
+		duplicates = new HashSet<>();
+
+		Set<String> prevInternalnames = new HashSet<>();
+		for (ItemStack stack : accessoryStacks) {
+			String internalname =
+				NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
+
+			if (prevInternalnames.contains(internalname)) {
+				duplicates.add(stack);
+				continue;
+			}
+			prevInternalnames.add(internalname);
+
+			if (talisman_upgrades.has(internalname)) {
+				JsonArray upgrades = talisman_upgrades.get(internalname).getAsJsonArray();
+				for (ItemStack stack2 : accessoryStacks) {
+					if (stack != stack2) {
+						String internalname2 = NotEnoughUpdates.INSTANCE.manager
+							.createItemResolutionQuery()
+							.withItemStack(stack2)
+							.resolveInternalName();
+						for (int j = 0; j < upgrades.size(); j++) {
+							String upgrade = upgrades.get(j).getAsString();
+							if (internalname2.equals(upgrade)) {
+								duplicates.add(stack);
+								break;
+							}
+						}
+					}
 				}
 			}
 		}
