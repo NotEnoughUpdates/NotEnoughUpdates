@@ -252,13 +252,7 @@ public class GuiCustomHex extends Gui {
 		return INSTANCE;
 	}
 
-	boolean hexTurnedOffTheCalendar = false;
-
 	public boolean shouldOverride(String containerName) {
-		if (hexTurnedOffTheCalendar) {
-			CalendarOverlay.ableToClickCalendar = true;
-			hexTurnedOffTheCalendar = false;
-		}
 		if (containerName == null) {
 			shouldOverrideET = false;
 			shouldOverrideFast = false;
@@ -313,9 +307,8 @@ public class GuiCustomHex extends Gui {
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
 		ItemStack bookStack = cc.getLowerChestInventory().getStackInSlot(32);
 		boolean shouldDisableCalendar = !(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
-		if (!shouldDisableCalendar && CalendarOverlay.ableToClickCalendar) {
-			CalendarOverlay.ableToClickCalendar = false;
-			hexTurnedOffTheCalendar = true;
+		if (!shouldDisableCalendar) {
+			CalendarOverlay.suppressCalendarClicks();
 		}
 		if (bookStack != null && bookStack.getItem() == Items.book) {
 			shouldOverrideGemstones = false;
