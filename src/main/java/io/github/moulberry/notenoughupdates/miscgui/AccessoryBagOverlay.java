@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
-import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
@@ -551,20 +550,10 @@ public class AccessoryBagOverlay {
 		return inAccessoryBag && NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay;
 	}
 
-	static boolean reder = false;
-
 	public static void renderOverlay() {
 		inAccessoryBag = false;
 		offsetButtons = false;
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			//System.out.println(RenderListener.inventoryLoaded);
-			if (RenderListener.inventoryLoaded) {
-				//if (!reder) Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(ScreenShotHelper.saveScreenshot(Minecraft.getMinecraft().mcDataDir, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight,Minecraft.getMinecraft().getFramebuffer()));
-				reder = false;
-			} else {
-				reder = true;
-				return;
-			}
 			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
@@ -588,40 +577,37 @@ public class AccessoryBagOverlay {
 					if (containerName.trim().contains("(")) {
 						String first = containerName.trim().split("\\(")[1].split("/")[0];
 						Integer currentPageNumber = Integer.parseInt(first);
-						//System.out.println("current:"+currentPageNumber);
-						//if (!pagesVisited.contains(currentPageNumber)) {
-							boolean hasStack = false;
-							if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest) {
-								IInventory inv =
-									((ContainerChest) Minecraft.getMinecraft().thePlayer.openContainer).getLowerChestInventory();
-								for (int i = 0; i < inv.getSizeInventory(); i++) {
-									ItemStack stack = inv.getStackInSlot(i);
-									if (stack != null) {
-										hasStack = true;
-										if (isAccessory(stack)) {
-											boolean toAdd = true;
-											for (ItemStack accessoryStack : accessoryStacks) {
-												String s = NotEnoughUpdates.INSTANCE.manager
-													.createItemResolutionQuery()
-													.withItemStack(accessoryStack)
-													.resolveInternalName();
-												String ss = NotEnoughUpdates.INSTANCE.manager
-													.createItemResolutionQuery()
-													.withItemStack(stack)
-													.resolveInternalName();
-												if (ss != null && ss.equals(s)) {
-													toAdd = false;
-													break;
-												}
+						boolean hasStack = false;
+						if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest) {
+							IInventory inv =
+								((ContainerChest) Minecraft.getMinecraft().thePlayer.openContainer).getLowerChestInventory();
+							for (int i = 0; i < inv.getSizeInventory(); i++) {
+								ItemStack stack = inv.getStackInSlot(i);
+								if (stack != null) {
+									hasStack = true;
+									if (isAccessory(stack)) {
+										boolean toAdd = true;
+										for (ItemStack accessoryStack : accessoryStacks) {
+											String s = NotEnoughUpdates.INSTANCE.manager
+												.createItemResolutionQuery()
+												.withItemStack(accessoryStack)
+												.resolveInternalName();
+											String ss = NotEnoughUpdates.INSTANCE.manager
+												.createItemResolutionQuery()
+												.withItemStack(stack)
+												.resolveInternalName();
+											if (ss != null && ss.equals(s)) {
+												toAdd = false;
+												break;
 											}
-											if (toAdd) accessoryStacks.add(stack);
 										}
+										if (toAdd) accessoryStacks.add(stack);
 									}
 								}
 							}
+						}
 
-							if (hasStack) pagesVisited.add(currentPageNumber);
-						//}
+						if (hasStack) pagesVisited.add(currentPageNumber);
 
 						String second = containerName.trim().split("/")[1].split("\\)")[0];
 						//System.out.println(second + ":" + pagesVisited.size());
