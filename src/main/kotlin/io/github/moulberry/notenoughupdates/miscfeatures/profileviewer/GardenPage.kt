@@ -175,9 +175,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderPlots() {
-        val top = guiTop + 80
-        val left = guiLeft + 180
-        Utils.renderShadowedString("§ePlots", left + 12, top - 12, 80)
+        val top = guiTop + 79
+        val left = guiLeft + 192
         GlStateManager.color(1f, 1f, 1f, 1f)
         for (value in repoData.plots) {
             Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
@@ -246,7 +245,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderCropUpgrades() {
-        val startHeight = guiTop + 100
+        val startHeight = guiTop + 105
         var yPos = startHeight
         var xPos = guiLeft + 26
 
@@ -277,7 +276,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 if (repoData.cropUpgrades.size == upgradeLevel) {
                     tooltip.add("§6Maxed")
                 } else {
-                    tooltip.add("§7${repoData.cropUpgrades[upgradeLevel]} §cCopper to upgrade")
+                    tooltip.add("§7${repoData.cropUpgrades[upgradeLevel]} §cCopper To Upgrade")
                     val totalCopper = repoData.cropUpgrades.sum()
                     val sum = totalCopper - repoData.cropUpgrades.subList(0, upgradeLevel).sum()
                     tooltip.add("§7$sum §cCopper Until Max")
@@ -338,7 +337,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderVisitorStats() {
-        val xPos = guiLeft + 320
+        val xPos = guiLeft + 322
         var yPos = guiTop + 20
 
         Utils.renderShadowedString("§eVisitors", xPos + 40, yPos - 3, 80)
@@ -368,7 +367,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderGardenLevel() {
         val top = guiTop + 20
-        val left = guiLeft + 195
+        val left = guiLeft + 198
         val level = getLevel(repoData.gardenExperience, gardenData?.gardenExperience?.toLong())
         if (level.maxed) {
             instance.renderGoldBar((left).toFloat(), (top + 10).toFloat(), 80f)
@@ -409,8 +408,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderFarmingWeight() {
-        val top = guiTop + 55
-        val left = guiLeft + 195
+        val top = guiTop + 51
+        val left = guiLeft + 198
 
         if (eliteData == null) {
             drawAlignedStringWithHover("§eFarming Weight", "§eLoading...", left, top, 100, listOf("§eLoading...", "§eTry again soon!"))
@@ -434,8 +433,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun renderCompost() {
-        val xPos = guiLeft + 320
-        var yPos = guiTop + 115
+        val xPos = guiLeft + 322
+        var yPos = guiTop + 118
 
         Utils.renderShadowedString("§eCompost Upgrades", xPos + 40, yPos, 80)
         yPos += 12
