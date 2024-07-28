@@ -58,7 +58,8 @@ public class CrystalOverlay {
 		DESERT(16, 0xfff178),
 		FISHING(15, 0x1972a6),
 		WART(5, 0x821530),
-		WHEAT(6, 0xff9d00);
+		WHEAT(6, 0xff9d00),
+		WINTER(16, 0x3ffcff);
 
 		CrystalType(int radius, int rgb) {
 			this.radius = radius;
@@ -136,6 +137,7 @@ public class CrystalOverlay {
 		put("949d100c-aa74-3b09-a642-af5529f808aa", CrystalType.MINING_MINION);
 		put("bd79a474-cf07-3f8c-b5a4-98657c33520a", CrystalType.FORAGING_MINION);
 		put("2e474ee3-5361-3218-84db-880eb1cface1", CrystalType.FISHING);
+		put("7a237e5c-ca9a-3dc1-b1d9-b385fc200aa7", CrystalType.WINTER);
 	}};
 
 	public static long displayMillis = 0;
