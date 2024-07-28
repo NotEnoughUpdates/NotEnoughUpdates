@@ -39,6 +39,7 @@ import io.github.moulberry.notenoughupdates.util.UrsaClient
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
@@ -165,8 +166,9 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private fun renderPlots() {
         val top = guiTop + 80
         val left = guiLeft + 180
+        Utils.renderShadowedString("§ePlots", left + 12, top - 12, 80)
+        GlStateManager.color(1f, 1f, 1f, 1f)
         for (value in repoData.plots) {
-            if (gardenData?.unlockedPlotIds?.contains(value.key) != true) continue
             Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
             val x = left + value.value.x * 22
             val y = top + value.value.y * 22
@@ -181,6 +183,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 20 / 256f,
                 GL11.GL_NEAREST
             )
+            if (gardenData?.unlockedPlotIds?.contains(value.key) != true) {
+                Utils.drawItemStack(ItemStack(Blocks.barrier), x + 2, y + 2)
+                if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
+                    instance.tooltipToDisplay = listOf("§cLocked " + value.value.name)
+                }
+                continue
+            }
             Utils.drawItemStack(ItemStack(Blocks.grass), x + 2, y + 2)
             if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
                 instance.tooltipToDisplay = listOf(value.value.name)
@@ -252,11 +261,17 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             )
 
             if (mouseX >= xPos + 20 && mouseX <= xPos + 70 && mouseY >= yPos && mouseY <= yPos + 20) {
+                val tooltip = ArrayList<String>()
+                tooltip.add("§7${crop.displayName} Fortune: §6+${upgradeLevel*5}☘")
                 if (repoData.cropUpgrades.size == upgradeLevel) {
-                    instance.tooltipToDisplay = listOf("§6Maxed")
+                    tooltip.add("§6Maxed")
                 } else {
-                    instance.tooltipToDisplay = listOf("§7${repoData.cropUpgrades[upgradeLevel]} §cCopper to upgrade")
+                    tooltip.add("§7${repoData.cropUpgrades[upgradeLevel]} §cCopper to upgrade")
+                    val totalCopper = repoData.cropUpgrades.sum()
+                    val sum = totalCopper - repoData.cropUpgrades.subList(0, upgradeLevel).sum()
+                    tooltip.add("§7$sum §cCopper Until Max")
                 }
+                instance.tooltipToDisplay = tooltip
             }
         }
     }
@@ -282,13 +297,31 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             val levelInfo = getLevel(levelsInfo, currentCollection)
             val collectionLevel = levelInfo.level.toInt()
             val formattedAmount = StringUtils.formatNumber(currentCollection.toDouble())
+            var nextLevel = 0
+            var nextLevelString = "§6MAXED"
+            var maxLevel = 0
+            var maxLevelString = ""
+            if (!levelInfo.maxed) {
+                for (i in 0..45) {
+                    maxLevel += levelsInfo[i]
+                    if (i < (levelInfo.level.toInt() + 1)) nextLevel += levelsInfo[i]
+                }
+                maxLevelString = StringUtils.formatNumber(maxLevel)
+                nextLevelString = "§f$formattedAmount§7/§f${StringUtils.formatNumber(nextLevel)} §7Until Next §eMilestone"
+            }
+            val tooltip = ArrayList<String>()
+            tooltip.add("§7Farmed: §f$formattedAmount")
+            tooltip.add(nextLevelString)
+            if (!levelInfo.maxed) {
+                tooltip.add("§f$formattedAmount§7/§f$maxLevelString §7Until §6Max §eMilestone")
+            }
             drawAlignedStringWithHover(
                 "§e${crop.displayName}",
                 "§f$collectionLevel",
                 xPos + 20,
                 yPos + 5,
                 50,
-                listOf("§7Farmed: §f$formattedAmount")
+                tooltip
             )
         }
     }
@@ -297,7 +330,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val xPos = guiLeft + 320
         var yPos = guiTop + 20
 
-        Utils.renderShadowedString("§eVisitors", xPos + 40, yPos, 80)
+        Utils.renderShadowedString("§eVisitors", xPos + 40, yPos - 3, 80)
 
         // todo progress bar!
         Utils.renderAlignedString(
@@ -324,7 +357,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderGardenLevel() {
         val top = guiTop + 20
-        val left = guiLeft + 175
+        val left = guiLeft + 195
         val level = getLevel(repoData.gardenExperience, gardenData?.gardenExperience?.toLong())
         if (level.maxed) {
             instance.renderGoldBar((left).toFloat(), (top + 10).toFloat(), 80f)
