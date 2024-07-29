@@ -423,6 +423,13 @@ public class AccessoryBagOverlay {
 						}
 					}
 				}
+
+				if (internalname.contains("ABICASE")) {
+					missingInternal.removeAll(missingInternal
+						.stream()
+						.filter(s -> s.contains("ABICASE"))
+						.collect(Collectors.toList()));
+				}
 			}
 			missingInternal.sort(getItemComparator(missing_useMP));
 
