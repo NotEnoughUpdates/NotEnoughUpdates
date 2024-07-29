@@ -673,9 +673,6 @@ public class PetInfoOverlay extends TextOverlay {
 					int y = (int) position.y;
 
 					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petHeldItem);
-					GlStateManager.enableDepth();
-					GlStateManager.pushMatrix();
-					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 
 					int counter = 0;
 					for (String line : overlayStrings) {
@@ -688,6 +685,9 @@ public class PetInfoOverlay extends TextOverlay {
 						return;
 					}
 
+					GlStateManager.enableDepth();
+					GlStateManager.pushMatrix();
+					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 					GlStateManager.translate(x + 77, y + (10 * counter) + 2 - backgroundOffset, 0);
 					Utils.drawItemStack(stack, 0, 0);
 					Utils.pushGuiScale(0);
