@@ -253,11 +253,20 @@ public class AccessoryBagOverlay {
 				rarityName,
 				EnumChatFormatting.WHITE.toString() + entry.getValue(),
 				x + 34,
-				y + 25 + 11 * yIndex,
+				y + 20 + 11 * yIndex,
 				100
 			);
 			yIndex++;
 		}
+
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		int mp = 0;
+		if (profileSpecific != null) mp = profileSpecific.magicalPower;
+		Utils.renderAlignedString(
+			EnumChatFormatting.AQUA + "Magical Power",
+			mp != 0 ? EnumChatFormatting.WHITE.toString() + mp : EnumChatFormatting.RED + "NO DATA, DO /PV",
+			x + 20, y + 25 + 88, 130
+		);
 	}
 
 	private static PlayerStats.Stats totalStats = null;
@@ -683,7 +692,7 @@ public class AccessoryBagOverlay {
 						guiTop + 20 * currentTab.ordinal() + 3
 					);
 
-					if (duplicates == null) fillDuplicates();
+					fillDuplicates();
 					if (dupe_highlight) {
 						highlightDuplicates();
 					}
