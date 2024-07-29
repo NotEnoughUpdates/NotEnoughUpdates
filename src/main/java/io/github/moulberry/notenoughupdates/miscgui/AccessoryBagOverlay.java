@@ -160,7 +160,7 @@ public class AccessoryBagOverlay {
 			}
 
 			if (currentTab == Tabs.TAB_TOTAL) {
-				ArrowPagesUtils.onPageSwitchMouse(
+				if (statsPagesTotal > 1) ArrowPagesUtils.onPageSwitchMouse(
 					guiLeft + xSize + 3,
 					guiTop,
 					new int[]{60, 110},
@@ -170,7 +170,7 @@ public class AccessoryBagOverlay {
 				);
 			}
 			if (currentTab == Tabs.TAB_DUP) {
-				ArrowPagesUtils.onPageSwitchMouse(
+				if (dupePagesTotal > 1) ArrowPagesUtils.onPageSwitchMouse(
 					guiLeft + xSize + 3,
 					guiTop,
 					new int[]{60, 110},
@@ -189,7 +189,7 @@ public class AccessoryBagOverlay {
 
 			}
 			if (currentTab == Tabs.TAB_MISSING) {
-				ArrowPagesUtils.onPageSwitchMouse(
+				if (missingPagesTotal > 1) ArrowPagesUtils.onPageSwitchMouse(
 					guiLeft + xSize + 3,
 					guiTop,
 					new int[]{60, 110},
@@ -282,6 +282,7 @@ public class AccessoryBagOverlay {
 			if (Math.abs(val) >= 1E-5) statPairs.add(new ImmutablePair<>(statNamePretty, val));
 		}
 
+		statsPageActive = Math.min(statsPageActive, (statPairs.size() / 8));
 		for (Pair<String, Integer> pair : statPairs.subList(statsPageActive * 8, statPairs.size())) {
 			Utils.renderAlignedString(
 				pair.getKey(),
@@ -292,8 +293,8 @@ public class AccessoryBagOverlay {
 			if (yIndex++ >= 7 && statPairs.size() > 9) break;
 		}
 
+		statsPagesTotal = (int) Math.ceil(statPairs.size() / 8.0);
 		if (statPairs.size() > 9) {
-			statsPagesTotal = (int) Math.ceil(statPairs.size() / 8.0);
 			GlStateManager.color(1f, 1f, 1f, 1f);
 			ArrowPagesUtils.onDraw(x, y, new int[]{60, 110}, statsPageActive, statsPagesTotal);
 		}
@@ -318,14 +319,15 @@ public class AccessoryBagOverlay {
 			List<ItemStack> sortedDupes =
 				duplicates.stream().sorted((Comparator.comparing(ItemStack::getDisplayName))).collect(Collectors.toList());
 
+			dupePageActive = Math.min(dupePageActive, (duplicates.size() / 8));
 			for (ItemStack duplicate : sortedDupes.subList(dupePageActive * 8, sortedDupes.size())) {
 				String s = duplicate.getDisplayName();
 				Utils.renderShadowedString(s.substring(0, Math.min(s.length(), 35)), x + 84, y + 20 + 11 * yIndex, 158);
 				if (++yIndex >= 8 && sortedDupes.size() > 9) break;
 			}
 
+			dupePagesTotal = (int) Math.ceil(sortedDupes.size() / 8.0);
 			if (sortedDupes.size() > 9) {
-				dupePagesTotal = (int) Math.ceil(sortedDupes.size() / 8.0);
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				ArrowPagesUtils.onDraw(x, y, new int[]{60, 110}, dupePageActive, dupePagesTotal);
 			}
@@ -491,8 +493,8 @@ public class AccessoryBagOverlay {
 				if (++yIndex >= 8 && missing.size() > 9) break;
 			}
 
+			missingPagesTotal = (int) Math.ceil(missing.size() / 8.0);
 			if (missing.size() > 9) {
-				missingPagesTotal = (int) Math.ceil(missing.size() / 8.0);
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				ArrowPagesUtils.onDraw(x, y, new int[]{60, 110}, missingPageActive, missingPagesTotal);
 			}
@@ -921,11 +923,11 @@ public class AccessoryBagOverlay {
 		for (Slot slot : Minecraft.getMinecraft().thePlayer.openContainer.inventorySlots) {
 			ItemStack stack = slot.getStack();
 			if (stack != null && isAccessory(stack)) {
-				if (NotEnoughUpdates.INSTANCE.manager
+				if (!dupe_showPersonal && NotEnoughUpdates.INSTANCE.manager
 					.createItemResolutionQuery()
 					.withItemStack(stack)
 					.resolveInternalName()
-					.matches("PERSONAL_(DELETOR|COMPACTOR)_[0-9]+") && !dupe_showPersonal) continue;
+					.matches("PERSONAL_(DELETOR|COMPACTOR)_[0-9]+")) continue;
 				if (duplicates != null && duplicates
 					.stream()
 					.map(ItemStack::getDisplayName)
