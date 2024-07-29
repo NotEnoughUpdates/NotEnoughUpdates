@@ -45,7 +45,7 @@ public class LocationEdit {
 		desc = "Change the size of NEU's overlays"
 	)
 	@ConfigEditorDropdown(
-		values = {"Default", "Small", "Normal", "Large", "Auto"}
+		values = {"Default", "Small", "Normal", "Large", "Auto", "4x", "5x", "6x", "7x", "8x"}
 	)
 	public int guiScale = 0;
 
