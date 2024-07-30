@@ -42,10 +42,11 @@ public class LocationEdit {
 	@Expose
 	@ConfigOption(
 		name = "Edit Gui Scale",
-		desc = "Change the size of NEU's overlays"
+		desc = "Change the size of NEU's overlays.\n" +
+			"§c4x and higher only supported on large monitors (4k res)"
 	)
 	@ConfigEditorDropdown(
-		values = {"Default", "Small", "Normal", "Large", "Auto"}
+		values = {"Default", "Small", "Normal", "Large", "Auto", "4x", "5x", "6x", "7x", "8x"}
 	)
 	public int guiScale = 0;
 
