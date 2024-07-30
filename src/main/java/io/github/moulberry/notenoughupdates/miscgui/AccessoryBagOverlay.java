@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
@@ -606,14 +607,9 @@ public class AccessoryBagOverlay {
 									if (isAccessory(stack)) {
 										boolean toAdd = true;
 										for (ItemStack accessoryStack : accessoryStacks) {
-											String s = NotEnoughUpdates.INSTANCE.manager
-												.createItemResolutionQuery()
-												.withItemStack(accessoryStack)
-												.resolveInternalName();
-											String ss = NotEnoughUpdates.INSTANCE.manager
-												.createItemResolutionQuery()
-												.withItemStack(stack)
-												.resolveInternalName();
+											String s = NEUManager.getUUIDForItem(accessoryStack);
+
+											String ss = NEUManager.getUUIDForItem(stack);
 											if (ss != null && ss.equals(s)) {
 												toAdd = false;
 												break;
@@ -693,22 +689,23 @@ public class AccessoryBagOverlay {
 					);
 
 					fillDuplicates();
-					if (dupe_highlight) {
-						highlightDuplicates();
-					}
+
 
 					switch (currentTab) {
 						case TAB_BASIC:
 							renderBasicOverlay(guiLeft + xSize + 3, guiTop);
-							return;
+							break;
 						case TAB_TOTAL:
 							renderTotalStatsOverlay(guiLeft + xSize + 3, guiTop);
-							return;
+							break;
 						case TAB_DUP:
 							renderDuplicatesOverlay(guiLeft + xSize + 3, guiTop);
-							return;
+							break;
 						case TAB_MISSING:
 							renderMissingOverlay(guiLeft + xSize + 3, guiTop);
+					}
+					if (dupe_highlight) {
+						highlightDuplicates();
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
