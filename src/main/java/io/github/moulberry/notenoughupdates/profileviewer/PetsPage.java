@@ -465,7 +465,7 @@ public class PetsPage extends GuiProfileViewerPage {
 		if (switchSortingMethodButton.contains(mouseX - guiLeft, mouseY - guiTop)) {
 			sortPetsAlphabetically = !sortPetsAlphabetically;
 			// Causes the pets to be sorted again next frame, this time taking into account the new sorting preference.
-			sortedPets = null;
+			resetCache();
 			Utils.playPressSound();
 		}
 	}
