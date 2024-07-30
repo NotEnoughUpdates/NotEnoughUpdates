@@ -2270,7 +2270,7 @@ public class NEUOverlay extends Gui {
 		JsonObject json = tooltipToDisplay.get();
 		if (json != null) {
 
-			ItemStack stack = manager.jsonToStack(json);
+			ItemStack stack = manager.jsonToStack(json, false, true);
 			{
 				NBTTagCompound tag = stack.getTagCompound();
 				tag.setBoolean("DisablePetExp", true);
