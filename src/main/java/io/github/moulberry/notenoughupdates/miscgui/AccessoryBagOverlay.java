@@ -158,6 +158,7 @@ public class AccessoryBagOverlay {
 				int tabClicked = (mouseY() - guiTop) / 20;
 				tabClicked = Math.min(Math.max(0, tabClicked), Tabs.values().length - 1);
 				currentTab = Tabs.values()[tabClicked];
+				playPressSound();
 			}
 
 			if (currentTab == Tabs.TAB_TOTAL) {
@@ -182,10 +183,12 @@ public class AccessoryBagOverlay {
 
 				if (new Rectangle(guiLeft + xSize + 3 + 120, guiTop + 108, 16, 16).contains(mouseX(), mouseY())) {
 					dupe_highlight = !dupe_highlight;
+					playPressSound();
 				}
 
 				if (new Rectangle(guiLeft + xSize + 3 + 141, guiTop + 108, 16, 16).contains(mouseX(), mouseY())) {
 					dupe_showPersonal = !dupe_showPersonal;
+					playPressSound();
 				}
 
 			}
@@ -202,10 +205,12 @@ public class AccessoryBagOverlay {
 				if (new Rectangle(guiLeft + xSize + 3 + 120, guiTop + 108, 16, 16).contains(mouseX(), mouseY())) {
 					missing_useMP = !missing_useMP;
 					missing = null;
+					playPressSound();
 				}
 				if (new Rectangle(guiLeft + xSize + 3 + 141, guiTop + 108, 16, 16).contains(mouseX(), mouseY())) {
 					missing_showAllTiers = !missing_showAllTiers;
 					missing = null;
+					playPressSound();
 				}
 			}
 
@@ -690,7 +695,6 @@ public class AccessoryBagOverlay {
 
 					fillDuplicates();
 
-
 					switch (currentTab) {
 						case TAB_BASIC:
 							renderBasicOverlay(guiLeft + xSize + 3, guiTop);
@@ -1053,5 +1057,9 @@ public class AccessoryBagOverlay {
 		} catch (NullPointerException ignored) {
 		}
 		return profileSpecific.abiphoneMagicPower;
+	}
+
+	private static void playPressSound() {
+		if (NotEnoughUpdates.INSTANCE.config.misc.guiButtonClicks) Utils.playPressSound();
 	}
 }
