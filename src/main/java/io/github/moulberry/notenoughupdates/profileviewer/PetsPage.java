@@ -27,11 +27,13 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
@@ -42,7 +44,10 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
 
 public class PetsPage extends GuiProfileViewerPage {
 
@@ -51,10 +56,14 @@ public class PetsPage extends GuiProfileViewerPage {
 	private static final int COLLS_YCOUNT = 4;
 	private static final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
 	private static final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
+	private static final Rectangle switchSortingMethodButton = new Rectangle(180, 8, 16, 16);
+
+	private boolean sortPetsAlphabetically = false;
 	private List<JsonObject> sortedPets = null;
 	private List<ItemStack> sortedPetsStack = null;
 	private int selectedPet = -1;
 	private int petsPage = 0;
+
 
 	public PetsPage(GuiProfileViewer instance) {
 		super(instance);
@@ -99,71 +108,10 @@ public class PetsPage extends GuiProfileViewerPage {
 
 		JsonArray pets = petsInfo.get("pets").getAsJsonArray();
 		if (sortedPets == null) {
-			sortedPets = new ArrayList<>();
-			sortedPetsStack = new ArrayList<>();
-			for (int i = 0; i < pets.size(); i++) {
-				sortedPets.add(pets.get(i).getAsJsonObject());
-			}
-			sortedPets.sort((pet1, pet2) -> {
-				String tier1 = pet1.get("tier").getAsString();
-				String tierNum1 = GuiProfileViewer.RARITY_TO_NUM.get(tier1);
-				if (tierNum1 == null) return 1;
-				int tierNum1I = Integer.parseInt(tierNum1);
-				if ("PET_ITEM_TIER_BOOST".equals(Utils.getElementAsString(pet1.get("heldItem"), null))) {
-					PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
-					PetInfoOverlay.Rarity tier = PetInfoOverlay.Rarity.valueOf(pet1.get("tier").getAsString());
-					parsedPet.petType = pet1.get("type").getAsString();
-					parsedPet.rarity = tier;
-					if (Utils.canPetBeTierBoosted(parsedPet, tier.nextRarity())) {
-						tierNum1I += 1;
-					}
-				}
-				float exp1 = pet1.get("exp").getAsFloat();
-
-				String tier2 = pet2.get("tier").getAsString();
-				String tierNum2 = GuiProfileViewer.RARITY_TO_NUM.get(tier2);
-				if (tierNum2 == null) return -1;
-				int tierNum2I = Integer.parseInt(tierNum2);
-				if ("PET_ITEM_TIER_BOOST".equals(Utils.getElementAsString(pet2.get("heldItem"), null))) {
-					PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
-					PetInfoOverlay.Rarity tier = PetInfoOverlay.Rarity.valueOf(pet2.get("tier").getAsString());
-					parsedPet.petType = pet2.get("type").getAsString();
-					parsedPet.rarity = tier;
-					if (Utils.canPetBeTierBoosted(parsedPet, tier.nextRarity())) {
-						tierNum2I += 1;
-					}
-				}
-				float exp2 = pet2.get("exp").getAsFloat();
-
-				if (tierNum1I != tierNum2I) {
-					return tierNum2I - tierNum1I;
-				} else {
-					return (int) (exp2 - exp1);
-				}
-			});
-			for (JsonObject pet : sortedPets) {
-				PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
-				parsedPet.petType = pet.get("type").getAsString();
-				parsedPet.rarity = PetInfoOverlay.Rarity.valueOf(pet.get("tier").getAsString());
-				parsedPet.petItem = Utils.getElementAsString(pet.get("heldItem"), null);
-				if ("PET_ITEM_TIER_BOOST".equals(parsedPet.petItem)) {
-					PetInfoOverlay.Rarity nextRarity = parsedPet.rarity.nextRarity();
-					if (Utils.canPetBeTierBoosted(parsedPet, nextRarity)) parsedPet.rarity = nextRarity;
-				}
-				parsedPet.petLevel = PetLeveling.getPetLevelingForPet(
-					parsedPet.petType,
-					parsedPet.rarity
-				).getPetLevel(pet.get("exp").getAsFloat());
-				parsedPet.petXpType = "unknown";
-				parsedPet.skin = Utils.getElementAsString(pet.get("skin"), null);
-				parsedPet.candyUsed = pet.get("candyUsed").getAsInt();
-				sortedPetsStack.add(ItemUtils.createPetItemstackFromPetInfo(parsedPet));
-				pet.addProperty("level", parsedPet.petLevel.getCurrentLevel());
-				pet.addProperty("currentLevelRequirement", parsedPet.petLevel.getExpRequiredForNextLevel());
-				pet.addProperty("maxXP", parsedPet.petLevel.getExpRequiredForMaxLevel());
-				pet.addProperty("percentageToNextLevel", parsedPet.petLevel.getPercentageToNextLevel());
-			}
+			sortPets(pets);
 		}
+
+		renderSortingButton(guiLeft, guiTop);
 
 		Panorama.drawPanorama(
 			-getInstance().backgroundRotation,
@@ -364,6 +312,117 @@ public class PetsPage extends GuiProfileViewerPage {
 		}
 	}
 
+	private void renderSortingButton(int guiLeft, int guiTop) {
+		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
+		Utils.drawTexturedRect(
+			switchSortingMethodButton.getX() + guiLeft - 2,
+			switchSortingMethodButton.getY() + guiTop - 2,
+			20,
+			20,
+			20 / 256f,
+			0,
+			20 / 256f,
+			0,
+			GL11.GL_NEAREST
+		);
+
+		ItemStack itemStack = new ItemStack(Blocks.hopper);
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+			itemStack,
+			switchSortingMethodButton.getX() + guiLeft,
+			switchSortingMethodButton.getY() + guiTop
+		);
+
+		int mouseX = Utils.getMouseX() - guiLeft;
+		int mouseY = Utils.getMouseY() - guiTop;
+		if (switchSortingMethodButton.contains(mouseX, mouseY)) {
+			getInstance().tooltipToDisplay = Arrays.asList(
+				EnumChatFormatting.GREEN + "Sort",
+				"",
+				(sortPetsAlphabetically
+					? EnumChatFormatting.GRAY + " "
+					: EnumChatFormatting.DARK_AQUA + "▶") + " Pet Exp",
+				(!sortPetsAlphabetically
+					? EnumChatFormatting.GRAY + " "
+					: EnumChatFormatting.DARK_AQUA + "▶") + " Alphabetical",
+				"",
+				EnumChatFormatting.YELLOW + "Click to switch!"
+			);
+		}
+	}
+
+	private void sortPets(JsonArray pets) {
+		sortedPets = new ArrayList<>();
+		sortedPetsStack = new ArrayList<>();
+		for (int i = 0; i < pets.size(); i++) {
+			sortedPets.add(pets.get(i).getAsJsonObject());
+		}
+		sortedPets.sort((pet1, pet2) -> {
+			String petType1 = pet1.get("type").getAsString();
+			String tier1 = pet1.get("tier").getAsString();
+			String tierNum1 = GuiProfileViewer.RARITY_TO_NUM.get(tier1);
+			if (tierNum1 == null) return 1;
+			int tierNum1I = Integer.parseInt(tierNum1);
+			if ("PET_ITEM_TIER_BOOST".equals(Utils.getElementAsString(pet1.get("heldItem"), null))) {
+				PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
+				PetInfoOverlay.Rarity tier = PetInfoOverlay.Rarity.valueOf(pet1.get("tier").getAsString());
+				parsedPet.petType = pet1.get("type").getAsString();
+				parsedPet.rarity = tier;
+				if (Utils.canPetBeTierBoosted(parsedPet, tier.nextRarity())) {
+					tierNum1I += 1;
+				}
+			}
+			float exp1 = pet1.get("exp").getAsFloat();
+
+			String petType2 = pet2.get("type").getAsString();
+			String tier2 = pet2.get("tier").getAsString();
+			String tierNum2 = GuiProfileViewer.RARITY_TO_NUM.get(tier2);
+			if (tierNum2 == null) return -1;
+			int tierNum2I = Integer.parseInt(tierNum2);
+			if ("PET_ITEM_TIER_BOOST".equals(Utils.getElementAsString(pet2.get("heldItem"), null))) {
+				PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
+				PetInfoOverlay.Rarity tier = PetInfoOverlay.Rarity.valueOf(pet2.get("tier").getAsString());
+				parsedPet.petType = pet2.get("type").getAsString();
+				parsedPet.rarity = tier;
+				if (Utils.canPetBeTierBoosted(parsedPet, tier.nextRarity())) {
+					tierNum2I += 1;
+				}
+			}
+			float exp2 = pet2.get("exp").getAsFloat();
+
+			if (tierNum1I != tierNum2I) {
+				return tierNum2I - tierNum1I;
+			} else if (sortPetsAlphabetically && petType1.compareTo(petType2) != 0) {
+				return petType1.compareTo(petType2);
+			} else {
+				return (int) (exp2 - exp1);
+			}
+		});
+
+		for (JsonObject pet : sortedPets) {
+			PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
+			parsedPet.petType = pet.get("type").getAsString();
+			parsedPet.rarity = PetInfoOverlay.Rarity.valueOf(pet.get("tier").getAsString());
+			parsedPet.petItem = Utils.getElementAsString(pet.get("heldItem"), null);
+			if ("PET_ITEM_TIER_BOOST".equals(parsedPet.petItem)) {
+				PetInfoOverlay.Rarity nextRarity = parsedPet.rarity.nextRarity();
+				if (Utils.canPetBeTierBoosted(parsedPet, nextRarity)) parsedPet.rarity = nextRarity;
+			}
+			parsedPet.petLevel = PetLeveling.getPetLevelingForPet(
+				parsedPet.petType,
+				parsedPet.rarity
+			).getPetLevel(pet.get("exp").getAsFloat());
+			parsedPet.petXpType = "unknown";
+			parsedPet.skin = Utils.getElementAsString(pet.get("skin"), null);
+			parsedPet.candyUsed = pet.get("candyUsed").getAsInt();
+			sortedPetsStack.add(ItemUtils.createPetItemstackFromPetInfo(parsedPet));
+			pet.addProperty("level", parsedPet.petLevel.getCurrentLevel());
+			pet.addProperty("currentLevelRequirement", parsedPet.petLevel.getExpRequiredForNextLevel());
+			pet.addProperty("maxXP", parsedPet.petLevel.getExpRequiredForMaxLevel());
+			pet.addProperty("percentageToNextLevel", parsedPet.petLevel.getPercentageToNextLevel());
+		}
+	}
+
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (sortedPets == null) return false;
@@ -401,6 +460,13 @@ public class PetsPage extends GuiProfileViewerPage {
 					petsPage++;
 				}
 			}
+		}
+
+		if (switchSortingMethodButton.contains(mouseX - guiLeft, mouseY - guiTop)) {
+			sortPetsAlphabetically = !sortPetsAlphabetically;
+			// Causes the pets to be sorted again next frame, this time taking into account the new sorting preference.
+			resetCache();
+			Utils.playPressSound();
 		}
 	}
 
