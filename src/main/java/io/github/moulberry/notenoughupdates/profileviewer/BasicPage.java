@@ -723,14 +723,19 @@ public class BasicPage extends GuiProfileViewerPage {
 								EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
 						} else {
 							int maxXp = (int) level.maxXpForLevel;
+							float currentXp = ((level.level % 1) * maxXp);
+							String currentProgressPercentage = StringUtils.formatToTenths((currentXp / maxXp) * 100);
+
 							getInstance()
 								.tooltipToDisplay.add(
 									EnumChatFormatting.GRAY +
 										"Progress: " +
 										EnumChatFormatting.DARK_PURPLE +
-										StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
+										StringUtils.shortNumberFormat(Math.round(currentXp)) +
 										"/" +
-										StringUtils.shortNumberFormat(maxXp));
+										StringUtils.shortNumberFormat(maxXp)
+										+ EnumChatFormatting.DARK_GRAY + " (" + currentProgressPercentage + "% to " +
+										((int) level.level + 1) + ")");
 						}
 						String totalXpS = StringUtils.formatNumber((long) level.totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
