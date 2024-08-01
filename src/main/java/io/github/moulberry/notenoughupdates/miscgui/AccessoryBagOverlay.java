@@ -958,12 +958,14 @@ public class AccessoryBagOverlay {
 	}
 
 	public static void fillDuplicates() {
+		if (duplicates != null) return;
 		JsonObject misc = Constants.MISC;
 		JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 		if (talisman_upgrades_element == null) return;
 		JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
 
 		duplicates = new HashSet<>();
+		ArrayList<String> duplicatesIDs = new ArrayList<>();
 
 		Set<String> prevInternalnames = new HashSet<>();
 		for (ItemStack stack : accessoryStacks) {
@@ -972,6 +974,7 @@ public class AccessoryBagOverlay {
 
 			if (prevInternalnames.contains(internalname)) {
 				duplicates.add(stack);
+				duplicatesIDs.add(internalname);
 				continue;
 			}
 			prevInternalnames.add(internalname);
@@ -984,15 +987,28 @@ public class AccessoryBagOverlay {
 							.createItemResolutionQuery()
 							.withItemStack(stack2)
 							.resolveInternalName();
+						boolean toAdd = false;
+						ArrayList<String> upgradeIDs = new ArrayList<>();
 						for (int j = 0; j < upgrades.size(); j++) {
 							String upgrade = upgrades.get(j).getAsString();
+							upgradeIDs.add(upgrade);
 							if (internalname2.equals(upgrade)) {
 								duplicates.add(stack);
-								break;
+								toAdd = true;
 							}
 						}
+						if (toAdd) duplicatesIDs.addAll(upgradeIDs);
 					}
 				}
+			}
+		}
+		for (ItemStack accessoryStack : accessoryStacks) {
+			String internalID = NotEnoughUpdates.INSTANCE.manager
+				.createItemResolutionQuery()
+				.withItemStack(accessoryStack)
+				.resolveInternalName();
+			if (duplicatesIDs.contains(internalID)) {
+				duplicates.add(accessoryStack);
 			}
 		}
 	}
