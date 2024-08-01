@@ -322,6 +322,7 @@ public class AccessoryBagOverlay {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
 				drawTitle(x, y, "Duplicates: REPO ERROR");
+				Utils.showOutdatedRepoNotification("misc.json");
 				return;
 			}
 		}
@@ -391,11 +392,13 @@ public class AccessoryBagOverlay {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
 				drawTitle(x, y, "Missing: REPO ERROR");
+				Utils.showOutdatedRepoNotification("misc.json");
 				return;
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
 				drawTitle(x, y, "Missing: REPO ERROR");
+				Utils.showOutdatedRepoNotification("misc.json talisman_upgrades");
 				return;
 			}
 			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
@@ -961,7 +964,10 @@ public class AccessoryBagOverlay {
 		if (duplicates != null) return;
 		JsonObject misc = Constants.MISC;
 		JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
-		if (talisman_upgrades_element == null) return;
+		if (talisman_upgrades_element == null) {
+			Utils.showOutdatedRepoNotification("misc.json talisman_upgrades");
+			return;
+		}
 		JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
 
 		duplicates = new HashSet<>();
