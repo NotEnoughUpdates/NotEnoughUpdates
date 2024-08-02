@@ -27,7 +27,12 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson
-import io.github.moulberry.notenoughupdates.util.*
+import io.github.moulberry.notenoughupdates.util.Constants
+import io.github.moulberry.notenoughupdates.util.MC
+import io.github.moulberry.notenoughupdates.util.PetLeveling
+import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.roundToDecimals
+import io.github.moulberry.notenoughupdates.util.toRoman
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -69,7 +74,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
     private var lastActivationTime = 0L
     private var lastViewedChocolateFactory = 0L
 
-    private var muTimeTowerBonus = 0
+    private var muTimeTowerBonus = 0f
 
     private var chocolateSpent = 0L
 
@@ -620,7 +625,7 @@ class HoppityPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstanc
                 RabbitCollectionRarity.MYTHIC.chocolatePerSecond += 5 * foundMythicRabbits.size
             }
             if (mythic == "mu") {
-                muTimeTowerBonus + 0.7
+                muTimeTowerBonus = 0.7f
             }
 
             val specialRabbit = specialRabbits.getAsJsonObject(mythic)
