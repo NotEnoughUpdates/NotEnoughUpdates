@@ -148,6 +148,7 @@ object TablistAPI {
         PROFILE(Regex("Profile: ([A-Za-z]+)( .*)?")),
         ACTIVE_EFFECTS(Regex("Active Effects(: \\(\\d+\\))?")),
         COOKIE_BUFF(Regex("Cookie Buff")),
+        PET(null),
         ;
 
         override fun toString(): String {
