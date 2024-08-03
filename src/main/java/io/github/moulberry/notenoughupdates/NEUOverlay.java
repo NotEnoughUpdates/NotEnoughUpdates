@@ -568,7 +568,7 @@ public class NEUOverlay extends Gui {
 
 					extraScale = 1.3f;
 				} else if (manager.getItemInformation().containsKey(display)) {
-					render = manager.jsonToStack(manager.getItemInformation().get(display), true, true);
+					render = manager.jsonToStack(manager.getItemInformation().get(display), true, false);
 				} else {
 					Item item = Item.itemRegistry.getObject(new ResourceLocation(display.toLowerCase(Locale.ROOT)));
 					if (item != null) {
@@ -2270,7 +2270,7 @@ public class NEUOverlay extends Gui {
 		JsonObject json = tooltipToDisplay.get();
 		if (json != null) {
 
-			ItemStack stack = manager.jsonToStack(json);
+			ItemStack stack = manager.jsonToStack(json, false, true);
 			{
 				NBTTagCompound tag = stack.getTagCompound();
 				tag.setBoolean("DisablePetExp", true);
@@ -2443,10 +2443,15 @@ public class NEUOverlay extends Gui {
 				if (json == null) {
 					return;
 				}
-				ItemStack stack = manager.jsonToStack(json, true, true, false);
-				if (stack == null || !stack.hasEffect()) {
-					return;
+				boolean hasEnch = false;
+				if (json.has("nbttag")) {
+					String jsonString = json.get("nbttag").getAsJsonPrimitive().getAsString();
+					// scuffed way of doing it but improves performance significantly over the old method
+					if (jsonString.contains("ench:[") || jsonString.contains("CustomPotionEffects:[")) {
+							hasEnch = true;
+					}
 				}
+				if (!hasEnch) return;
 
 				GlStateManager.pushMatrix();
 				GlStateManager.enableRescaleNormal();
@@ -2601,7 +2606,7 @@ public class NEUOverlay extends Gui {
 					renderEntity(x + ITEM_SIZE / 2, y + ITEM_SIZE, scale, name, entities);
 				} else {
 					if (!items) return;
-					ItemStack stack = manager.jsonToStack(json, true, true, false);
+					ItemStack stack = manager.jsonToStack(json, true, false, false);
 					if (stack != null) {
 						if (glint) {
 							Utils.drawItemStack(stack, x, y);

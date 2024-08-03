@@ -96,7 +96,7 @@ public class Ingredient {
 			return ItemUtils.getCoinItemStack(count);
 		}
 		JsonObject itemInfo = manager.getItemInformation().get(internalItemId);
-		itemStack = manager.jsonToStack(itemInfo);
+		itemStack = manager.jsonToStack(itemInfo, false, true);
 		itemStack.stackSize = (int) count;
 		return itemStack;
 	}

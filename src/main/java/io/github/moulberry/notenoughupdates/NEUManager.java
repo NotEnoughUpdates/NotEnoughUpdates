@@ -1507,7 +1507,7 @@ public class NEUManager {
 	}
 
 	public ItemStack jsonToStack(JsonObject json, boolean useCache) {
-		return jsonToStack(json, useCache, true);
+		return jsonToStack(json, useCache, false);
 	}
 
 	public ItemStack jsonToStack(JsonObject json, boolean useCache, boolean useReplacements) {
