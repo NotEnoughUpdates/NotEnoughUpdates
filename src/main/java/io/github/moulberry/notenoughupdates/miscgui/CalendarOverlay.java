@@ -356,13 +356,14 @@ public class CalendarOverlay {
 		}
 	}
 
+	//  Blue Whale -> Tiger -> Lion -> Monkey -> Elephant -> Giraffe
 	String[] oringoPets = new String[]{
+		"§6Elephant",
+		"§6Giraffe",
+		"§6Blue Whale",
+		"§6Tiger",
 		"§6Lion",
 		"§6Monkey",
-		"§6Elephant",
-		"§6Tiger",
-		"§6Blue Whale",
-		"§6Giraffe",
 	};
 
 	public String getZooPet(long startTime) {
