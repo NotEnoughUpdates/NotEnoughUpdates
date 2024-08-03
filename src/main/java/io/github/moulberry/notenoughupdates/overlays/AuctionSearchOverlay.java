@@ -87,8 +87,8 @@ public class AuctionSearchOverlay extends GuiScreen {
 		boolean auc2Invalid = auctionInfo2 == null || !auctionInfo2.has("sales");
 
 		if (auc1Invalid && auc2Invalid) return o1.compareTo(o2);
-		if (auc1Invalid) return -1;
-		if (auc2Invalid) return 1;
+		if (auc1Invalid) return 1;
+		if (auc2Invalid) return -1;
 
 		int sales1 = auctionInfo1.get("sales").getAsInt();
 		int sales2 = auctionInfo2.get("sales").getAsInt();

@@ -76,8 +76,8 @@ public class BazaarSearchOverlay extends GuiScreen {
 		boolean auc2Invalid = bazaarInfo2 == null || !bazaarInfo2.has("curr_sell");
 
 		if (auc1Invalid && auc2Invalid) return o1.compareTo(o2);
-		if (auc1Invalid) return -1;
-		if (auc2Invalid) return 1;
+		if (auc1Invalid) return 1;
+		if (auc2Invalid) return -1;
 
 		int sales1 = bazaarInfo1.get("curr_sell").getAsInt();
 		int sales2 = bazaarInfo2.get("curr_sell").getAsInt();
