@@ -33,6 +33,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
@@ -46,7 +47,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 @NEUAutoSubscribe
@@ -72,8 +73,6 @@ public class BetterContainers {
 
 	private static int lastInvHashcode = 0;
 	private static final int lastHashcodeCheck = 0;
-
-	public static HashMap<Integer, ItemStack> itemCache = new HashMap<>();
 
 	public static int profileViewerStackIndex = -1;
 
@@ -103,7 +102,7 @@ public class BetterContainers {
 			if ((texture != null && lastClickedSlot != getClickedSlot()) || !loaded || lastInvHashcode != invHashcode) {
 				lastInvHashcode = invHashcode;
 				lastClickedSlot = getClickedSlot();
-				generateTex(location);
+				generateTex();
 			}
 			if (texture != null && loaded) {
 				lastRenderMillis = currentMillis;
@@ -121,10 +120,6 @@ public class BetterContainers {
 		}
 		GlStateManager.enableBlend();
 		textureManager.bindTexture(location);
-	}
-
-	public static boolean getUsingCache() {
-		return false;
 	}
 
 	public static boolean isBlacklistedInventory() {
@@ -189,47 +184,37 @@ public class BetterContainers {
 		return false;
 	}
 
-	private static void generateTex(ResourceLocation location) {
-		if (!hasItem()) return;
+	static BufferedImage bufferedImageOn = null;
+	static BufferedImage bufferedImageOff = null;
+	static BufferedImage bufferedImageBase = null;
+	static BufferedImage bufferedImageSlot = null;
+	static BufferedImage bufferedImageButton = null;
 
-		loaded = true;
-		Container container = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots;
+	static List<Slot> lastSlots = null;
 
-		if (hasNullPane() && container instanceof ContainerChest) {
-			int backgroundStyle = NotEnoughUpdates.INSTANCE.config.improvedSBMenu.backgroundStyle + 1;
-			backgroundStyle = Math.max(1, Math.min(10, backgroundStyle));
-			try (
-				BufferedReader reader = new BufferedReader(new InputStreamReader(Minecraft
-					.getMinecraft()
-					.getResourceManager()
-					.getResource(
-						new ResourceLocation("notenoughupdates:dynamic_54/style" + backgroundStyle + "/dynamic_config.json"))
-					.getInputStream(), StandardCharsets.UTF_8))
-			) {
-				JsonObject json = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, JsonObject.class);
-				String textColourS = json.get("text-colour").getAsString();
-				textColour = (int) Long.parseLong(textColourS, 16);
-			} catch (Exception e) {
-				textColour = 4210752;
-			}
-
+	private static void generateBufferedImages() {
 			try {
-				BufferedImage bufferedImageOn = ImageIO.read(Minecraft
-					.getMinecraft()
-					.getResourceManager()
-					.getResource(TOGGLE_ON)
-					.getInputStream());
-				BufferedImage bufferedImageOff = ImageIO.read(Minecraft
-					.getMinecraft()
-					.getResourceManager()
-					.getResource(TOGGLE_OFF)
-					.getInputStream());
-
-				BufferedImage bufferedImageBase = ImageIO.read(Minecraft
-					.getMinecraft()
-					.getResourceManager()
-					.getResource(DYNAMIC_54_BASE)
-					.getInputStream());
+				int backgroundStyle = NotEnoughUpdates.INSTANCE.config.improvedSBMenu.backgroundStyle + 1;
+				backgroundStyle = Math.max(1, Math.min(10, backgroundStyle));
+				try (
+					BufferedReader reader = new BufferedReader(new InputStreamReader(Minecraft
+						.getMinecraft()
+						.getResourceManager()
+						.getResource(
+							new ResourceLocation("notenoughupdates:dynamic_54/style" + backgroundStyle + "/dynamic_config.json"))
+						.getInputStream(), StandardCharsets.UTF_8))
+				) {
+					JsonObject json = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, JsonObject.class);
+					String textColourS = json.get("text-colour").getAsString();
+					textColour = (int) Long.parseLong(textColourS, 16);
+				} catch (Exception e) {
+					textColour = 4210752;
+				}
+				bufferedImageOn = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(TOGGLE_ON).getInputStream());
+				bufferedImageOff = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(TOGGLE_OFF).getInputStream());
+				bufferedImageBase = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(DYNAMIC_54_BASE).getInputStream());
+				bufferedImageSlot = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(DYNAMIC_54_SLOT).getInputStream());
+				bufferedImageButton = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(DYNAMIC_54_BUTTON).getInputStream());
 				try {
 					bufferedImageBase = ImageIO.read(Minecraft
 						.getMinecraft()
@@ -239,11 +224,6 @@ public class BetterContainers {
 						.getInputStream());
 				} catch (Exception ignored) {
 				}
-				BufferedImage bufferedImageSlot = ImageIO.read(Minecraft
-					.getMinecraft()
-					.getResourceManager()
-					.getResource(DYNAMIC_54_SLOT)
-					.getInputStream());
 				try {
 					int buttonStyle = NotEnoughUpdates.INSTANCE.config.improvedSBMenu.buttonStyle + 1;
 					buttonStyle = Math.max(1, Math.min(10, buttonStyle));
@@ -255,11 +235,6 @@ public class BetterContainers {
 						.getInputStream());
 				} catch (Exception ignored) {
 				}
-				BufferedImage bufferedImageButton = ImageIO.read(Minecraft
-					.getMinecraft()
-					.getResourceManager()
-					.getResource(DYNAMIC_54_BUTTON)
-					.getInputStream());
 				try {
 					int buttonStyle = NotEnoughUpdates.INSTANCE.config.improvedSBMenu.buttonStyle + 1;
 					buttonStyle = Math.max(1, Math.min(10, buttonStyle));
@@ -271,7 +246,24 @@ public class BetterContainers {
 						.getInputStream());
 				} catch (Exception ignored) {
 				}
+			} catch (Exception e) {
+			}
+	}
 
+	private static void generateTex() {
+		if (!hasItem()) return;
+
+		loaded = true;
+		Container container = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots;
+		List<Slot> inventorySlots = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+
+		if (hasNullPane() && container instanceof ContainerChest) {
+			if (lastSlots != inventorySlots) {
+				generateBufferedImages();
+				lastSlots = inventorySlots;
+			}
+
+			try {
 				int horzTexMult = bufferedImageBase.getWidth() / 256;
 				int vertTexMult = bufferedImageBase.getWidth() / 256;
 				BufferedImage bufferedImageNew = new BufferedImage(
@@ -290,7 +282,7 @@ public class BetterContainers {
 				boolean superpairs = lower.getDisplayName().getUnformattedText().startsWith("Superpairs") &&
 					!lower.getDisplayName().getUnformattedText().contains("Stakes");
 				for (int index = 0; index < size; index++) {
-					ItemStack stack = getStackCached(lower, index);
+					ItemStack stack = getStackFromInvetory(lower, index);
 					buttons[index % 9][index / 9] = isButtonStack(index, stack);
 
 					if (ultrasequencer && stack.getItem() == Items.dye) {
@@ -309,7 +301,7 @@ public class BetterContainers {
 					}
 				}
 				for (int index = 0; index < size; index++) {
-					ItemStack stack = getStackCached(lower, index);
+					ItemStack stack = getStackFromInvetory(lower, index);
 					int xi = index % 9;
 					int yi = index / 9;
 					if (slots[xi][yi] || buttons[xi][yi]) {
@@ -416,18 +408,14 @@ public class BetterContainers {
 			IInventory lower = ((ContainerChest) container).getLowerChestInventory();
 			int size = lower.getSizeInventory();
 			for (int index = 0; index < size; index++) {
-				if (getStackCached(lower, index) != null) return true;
+				if (getStackFromInvetory(lower, index) != null) return true;
 			}
 		}
 		return false;
 	}
 
-	private static ItemStack getStackCached(IInventory lower, int index) {
-		if (getUsingCache()) {
-			return itemCache.get(index);
-		} else {
-			return lower.getStackInSlot(index);
-		}
+	private static ItemStack getStackFromInvetory(IInventory lower, int index) {
+		return lower.getStackInSlot(index);
 	}
 
 	private static boolean hasNullPane() {
@@ -437,7 +425,7 @@ public class BetterContainers {
 			IInventory lower = ((ContainerChest) container).getLowerChestInventory();
 			int size = lower.getSizeInventory();
 			for (int index = 0; index < size; index++) {
-				if (isBlankStack(index, getStackCached(lower, index))) return true;
+				if (isBlankStack(index, getStackFromInvetory(lower, index))) return true;
 			}
 		}
 		return false;
