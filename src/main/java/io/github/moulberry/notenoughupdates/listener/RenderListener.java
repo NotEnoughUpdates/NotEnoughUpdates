@@ -45,8 +45,6 @@ import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
-import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
-import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
@@ -389,17 +387,6 @@ public class RenderListener {
 	@SubscribeEvent
 	public void onGuiScreenDrawPre(GuiScreenEvent.DrawScreenEvent.Pre event) {
 		doInventoryButtons = false;
-
-		if (AuctionSearchOverlay.shouldReplace()) {
-			AuctionSearchOverlay.render();
-			event.setCanceled(true);
-			return;
-		}
-		if (BazaarSearchOverlay.shouldReplace()) {
-			BazaarSearchOverlay.render();
-			event.setCanceled(true);
-			return;
-		}
 
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
@@ -942,16 +929,6 @@ public class RenderListener {
 		if (!event.isCanceled()) {
 			Utils.scrollTooltip(Mouse.getEventDWheel());
 		}
-		if (AuctionSearchOverlay.shouldReplace()) {
-			AuctionSearchOverlay.mouseEvent();
-			event.setCanceled(true);
-			return;
-		}
-		if (BazaarSearchOverlay.shouldReplace()) {
-			BazaarSearchOverlay.mouseEvent();
-			event.setCanceled(true);
-			return;
-		}
 
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
@@ -1109,17 +1086,6 @@ public class RenderListener {
 		}
 		if (PresetWarning.getInstance().shouldShow()) {
 			PresetWarning.getInstance().keyboardInput();
-			event.setCanceled(true);
-			return;
-		}
-
-		if (AuctionSearchOverlay.shouldReplace()) {
-			AuctionSearchOverlay.keyEvent();
-			event.setCanceled(true);
-			return;
-		}
-		if (BazaarSearchOverlay.shouldReplace()) {
-			BazaarSearchOverlay.keyEvent();
 			event.setCanceled(true);
 			return;
 		}
