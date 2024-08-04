@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.overlays;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
-import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -49,13 +48,7 @@ public abstract class TextTabOverlay extends TextOverlay {
 	public void realTick() {
 		shouldUpdateOverlay = shouldUpdate();
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChat)) {
-			int keycode = Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode();
-			boolean currentTabState;
-			if (keycode > 0) {
-				currentTabState = Keyboard.isKeyDown(keycode);
-			} else {
-				currentTabState = false;
-			}
+			boolean currentTabState = Minecraft.getMinecraft().gameSettings.keyBindPlayerList.isKeyDown();
 			if (lastTabState != currentTabState) {
 				lastTabState = currentTabState;
 			}

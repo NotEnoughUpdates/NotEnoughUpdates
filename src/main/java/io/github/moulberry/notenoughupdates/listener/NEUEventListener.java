@@ -117,7 +117,7 @@ public class NEUEventListener {
 				List<JsonObject> list = new ArrayList<>(neu.manager.getItemInformation().values());
 				for (JsonObject json : list) {
 					itemPreloader.submit(() -> {
-						ItemStack stack = neu.manager.jsonToStack(json, true, true);
+						ItemStack stack = neu.manager.jsonToStack(json, true, false);
 						if (stack.getItem() == Items.skull) toPreload.add(stack);
 					});
 				}

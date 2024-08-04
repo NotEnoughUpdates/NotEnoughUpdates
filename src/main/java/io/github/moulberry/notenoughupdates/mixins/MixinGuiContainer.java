@@ -48,9 +48,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -314,7 +312,6 @@ public abstract class MixinGuiContainer extends GuiScreen {
 
 	@Redirect(method = "drawSlot", at = @At(value = "INVOKE", target = TARGET_GETSTACK))
 	public ItemStack drawSlot_getStack(Slot slot) {
-		GuiContainer $this = (GuiContainer) (Object) this;
 
 		ItemStack stack = slot.getStack();
 
@@ -322,28 +319,6 @@ public abstract class MixinGuiContainer extends GuiScreen {
 			ItemStack newStack = EnchantingSolvers.overrideStack(slot.inventory, slot.getSlotIndex(), stack);
 			if (newStack != null) {
 				stack = newStack;
-			}
-		}
-
-		if ($this instanceof GuiChest) {
-			Container container = $this.inventorySlots;
-			if (container instanceof ContainerChest) {
-				IInventory lower = ((ContainerChest) container).getLowerChestInventory();
-				int size = lower.getSizeInventory();
-				if (slot.slotNumber >= size) {
-					return stack;
-				}
-				if (System.currentTimeMillis() - BetterContainers.lastRenderMillis < 300 && stack == null) {
-					for (int index = 0; index < size; index++) {
-						if (lower.getStackInSlot(index) != null) {
-							BetterContainers.itemCache.put(slot.slotNumber, null);
-							return null;
-						}
-					}
-					return BetterContainers.itemCache.get(slot.slotNumber);
-				} else {
-					BetterContainers.itemCache.put(slot.slotNumber, stack);
-				}
 			}
 		}
 		return stack;

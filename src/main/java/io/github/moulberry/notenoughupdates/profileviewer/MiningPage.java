@@ -23,19 +23,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.core.GlScissorStack;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
-import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.hotm.HotmTreeRenderer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.text.WordUtils;
@@ -43,11 +38,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class MiningPage extends GuiProfileViewerPage {
@@ -259,7 +251,7 @@ public class MiningPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.BLUE + "Nucleus Runs Completed:",
-				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(nucleusRunsCompleted),
+				EnumChatFormatting.WHITE + StringUtils.formatNumber(nucleusRunsCompleted),
 				guiLeft + rectStartX,
 				guiTop + rectStartY + originalRectYSize - padding - 1.5F * Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT,
 				rectXSize

@@ -1005,6 +1005,16 @@ public class NEUManager {
 		loadItem(internalname);
 	}
 
+	long lastKeybind = -1;
+
+	public boolean displayGuiItemUsagesKeybind(String internalName) {
+		if (System.currentTimeMillis() - lastKeybind < 500) {
+			return false;
+		}
+		lastKeybind = System.currentTimeMillis();
+		return displayGuiItemUsages(internalName);
+	}
+
 	public boolean displayGuiItemUsages(String internalName) {
 		if (!usagesMap.containsKey(internalName)) return false;
 		List<NeuRecipe> usages = getAvailableUsagesFor(internalName);
@@ -1012,6 +1022,14 @@ public class NEUManager {
 		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(usages, this));
 		RecipeHistory.add(NotEnoughUpdates.INSTANCE.openGui);
 		return true;
+	}
+
+	public boolean displayGuiItemRecipeKeybind(String internalName) {
+		if (System.currentTimeMillis() - lastKeybind < 500) {
+			return false;
+		}
+		lastKeybind = System.currentTimeMillis();
+		return displayGuiItemRecipe(internalName);
 	}
 
 	public boolean displayGuiItemRecipe(String internalName) {
@@ -1495,7 +1513,7 @@ public class NEUManager {
 	}
 
 	public ItemStack jsonToStack(JsonObject json, boolean useCache) {
-		return jsonToStack(json, useCache, true);
+		return jsonToStack(json, useCache, false);
 	}
 
 	public ItemStack jsonToStack(JsonObject json, boolean useCache, boolean useReplacements) {

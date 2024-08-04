@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.KSerializable
 import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.Slot
 import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -116,6 +117,8 @@ object MuseumTooltipManager {
         return profileData.visitedOnce
     }
 
+    private var previousSlots: List<Slot> = emptyList()
+
     @SubscribeEvent
     fun onBackgroundDrawn(event: GuiContainerBackgroundDrawnEvent) {
         val gui = event.container ?: return
@@ -125,14 +128,17 @@ object MuseumTooltipManager {
         val armor = Utils.getOpenChestName().stripControlCodes().endsWith("Armor Sets")
         val slots = chest.inventorySlots
 
-        for (i in 0..53) {
-            val slot = slots[i]
-            if (slot == null || slot.stack == null) continue
-            val item = MuseumUtil.findMuseumItem(slot.stack, armor) ?: continue
-            if (donatedStates.contains(item.state)) {
-                addItemToDonatedList(item.skyblockItemIds)
+        if (!slots.equals(previousSlots)) {
+            for (i in 0..53) {
+                val slot = slots[i]
+                if (slot == null || slot.stack == null) continue
+                val item = MuseumUtil.findMuseumItem(slot.stack, armor) ?: continue
+                if (donatedStates.contains(item.state)) {
+                    addItemToDonatedList(item.skyblockItemIds)
+                }
             }
         }
+        previousSlots = slots
     }
 
     @SubscribeEvent

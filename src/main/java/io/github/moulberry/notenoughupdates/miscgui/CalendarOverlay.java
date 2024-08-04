@@ -91,7 +91,8 @@ public class CalendarOverlay {
 
 	private static boolean enabled = false;
 
-	public static boolean ableToClickCalendar = true;
+	private boolean isTimerRendered = false;
+
 	long thunderStormEpoch = 1692826500000L;
 	long oringoEpoch = 1583153700000L;
 	long oringoInterval = 223200000L;
@@ -356,13 +357,14 @@ public class CalendarOverlay {
 		}
 	}
 
+	//  Blue Whale -> Tiger -> Lion -> Monkey -> Elephant -> Giraffe
 	String[] oringoPets = new String[]{
+		"§6Elephant",
+		"§6Giraffe",
+		"§6Blue Whale",
+		"§6Tiger",
 		"§6Lion",
 		"§6Monkey",
-		"§6Elephant",
-		"§6Tiger",
-		"§6Blue Whale",
-		"§6Giraffe",
 	};
 
 	public String getZooPet(long startTime) {
@@ -691,7 +693,6 @@ public class CalendarOverlay {
 
 		//Daily Events
 		int index = 0;
-		out:
 		for (Map.Entry<Long, Set<SBEvent>> sbEvents : eventMap.entrySet()) {
 			for (SBEvent sbEvent : sbEvents.getValue()) {
 				long timeUntilMillis = sbEvents.getKey() - currentTime;
@@ -1020,7 +1021,7 @@ public class CalendarOverlay {
 
 				guiLeft = (width - xSize) / 2;
 				guiTop = 5;
-				if (mouseX >= guiLeft && mouseX <= guiLeft + xSize && ableToClickCalendar) {
+				if (mouseX >= guiLeft && mouseX <= guiLeft + xSize && isTimerRendered) {
 					if (mouseY >= guiTop && mouseY <= guiTop + ySize) {
 						ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neucalendar");
 					}
@@ -1375,6 +1376,7 @@ public class CalendarOverlay {
 
 	@SubscribeEvent
 	public void onGuiScreenDrawTimer(GuiScreenEvent.DrawScreenEvent.Post event) {
+		isTimerRendered = false;
 		if (drawTimerForeground) {
 			drawTimer();
 		}
@@ -1466,6 +1468,7 @@ public class CalendarOverlay {
 				boolean toastRendered = renderToast(nextEvent, timeUntilNext);
 				GlStateManager.translate(0, 0, -50);
 				if (!toastRendered && !enabled && NotEnoughUpdates.INSTANCE.config.calendar.showEventTimerInInventory) {
+					isTimerRendered = true;
 					List<String> tooltipToDisplay = null;
 					FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 

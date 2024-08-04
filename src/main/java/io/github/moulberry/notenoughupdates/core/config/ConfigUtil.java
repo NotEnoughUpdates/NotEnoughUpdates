@@ -66,15 +66,8 @@ public class ConfigUtil {
 				"Invalid config file '" + file + "'. This will reset the config to default",
 				e
 			).printStackTrace();
-			try {
-				// Try to save a version of the corrupted config for debugging purposes
-				Files.copy(
-					file.toPath(),
-					new File(file.getParent(), file.getName() + ".corrupted").toPath(),
-					StandardCopyOption.REPLACE_EXISTING
-				);
-			} catch (Exception ignored) {
-			}
+			// Try to save a version of the corrupted config for debugging purposes
+			makeBackup(file, ".corrupted");
 		}
 		return null;
 	}
@@ -100,7 +93,7 @@ public class ConfigUtil {
 
 			if (loadConfig(config.getClass(), tempFile, gson, useGzip, false) == null) {
 				System.out.println("Config verification failed for " + tempFile + ", could not save config properly.");
-				tempFile.delete();
+				makeBackup(tempFile, ".backup");
 				return;
 			}
 
@@ -112,8 +105,26 @@ public class ConfigUtil {
 				Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			}
 		} catch (Exception e) {
+			makeBackup(tempFile, ".backup");
 			e.printStackTrace();
-			tempFile.delete();
+		}
+	}
+
+	private static void makeBackup(File file, String suffix) {
+		File backupFile = new File(file.getParent(), file.getName() + "-" + System.currentTimeMillis() + suffix);
+		System.out.println("trying to make backup: " + backupFile.getName());
+
+		try {
+			Files.move(file.toPath(), backupFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+		} catch (IOException _) {
+			try {
+				Files.move(file.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} catch (Exception __) {
+				System.out.println("neu config gone");
+			}
+		}
+		finally {
+			file.delete();
 		}
 	}
 }

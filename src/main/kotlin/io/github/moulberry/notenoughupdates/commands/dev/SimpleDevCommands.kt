@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere
+import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking
 import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.event.ClickEvent
@@ -104,5 +105,11 @@ class SimpleDevCommands {
                     }
             }
         }.withHelp("Reload the NEU data repository from network")
+        event.command("neuresetslotlocking") {
+            thenExecute {
+                SlotLocking.getInstance().resetSlotLocking()
+                reply("Reset NEU slot locking")
+            }
+        }.withHelp("Resets locked slots")
     }
 }

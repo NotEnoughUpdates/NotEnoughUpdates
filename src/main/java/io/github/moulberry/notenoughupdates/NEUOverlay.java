@@ -568,7 +568,7 @@ public class NEUOverlay extends Gui {
 
 					extraScale = 1.3f;
 				} else if (manager.getItemInformation().containsKey(display)) {
-					render = manager.jsonToStack(manager.getItemInformation().get(display), true, true);
+					render = manager.jsonToStack(manager.getItemInformation().get(display), true, false);
 				} else {
 					Item item = Item.itemRegistry.getObject(new ResourceLocation(display.toLowerCase(Locale.ROOT)));
 					if (item != null) {
@@ -1168,13 +1168,13 @@ public class NEUOverlay extends Gui {
 					JsonObject item = manager.getItemInformation().get(internalname.get());
 					if (item != null) {
 						if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
-							manager.displayGuiItemUsages(internalname.get());
+							manager.displayGuiItemUsagesKeybind(internalname.get());
 							return true;
 						} else if (keyPressed == manager.keybindFavourite.getKeyCode()) {
-							toggleFavourite(item.get("internalname").getAsString());
+							toggleFavourite(internalname.get());
 							return true;
 						} else if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
-							manager.showRecipe(item);
+							manager.displayGuiItemRecipeKeybind(internalname.get());
 							return true;
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint &&
 							NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(item)) {
@@ -1426,7 +1426,8 @@ public class NEUOverlay extends Gui {
 				"DUNGEON GLOVES",
 				"DUNGEON CLOAK",
 				"DUNGEON NECKLACE",
-				"DUNGEON BRACELET"
+				"DUNGEON BRACELET",
+				"CARNIVAL MASK"
 			) >= 0;
 		} else if (getSortMode() == SORT_MODE_ACCESSORY) {
 			return checkItemType(item.get("lore").getAsJsonArray(), "ACCESSORY", "HATCESSORY", "DUNGEON ACCESSORY") >= 0;
@@ -2269,7 +2270,7 @@ public class NEUOverlay extends Gui {
 		JsonObject json = tooltipToDisplay.get();
 		if (json != null) {
 
-			ItemStack stack = manager.jsonToStack(json);
+			ItemStack stack = manager.jsonToStack(json, false, true);
 			{
 				NBTTagCompound tag = stack.getTagCompound();
 				tag.setBoolean("DisablePetExp", true);
@@ -2442,10 +2443,15 @@ public class NEUOverlay extends Gui {
 				if (json == null) {
 					return;
 				}
-				ItemStack stack = manager.jsonToStack(json, true, true, false);
-				if (stack == null || !stack.hasEffect()) {
-					return;
+				boolean hasEnch = false;
+				if (json.has("nbttag")) {
+					String jsonString = json.get("nbttag").getAsJsonPrimitive().getAsString();
+					// scuffed way of doing it but improves performance significantly over the old method
+					if (jsonString.contains("ench:[") || jsonString.contains("CustomPotionEffects:[")) {
+							hasEnch = true;
+					}
 				}
+				if (!hasEnch) return;
 
 				GlStateManager.pushMatrix();
 				GlStateManager.enableRescaleNormal();
@@ -2600,7 +2606,7 @@ public class NEUOverlay extends Gui {
 					renderEntity(x + ITEM_SIZE / 2, y + ITEM_SIZE, scale, name, entities);
 				} else {
 					if (!items) return;
-					ItemStack stack = manager.jsonToStack(json, true, true, false);
+					ItemStack stack = manager.jsonToStack(json, true, false, false);
 					if (stack != null) {
 						if (glint) {
 							Utils.drawItemStack(stack, x, y);

@@ -8,9 +8,11 @@ Your PR title will be used in our changelog and should look like one of those:
 
 Add fleebleblub menu
 Fix crash in the gorp overlay
-meta: Remove outdated documentation in CONTRIBUTING.md
+Remove Herobrine
+meta: Make documentation clearer
 
-Use the meta prefix for things that don't affect users and use Add, Fix, or Remove for the rest of your PR.
+Use Add, Fix, or Remove at the start of your PR name.
+If the change doesn't affect end-users, start your PR name with `meta:`, in which case the naming conventions above do not apply.
 
 Do not end your PR title with a .
 

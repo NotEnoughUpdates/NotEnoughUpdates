@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -216,20 +216,20 @@ public class NEUConfig extends Config {
 				NotEnoughUpdates.INSTANCE.openGui = new GuiEnchantColour();
 				return;
 			case 12:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/dn");
+				executeRunnableCommand("/dn");
 				return;
 			case 13:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/pv");
+				executeRunnableCommand("/pv");
 				return;
 			case 15:
 				String command = NotEnoughUpdates.INSTANCE.config.misc.fariySoul ? "/neusouls on" : "/neusouls off";
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command);
+				executeRunnableCommand(command);
 				return;
 			case 16:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls clear");
+				executeRunnableCommand("/neusouls clear");
 				return;
 			case 17:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls unclear");
+				executeRunnableCommand("/neusouls unclear");
 				return;
 			case 20:
 				FairySouls.getInstance().setTrackFairySouls(NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls);
@@ -255,9 +255,23 @@ public class NEUConfig extends Config {
 			case 27:
 				IQTest.testIQ();
 				return;
+			case 28:
+				executeRunnableCommand("/neuresetslotlocking");
+				return;
 			default:
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}
+	}
+
+	/**
+	 * Adds a check for the player being in a world before executing the given command
+	 */
+	private void executeRunnableCommand(String command) {
+		if (Minecraft.getMinecraft().thePlayer == null) {
+			System.err.println("Command (" + command + ") not executed since you are not in a world.");
+			return;
+		}
+		ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command);
 	}
 
 	@Expose
@@ -718,6 +732,13 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public Map<String, Integer> hotmTree = new HashMap<>();
+
+		@Expose
+		public boolean hasConsumedRiftPrism = false;
+
+		@Expose
+		public int abiphoneMagicPower = 0;
+
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

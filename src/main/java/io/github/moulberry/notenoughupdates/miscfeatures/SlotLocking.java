@@ -173,6 +173,8 @@ public class SlotLocking {
 			String openChestName = Utils.getOpenChestName();
 			if (openChestName.trim().equals("Storage")) return null;
 
+			openChestName = Utils.cleanColour(openChestName);
+
 			Matcher matcher = WINDOW_REGEX.matcher(openChestName);
 			Matcher matcherEchest = ECHEST_WINDOW_REGEX.matcher(openChestName);
 
@@ -804,5 +806,14 @@ public class SlotLocking {
 		if (eventSlotNumber == 37 && pairingSlotNumber == 7) return true;
 		if (eventSlotNumber == 36 && pairingSlotNumber == 8) return true;
 		return false;
+	}
+
+	public void resetSlotLocking() {
+		String profileName = SBInfo.getInstance().currentProfile;
+		if (profileName == null) profileName = "generic";
+		SlotLockProfile slotLockProfile = config.profileData.get(profileName);
+		if (slotLockProfile != null) {
+			slotLockProfile.slotLockData[0] = new SlotLockData();
+		}
 	}
 }
