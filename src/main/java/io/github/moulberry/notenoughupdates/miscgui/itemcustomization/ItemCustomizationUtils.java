@@ -88,7 +88,7 @@ public class ItemCustomizationUtils {
 		EnumChatFormatting.AQUA + "This is how fast the dyes will cycle, in ticks",
 		EnumChatFormatting.GRAY + "§6Hypixel §7dyes cycle every 2 ticks",
 		EnumChatFormatting.GRAY + "",
-		EnumChatFormatting.GRAY + "In the §dgradient mode §7this is how many colours between colours",
+		EnumChatFormatting.GRAY + "In the §dgradient mode §7this decides the amount of intermediary colours",
 		EnumChatFormatting.GRAY + "This means if speed is set to 1 it's the same as §aanimated mode"
 	);
 
