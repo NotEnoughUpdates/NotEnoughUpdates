@@ -118,7 +118,7 @@ enum class CropType(val itemId: String, val apiName: String, val displayName: St
     }
 }
 
-enum class VisitorRarity(val displayName: String, var visits: Int = 0, var completed: Int = 0) {
+enum class VisitorRarity(val displayName: String) {
     UNCOMMON("§aUncommon"),
     RARE("§9Rare"),
     LEGENDARY("§6Legendary"),
@@ -126,27 +126,4 @@ enum class VisitorRarity(val displayName: String, var visits: Int = 0, var compl
     SPECIAL("§cSpecial"),
     TOTAL("§7Total"),
     ;
-
-    fun addVisits(visits: Int) {
-        this.visits += visits
-        if (this != TOTAL) {
-            TOTAL.visits += visits
-        }
-    }
-
-    fun addCompleted(completed: Int) {
-        this.completed += completed
-        if (this != TOTAL) {
-            TOTAL.completed += completed
-        }
-    }
-
-    companion object {
-        fun reset() {
-            values().forEach {
-                it.visits = 0
-                it.completed = 0
-            }
-        }
-    }
 }

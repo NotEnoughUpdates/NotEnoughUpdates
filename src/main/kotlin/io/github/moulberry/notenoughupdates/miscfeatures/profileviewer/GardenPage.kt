@@ -61,6 +61,9 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var mouseX: Int = 0
     private var mouseY: Int = 0
 
+    private val visitorRarityToVisits: MutableMap<VisitorRarity, Int> = mutableMapOf()
+    private val visitorRarityToCompleted: MutableMap<VisitorRarity, Int> = mutableMapOf()
+
     val background: ResourceLocation = ResourceLocation("notenoughupdates:profile_viewer/garden/background.png")
 
     companion object {
@@ -150,18 +153,17 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun getVisitorData() {
-        VisitorRarity.reset()
         for ((visitor, amount) in gardenData?.commissionData?.visits ?: return) {
             val rarity = repoData.visitors[visitor]
             if (rarity == null) {
                 println("Unknown visitor: $visitor")
                 continue
             }
-            rarity.addVisits(amount)
+            visitorRarityToVisits[rarity] = visitorRarityToVisits.getOrDefault(rarity, 0) + amount
         }
         for ((visitor, amount) in gardenData?.commissionData?.completed ?: return) {
             val rarity = repoData.visitors[visitor] ?: continue
-            rarity.addCompleted(amount)
+            visitorRarityToCompleted[rarity] = visitorRarityToCompleted.getOrDefault(rarity, 0) + amount
         }
     }
 
@@ -353,8 +355,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         yPos += 20
 
         for (rarity in VisitorRarity.values()) {
-            val formattedVisits = StringUtils.formatNumber(rarity.visits)
-            val formattedCompleted = StringUtils.formatNumber(rarity.completed)
+            val formattedVisits = StringUtils.formatNumber(visitorRarityToVisits.getOrDefault(rarity, 0))
+            val formattedCompleted = StringUtils.formatNumber(visitorRarityToCompleted.getOrDefault(rarity, 0))
             val tooltip = listOf(
                 "§7Visits: §f$formattedVisits",
                 "§7Completed: §f$formattedCompleted",
