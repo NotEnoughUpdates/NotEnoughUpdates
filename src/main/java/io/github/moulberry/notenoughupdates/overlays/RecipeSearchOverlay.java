@@ -26,10 +26,11 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
-import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
+import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -37,31 +38,29 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NEUAutoSubscribe
-public class AuctionSearchOverlay extends GuiScreen {
+public class RecipeSearchOverlay extends GuiScreen {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay.png");
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay_tab_completed.png");
-	private static final ResourceLocation STAR = new ResourceLocation("notenoughupdates:auc_search/star.png");
-	private static final ResourceLocation MASTER_STAR =
-		new ResourceLocation("notenoughupdates:auc_search/master_star.png");
-	private static final ResourceLocation STAR_BOARD = new ResourceLocation("notenoughupdates:auc_search/star_board.png");
 
 	private static final GuiElementTextField textField = new GuiElementTextField("", 200, 20, 0);
 	private static boolean searchFieldClicked = false;
@@ -70,46 +69,18 @@ public class AuctionSearchOverlay extends GuiScreen {
 	private static final Splitter SPACE_SPLITTER = Splitter.on(" ").omitEmptyStrings().trimResults();
 	private static boolean tabCompleted = false;
 	private static int tabCompletionIndex = -1;
-
-	private static int selectedStars = 0;
-	private static boolean atLeast = true;
-	private static boolean onlyLevel100 = false;
+	private static final Pattern ENCHANTED_BOOK_PATTERN = Pattern.compile("(.*)( [IVX]+)");
 
 	private static final int AUTOCOMPLETE_HEIGHT = 118;
 
 	private static final Set<String> autocompletedItems = new LinkedHashSet<>();
 
-	private static final Comparator<String> salesComparator = (o1, o2) -> {
-		JsonObject auctionInfo1 = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(o1);
-		JsonObject auctionInfo2 = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(o2);
-
-		boolean auc1Invalid = auctionInfo1 == null || !auctionInfo1.has("sales");
-		boolean auc2Invalid = auctionInfo2 == null || !auctionInfo2.has("sales");
-
-		if (auc1Invalid && auc2Invalid) return o1.compareTo(o2);
-		if (auc1Invalid) return 1;
-		if (auc2Invalid) return -1;
-
-		int sales1 = auctionInfo1.get("sales").getAsInt();
-		int sales2 = auctionInfo2.get("sales").getAsInt();
-
-		if (sales1 == sales2) return o1.compareTo(o2);
-		if (sales1 > sales2) return -1;
-		return 1;
-	};
-
-	public AuctionSearchOverlay() {
+	public RecipeSearchOverlay() {
 		super();
-	}
-
-	static boolean isGuiOpen = false;
-	public static boolean shouldReplace() {
-		return isGuiOpen; //💀
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		isGuiOpen = true;
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		super.drawDefaultBackground();
 
@@ -117,7 +88,7 @@ public class AuctionSearchOverlay extends GuiScreen {
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
 
-		int h = NotEnoughUpdates.INSTANCE.config.ahTweaks.showPastSearches ? 219 : 145;
+		int h = NotEnoughUpdates.INSTANCE.config.recipeTweaks.showPastSearches ? 219 : 145;
 
 		int topY = height / 4;
 		if (scaledResolution.getScaleFactor() >= 4) {
@@ -127,40 +98,6 @@ public class AuctionSearchOverlay extends GuiScreen {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
 		GlStateManager.color(1, 1, 1, 1);
 		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, 145, 0, 203 / 512f, 0, 145 / 256f, GL11.GL_NEAREST);
-
-		Minecraft.getMinecraft().getTextureManager().bindTexture(STAR_BOARD);
-		Utils.drawTexturedRect(width / 2 + 105, topY + 27, 105, 13, GL11.GL_NEAREST);
-
-		Minecraft.getMinecraft().getTextureManager().bindTexture(STAR);
-		GlStateManager.color(1, 1, 1, 1);
-		int stars = atLeast && selectedStars > 0 ? 10 : selectedStars;
-		for (int i = 0; i < stars; i++) {
-			if (i >= 5) {
-				Minecraft.getMinecraft().getTextureManager().bindTexture(MASTER_STAR);
-				GlStateManager.color(1, 1, 1, 1);
-			}
-			if (i >= selectedStars) {
-				GlStateManager.color(1, 1, 1, 0.3f);
-			}
-			Utils.drawTexturedRect(width / 2 + 108 + 10 * i, topY + 29, 9, 10, GL11.GL_NEAREST);
-		}
-
-		if (selectedStars < 6) {
-			Gui.drawRect(width / 2 + 106, topY + 42, width / 2 + 115, topY + 51, 0xffffffff);
-			Gui.drawRect(width / 2 + 107, topY + 43, width / 2 + 114, topY + 50, 0xff000000);
-			Minecraft.getMinecraft().fontRendererObj.drawString("At Least?", width / 2 + 117, topY + 43, 0xffffff);
-
-			if (atLeast) {
-				Gui.drawRect(width / 2 + 108, topY + 44, width / 2 + 113, topY + 49, 0xffffffff);
-			}
-		}
-
-		Gui.drawRect(width / 2 + 106, topY + 53, width / 2 + 115, topY + 62, 0xffffffff);
-		Gui.drawRect(width / 2 + 107, topY + 54, width / 2 + 114, topY + 61, 0xff000000);
-		if (onlyLevel100) {
-			Gui.drawRect(width / 2 + 108, topY + 55, width / 2 + 113, topY + 60, 0xffffffff);
-		}
-		Minecraft.getMinecraft().fontRendererObj.drawString("Level 100 pets only?", width / 2 + 117, topY + 54, 0xffffff);
 
 		Minecraft.getMinecraft().fontRendererObj.drawString("Enter Query:", width / 2 - 100, topY - 10, 0xdddddd, true);
 
@@ -172,9 +109,6 @@ public class AuctionSearchOverlay extends GuiScreen {
 
 		if (textField.getText().trim().isEmpty()) autocompletedItems.clear();
 
-		//Gui.drawRect(width/2-101, height/4+25, width/2+101, height/4+25+ AUTOCOMPLETE_HEIGHT, 0xffffffff);
-		//Gui.drawRect(width/2-100, height/4+25+1, width/2+100, height/4+25-1+ AUTOCOMPLETE_HEIGHT, 0xff000000);
-
 		List<String> tooltipToDisplay = null;
 
 		int num = 0;
@@ -185,7 +119,6 @@ public class AuctionSearchOverlay extends GuiScreen {
 				JsonObject obj = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(str);
 				if (obj != null) {
 					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(obj, false, true);
-					//Gui.drawRect(width/2-96, height/4+30+num*22, width/2+96, height/4+30+num*22+20, 0xff505050);
 					if (i == tabCompletionIndex) {
 						Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED);
 						GlStateManager.color(1, 1, 1, 1);
@@ -223,11 +156,9 @@ public class AuctionSearchOverlay extends GuiScreen {
 					}
 
 					Minecraft.getMinecraft().fontRendererObj.drawString(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(
-							itemName,
-							165
-						),
-						width / 2 - 74, topY + 35 + num * 22 + 1, 0xdddddd, true
-					);
+						itemName,
+						165
+					), width / 2 - 74, topY + 35 + num * 22 + 1, 0xdddddd, true);
 
 					GlStateManager.enableDepth();
 					Utils.drawItemStack(stack, width / 2 - 94 + 2, topY + 32 + num * 22 + 1);
@@ -242,7 +173,7 @@ public class AuctionSearchOverlay extends GuiScreen {
 			}
 		}
 
-		if (NotEnoughUpdates.INSTANCE.config.ahTweaks.showPastSearches) {
+		if (NotEnoughUpdates.INSTANCE.config.recipeTweaks.showPastSearches) {
 			Minecraft.getMinecraft().fontRendererObj.drawString(
 				"Past Searches:",
 				width / 2 - 100,
@@ -253,12 +184,12 @@ public class AuctionSearchOverlay extends GuiScreen {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
 			Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160, 203, 4, 0, 203 / 512f, 160 / 256f, 163 / 256f, GL11.GL_NEAREST);
 
-			for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.ahTweaks.ahSearchHistorySize; i++) {
+			for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.recipeTweaks.recipeSearchHistorySize; i++) {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
 				Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160 + 4 + i * 10, 203, 10, 0, 203 / 512f, 164 / 256f, 174 / 256f, GL11.GL_NEAREST);
-				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.size()) continue;
+				if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.size()) continue;
 
-				String s = NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.get(i);
+				String s = NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.get(i);
 				Minecraft.getMinecraft().fontRendererObj.drawString(
 					s,
 					width / 2 - 95 + 1,
@@ -268,10 +199,9 @@ public class AuctionSearchOverlay extends GuiScreen {
 				);
 			}
 
-			int size = NotEnoughUpdates.INSTANCE.config.ahTweaks.ahSearchHistorySize;
+			int size = NotEnoughUpdates.INSTANCE.config.recipeTweaks.recipeSearchHistorySize;
 			Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE);
 			Utils.drawTexturedRect(width / 2 - 100, topY - 1 + 160 + 4 + size * 10, 203, 4, 0, 203 / 512f, 215 / 256f, 219 / 256f, GL11.GL_NEAREST);
-
 
 			if (tooltipToDisplay != null) {
 				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
@@ -300,12 +230,11 @@ public class AuctionSearchOverlay extends GuiScreen {
 	}
 
 	public static void close() {
-		isGuiOpen = false;
 		if (tabCompleted) {
 			tabCompletionIndex = -1;
 			tabCompleted = false;
 		}
-		if (NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) {
+		if (NotEnoughUpdates.INSTANCE.config.recipeTweaks.keepPreviousSearch) {
 			search();
 		} else {
 			synchronized (autocompletedItems) {
@@ -317,24 +246,25 @@ public class AuctionSearchOverlay extends GuiScreen {
 		if (!searchStringExtra.isEmpty()) {
 			stringBuilder.append(searchStringExtra);
 		}
-		if (onlyLevel100) {
-			stringBuilder.insert(0, "[Lvl 100] ");
-		}
 
 		String search = stringBuilder.toString();
 
+		if (search.isEmpty()) return;
+
+		Minecraft.getMinecraft().thePlayer.sendChatMessage("/recipe " + search);
+
 		if (!searchString.trim().isEmpty()) {
-			List<String> previousAuctionSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches;
-			previousAuctionSearches.remove(searchString);
-			previousAuctionSearches.remove(searchString);
-			previousAuctionSearches.add(0, searchString);
-			while (previousAuctionSearches.size() > NotEnoughUpdates.INSTANCE.config.ahTweaks.ahSearchHistorySize) {
-				previousAuctionSearches.remove(previousAuctionSearches.size() - 1);
+			List<String> previousRecipeSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches;
+			previousRecipeSearches.remove(searchString);
+			previousRecipeSearches.remove(searchString);
+			previousRecipeSearches.add(0, searchString);
+			while (previousRecipeSearches.size() > NotEnoughUpdates.INSTANCE.config.recipeTweaks.recipeSearchHistorySize) {
+				previousRecipeSearches.remove(previousRecipeSearches.size() - 1);
 			}
 		}
 
-		if (!search.isEmpty()) NotEnoughUpdates.INSTANCE.sendChatMessage("/ahs " + search);
-		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) searchString = "";
+		BetterContainers.recipeSearchStackIndex = -1;
+		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.keepPreviousSearch) searchString = "";
 	}
 
 	private static boolean updateTabCompletedSearch(int key) {
@@ -402,21 +332,17 @@ public class AuctionSearchOverlay extends GuiScreen {
 
 			if (thisSearchId != searchId.get()) return;
 
-			Set<String> auctionableItems = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBinKeySet();
-			auctionableItems.addAll(NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfoKeySet());
+			HashMap<String, Set<NeuRecipe>> items = NotEnoughUpdates.INSTANCE.manager.getAllRecipes();
 
-			if (!auctionableItems.isEmpty()) {
-				title.retainAll(auctionableItems);
-				desc.retainAll(auctionableItems);
+			List<String> keys = new ArrayList<>();
 
-				title.sort(salesComparator);
-				desc.sort(salesComparator);
-			} else {
-				Set<String> bazaarItems = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarKeySet();
-
-				title.removeAll(bazaarItems);
-				desc.removeAll(bazaarItems);
+			for (Map.Entry<String, Set<NeuRecipe>> entry : items.entrySet()) {
+				for (NeuRecipe recipe : entry.getValue()) {
+					if (recipe instanceof CraftingRecipe && recipe.isAvailable()) keys.add(entry.getKey());
+				}
 			}
+			title.retainAll(keys);
+			desc.retainAll(keys);
 
 			if (thisSearchId != searchId.get()) return;
 
@@ -435,7 +361,7 @@ public class AuctionSearchOverlay extends GuiScreen {
 
 		if (keyCode == Keyboard.KEY_ESCAPE) {
 			searchStringExtra = "";
-			if (NotEnoughUpdates.INSTANCE.config.ahTweaks.escFullClose) {
+			if (NotEnoughUpdates.INSTANCE.config.recipeTweaks.escFullClose) {
 				Minecraft.getMinecraft().displayGuiScreen(null);
 			} else {
 				close();
@@ -491,40 +417,11 @@ public class AuctionSearchOverlay extends GuiScreen {
 		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
-		int h = NotEnoughUpdates.INSTANCE.config.ahTweaks.showPastSearches ? 219 : 145;
+		int h = NotEnoughUpdates.INSTANCE.config.recipeTweaks.showPastSearches ? 219 : 145;
 
 		int topY = height / 4;
 		if (scaledResolution.getScaleFactor() >= 4) {
 			topY = height / 2 - h / 2 + 5;
-		}
-
-		if (Mouse.getEventButtonState() && mouseX > width / 2 + 105 && mouseX < width / 2 + 105 + 105 &&
-			mouseY > topY + 27 && mouseY < topY + 40) {
-			int starClicked = 10;
-			for (int i = 1; i <= 10; i++) {
-				if (mouseX < width / 2 + 108 + 10 * i) {
-					starClicked = i;
-					break;
-				}
-			}
-			if (selectedStars == starClicked) {
-				selectedStars = 0;
-			} else {
-				selectedStars = starClicked;
-			}
-			return;
-		}
-
-		if (Mouse.getEventButtonState() && mouseX >= width / 2 + 106 && mouseX <= width / 2 + 116 &&
-			mouseY >= topY + 42 && mouseY <= topY + 50) {
-			atLeast = !atLeast;
-			return;
-		}
-
-		if (Mouse.getEventButtonState() && mouseX >= width / 2 + 106 && mouseX <= width / 2 + 116 &&
-			mouseY >= topY + 53 && mouseY <= topY + 62) {
-			onlyLevel100 = !onlyLevel100;
-			return;
 		}
 
 		if (!Mouse.getEventButtonState() && Mouse.getEventButton() == -1 && searchFieldClicked) {
@@ -555,7 +452,7 @@ public class AuctionSearchOverlay extends GuiScreen {
 						searchString = "";
 						searchStringExtra = "";
 						close();
-						NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("AH Tweaks");
+						NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("Recipe Tweaks");
 					}
 				}
 			} else if (Mouse.getEventButton() == 0) {
@@ -570,41 +467,18 @@ public class AuctionSearchOverlay extends GuiScreen {
 								searchString = Utils.cleanColour(stack.getDisplayName().replaceAll("\\[.+]", "")).trim();
 								if (searchString.contains("Enchanted Book") && str.contains(";")) {
 									String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-									String[] split = Utils.cleanColour(lore[0]).trim().split(" ");
-									split[split.length - 1] = "";
-
-									searchString = StringUtils.join(split, " ").trim();
+									if (lore != null) {
+										String bookName = Utils.cleanColour(lore[0]);
+										Matcher matcher = ENCHANTED_BOOK_PATTERN.matcher(bookName);
+										if (matcher.matches()) {
+											searchString = matcher.group(1);
+										} else {
+											searchString = bookName;
+										}
+									}
 								}
 
-								JsonObject essenceCosts = Constants.ESSENCECOSTS;
 								searchStringExtra = " ";
-								if (essenceCosts != null && essenceCosts.has(str) && selectedStars > 0) {
-									for (int i = 0; i < selectedStars; i++) {
-										if (i > 4) break;
-										searchStringExtra += "\u272A";
-									}
-									switch (selectedStars) {
-										case 6:
-											searchStringExtra += "\u278A";
-											break;
-										case 7:
-											searchStringExtra += "\u278B";
-											break;
-										case 8:
-											searchStringExtra += "\u278C";
-											break;
-										case 9:
-											searchStringExtra += "\u278D";
-											break;
-										case 10:
-											searchStringExtra += "\u278E";
-											break;
-									}
-									if (selectedStars < 6 && !atLeast) {
-										searchStringExtra += " ";
-										searchStringExtra += stack.getItem().getItemStackDisplayName(stack).substring(0, 1);
-									}
-								}
 
 								close();
 								return;
@@ -615,11 +489,11 @@ public class AuctionSearchOverlay extends GuiScreen {
 					}
 				}
 
-				if (NotEnoughUpdates.INSTANCE.config.ahTweaks.showPastSearches) {
-					for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.ahTweaks.ahSearchHistorySize; i++) {
-						if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.size()) break;
+				if (NotEnoughUpdates.INSTANCE.config.recipeTweaks.showPastSearches) {
+					for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.recipeTweaks.recipeSearchHistorySize; i++) {
+						if (i >= NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.size()) break;
 
-						String s = NotEnoughUpdates.INSTANCE.config.hidden.previousAuctionSearches.get(i);
+						String s = NotEnoughUpdates.INSTANCE.config.hidden.previousRecipeSearches.get(i);
 						if (mouseX >= width / 2 - 95 && mouseX <= width / 2 + 95 &&
 							mouseY >= topY + 45 + AUTOCOMPLETE_HEIGHT + i * 10 &&
 							mouseY <= topY + 45 + AUTOCOMPLETE_HEIGHT + i * 10 + 10) {
@@ -636,12 +510,11 @@ public class AuctionSearchOverlay extends GuiScreen {
 
 	@SubscribeEvent
 	public void onSlotClick(SlotClickEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableSearchOverlay) return;
-		if (!Utils.getOpenChestName().startsWith("Auctions")) return;
+		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.enableSearchOverlay) return;
 		ItemStack stack = event.slot.getStack();
-		if (event.slot.slotNumber == 48 && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
+		if ((event.slot.slotNumber == 50 || event.slot.slotNumber == 51) && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch Recipes")) {
 			event.setCanceled(true);
-			NotEnoughUpdates.INSTANCE.openGui = new AuctionSearchOverlay();
+			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
 		}
 	}
 }
