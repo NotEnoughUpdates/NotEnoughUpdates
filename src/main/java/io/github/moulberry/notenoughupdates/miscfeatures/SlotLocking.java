@@ -495,15 +495,23 @@ public class SlotLocking {
 
 			LockedSlot boundLocked = getLockedSlot(boundSlot);
 
+			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
+				return;
+			}
+			GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+			int size = container.inventorySlots.inventorySlots.size();
+
 			int from, to;
 			int id = slotClickEvent.slot.getSlotIndex();
-			if (id >= 9 && 0 <= locked.boundTo && locked.boundTo < 8 && !boundLocked.locked) {
-				from = id;
+			int idChest = id + (size - 45); // adjust the id of the clicked slot to align with the current inventory's number of slots
+
+			if (idChest >= 9 && 0 <= locked.boundTo && locked.boundTo < 8 && !boundLocked.locked) {
+				from = idChest;
 				to = locked.boundTo;
 				if (boundLocked == DEFAULT_LOCKED_SLOT) {
 					LockedSlot[] lockedSlots = getDataForProfile();
 					lockedSlots[locked.boundTo] = new LockedSlot();
-					lockedSlots[locked.boundTo].boundTo = id;
+					lockedSlots[locked.boundTo].boundTo = idChest;
 				} else {
 					boundLocked.boundTo = id;
 				}
