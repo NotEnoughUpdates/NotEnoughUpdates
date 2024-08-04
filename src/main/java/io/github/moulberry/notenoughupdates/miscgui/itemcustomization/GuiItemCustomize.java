@@ -79,12 +79,14 @@ public class GuiItemCustomize extends GuiScreen {
 	String customLeatherColour = null;
 	ArrayList<String> animatedLeatherColours = new ArrayList<>();
 	int animatedDyeTicks = 2;
+	DyeMode dyeMode = DyeMode.CYCLING;
 	private int lastTicks = 2;
 	boolean supportCustomLeatherColour;
 	private String lastCustomItem = "";
 
 	JsonObject animatedDyes = null;
 	JsonObject staticDyes = null;
+	JsonObject vanillaDyes = null;
 	ArrayList<DyeType> dyes = new ArrayList<>();
 	boolean repoError = false;
 
@@ -122,6 +124,7 @@ public class GuiItemCustomize extends GuiScreen {
 					this.animatedDyeTicks = data.animatedDyeTicks;
 				}
 				this.textFieldTickSpeed.setText("" + this.animatedDyeTicks);
+				this.dyeMode = data.dyeMode;
 			} else {
 				this.animatedLeatherColours = new ArrayList<>();
 				this.textFieldTickSpeed.setText("2");
@@ -155,6 +158,7 @@ public class GuiItemCustomize extends GuiScreen {
 			animatedDyes = dyesConst.get("animated").getAsJsonObject();
 			DyeType animatedHeader = new DyeType("Animated Dyes");
 			dyes.add(animatedHeader);
+
 			animatedDyes.entrySet().forEach(entry -> {
 				String key = entry.getKey();
 				JsonArray value = entry.getValue().getAsJsonArray();
@@ -169,6 +173,19 @@ public class GuiItemCustomize extends GuiScreen {
 			dyes.add(staticHeader);
 
 			staticDyes.entrySet().forEach(entry -> {
+				String key = entry.getKey();
+				String value = entry.getValue().getAsString();
+				DyeType dyeType = new DyeType(key, value);
+				dyes.add(dyeType);
+			});
+		}
+
+		if (dyesConst.has("vanilla")) {
+			vanillaDyes = dyesConst.get("vanilla").getAsJsonObject();
+			DyeType staticHeader = new DyeType("Vanilla Dyes");
+			dyes.add(staticHeader);
+
+			vanillaDyes.entrySet().forEach(entry -> {
 				String key = entry.getKey();
 				String value = entry.getValue().getAsString();
 				DyeType dyeType = new DyeType(key, value);
@@ -225,6 +242,8 @@ public class GuiItemCustomize extends GuiScreen {
 				}
 			}
 		}
+
+		data.dyeMode = dyeMode;
 
 		if (!this.textFieldRename.getText().isEmpty()) {
 			data.customName = this.textFieldRename.getText();
@@ -470,6 +489,13 @@ public class GuiItemCustomize extends GuiScreen {
 		Gui.drawRect(xCenter - 39, yTop + 3, xCenter - 3, yTop + 16, 0xff000000 | 0xff6955);
 		Utils.renderShadowedString("§c§lClear", xCenter - 20, yTop + 6, xCenter * 2);
 
+		String dyeModeText = dyeMode == DyeMode.CYCLING ? "§a§lCycling" : "§d§lGradient";
+		int backgroundColour = dyeMode == DyeMode.CYCLING ? 0x0aff00 : 0xff00ef;
+		Gui.drawRect(xCenter + 10, yTop + 2, xCenter + 68, yTop + 19, 0x70000000);
+		Gui.drawRect(xCenter + 10, yTop + 2, xCenter + 68, yTop + 16, 0xff101016);
+		Gui.drawRect(xCenter + 11, yTop + 3, xCenter + 67, yTop + 16, 0xff000000 | backgroundColour);
+		Utils.renderShadowedString(dyeModeText, xCenter + 39, yTop + 6, xCenter * 2);
+
 		yTop += 25;
 
 		enchantGlintCustomColourAnimation.tick();
@@ -557,7 +583,7 @@ public class GuiItemCustomize extends GuiScreen {
 				//Utils.drawItemStack(itemStack, xCenter - 90, yTop);
 				GlStateManager.enableDepth();
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(xCenter - 90, yTop, 0);
+				GlStateManager.translate(xCenter - 89, yTop, 0);
 				GlStateManager.scale(.9, .9, 1);
 				Utils.drawItemStack(itemStack, 0, 0);
 				GlStateManager.popMatrix();
@@ -934,6 +960,13 @@ public class GuiItemCustomize extends GuiScreen {
 						this.animatedLeatherColours = new ArrayList<>(Arrays.asList(dyeType.coloursArray));
 						dataForItem.animatedLeatherColours =
 							Arrays.stream(dataForItem.animatedLeatherColours).filter(Objects::nonNull).toArray(String[]::new);
+						if (dyeType.dyeMode != null) {
+							this.dyeMode = dyeType.dyeMode;
+							dataForItem.dyeMode = dyeType.dyeMode;
+						} else {
+							this.dyeMode = DyeMode.CYCLING;
+							dataForItem.dyeMode = DyeMode.CYCLING;
+						}
 						ItemCustomizeManager.putItemData(itemUUID, dataForItem);
 						NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
 					}
@@ -941,7 +974,7 @@ public class GuiItemCustomize extends GuiScreen {
 			} else if (mouseY >= yTop + 72 && mouseY <= yTop + 72 + 20) {
 				ItemCustomizationUtils.shareContents(
 					"NEUANIMATED",
-					gson.toJson(new DyeType(dataForItem.animatedLeatherColours, dataForItem.animatedDyeTicks))
+					gson.toJson(new DyeType(dataForItem.animatedLeatherColours, dataForItem.animatedDyeTicks, dataForItem.dyeMode))
 				);
 			}
 		}
@@ -978,6 +1011,12 @@ public class GuiItemCustomize extends GuiScreen {
 			updateData();
 		}
 
+		if (mouseX >= xCenter - 23 - 15 + 50 && mouseX <= xCenter + 23 / 2 - 15 + 70 &&
+			mouseY >= topOffset && mouseY <= topOffset + 20) {
+			dyeMode = dyeMode == DyeMode.CYCLING ? DyeMode.GRADIENT : DyeMode.CYCLING;
+			updateData();
+		}
+
 		GuiType buttonClicked = ItemCustomizationUtils.getButtonClicked(mouseX, mouseY, guiType, bottomOffset);
 		if (buttonClicked != null) {
 			guiType = buttonClicked;
@@ -1004,6 +1043,7 @@ public class GuiItemCustomize extends GuiScreen {
 				mouseY <= topOffset + 15) {
 				if (dyes.get(i).hasAnimatedColour()) {
 					animatedLeatherColours.clear();
+					dyeMode = DyeMode.CYCLING;
 					for (JsonElement colour : dyes.get(i).colours) {
 						String string = colour.getAsString();
 						Color colourFromHex = ItemCustomizationUtils.getColourFromHex(string);
@@ -1011,6 +1051,7 @@ public class GuiItemCustomize extends GuiScreen {
 						animatedLeatherColours.add(special);
 					}
 				} else if ((dyes.get(i).hasStaticColour())) {
+					dyeMode = DyeMode.CYCLING;
 					animatedLeatherColours.clear();
 					Color colourFromHex = ItemCustomizationUtils.getColourFromHex(dyes.get(i).colour);
 					String special = SpecialColour.special(0, 0, colourFromHex.getRGB());

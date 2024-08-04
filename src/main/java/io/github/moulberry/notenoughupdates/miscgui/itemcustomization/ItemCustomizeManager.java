@@ -91,6 +91,7 @@ public class ItemCustomizeManager {
 		public String customLeatherColour = null;
 		public String[] animatedLeatherColours = null;
 		public int animatedDyeTicks = 2;
+		public DyeMode dyeMode = DyeMode.CYCLING;
 
 		public String defaultItem = null;
 		public String customItem = null;
