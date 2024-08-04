@@ -367,7 +367,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderGardenLevel() {
         val top = guiTop + 20
-        val left = guiLeft + 198
+        val left = guiLeft + 190
         val level = getLevel(repoData.gardenExperience, gardenData?.gardenExperience?.toLong())
         if (level.maxed) {
             instance.renderGoldBar((left).toFloat(), (top + 10).toFloat(), 80f)
@@ -395,7 +395,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                     "% to ${level.maxLevel})"
         )
         drawAlignedStringWithHover("§2Garden", "§f${level.level.toInt()}", left + 20, top, 60, gardenTooltip)
-        Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 5)
+        Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 6)
 
         val copper = apiData?.garden_player_data?.copper ?: 0
         Utils.renderAlignedString(
@@ -409,7 +409,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderFarmingWeight() {
         val top = guiTop + 51
-        val left = guiLeft + 198
+        val left = guiLeft + 190
 
         if (eliteData == null) {
             drawAlignedStringWithHover("§eFarming Weight", "§eLoading...", left, top, 100, listOf("§eLoading...", "§eTry again soon!"))
