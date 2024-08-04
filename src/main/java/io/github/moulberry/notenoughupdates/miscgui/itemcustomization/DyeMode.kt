@@ -20,6 +20,6 @@
 package io.github.moulberry.notenoughupdates.miscgui.itemcustomization
 
 enum class DyeMode {
-    ANIMATED,
+    CYCLING,
     GRADIENT,
 }

@@ -89,7 +89,7 @@ public class ItemCustomizationUtils {
 		EnumChatFormatting.GRAY + "§6Hypixel §7dyes cycle every 2 ticks",
 		EnumChatFormatting.GRAY + "",
 		EnumChatFormatting.GRAY + "In the §dgradient mode §7this decides the amount of intermediary colours",
-		EnumChatFormatting.GRAY + "This means if speed is set to 1 it's the same as §aanimated mode"
+		EnumChatFormatting.GRAY + "This means if speed is set to 1 it's the same as §aCycling mode"
 	);
 
 	public static ItemStack copy(ItemStack stack, GuiItemCustomize instance) {

@@ -28,7 +28,7 @@ public class DyeType {
 	JsonArray colours = null;
 	String[] coloursArray = null;
 	int ticks = 2;
-	DyeMode dyeMode = DyeMode.ANIMATED;
+	DyeMode dyeMode = DyeMode.CYCLING;
 
 	public DyeType(String displayName) {
 		this.itemId = displayName;

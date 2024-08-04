@@ -79,7 +79,7 @@ public class GuiItemCustomize extends GuiScreen {
 	String customLeatherColour = null;
 	ArrayList<String> animatedLeatherColours = new ArrayList<>();
 	int animatedDyeTicks = 2;
-	DyeMode dyeMode = DyeMode.ANIMATED;
+	DyeMode dyeMode = DyeMode.CYCLING;
 	private int lastTicks = 2;
 	boolean supportCustomLeatherColour;
 	private String lastCustomItem = "";
@@ -489,8 +489,8 @@ public class GuiItemCustomize extends GuiScreen {
 		Gui.drawRect(xCenter - 39, yTop + 3, xCenter - 3, yTop + 16, 0xff000000 | 0xff6955);
 		Utils.renderShadowedString("§c§lClear", xCenter - 20, yTop + 6, xCenter * 2);
 
-		String dyeModeText = dyeMode == DyeMode.ANIMATED ? "§a§lAnimated" : "§d§lGradient";
-		int backgroundColour = dyeMode == DyeMode.ANIMATED ? 0x0aff00 : 0xff00ef;
+		String dyeModeText = dyeMode == DyeMode.CYCLING ? "§a§lCycling" : "§d§lGradient";
+		int backgroundColour = dyeMode == DyeMode.CYCLING ? 0x0aff00 : 0xff00ef;
 		Gui.drawRect(xCenter + 10, yTop + 2, xCenter + 68, yTop + 19, 0x70000000);
 		Gui.drawRect(xCenter + 10, yTop + 2, xCenter + 68, yTop + 16, 0xff101016);
 		Gui.drawRect(xCenter + 11, yTop + 3, xCenter + 67, yTop + 16, 0xff000000 | backgroundColour);
@@ -964,8 +964,8 @@ public class GuiItemCustomize extends GuiScreen {
 							this.dyeMode = dyeType.dyeMode;
 							dataForItem.dyeMode = dyeType.dyeMode;
 						} else {
-							this.dyeMode = DyeMode.ANIMATED;
-							dataForItem.dyeMode = DyeMode.ANIMATED;
+							this.dyeMode = DyeMode.CYCLING;
+							dataForItem.dyeMode = DyeMode.CYCLING;
 						}
 						ItemCustomizeManager.putItemData(itemUUID, dataForItem);
 						NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(stack, itemUUID);
@@ -1013,7 +1013,7 @@ public class GuiItemCustomize extends GuiScreen {
 
 		if (mouseX >= xCenter - 23 - 15 + 50 && mouseX <= xCenter + 23 / 2 - 15 + 70 &&
 			mouseY >= topOffset && mouseY <= topOffset + 20) {
-			dyeMode = dyeMode == DyeMode.ANIMATED ? DyeMode.GRADIENT : DyeMode.ANIMATED;
+			dyeMode = dyeMode == DyeMode.CYCLING ? DyeMode.GRADIENT : DyeMode.CYCLING;
 			updateData();
 		}
 
@@ -1043,7 +1043,7 @@ public class GuiItemCustomize extends GuiScreen {
 				mouseY <= topOffset + 15) {
 				if (dyes.get(i).hasAnimatedColour()) {
 					animatedLeatherColours.clear();
-					dyeMode = DyeMode.ANIMATED;
+					dyeMode = DyeMode.CYCLING;
 					for (JsonElement colour : dyes.get(i).colours) {
 						String string = colour.getAsString();
 						Color colourFromHex = ItemCustomizationUtils.getColourFromHex(string);
@@ -1051,7 +1051,7 @@ public class GuiItemCustomize extends GuiScreen {
 						animatedLeatherColours.add(special);
 					}
 				} else if ((dyes.get(i).hasStaticColour())) {
-					dyeMode = DyeMode.ANIMATED;
+					dyeMode = DyeMode.CYCLING;
 					animatedLeatherColours.clear();
 					Color colourFromHex = ItemCustomizationUtils.getColourFromHex(dyes.get(i).colour);
 					String special = SpecialColour.special(0, 0, colourFromHex.getRGB());
