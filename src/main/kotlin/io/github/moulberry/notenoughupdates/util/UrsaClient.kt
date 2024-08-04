@@ -226,6 +226,10 @@ class UrsaClient(val apiUtil: ApiUtil) {
             KnownRequest("v1/hypixel/v2/museum/${profileUuid}", JsonObject::class.java)
 
         @JvmStatic
+        fun gardenForProfile(profileUuid: String) =
+            KnownRequest("v1/hypixel/v2/garden/${profileUuid}", JsonObject::class.java)
+
+        @JvmStatic
         fun status(uuid: UUID) = KnownRequest("v1/hypixel/v2/status/${uuid}", JsonObject::class.java)
     }
 }
