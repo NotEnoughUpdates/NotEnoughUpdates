@@ -184,7 +184,7 @@ public class AuctionSearchOverlay extends GuiScreen {
 				String str = autoCompletedItemsArray[i];
 				JsonObject obj = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(str);
 				if (obj != null) {
-					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(obj);
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(obj, false, true);
 					//Gui.drawRect(width/2-96, height/4+30+num*22, width/2+96, height/4+30+num*22+20, 0xff505050);
 					if (i == tabCompletionIndex) {
 						Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED);
