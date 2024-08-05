@@ -46,7 +46,7 @@ class SearchCommand {
             }
         }.withHelp("Search the bazaar directly with a custom search GUI")
         event.command("ahs") {
-            thenArgumentExecute("search", StringArgumentType.string()) { search ->
+            thenArgumentExecute("search", RestArgumentType) { search ->
                 NotEnoughUpdates.INSTANCE.sendChatMessage("/ahs ${this[search]}")
             }.withHelp("Search directly without opening the GUI")
             thenExecute {
