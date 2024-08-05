@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.commands.misc
 
-import com.mojang.brigadier.arguments.StringArgumentType
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
@@ -38,7 +37,7 @@ class SearchCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("bzs") {
-            thenArgumentExecute("search", StringArgumentType.string()) { search ->
+            thenArgumentExecute("search", RestArgumentType) { search ->
                 NotEnoughUpdates.INSTANCE.sendChatMessage("/bz ${this[search]}")
             }.withHelp("Search directly without opening the GUI")
             thenExecute {
@@ -72,7 +71,7 @@ class SearchCommand {
             }
         }
         event.command("recipe") {
-            thenArgumentExecute("search", StringArgumentType.string()) { search ->
+            thenArgumentExecute("search", RestArgumentType) { search ->
                 NotEnoughUpdates.INSTANCE.sendChatMessage("/recipe ${this[search]}")
             }
             thenExecute {  ->
