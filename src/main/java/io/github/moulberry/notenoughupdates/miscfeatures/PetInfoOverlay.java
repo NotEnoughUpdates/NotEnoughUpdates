@@ -1174,7 +1174,10 @@ public class PetInfoOverlay extends TextOverlay {
 		JsonObject pets = Constants.PETS;
 		String defaultName = WordUtils.capitalizeFully(petId.replace("_", " "));
 		if (pets == null) return defaultName;
-		if (!pets.has("id_to_display_name")) return defaultName;
+		if (!pets.has("id_to_display_name")) {
+			Utils.showOutdatedRepoNotification("pets.json id_to_display_name");
+			return defaultName;
+		}
 		JsonObject idToDisplayName = pets.get("id_to_display_name").getAsJsonObject();
 		if (idToDisplayName.has(petId)) {
 			return idToDisplayName.get(petId).getAsString();
