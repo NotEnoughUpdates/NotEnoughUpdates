@@ -430,7 +430,7 @@ public class PetInfoOverlay extends TextOverlay {
 		String petName =
 			EnumChatFormatting.GREEN + "[Lvl " + currentPet.petLevel.getCurrentLevel() + "] " +
 				currentPet.rarity.chatFormatting +
-				WordUtils.capitalizeFully(currentPet.petType.replace("_", " "));
+				getPetNameFromId(currentPet.petType);
 
 		float levelPercent = getLevelPercent(currentPet);
 		String lvlStringShort = null;
@@ -998,7 +998,7 @@ public class PetInfoOverlay extends TextOverlay {
 			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(line);
 			if (petNameMatcher.matches()) {
 				String petName = petNameMatcher.group(2);
-				if (!currentPet.petType.replace("_", " ").equalsIgnoreCase(petName)) {
+				if (!getPetNameFromId(currentPet.petType).equalsIgnoreCase(petName)) {
 					break;
 				}
 
@@ -1168,5 +1168,17 @@ public class PetInfoOverlay extends TextOverlay {
 			rarity = Rarity.getRarityFromColor(col);
 		}
 		return rarity;
+	}
+
+	private static String getPetNameFromId(String petId) {
+		JsonObject pets = Constants.PETS;
+		String defaultName = WordUtils.capitalizeFully(petId.replace("_", " "));
+		if (pets == null) return defaultName;
+		if (!pets.has("id_to_display_name")) return defaultName;
+		JsonObject idToDisplayName = pets.get("id_to_display_name").getAsJsonObject();
+		if (idToDisplayName.has(petId)) {
+			return idToDisplayName.get(petId).getAsString();
+		}
+		return defaultName;
 	}
 }
