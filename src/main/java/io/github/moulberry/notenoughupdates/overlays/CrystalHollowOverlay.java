@@ -400,7 +400,7 @@ public class CrystalHollowOverlay extends TextOverlay {
 		Matcher crystalPlacedMatcher = crystalPlacedPattern.matcher(message);
 		Matcher crystalPlaceMatcher = crystalPlacePattern.matcher(message);
 		Matcher crystalReclaimMatcher = crystalReclaimPattern.matcher(message);
-		if (message.equals("  You've earned a Crystal Loot Bundle!"))
+		if (message.startsWith("  CRYSTAL NUCLEUS LOOT BUNDLE"))
 			hidden.crystals.replaceAll((k, v) -> 0);
 		if (crystalNotPlacedMatcher.matches() && hidden.crystals.containsKey(crystalNotPlacedMatcher.group("crystal"))) {
 			hidden.crystals.put(crystalNotPlacedMatcher.group("crystal"), 1);
