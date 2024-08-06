@@ -512,7 +512,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 	public void onSlotClick(SlotClickEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.enableSearchOverlay) return;
 		ItemStack stack = event.slot.getStack();
-		if ((event.slot.slotNumber == 50 || event.slot.slotNumber == 51) && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch Recipes")) {
+		if ((event.slot.slotNumber == 50 || event.slot.slotNumber == 51) && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch Recipes")) {
 			event.setCanceled(true);
 			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
 		}

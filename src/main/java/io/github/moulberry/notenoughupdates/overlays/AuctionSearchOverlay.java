@@ -639,7 +639,7 @@ public class AuctionSearchOverlay extends GuiScreen {
 		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableSearchOverlay) return;
 		if (!Utils.getOpenChestName().startsWith("Auctions")) return;
 		ItemStack stack = event.slot.getStack();
-		if (event.slot.slotNumber == 48 && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
+		if (event.slot.slotNumber == 48 && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
 			event.setCanceled(true);
 			NotEnoughUpdates.INSTANCE.openGui = new AuctionSearchOverlay();
 		}

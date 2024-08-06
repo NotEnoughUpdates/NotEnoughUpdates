@@ -521,7 +521,7 @@ public class BazaarSearchOverlay extends GuiScreen {
 		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.enableSearchOverlay) return;
 		if (!Utils.getOpenChestName().startsWith("Bazaar ➜")) return;
 		ItemStack stack = event.slot.getStack();
-		if (event.slot.slotNumber == 45 && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
+		if (event.slot.slotNumber == 45 && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
 			event.setCanceled(true);
 			NotEnoughUpdates.INSTANCE.openGui = new BazaarSearchOverlay();
 		}
