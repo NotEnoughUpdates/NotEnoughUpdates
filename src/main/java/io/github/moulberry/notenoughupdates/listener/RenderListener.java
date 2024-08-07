@@ -27,35 +27,17 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
-import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
-import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
-import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
-import io.github.moulberry.notenoughupdates.miscfeatures.HexPriceWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
+import io.github.moulberry.notenoughupdates.miscfeatures.*;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.RepoExporters;
-import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
-import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
-import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
-import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
+import io.github.moulberry.notenoughupdates.miscgui.*;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
-import io.github.moulberry.notenoughupdates.overlays.RecipeSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
-import io.github.moulberry.notenoughupdates.util.ItemUtils;
-import io.github.moulberry.notenoughupdates.util.NotificationHandler;
-import io.github.moulberry.notenoughupdates.util.Rectangle;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
-import io.github.moulberry.notenoughupdates.util.ScreenReplacer;
-import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -73,11 +55,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -90,18 +68,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -955,15 +922,6 @@ public class RenderListener {
 						});
 					}
 				}
-			} else if (containerName.equals("Craft Item") && BetterContainers.recipeSearchStackIndex != -1 &&
-				((AccessorGuiContainer) eventGui).doIsMouseOverSlot(
-					cc.inventorySlots.get(BetterContainers.recipeSearchStackIndex),
-					mouseX,
-					mouseY
-				) &&
-				Mouse.getEventButton() >= 0) {
-				event.setCanceled(true);
-				NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
 			}
 		}
 

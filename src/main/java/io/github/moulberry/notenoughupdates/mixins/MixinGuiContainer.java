@@ -26,13 +26,7 @@ import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEv
 import io.github.moulberry.notenoughupdates.events.IsSlotBeingHoveredEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
-import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneFavourites;
-import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
-import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
-import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import io.github.moulberry.notenoughupdates.miscfeatures.*;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
@@ -47,7 +41,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
@@ -70,16 +63,10 @@ import java.util.Set;
 @Mixin(value = GuiContainer.class, priority = 500)
 public abstract class MixinGuiContainer extends GuiScreen {
 	private static boolean hasProfileViewerStack = false;
-	private static boolean hasRecipeSearchStack = false;
 	private static final ItemStack profileViewerStack = Utils.createItemStack(
 		Item.getItemFromBlock(Blocks.command_block),
 		EnumChatFormatting.GREEN + "Profile Viewer",
 		EnumChatFormatting.YELLOW + "Click to open NEU profile viewer!"
-	);
-	private static final ItemStack recipeSearchStack = Utils.createItemStack(
-		Items.golden_pickaxe,
-		EnumChatFormatting.GREEN + "Recipe Search",
-		EnumChatFormatting.YELLOW + "Click to open Recipe Search!"
 	);
 
 	@Inject(method = "drawSlot", at = @At("RETURN"))
@@ -135,41 +122,9 @@ public abstract class MixinGuiContainer extends GuiScreen {
 					}
 				}
 			}
-		} else if (!hasRecipeSearchStack && $this instanceof GuiChest && slot.getSlotIndex() == 32 &&
-			BetterContainers.isBlankStack(-1, slot.getStack())) {
-			BetterContainers.recipeSearchStackIndex = -1;
-			hasRecipeSearchStack = true;
-
-			GuiChest eventGui = (GuiChest) $this;
-			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.equals("Craft Item") && cc.inventorySlots.size() >= 54) {
-				ci.cancel();
-
-				this.zLevel = 100.0F;
-				this.itemRender.zLevel = 100.0F;
-
-				GlStateManager.enableDepth();
-				this.itemRender.renderItemAndEffectIntoGUI(
-					recipeSearchStack,
-					slot.xDisplayPosition,
-					slot.yDisplayPosition
-				);
-				this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, recipeSearchStack,
-					slot.xDisplayPosition, slot.yDisplayPosition, ""
-				);
-
-				this.itemRender.zLevel = 0.0F;
-				this.zLevel = 0.0F;
-				BetterContainers.recipeSearchStackIndex = slot.getSlotIndex();
-			} else {
-				BetterContainers.recipeSearchStackIndex = -1;
-			}
 		} else if (slot.getSlotIndex() == 0) {
 			hasProfileViewerStack = false;
-			hasRecipeSearchStack = false;
 		} else if (!($this instanceof GuiChest)) {
-			BetterContainers.recipeSearchStackIndex = -1;
 			BetterContainers.profileViewerStackIndex = -1;
 		}
 
@@ -215,8 +170,6 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	public ItemStack adjustItemStack(ItemStack itemStack) {
 		if (theSlot.slotNumber == BetterContainers.profileViewerStackIndex) {
 			return profileViewerStack;
-		} else if (theSlot.slotNumber == BetterContainers.recipeSearchStackIndex) {
-			return recipeSearchStack;
 		} else {
 			return itemStack;
 		}

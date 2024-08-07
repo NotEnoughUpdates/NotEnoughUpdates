@@ -75,7 +75,6 @@ public class BetterContainers {
 	private static final int lastHashcodeCheck = 0;
 
 	public static int profileViewerStackIndex = -1;
-	public static int recipeSearchStackIndex = -1;
 
 	public static void clickSlot(int slot) {
 		clickedSlotMillis = System.currentTimeMillis();
@@ -142,10 +141,6 @@ public class BetterContainers {
 			return false;
 		}
 
-		if (index != -1 && index == recipeSearchStackIndex) {
-			return false;
-		}
-
 		return stack != null && stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) &&
 			stack.getItemDamage() == 15 &&
 			stack.getDisplayName() != null && stack.getDisplayName().trim().isEmpty();
@@ -157,10 +152,6 @@ public class BetterContainers {
 
 	public static boolean isButtonStack(int index, ItemStack stack) {
 		if (index == profileViewerStackIndex) {
-			return true;
-		}
-
-		if (index == recipeSearchStackIndex) {
 			return true;
 		}
 
