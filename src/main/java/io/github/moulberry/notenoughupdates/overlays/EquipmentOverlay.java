@@ -263,13 +263,16 @@ public class EquipmentOverlay {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
 			GlStateManager.color(1, 1, 1, 1);
 			Utils.drawTexturedRect(overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y, 16, 16, GL11.GL_NEAREST);
+			for (int i = 0; i < 4; i++) {
+				Utils.drawTexturedRect(overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y + 18 * i, 16, 16, GL11.GL_NEAREST);
+			}
 
 			tooltipToDisplay = Lists.newArrayList(
 				EnumChatFormatting.RED + "Warning",
 				EnumChatFormatting.GREEN + "You need to open /equipment",
 				EnumChatFormatting.GREEN + "to cache your armour"
 			);
-			if (Utils.isWithinRect(mouseX, mouseY, overlayLeft + 8, overlayTop + 8, 16, 16)
+			if (Utils.isWithinRect(mouseX, mouseY, overlayLeft + 8, overlayTop + 8, 16, 70)
 				&& NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand
 				&& Mouse.getEventButtonState()
 				&& Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
