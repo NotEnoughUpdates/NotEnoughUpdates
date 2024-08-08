@@ -73,7 +73,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Enable Monkey Pet Check",
-		desc = "Will check using the API to check what pet you're using\nto determine the cooldown based off of if you have a monkey pet."
+		desc = "Determines the cooldown based off of if you have a monkey pet."
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
