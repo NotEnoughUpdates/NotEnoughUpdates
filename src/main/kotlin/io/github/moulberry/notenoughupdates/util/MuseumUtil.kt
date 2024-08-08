@@ -104,6 +104,7 @@ object MuseumUtil {
             "TROUSERS",
             "TUNIC",
             "SLIPPERS",
+            "HAT",
         )
         val monochromeName = NEUManager.cleanForTitleMapSearch(displayName)
         val results = ItemResolutionQuery.findInternalNameCandidatesForDisplayName(displayName)
