@@ -25,8 +25,8 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
-import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -36,6 +36,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
@@ -43,12 +44,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -263,7 +259,6 @@ public class RecipeSearchOverlay extends GuiScreen {
 			}
 		}
 
-		BetterContainers.recipeSearchStackIndex = -1;
 		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.keepPreviousSearch) searchString = "";
 	}
 
@@ -516,5 +511,23 @@ public class RecipeSearchOverlay extends GuiScreen {
 			event.setCanceled(true);
 			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
 		}
+		if (event.slot.slotNumber == 32 && Utils.getOpenChestName().equals("Craft Item")) {
+			event.setCanceled(true);
+			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
+		}
 	}
+
+	private static final ItemStack recipeSearchStack = Utils.createItemStack(
+		Items.golden_pickaxe,
+		EnumChatFormatting.GREEN + "Recipe Search",
+		EnumChatFormatting.YELLOW + "Click to open Recipe Search!"
+	);
+
+	@SubscribeEvent
+	public void slotReplace(ReplaceItemEvent event) {
+		if (event.getSlotNumber() != 32 || !Utils.getOpenChestName().equals("Craft Item")) return;
+		event.replaceWith(recipeSearchStack);
+	}
+
+
 }

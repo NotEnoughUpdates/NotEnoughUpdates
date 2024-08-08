@@ -46,10 +46,8 @@ import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
-import io.github.moulberry.notenoughupdates.overlays.RecipeSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
@@ -930,41 +928,6 @@ public class RenderListener {
 			GuiChest eventGui = (GuiChest) guiScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.contains(" Profile") && BetterContainers.profileViewerStackIndex != -1 &&
-				((AccessorGuiContainer) eventGui).doIsMouseOverSlot(
-					cc.inventorySlots.get(BetterContainers.profileViewerStackIndex),
-					mouseX,
-					mouseY
-				) &&
-				Mouse.getEventButton() >= 0) {
-				event.setCanceled(true);
-				if (Mouse.getEventButtonState() && eventGui.inventorySlots.inventorySlots.get(22).getStack() != null &&
-					eventGui.inventorySlots.inventorySlots.get(22).getStack().getTagCompound() != null) {
-					NBTTagCompound tag = eventGui.inventorySlots.inventorySlots.get(22).getStack().getTagCompound();
-					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
-						String username = tag.getCompoundTag("SkullOwner").getString("Name");
-						Utils.playPressSound();
-						NotEnoughUpdates.profileViewer.loadPlayerByName(username, profile -> {
-							if (profile == null) {
-								Utils.addChatMessage("${RED}Invalid player name. Maybe the API is down?");
-							} else {
-								profile.resetCache();
-								ProfileViewerUtils.saveSearch(username);
-								NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
-							}
-						});
-					}
-				}
-			} else if (containerName.equals("Craft Item") && BetterContainers.recipeSearchStackIndex != -1 &&
-				((AccessorGuiContainer) eventGui).doIsMouseOverSlot(
-					cc.inventorySlots.get(BetterContainers.recipeSearchStackIndex),
-					mouseX,
-					mouseY
-				) &&
-				Mouse.getEventButton() >= 0) {
-				event.setCanceled(true);
-				NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
-			}
 		}
 
 		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
