@@ -199,6 +199,9 @@ public class ItemResolutionQuery {
 		if (guiName.equals("Catacombs RNG Meter")) {
 			return resolveItemInCatacombsRngMeter();
 		}
+		if (guiName.startsWith("Choose Pet")) {
+			return findInternalNameByDisplayName(displayName, false);
+		}
 		return null;
 	}
 
