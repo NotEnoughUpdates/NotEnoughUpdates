@@ -95,7 +95,16 @@ object MuseumUtil {
             "HELMET",
             "LEGGINGS",
             "CHESTPLATE",
-            "BOOTS"
+            "BOOTS",
+            "NECKLACE",
+            "CLOAK",
+            "BELT",
+            "GAUNTLET",
+            "HOOD",
+            "TROUSERS",
+            "TUNIC",
+            "SLIPPERS",
+            "HAT",
         )
         val monochromeName = NEUManager.cleanForTitleMapSearch(displayName)
         val results = ItemResolutionQuery.findInternalNameCandidatesForDisplayName(displayName)
@@ -107,7 +116,34 @@ object MuseumUtil {
             }
             .toSet()
         return armorSlots.map { armorSlot ->
-            results.singleOrNull { armorSlot in it }
+            var singleOrNull = results.singleOrNull { armorSlot in it }
+            if (singleOrNull == null) {
+                convertArmourNameToId(monochromeName, armorSlot)
+            } else {
+                singleOrNull
+            }
+        }
+    }
+
+    fun convertArmourNameToId(name: String, armorSlot: String): String? {
+        var internalId = ""
+        if (name.contains("perfect ")) {
+            try {
+                Utils.parseRomanNumeral(name.replace("perfect armor  tier ", "").uppercase()).let {
+                    internalId = "PERFECT_${armorSlot}_$it"
+                }
+            } catch (_: Exception) {
+            }
+        } else if (name.contains("divan")) {
+            internalId = "DIVAN_$armorSlot"
+        } else {
+            internalId = "${name.replace("armor",  "").uppercase().replace(" ", "_")}$armorSlot"
+        }
+        val findInternalId = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(internalId).resolveToItemStack()
+        return if (findInternalId != null) {
+            internalId
+        } else {
+            null
         }
     }
 
