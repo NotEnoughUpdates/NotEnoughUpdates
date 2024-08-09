@@ -20,6 +20,8 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.events.SignSubmitEvent;
+import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
+import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatComponentText;
@@ -27,7 +29,9 @@ import net.minecraft.util.IChatComponent;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiEditSign.class)
 public class MixinGuiEditSign {
@@ -45,6 +49,12 @@ public class MixinGuiEditSign {
 			arr[i] = new ChatComponentText(signSubmitEvent.lines[i]);
 		}
 		return arr;
+	}
+
+	@Inject(method = "onGuiClosed", at = @At(value = "HEAD"), cancellable = true)
+	public void onGuiClosed(CallbackInfo ci) {
+		if (AuctionSearchOverlay.shouldReplace()) ci.cancel();
+		if (BazaarSearchOverlay.shouldReplace()) ci.cancel();
 	}
 
 }

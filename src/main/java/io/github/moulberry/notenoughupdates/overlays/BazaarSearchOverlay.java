@@ -26,14 +26,21 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiEditSign;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C12PacketUpdateSign;
+import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -50,7 +57,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @NEUAutoSubscribe
-public class BazaarSearchOverlay extends GuiScreen {
+public class BazaarSearchOverlay extends GuiEditSign {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay.png");
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation(
@@ -63,6 +70,7 @@ public class BazaarSearchOverlay extends GuiScreen {
 	private static final Splitter SPACE_SPLITTER = Splitter.on(" ").omitEmptyStrings().trimResults();
 	private static boolean tabCompleted = false;
 	private static int tabCompletionIndex = -1;
+	private TileEntitySign tileSign;
 
 	private static final int AUTOCOMPLETE_HEIGHT = 118;
 
@@ -88,18 +96,36 @@ public class BazaarSearchOverlay extends GuiScreen {
 	};
 
 	public BazaarSearchOverlay() {
-		super();
+		super(new TileEntitySign());
 	}
 
-	static boolean isGuiOpen = false;
+	public BazaarSearchOverlay(TileEntitySign tes) {
+		super(tes);
+		this.tileSign = tes;
+	}
+
 	public static boolean shouldReplace() {
-		return isGuiOpen; //this whole method is just so skyhanni doesnt crash 💀
+		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return false;
+		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.enableSearchOverlay) return false;
+
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiEditSign)) {
+			if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.keepPreviousSearch) searchString = "";
+			return false;
+		}
+
+		String lastContainer = Utils.getLastOpenChestName();
+		if (!lastContainer.startsWith("Bazaar ➜ ")) return false;
+
+		TileEntitySign tes = ((AccessorGuiEditSign) Minecraft.getMinecraft().currentScreen).getTileSign();
+
+		if (tes == null) return false;
+		if (tes.getPos().getY() != 0) return false;
+		if (!tes.signText[2].getUnformattedText().equals("^^^^^^^^^^^^^^^")) return false;
+		return tes.signText[3].getUnformattedText().equals("Enter query");
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		isGuiOpen = true;
-		super.drawScreen(mouseX, mouseY, partialTicks);
 		super.drawDefaultBackground();
 
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
@@ -248,8 +274,7 @@ public class BazaarSearchOverlay extends GuiScreen {
 		return null;
 	}
 
-	public static void close() {
-		isGuiOpen = false;
+	public static void close(TileEntitySign tes) {
 		if (tabCompleted) {
 			tabCompletionIndex = -1;
 			tabCompleted = false;
@@ -279,8 +304,54 @@ public class BazaarSearchOverlay extends GuiScreen {
 			}
 		}
 
-		if (!search.isEmpty()) NotEnoughUpdates.INSTANCE.sendChatMessage("/bz " + search);
+		if (tes != null) {
+			if (search.length() <= 15) {
+				tes.signText[0] = new ChatComponentText(search.substring(0, Math.min(search.length(), 15)));
+			} else {
+				List<String> words = SPACE_SPLITTER.splitToList(search);
+
+				StringBuilder line0 = new StringBuilder();
+				StringBuilder line1 = new StringBuilder();
+
+				int currentLine = 0;
+				for (String word : words) {
+					if (currentLine == 0) {
+						if (line0.length() + word.length() > 15) {
+							currentLine++;
+						} else {
+							line0.append(word);
+							if (line0.length() >= 15) {
+								currentLine++;
+								continue;
+							} else {
+								line0.append(" ");
+							}
+						}
+					}
+					if (currentLine == 1) {
+						if (line1.length() + word.length() > 15) {
+							line1.append(word, 0, 15 - line1.length());
+							break;
+						} else {
+							line1.append(word);
+							if (line1.length() >= 15) {
+								break;
+							} else {
+								line1.append(" ");
+							}
+						}
+					}
+					if (line1.length() >= 15) break;
+				}
+
+				tes.signText[0] = new ChatComponentText(line0.toString().trim());
+				tes.signText[1] = new ChatComponentText(line1.toString().trim());
+			}
+		} else {
+			if (!search.isEmpty()) NotEnoughUpdates.INSTANCE.sendChatMessage("/bz " + search);
+		}
 		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.keepPreviousSearch) searchString = "";
+		Minecraft.getMinecraft().displayGuiScreen(null);
 	}
 
 	private static boolean updateTabCompletedSearch(int key) {
@@ -369,7 +440,7 @@ public class BazaarSearchOverlay extends GuiScreen {
 	}
 
 	@Override
-	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+	protected void keyTyped(char typedChar, int keyCode) {
 		super.keyTyped(typedChar, keyCode);
 		boolean ignoreKey = false;
 
@@ -378,12 +449,12 @@ public class BazaarSearchOverlay extends GuiScreen {
 			if (NotEnoughUpdates.INSTANCE.config.bazaarTweaks.escFullClose) {
 				Minecraft.getMinecraft().displayGuiScreen(null);
 			} else {
-				close();
+				close(this.tileSign);
 			}
 			return;
 		} else if (keyCode == Keyboard.KEY_RETURN) {
 			searchStringExtra = "";
-			close();
+			close(this.tileSign);
 			return;
 		} else if (keyCode == Keyboard.KEY_TAB) {
 			//autocomplete to first item in the list
@@ -461,11 +532,11 @@ public class BazaarSearchOverlay extends GuiScreen {
 						}
 					} else if (mouseX < width / 2 + 75) {
 						searchStringExtra = "";
-						close();
+						close(this.tileSign);
 					} else if (mouseX < width / 2 + 100) {
 						searchString = "";
 						searchStringExtra = "";
-						close();
+						close(this.tileSign);
 						NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("Bazaar Tweaks");
 					}
 				}
@@ -488,7 +559,7 @@ public class BazaarSearchOverlay extends GuiScreen {
 
 								searchStringExtra = " ";
 
-								close();
+								close(this.tileSign);
 								return;
 							}
 
@@ -507,7 +578,7 @@ public class BazaarSearchOverlay extends GuiScreen {
 							mouseY <= topY + 45 + AUTOCOMPLETE_HEIGHT + i * 10 + 10) {
 							searchString = s;
 							searchStringExtra = "";
-							close();
+							close(this.tileSign);
 							return;
 						}
 					}
@@ -519,11 +590,40 @@ public class BazaarSearchOverlay extends GuiScreen {
 	@SubscribeEvent
 	public void onSlotClick(SlotClickEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.enableSearchOverlay) return;
+		if (!CookieWarning.hasActiveBoosterCookie()) return;
 		if (!Utils.getOpenChestName().startsWith("Bazaar ➜")) return;
 		ItemStack stack = event.slot.getStack();
 		if (event.slot.slotNumber == 45 && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
 			event.setCanceled(true);
 			NotEnoughUpdates.INSTANCE.openGui = new BazaarSearchOverlay();
+		}
+	}
+
+	@Override
+	public void initGui() {
+
+	}
+
+	@Override
+	public void onGuiClosed() {
+		if (this.tileSign == null) return;
+		if (this.tileSign.signText[0].getUnformattedText().isEmpty()) return;
+		NetHandlerPlayClient netHandlerPlayClient = this.mc.getNetHandler();
+		if (netHandlerPlayClient != null) {
+			netHandlerPlayClient.addToSendQueue(new C12PacketUpdateSign(this.tileSign.getPos(), this.tileSign.signText));
+		}
+
+		this.tileSign.setEditable(true);
+	}
+
+	@SubscribeEvent
+	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
+		if (!shouldReplace() || !(event.gui instanceof GuiEditSign) || event.gui instanceof BazaarSearchOverlay)
+			return;
+		GuiEditSign guiEditSign = (GuiEditSign) event.gui;
+		TileEntitySign tileSign = ((AccessorGuiEditSign) guiEditSign).getTileSign();
+		if (tileSign != null) {
+			Minecraft.getMinecraft().displayGuiScreen(new BazaarSearchOverlay(tileSign));
 		}
 	}
 }
