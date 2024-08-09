@@ -1012,7 +1012,7 @@ public class GuiProfileViewer extends GuiScreen {
 				}
 				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
-					levelStr = levelObj.maxLevel != 7 ?
+					levelStr = levelObj.maxLevel != 10 ?
 						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format(
 							"%.2f",
 							levelObj.level
