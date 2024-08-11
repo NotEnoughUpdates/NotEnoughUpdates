@@ -100,10 +100,6 @@ public class RiftPage extends GuiProfileViewerPage {
 		var rift = data.rift;
 		JsonObject riftData = profileInfo.getAsJsonObject("rift");
 		JsonObject riftInventory = riftData.getAsJsonObject("inventory");
-		if (riftInventory == null) {
-			drawErrorMessage();
-			return;
-		}
 
 		APIDataJson.Rift.RiftInventory.Inventory riftArmor = rift.inventory.inv_armor;
 		if (riftArmor != null) {
@@ -282,140 +278,141 @@ public class RiftPage extends GuiProfileViewerPage {
 		}
 
 		// button
+		if (riftInventory != null) {
+			addInventoryButton(156, 16, guiLeft, guiTop, mouseX, mouseY, "§7Inventory", "CHEST");
+			addInventoryButton(222, 16, guiLeft, guiTop, mouseX, mouseY, "§7Ender Chest", "ENDER_CHEST");
 
-		addInventoryButton(156, 16, guiLeft, guiTop, mouseX, mouseY, "§7Inventory", "CHEST");
-		addInventoryButton(222, 16, guiLeft, guiTop, mouseX, mouseY, "§7Ender Chest", "ENDER_CHEST");
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
 
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
+			int inventoryRows = inInventory ? 4 : 5;
+			int invSizeY = inventoryRows * 18 + 17 + 7;
 
-		int inventoryRows = inInventory ? 4 : 5;
-		int invSizeY = inventoryRows * 18 + 17 + 7;
+			int inventoryX = guiLeft + 203 - 176 / 2;
+			int inventoryY = guiTop + 130 - invSizeY / 2;
+			getInstance().drawTexturedModalRect(inventoryX, inventoryY, 0, 0, 176, inventoryRows * 18 + 17);
+			getInstance().drawTexturedModalRect(inventoryX, inventoryY + inventoryRows * 18 + 17, 0, 215, 176, 7);
 
-		int inventoryX = guiLeft + 203 - 176 / 2;
-		int inventoryY = guiTop + 130 - invSizeY / 2;
-		getInstance().drawTexturedModalRect(inventoryX, inventoryY, 0, 0, 176, inventoryRows * 18 + 17);
-		getInstance().drawTexturedModalRect(inventoryX, inventoryY + inventoryRows * 18 + 17, 0, 215, 176, 7);
+			Utils.drawStringF(
+				inInventory ? "Inventory" : "Ender Chest",
+				guiLeft + 122,
+				inInventory ? guiTop + 87 + 1 : guiTop + 79,
+				false,
+				4210752
+			);
 
-		Utils.drawStringF(
-			inInventory ? "Inventory" : "Ender Chest",
-			guiLeft + 122,
-			inInventory ? guiTop + 87 + 1 : guiTop + 79,
-			false,
-			4210752
-		);
+			if (!inInventory) {
+				if (!riftInventory.has("ender_chest_contents")) {
+					drawErrorMessage();
+					return;
+				}
+				APIDataJson.Rift.RiftInventory.Inventory riftEnderChest = rift.inventory.ender_chest_contents;
+				if (riftEnderChest != null) {
+					List<JsonObject> enderChestContents = riftEnderChest.readItems();
+					if (enderChestContents != null) {
+						pages = (int) (Math.ceil(enderChestContents.size() / 45d));
 
-		if (!inInventory) {
-			if (!riftInventory.has("ender_chest_contents")) {
-				drawErrorMessage();
-				return;
-			}
-			APIDataJson.Rift.RiftInventory.Inventory riftEnderChest = rift.inventory.ender_chest_contents;
-			if (riftEnderChest != null) {
-				List<JsonObject> enderChestContents = riftEnderChest.readItems();
-				if (enderChestContents != null) {
-					pages = (int) (Math.ceil(enderChestContents.size() / 45d));
+						drawArrows(onPage, pages, 190, 77);
 
-					drawArrows(onPage, pages, 190, 77);
+						for (int i = 0; i <= pages; i++) {
+							if (i != onPage) continue;
 
-					for (int i = 0; i <= pages; i++) {
-						if (i != onPage) continue;
+							List<JsonObject> page = enderChestContents.subList(
+								Math.min(i == 0 ? 0 : i * 45, enderChestContents.size() - 45),
+								i == 0 ? 45 : enderChestContents.size()
+							); // if anybody has an idea how to make this less hard coded on 2 pages (more pages) please do it for me, i am doing this at 4 am
 
-						List<JsonObject> page = enderChestContents.subList(
-							Math.min(i == 0 ? 0 : i * 45, enderChestContents.size() - 45),
-							i == 0 ? 45 : enderChestContents.size()
-						); // if anybody has an idea how to make this less hard coded on 2 pages (more pages) please do it for me, i am doing this at 4 am
+							int row = 0;
+							int slot = 0;
 
-						int row = 0;
-						int slot = 0;
+							for (int j = 0; j < page.size(); j++) {
+								JsonObject jsonObject = page.get(j);
+								if (j % 9 == 0 && j > 0) {
+									slot = 0;
+									row++;
+								}
 
-						for (int j = 0; j < page.size(); j++) {
-							JsonObject jsonObject = page.get(j);
-							if (j % 9 == 0 && j > 0) {
-								slot = 0;
-								row++;
+								int x = (inventoryX - guiLeft) + 8 + (slot * 18);
+								int y = 91 + (row * 18);
+								slot++;
+								if (jsonObject != null) {
+									ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
+
+									if ((mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) &&
+										(mouseY >= guiTop + y && mouseY <= guiTop + y + 16)) {
+										getInstance().tooltipToDisplay =
+											itemStack.getTooltip(
+												Minecraft.getMinecraft().thePlayer,
+												Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+											);
+									}
+									renderItem(itemStack, x, y, guiLeft, guiTop);
+								}
 							}
+						}
+					}
+				}
+			} else {
+				if (riftInventory == null || !riftInventory.has("inv_contents")) {
+					drawErrorMessage();
+					return;
+				}
+				APIDataJson.Rift.RiftInventory.Inventory riftInventory2 = rift.inventory.inv_contents;
+				if (riftInventory2 != null) {
+					List<JsonObject> inventoryContents = riftInventory2.readItems();
+					if (inventoryContents != null) {
 
-							int x = (inventoryX - guiLeft) + 8 + (slot * 18);
-							int y = 91 + (row * 18);
-							slot++;
+						List<JsonObject> hotbar = new ArrayList<>();
+						for (int i = 0; i < 9; i++) {
+							hotbar.add(inventoryContents.get(i));
+						}
+						inventoryContents.removeAll(hotbar);
+						int hotbarSlot = 0;
+						for (JsonObject jsonObject : hotbar) {
 							if (jsonObject != null) {
+								int drawX = 123 + (hotbarSlot * 18);
 								ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
 
-								if ((mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) &&
-									(mouseY >= guiTop + y && mouseY <= guiTop + y + 16)) {
+								if ((mouseX >= guiLeft + drawX && mouseX <= guiLeft + drawX + 16) &&
+									(mouseY >= guiTop + 154 && mouseY <= guiTop + 154 + 16)) {
 									getInstance().tooltipToDisplay =
 										itemStack.getTooltip(
 											Minecraft.getMinecraft().thePlayer,
 											Minecraft.getMinecraft().gameSettings.advancedItemTooltips
 										);
 								}
-								renderItem(itemStack, x, y, guiLeft, guiTop);
+
+								renderItem(itemStack, drawX, 154, guiLeft, guiTop);
 							}
+							hotbarSlot++;
+
 						}
-					}
-				}
-			}
-		} else {
-			if (riftInventory == null || !riftInventory.has("inv_contents")) {
-				drawErrorMessage();
-				return;
-			}
-			APIDataJson.Rift.RiftInventory.Inventory riftInventory2 = rift.inventory.inv_contents;
-			if (riftInventory2 != null) {
-				List<JsonObject> inventoryContents = riftInventory2.readItems();
-				if (inventoryContents != null) {
 
-					List<JsonObject> hotbar = new ArrayList<>();
-					for (int i = 0; i < 9; i++) {
-						hotbar.add(inventoryContents.get(i));
-					}
-					inventoryContents.removeAll(hotbar);
-					int hotbarSlot = 0;
-					for (JsonObject jsonObject : hotbar) {
-						if (jsonObject != null) {
-							int drawX = 123 + (hotbarSlot * 18);
-							ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
-
-							if ((mouseX >= guiLeft + drawX && mouseX <= guiLeft + drawX + 16) &&
-								(mouseY >= guiTop + 154 && mouseY <= guiTop + 154 + 16)) {
-								getInstance().tooltipToDisplay =
-									itemStack.getTooltip(
-										Minecraft.getMinecraft().thePlayer,
-										Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-									);
+						int row = 1;
+						int slot = 0;
+						for (int i = 0; i < inventoryContents.size(); i++) {
+							JsonObject jsonObject = inventoryContents.get(i);
+							if (i % 9 == 0 && i > 0) {
+								slot = 0;
+								row++;
 							}
 
-							renderItem(itemStack, drawX, 154, guiLeft, guiTop);
-						}
-						hotbarSlot++;
-
-					}
-
-					int row = 1;
-					int slot = 0;
-					for (int i = 0; i < inventoryContents.size(); i++) {
-						JsonObject jsonObject = inventoryContents.get(i);
-						if (i % 9 == 0 && i > 0) {
-							slot = 0;
-							row++;
-						}
-
-						if (jsonObject != null) {
-							ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
-							int x1 = (inventoryX - guiLeft) + (slot * 18) + 8;
-							int y1 = (inventoryY - guiTop) + (row * 18);
-							if ((mouseX >= guiLeft + x1 && mouseX <= guiLeft + x1 + 16) &&
-								(mouseY >= guiTop + y1 && mouseY <= guiTop + y1 + 16)) {
-								getInstance().tooltipToDisplay =
-									itemStack.getTooltip(
-										Minecraft.getMinecraft().thePlayer,
-										Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-									);
+							if (jsonObject != null) {
+								ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
+								int x1 = (inventoryX - guiLeft) + (slot * 18) + 8;
+								int y1 = (inventoryY - guiTop) + (row * 18);
+								if ((mouseX >= guiLeft + x1 && mouseX <= guiLeft + x1 + 16) &&
+									(mouseY >= guiTop + y1 && mouseY <= guiTop + y1 + 16)) {
+									getInstance().tooltipToDisplay =
+										itemStack.getTooltip(
+											Minecraft.getMinecraft().thePlayer,
+											Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+										);
+								}
+								renderItem(itemStack, x1, y1, guiLeft, guiTop);
 							}
-							renderItem(itemStack, x1, y1, guiLeft, guiTop);
+							slot++;
 						}
-						slot++;
 					}
 				}
 			}
