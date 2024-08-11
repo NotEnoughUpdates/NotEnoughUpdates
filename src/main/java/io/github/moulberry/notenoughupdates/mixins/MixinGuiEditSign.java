@@ -53,8 +53,8 @@ public class MixinGuiEditSign {
 
 	@Inject(method = "onGuiClosed", at = @At(value = "HEAD"), cancellable = true)
 	public void onGuiClosed(CallbackInfo ci) {
-		if (AuctionSearchOverlay.shouldReplace()) ci.cancel();
-		if (BazaarSearchOverlay.shouldReplace()) ci.cancel();
+		if (AuctionSearchOverlay.isinAhSign()) ci.cancel();
+		if (BazaarSearchOverlay.isinBzSign()) ci.cancel();
 	}
 
 }

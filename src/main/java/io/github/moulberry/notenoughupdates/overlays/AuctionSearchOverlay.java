@@ -116,6 +116,10 @@ public class AuctionSearchOverlay extends GuiEditSign {
 	}
 
 	public static boolean shouldReplace() {
+		return Minecraft.getMinecraft().currentScreen instanceof AuctionSearchOverlay;
+	}
+
+	public static boolean isinAhSign() {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return false;
 		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableSearchOverlay) return false;
 
@@ -735,7 +739,7 @@ public class AuctionSearchOverlay extends GuiEditSign {
 
 	@SubscribeEvent
 	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
-		if (!shouldReplace() || !(event.gui instanceof GuiEditSign) || event.gui instanceof AuctionSearchOverlay)
+		if (!isinAhSign() || !(event.gui instanceof GuiEditSign) || event.gui instanceof AuctionSearchOverlay)
 			return;
 		GuiEditSign guiEditSign = (GuiEditSign) event.gui;
 		TileEntitySign tileSign = ((AccessorGuiEditSign) guiEditSign).getTileSign();

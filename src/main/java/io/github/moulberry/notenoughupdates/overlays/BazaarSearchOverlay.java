@@ -105,6 +105,10 @@ public class BazaarSearchOverlay extends GuiEditSign {
 	}
 
 	public static boolean shouldReplace() {
+		return Minecraft.getMinecraft().currentScreen instanceof BazaarSearchOverlay;
+	}
+
+	public static boolean isinBzSign() {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return false;
 		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.enableSearchOverlay) return false;
 
@@ -441,7 +445,6 @@ public class BazaarSearchOverlay extends GuiEditSign {
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) {
-		super.keyTyped(typedChar, keyCode);
 		boolean ignoreKey = false;
 
 		if (keyCode == Keyboard.KEY_ESCAPE) {
@@ -618,7 +621,7 @@ public class BazaarSearchOverlay extends GuiEditSign {
 
 	@SubscribeEvent
 	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
-		if (!shouldReplace() || !(event.gui instanceof GuiEditSign) || event.gui instanceof BazaarSearchOverlay)
+		if (!isinBzSign() || !(event.gui instanceof GuiEditSign) || event.gui instanceof BazaarSearchOverlay)
 			return;
 		GuiEditSign guiEditSign = (GuiEditSign) event.gui;
 		TileEntitySign tileSign = ((AccessorGuiEditSign) guiEditSign).getTileSign();
