@@ -47,7 +47,8 @@ public class DamageCommas {
 	private static final char OVERLOAD_STAR = '\u272F';
 	private static final Pattern PATTERN_CRIT = Pattern.compile(
 		"\u00a7f" + STAR + "((?:\u00a7.\\d(?:§.,)?)+)\u00a7." + STAR + "(.*)");
-	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("(\u00a7.)([\\d+,]*)(.*)");
+	private static final String SPECIAL = "[⚔+✧❤♞☄✷ﬗ✯]*"; //Stolen from skytils
+	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("(\u00a7.)([\\d+,]*)(.*)" + SPECIAL);
 	private static final Pattern OVERLOAD_PATTERN = Pattern.compile("(\u00a7.)" + OVERLOAD_STAR + "((?:\u00a7.[\\d,])+)(\u00a7.)" + OVERLOAD_STAR + "\u00a7r");
 
 	public static IChatComponent replaceName(EntityLivingBase entity) {
