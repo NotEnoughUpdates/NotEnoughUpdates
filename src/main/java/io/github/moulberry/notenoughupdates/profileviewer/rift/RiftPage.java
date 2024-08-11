@@ -118,6 +118,7 @@ public class RiftPage extends GuiProfileViewerPage {
 		}
 
 		// pet
+		GlStateManager.color(1,1,1);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
 		Utils.drawTexturedRect(guiLeft + 35, guiTop + 156, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 
