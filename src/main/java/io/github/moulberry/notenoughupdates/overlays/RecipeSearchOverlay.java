@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
-import com.google.common.base.Splitter;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
@@ -66,7 +65,6 @@ public class RecipeSearchOverlay extends GuiScreen {
 	private static boolean searchFieldClicked = false;
 	private static String searchString = "";
 	private static String searchStringExtra = "";
-	private static final Splitter SPACE_SPLITTER = Splitter.on(" ").omitEmptyStrings().trimResults();
 	private static boolean tabCompleted = false;
 	private static int tabCompletionIndex = -1;
 	private static final Pattern ENCHANTED_BOOK_PATTERN = Pattern.compile("(.*)( [IVX]+)");
@@ -77,6 +75,10 @@ public class RecipeSearchOverlay extends GuiScreen {
 
 	public RecipeSearchOverlay() {
 		super();
+	}
+
+	public static boolean shouldReplace() {
+		return Minecraft.getMinecraft().currentScreen instanceof RecipeSearchOverlay;
 	}
 
 	@Override
@@ -265,6 +267,7 @@ public class RecipeSearchOverlay extends GuiScreen {
 
 		BetterContainers.recipeSearchStackIndex = -1;
 		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.keepPreviousSearch) searchString = "";
+		Minecraft.getMinecraft().displayGuiScreen(null);
 	}
 
 	private static boolean updateTabCompletedSearch(int key) {
