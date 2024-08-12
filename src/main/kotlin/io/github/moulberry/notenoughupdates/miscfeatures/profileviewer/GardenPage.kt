@@ -278,14 +278,23 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
             if (mouseX >= xPos + 20 && mouseX <= xPos + 70 && mouseY >= yPos && mouseY <= yPos + 20) {
                 val tooltip = ArrayList<String>()
+                tooltip.add("§a${crop.displayName}")
+                tooltip.add("")
+                if (repoData.cropUpgrades.size == upgradeLevel) {
+                    tooltip.add("§7Current Tier: §a$upgradeLevel§7/§a${repoData.cropUpgrades.size}")
+                } else {
+                    tooltip.add("§7Current Tier: §e$upgradeLevel§7/§a${repoData.cropUpgrades.size}")
+                }
                 tooltip.add("§7${crop.displayName} Fortune: §6+${upgradeLevel*5}☘")
+                tooltip.add("")
                 if (repoData.cropUpgrades.size == upgradeLevel) {
                     tooltip.add("§6Maxed")
                 } else {
-                    tooltip.add("§7${repoData.cropUpgrades[upgradeLevel]} §cCopper To Upgrade")
+                    tooltip.add("§7Cost:")
+                    tooltip.add("§c${repoData.cropUpgrades[upgradeLevel]} §7Copper to Upgrade")
                     val totalCopper = repoData.cropUpgrades.sum()
                     val sum = totalCopper - repoData.cropUpgrades.subList(0, upgradeLevel).sum()
-                    tooltip.add("§7$sum §cCopper Until Max")
+                    tooltip.add("§c$sum §7Copper to Max")
                 }
                 instance.tooltipToDisplay = tooltip
             }
@@ -320,13 +329,23 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             if (!levelInfo.maxed) {
                 for (i in 0..45) {
                     maxLevel += levelsInfo[i]
-                    if (i < (levelInfo.level.toInt() + 1)) nextLevel += levelsInfo[i]
+                    if (i <= collectionLevel + 1) nextLevel += levelsInfo[i]
                 }
                 maxLevelString = StringUtils.formatNumber(maxLevel)
-                nextLevelString = "§f$formattedAmount§7/§f${StringUtils.formatNumber(nextLevel)} §7Until Next §eMilestone"
+
+                val remainingForNext = nextLevel - currentCollection
+                println(crop.displayName)
+                println("Next level: $nextLevel")
+                println("Remaining $remainingForNext")
+                println("Collection: $currentCollection")
+                val formattedRemainingForNext = StringUtils.formatNumber(remainingForNext.toDouble())
+
+                nextLevelString = "§f$formattedRemainingForNext§7/§f${StringUtils.formatNumber(levelsInfo[collectionLevel + 1].toDouble())} §7Until Next §eMilestone"
             }
             val tooltip = ArrayList<String>()
-            tooltip.add("§7Farmed: §f$formattedAmount")
+            tooltip.add("§a${crop.displayName}")
+            tooltip.add("§7Total: §a$formattedAmount")
+            tooltip.add("")
             tooltip.add(nextLevelString)
             if (!levelInfo.maxed) {
                 tooltip.add("§f$formattedAmount§7/§f$maxLevelString §7Until §6Max §eMilestone")
@@ -475,9 +494,12 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             val upgradeValues = repoData.composterUpgrades[repoName]?.get(upgradeAmount + 1)
             val upgradeValuesCurrent = repoData.composterUpgrades[repoName]?.get(upgradeAmount)?.upgrade ?: 0
             val upgradeValuesCurrentSt = StringUtils.formatNumber(upgradeValuesCurrent)
+            tooltip.add("$upgradeName")
             if (upgradeValues != null) {
                 repoData.composterTooltips[repoName]?.replace("{}", "$upgradeValuesCurrentSt -> ${StringUtils.formatNumber(upgradeValues.upgrade)}")
                     ?.let { tooltip.add(it) }
+                tooltip.add("")
+                tooltip.add("§7Cost:")
                 for (item in upgradeValues.items) {
                     val itemStack = manager.createItem(item.key.uppercase())
                     if (itemStack == null) {
