@@ -366,7 +366,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 					if (!Objects.equals(item.get("internalname").getAsString(), "_")) {
 						actualItem = true;
 					}
-					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
+					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, false);
 				}
 
 				if ((mouseX >= x && mouseX <= x + 16) &&
