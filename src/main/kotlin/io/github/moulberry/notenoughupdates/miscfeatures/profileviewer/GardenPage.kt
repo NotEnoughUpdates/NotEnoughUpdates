@@ -326,23 +326,46 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             var nextLevelString = "§6MAXED"
             var maxLevel = 0
             var maxLevelString = ""
+            var formattedPercentage = "100.00"
+            var formattedMaxLevelPercentage = "100.00"
+            var aboveMaxMilestoneNumber: String
+            var lastCropMilestoneAmountRequired = 0
+
+            for (i in 0..45) {
+                maxLevel += levelsInfo[i]
+                if (i < collectionLevel + 1) nextLevel += levelsInfo[i]
+                if (i == 45) lastCropMilestoneAmountRequired = levelsInfo[i]
+            }
             if (!levelInfo.maxed) {
-                for (i in 0..45) {
-                    maxLevel += levelsInfo[i]
-                    if (i < collectionLevel + 1) nextLevel += levelsInfo[i]
-                }
                 maxLevelString = StringUtils.formatNumber(maxLevel)
                 val remainingForNext = levelsInfo[collectionLevel] - (nextLevel - currentCollection)
                 val formattedRemainingForNext = StringUtils.formatNumber(remainingForNext.toDouble())
-                nextLevelString = "§f$formattedRemainingForNext§7/§f${StringUtils.formatNumber(levelsInfo[collectionLevel].toDouble())} §7Until Next §eMilestone"
+                nextLevelString =
+                    "§e$formattedRemainingForNext§6/§e${StringUtils.formatNumber(levelsInfo[collectionLevel].toDouble())}"
+
+                val percentage = (remainingForNext / levelsInfo[collectionLevel].toDouble()) * 100
+                formattedPercentage = String.format("%.2f", percentage)
+
+                val maxLevelPercentage = (currentCollection.toFloat() / maxLevel.toFloat()) * 100
+                formattedMaxLevelPercentage = String.format("%.2f", maxLevelPercentage)
             }
             val tooltip = ArrayList<String>()
-            tooltip.add("§a${crop.displayName}")
+            tooltip.add("§a${crop.displayName} $collectionLevel")
             tooltip.add("§7Total: §a$formattedAmount")
             tooltip.add("")
-            tooltip.add(nextLevelString)
             if (!levelInfo.maxed) {
-                tooltip.add("§f$formattedAmount§7/§f$maxLevelString §7Until §6Max §eMilestone")
+                tooltip.add("Progress to Tier " + (levelInfo.level.toInt() + 1) + ": §e$formattedPercentage%")
+                tooltip.add(nextLevelString)
+                tooltip.add("")
+                tooltip.add("Progress to Tier 46: §e$formattedMaxLevelPercentage%")
+                tooltip.add("§e$formattedAmount§6/§e$maxLevelString")
+            } else {
+                val aboveMaxMilestone =
+                    (currentCollection.toDouble() - maxLevel.toFloat()) + lastCropMilestoneAmountRequired
+                aboveMaxMilestoneNumber = StringUtils.formatNumber(aboveMaxMilestone)
+                tooltip.add("§7Overflow: §6$aboveMaxMilestoneNumber")
+                tooltip.add("")
+                tooltip.add("§6Max tier reached!")
             }
             drawAlignedStringWithHover(
                 "§e${crop.displayName}",
@@ -357,9 +380,9 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
     private fun renderVisitorStats() {
         val xPos = guiLeft + 322
-        var yPos = guiTop + 20
+        var yPos = guiTop + 17
 
-        Utils.renderShadowedString("§eVisitors", xPos + 40, yPos - 3, 80)
+        Utils.renderShadowedString("§eVisitors", xPos + 40, yPos - 2, 80)
 
         // todo progress bar!
         Utils.renderAlignedString(
@@ -389,9 +412,9 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val left = guiLeft + 190
         val level = getLevel(repoData.gardenExperience, gardenData?.gardenExperience?.toLong())
         if (level.maxed) {
-            instance.renderGoldBar((left).toFloat(), (top + 10).toFloat(), 80f)
+            instance.renderGoldBar((left).toFloat() + 16, (top + 10).toFloat(), 80f)
         } else {
-            instance.renderBar(left.toFloat(), (top + 10).toFloat(), 80f, level.level % 1)
+            instance.renderBar(left.toFloat() + 16, (top + 10).toFloat(), 80f, level.level % 1)
         }
 
         val maxXp = level.maxXpForLevel.toInt()
@@ -413,14 +436,14 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                     StringUtils.formatToTenths(instance.getPercentage("garden", level)) +
                     "% to ${level.maxLevel})"
         )
-        drawAlignedStringWithHover("§2Garden", "§f${level.level.toInt()}", left + 20, top, 60, gardenTooltip)
-        Utils.drawItemStack(ItemStack(Blocks.grass), left, top - 6)
+        drawAlignedStringWithHover("§2Garden", "§f${level.level.toInt()}", left + 36, top, 60, gardenTooltip)
+        Utils.drawItemStack(ItemStack(Blocks.grass), left + 16, top - 6)
 
         val copper = apiData?.garden_player_data?.copper ?: 0
         Utils.renderAlignedString(
-            "§cCopper:",
+            "§cCopper",
             "§f" + StringUtils.formatNumber(copper),
-            (left).toFloat(),
+            (left + 16).toFloat(),
             (top + 20).toFloat(),
             80
         )
@@ -431,7 +454,14 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val left = guiLeft + 190
 
         if (eliteData == null) {
-            drawAlignedStringWithHover("§eFarming Weight", "§eLoading...", left, top, 100, listOf("§eLoading...", "§eTry again soon!"))
+            drawAlignedStringWithHover(
+                "§eFarming Weight",
+                "§eLoading...",
+                left + 16,
+                top,
+                95,
+                listOf("§eLoading...", "§eTry again soon!")
+            )
             return
         }
 
@@ -448,14 +478,21 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             }
         }
 
-        drawAlignedStringWithHover("§eFarming Weight", "§f${StringUtils.formatNumber(totalWeight)}", left, top, 100, tooltip)
+        drawAlignedStringWithHover(
+            "§eFarming Weight",
+            "§f${StringUtils.formatNumber(totalWeight.toInt())}",
+            left + 11,
+            top,
+            90,
+            tooltip
+        )
     }
 
     private fun renderCompost() {
         val xPos = guiLeft + 322
-        var yPos = guiTop + 118
+        var yPos = guiTop + 122
 
-        Utils.renderShadowedString("§eCompost Upgrades", xPos + 40, yPos, 80)
+        Utils.renderShadowedString("§eCompost Upgrades", xPos + 40, yPos - 2, 80)
         yPos += 12
 
         val (speed, multiDrop, fuelCap, organicMatterCap, costReduction) = gardenData?.composterData?.upgrades ?: return
@@ -488,7 +525,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             val upgradeValues = repoData.composterUpgrades[repoName]?.get(upgradeAmount + 1)
             val upgradeValuesCurrent = repoData.composterUpgrades[repoName]?.get(upgradeAmount)?.upgrade ?: 0
             val upgradeValuesCurrentSt = StringUtils.formatNumber(upgradeValuesCurrent)
-            tooltip.add("$upgradeName")
+            tooltip.add("$upgradeName $upgradeAmount")
             if (upgradeValues != null) {
                 repoData.composterTooltips[repoName]?.replace("{}", "$upgradeValuesCurrentSt -> ${StringUtils.formatNumber(upgradeValues.upgrade)}")
                     ?.let { tooltip.add(it) }
