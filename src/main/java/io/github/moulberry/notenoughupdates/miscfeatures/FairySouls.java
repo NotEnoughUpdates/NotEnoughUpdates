@@ -44,12 +44,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -184,6 +180,7 @@ public class FairySouls {
 			double currentDistSq = lastPlayerPos.distanceSq(currentSoul);
 			double factor = normalize(currentDistSq, 0.0, farSoulDistSq);
 			int rgb = interpolateColors(closeColor, farColor, Math.min(0.40, factor));
+			rgb = rgb | 0x66000000;
 			RenderUtils.renderBeaconBeamOrBoundingBox(currentSoul, rgb, 1.0f, event.partialTicks);
 			if (NotEnoughUpdates.INSTANCE.config.misc.fairySoulWaypointDistance) RenderUtils.renderWayPoint(currentSoul, event.partialTicks);
 		}
