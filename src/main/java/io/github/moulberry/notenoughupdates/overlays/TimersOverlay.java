@@ -310,11 +310,12 @@ public class TimersOverlay extends TextTabOverlay {
 		NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (hidden == null) return;
 
-		if (NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlayOnlyShowTab &&
-			!lastTabState) {
-			overlayStrings = null;
-			return;
-		}
+		long midnightReset = (currentTime - 18000000) / TimeEnums.DAY.time * TimeEnums.DAY.time + 18000000; // 12am est
+		long pearlsReset = midnightReset - 18000000; //8pm est
+		long catacombsReset = currentTime / TimeEnums.DAY.time * TimeEnums.DAY.time; // 7pm est
+		long timeDiffMidnightNow = midnightReset + TimeEnums.DAY.time - currentTime;
+		long catacombsDiffNow = catacombsReset + TimeEnums.DAY.time - currentTime;
+		long fetchurComplete = hidden.fetchurCompleted;
 
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
 			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
@@ -339,7 +340,7 @@ public class TimersOverlay extends TextTabOverlay {
 					if (lower.getSizeInventory() < 18) {
 						break;
 					}
-					if (hidden.commissionsCompleted == 0) {
+					if (hidden.commissionsCompleted == 0 || hidden.commissionsCompleted < midnightReset) {
 						hidden.commissionsCompleted = currentTime;
 					}
 					for (int i = 9; i < 18; i++) {
@@ -467,6 +468,12 @@ public class TimersOverlay extends TextTabOverlay {
 					}
 					break;
 			}
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlayOnlyShowTab &&
+			!lastTabState) {
+			overlayStrings = null;
+			return;
 		}
 
 		boolean foundGodPotText = false;
@@ -733,13 +740,6 @@ public class TimersOverlay extends TextTabOverlay {
 					Utils.prettyTime(puzzlerEnd)
 			);
 		}
-
-		long midnightReset = (currentTime - 18000000) / TimeEnums.DAY.time * TimeEnums.DAY.time + 18000000; // 12am est
-		long pearlsReset = midnightReset - 18000000; //8pm est
-		long catacombsReset = currentTime / TimeEnums.DAY.time * TimeEnums.DAY.time; // 7pm est
-		long timeDiffMidnightNow = midnightReset + TimeEnums.DAY.time - currentTime;
-		long catacombsDiffNow = catacombsReset + TimeEnums.DAY.time - currentTime;
-		long fetchurComplete = hidden.fetchurCompleted;
 
 		//Fetchur Display
 		if (fetchurComplete < midnightReset) {
