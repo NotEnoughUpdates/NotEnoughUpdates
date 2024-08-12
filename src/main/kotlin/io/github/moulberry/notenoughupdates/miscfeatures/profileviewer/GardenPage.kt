@@ -476,6 +476,9 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 val cropWeight = eliteData?.cropWeight?.get(crop) ?: 0.0
                 add("§7${crop.displayName}: §f${StringUtils.formatNumber(cropWeight)}")
             }
+            add("")
+            add("Data provided by the Elitebot API.")
+            add("§eClick to view on the Elitebot website.")
         }
 
         drawAlignedStringWithHover(
@@ -486,6 +489,15 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             90,
             tooltip
         )
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
+        if (mouseButton == 0) {
+            if (mouseX in (guiLeft + 190)..(guiLeft + 290) && mouseY in (guiTop + 51)..(guiTop + 60)) {
+                openWebsite()
+            }
+        }
+        return false
     }
 
     private fun renderCompost() {
@@ -556,6 +568,12 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         val array = JsonArray()
         experienceList.forEach { array.add(gson.toJsonTree(it)) }
         return ProfileViewerUtils.getLevel(array, (currentExp ?: 0).toFloat(), experienceList.size, false)
+    }
+
+    private fun openWebsite() {
+        if (eliteData == null) return
+        Utils.openUrl("https://elitebot.dev/@" + GuiProfileViewer.getDisplayName() + "/" + GuiProfileViewer.getProfileName())
+        Utils.playPressSound()
     }
 
     private fun drawAlignedStringWithHover(
