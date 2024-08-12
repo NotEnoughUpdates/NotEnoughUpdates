@@ -278,6 +278,11 @@ public class RiftPage extends GuiProfileViewerPage {
 			renderItem("SKYBLOCK_ENIGMA_SOUL", 314, 106, guiLeft, guiTop);
 		}
 
+		if (riftInventory == null) {
+			String message = EnumChatFormatting.RED + "Inventory API not enabled!";
+			Utils.drawStringCentered(message, guiLeft + 431 / 2f, guiTop + 61, true, 0);
+		}
+
 		// button
 		if (riftInventory != null) {
 			addInventoryButton(156, 16, guiLeft, guiTop, mouseX, mouseY, "§7Inventory", "CHEST");
