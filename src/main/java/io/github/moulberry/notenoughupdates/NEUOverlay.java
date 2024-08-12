@@ -40,6 +40,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.GuiItemCustomize;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.options.separatesections.ApiData;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -1156,12 +1157,21 @@ public class NEUOverlay extends Gui {
 					Utils.pushGuiScale(-1);
 				}
 				if (internalname.get() != null) {
+					ApiData apiData = NotEnoughUpdates.INSTANCE.config.apiData;
 					if (itemstack.get() != null) {
-						if (NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing && Keyboard.getEventCharacter() == 'k') {
+						if (apiData.repositoryEditing && Keyboard.getEventKey() == apiData.repositoryEditingKeybind) {
 							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(
 								internalname.get(),
 								manager.getJsonForItem(itemstack.get())
 							));
+							return true;
+						}
+						if (apiData.repositoryEditing && Keyboard.getEventKey() == apiData.instantEditKeybind) {
+							if (NEUItemEditor.saveOnly(internalname.get(), manager.getJsonForItem(itemstack.get()))) {
+								Utils.addChatMessage("§aSaved " + internalname.get() + " to repository.");
+							} else {
+								Utils.addChatMessage("§cFailed to save " + internalname.get() + " to repository.");
+							}
 							return true;
 						}
 					}
@@ -1184,7 +1194,7 @@ public class NEUOverlay extends Gui {
 								Minecraft.getMinecraft().thePlayer.inventory.addItemStackToInventory(
 									manager.jsonToStack(item));
 							}
-						} else if (NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing &&
+						} else if (apiData.repositoryEditing &&
 							keyPressed == Keyboard.KEY_K) {
 							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 								var externalEditorCommand = NotEnoughUpdates.INSTANCE.config.hidden.externalEditor;

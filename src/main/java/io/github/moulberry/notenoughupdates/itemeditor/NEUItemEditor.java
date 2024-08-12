@@ -234,6 +234,7 @@ public class NEUItemEditor extends GuiScreen {
 		if (infoA.length == 0 || infoA[0].isEmpty()) {
 			infoA = new String[0];
 		}
+		NotEnoughUpdates.INSTANCE.manager.removeItemFromCache(internalName.get());
 		return NotEnoughUpdates.INSTANCE.manager.writeItemJson(
 			item,
 			internalName.get(),
