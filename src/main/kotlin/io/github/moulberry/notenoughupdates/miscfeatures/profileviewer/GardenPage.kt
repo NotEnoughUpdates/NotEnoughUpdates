@@ -329,18 +329,12 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             if (!levelInfo.maxed) {
                 for (i in 0..45) {
                     maxLevel += levelsInfo[i]
-                    if (i <= collectionLevel + 1) nextLevel += levelsInfo[i]
+                    if (i < collectionLevel + 1) nextLevel += levelsInfo[i]
                 }
                 maxLevelString = StringUtils.formatNumber(maxLevel)
-
-                val remainingForNext = nextLevel - currentCollection
-                println(crop.displayName)
-                println("Next level: $nextLevel")
-                println("Remaining $remainingForNext")
-                println("Collection: $currentCollection")
+                val remainingForNext = levelsInfo[collectionLevel] - (nextLevel - currentCollection)
                 val formattedRemainingForNext = StringUtils.formatNumber(remainingForNext.toDouble())
-
-                nextLevelString = "§f$formattedRemainingForNext§7/§f${StringUtils.formatNumber(levelsInfo[collectionLevel + 1].toDouble())} §7Until Next §eMilestone"
+                nextLevelString = "§f$formattedRemainingForNext§7/§f${StringUtils.formatNumber(levelsInfo[collectionLevel].toDouble())} §7Until Next §eMilestone"
             }
             val tooltip = ArrayList<String>()
             tooltip.add("§a${crop.displayName}")
