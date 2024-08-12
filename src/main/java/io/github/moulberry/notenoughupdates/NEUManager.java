@@ -1524,6 +1524,7 @@ public class NEUManager {
 		if (useReplacements) useCache = false;
 		if (json == null) return new ItemStack(Items.painting, 1, 10);
 		String internalname = json.get("internalname").getAsString();
+		if ("_".equals(internalname)) useCache = false;
 
 		if (useCache) {
 			ItemStack stack = itemstackCache.get(internalname);
