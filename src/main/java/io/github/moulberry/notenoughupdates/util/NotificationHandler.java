@@ -112,7 +112,7 @@ public class NotificationHandler {
 			GuiChest eventGui = (GuiChest) gui;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.trim().equals("Fast Travel")) {
+			if (containerName.trim().equals("Fast Travel") || containerName.trim().equals("Porhtal")) {
 				validGui = false;
 			}
 		}
