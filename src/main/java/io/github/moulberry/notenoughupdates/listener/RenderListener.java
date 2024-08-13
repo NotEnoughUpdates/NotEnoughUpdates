@@ -666,8 +666,8 @@ public class RenderListener {
 					String missingItem = null;
 					double totalValue = 0;
 					HashMap<String, Double> itemValues = new HashMap<>();
-					for (int i = 0; i < 5; i++) {
-						ItemStack item = lower.getStackInSlot(11 + i);
+					for (int i = 0; i < 7; i++) {
+						ItemStack item = lower.getStackInSlot(10 + i);
 						if (ItemUtils.isSoulbound(item)) continue;
 
 						String internal = neu.manager.createItemResolutionQuery().withItemStack(item).resolveInternalName();
