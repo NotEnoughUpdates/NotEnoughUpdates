@@ -21,11 +21,14 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -50,6 +53,22 @@ public class RecipeSearchOverlay extends SearchOverlayScreen {
 			event.setCanceled(true);
 			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
 		}
+		if (event.slot.slotNumber == 32 && Utils.getOpenChestName().equals("Craft Item")) {
+			event.setCanceled(true);
+			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
+		}
+	}
+
+	private static final ItemStack recipeSearchStack = Utils.createItemStack(
+		Items.golden_pickaxe,
+		EnumChatFormatting.GREEN + "Recipe Search",
+		EnumChatFormatting.YELLOW + "Click to open Recipe Search!"
+	);
+
+	@SubscribeEvent
+	public void slotReplace(ReplaceItemEvent event) {
+		if (event.getSlotNumber() != 32 || !Utils.getOpenChestName().equals("Craft Item")) return;
+		event.replaceWith(recipeSearchStack);
 	}
 
 
@@ -87,4 +106,5 @@ public class RecipeSearchOverlay extends SearchOverlayScreen {
 	public GuiType currentGuiType() {
 		return GuiType.RECIPE;
 	}
+
 }

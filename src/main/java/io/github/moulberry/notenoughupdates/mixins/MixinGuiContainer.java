@@ -37,23 +37,15 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
-import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -69,18 +61,6 @@ import java.util.Set;
 
 @Mixin(value = GuiContainer.class, priority = 500)
 public abstract class MixinGuiContainer extends GuiScreen {
-	private static boolean hasProfileViewerStack = false;
-	private static boolean hasRecipeSearchStack = false;
-	private static final ItemStack profileViewerStack = Utils.createItemStack(
-		Item.getItemFromBlock(Blocks.command_block),
-		EnumChatFormatting.GREEN + "Profile Viewer",
-		EnumChatFormatting.YELLOW + "Click to open NEU profile viewer!"
-	);
-	private static final ItemStack recipeSearchStack = Utils.createItemStack(
-		Items.golden_pickaxe,
-		EnumChatFormatting.GREEN + "Recipe Search",
-		EnumChatFormatting.YELLOW + "Click to open Recipe Search!"
-	);
 
 	@Inject(method = "drawSlot", at = @At("RETURN"))
 	public void drawSlotRet(Slot slotIn, CallbackInfo ci) {
@@ -91,87 +71,6 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	@Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
 	public void drawSlot(Slot slot, CallbackInfo ci) {
 		if (slot == null) return;
-
-		GuiContainer $this = (GuiContainer) (Object) this;
-
-		if (!hasProfileViewerStack && $this instanceof GuiChest && slot.getSlotIndex() > 9 &&
-			(slot.getSlotIndex() % 9 == 6 || slot.getSlotIndex() % 9 == 7) &&
-			BetterContainers.isBlankStack(-1, slot.getStack())) {
-			BetterContainers.profileViewerStackIndex = -1;
-			hasProfileViewerStack = true;
-
-			GuiChest eventGui = (GuiChest) $this;
-			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.contains(" Profile") && cc.inventorySlots.size() >= 54) {
-				if (cc.inventorySlots.get(22).getStack() != null &&
-					cc.inventorySlots.get(22).getStack().getTagCompound() != null) {
-					NBTTagCompound tag = eventGui.inventorySlots.inventorySlots.get(22).getStack().getTagCompound();
-					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
-						String tagName = tag.getCompoundTag("SkullOwner").getString("Name");
-						String displayName = Utils.cleanColour(cc.inventorySlots.get(22).getStack().getDisplayName());
-						if (displayName.length() - tagName.length() >= 0 && tagName.equals(displayName.substring(
-							displayName.length() - tagName.length()))) {
-							ci.cancel();
-
-							this.zLevel = 100.0F;
-							this.itemRender.zLevel = 100.0F;
-
-							GlStateManager.enableDepth();
-							this.itemRender.renderItemAndEffectIntoGUI(
-								profileViewerStack,
-								slot.xDisplayPosition,
-								slot.yDisplayPosition
-							);
-							this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, profileViewerStack,
-								slot.xDisplayPosition, slot.yDisplayPosition, ""
-							);
-
-							this.itemRender.zLevel = 0.0F;
-							this.zLevel = 0.0F;
-
-							BetterContainers.profileViewerStackIndex = slot.getSlotIndex();
-						}
-					}
-				}
-			}
-		} else if (!hasRecipeSearchStack && $this instanceof GuiChest && slot.getSlotIndex() == 32 &&
-			BetterContainers.isBlankStack(-1, slot.getStack())) {
-			BetterContainers.recipeSearchStackIndex = -1;
-			hasRecipeSearchStack = true;
-
-			GuiChest eventGui = (GuiChest) $this;
-			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.equals("Craft Item") && cc.inventorySlots.size() >= 54) {
-				ci.cancel();
-
-				this.zLevel = 100.0F;
-				this.itemRender.zLevel = 100.0F;
-
-				GlStateManager.enableDepth();
-				this.itemRender.renderItemAndEffectIntoGUI(
-					recipeSearchStack,
-					slot.xDisplayPosition,
-					slot.yDisplayPosition
-				);
-				this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, recipeSearchStack,
-					slot.xDisplayPosition, slot.yDisplayPosition, ""
-				);
-
-				this.itemRender.zLevel = 0.0F;
-				this.zLevel = 0.0F;
-				BetterContainers.recipeSearchStackIndex = slot.getSlotIndex();
-			} else {
-				BetterContainers.recipeSearchStackIndex = -1;
-			}
-		} else if (slot.getSlotIndex() == 0) {
-			hasProfileViewerStack = false;
-			hasRecipeSearchStack = false;
-		} else if (!($this instanceof GuiChest)) {
-			BetterContainers.recipeSearchStackIndex = -1;
-			BetterContainers.profileViewerStackIndex = -1;
-		}
 
 		if (slot.getStack() == null && NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen &&
 			NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
@@ -208,17 +107,6 @@ public abstract class MixinGuiContainer extends GuiScreen {
 
 		if (BetterContainers.isOverriding() && !BetterContainers.shouldRenderStack(slot.slotNumber, stack)) {
 			ci.cancel();
-		}
-	}
-
-	@ModifyArg(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;renderToolTip(Lnet/minecraft/item/ItemStack;II)V"), index = 0)
-	public ItemStack adjustItemStack(ItemStack itemStack) {
-		if (theSlot.slotNumber == BetterContainers.profileViewerStackIndex) {
-			return profileViewerStack;
-		} else if (theSlot.slotNumber == BetterContainers.recipeSearchStackIndex) {
-			return recipeSearchStack;
-		} else {
-			return itemStack;
 		}
 	}
 
