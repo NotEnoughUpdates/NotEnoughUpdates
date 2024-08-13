@@ -484,6 +484,8 @@ public class ItemTooltipListener {
 					int chestCost = 0;
 					try {
 						String line6 = Utils.cleanColour(line);
+						String line7 = "";
+						if (event.toolTip.size() > 7) line7 = Utils.cleanColour(event.toolTip.get(k+1));
 						StringBuilder cost = new StringBuilder();
 						for (int i = 0; i < line6.length(); i++) {
 							char c = line6.charAt(i);
@@ -493,6 +495,13 @@ public class ItemTooltipListener {
 						}
 						if (cost.length() > 0) {
 							chestCost = Integer.parseInt(cost.toString());
+						}
+						if (neu.config.dungeons.useChestKeyCost && (line6.contains("Dungeon Chest Key") || line7.contains("Dungeon Chest Key"))) {
+							JsonObject dungeonChestKey = neu.manager.auctionManager.getBazaarInfo("DUNGEON_CHEST_KEY");
+							if (dungeonChestKey != null && dungeonChestKey.has("curr_buy")) {
+								float bazaarPrice = dungeonChestKey.get("curr_buy").getAsFloat();
+								chestCost += bazaarPrice;
+							}
 						}
 					} catch (Exception ignored) {
 					}

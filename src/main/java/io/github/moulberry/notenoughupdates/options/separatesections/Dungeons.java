@@ -113,6 +113,15 @@ public class Dungeons {
 
 	@Expose
 	@ConfigOption(
+		name = "Include Chest Key Cost",
+		desc = "Include Bazaar Dungeon Chest Key Buy Cost in the Profit Calculation for Dungeon Chests"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean useChestKeyCost = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Warning if Derpy active",
 		desc = "Shows a warning if the mayor Derpy is active"
 	)
