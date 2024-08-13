@@ -40,6 +40,7 @@ import net.minecraft.util.EnumChatFormatting;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -118,8 +119,39 @@ public class ProfileViewerUtils {
 			powerAmount += 11;
 		}
 
+		HashSet<String> duplicates = new HashSet<>();
+		for (Map.Entry<String, Integer> entry : accessories.entrySet()) {
+			if (duplicates.contains(entry.getKey())) continue;
+
+			JsonObject misc = Constants.MISC;
+			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
+			if (talisman_upgrades_element == null) {
+				break;
+			}
+			String internalName = entry.getKey();
+			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
+
+			if (talisman_upgrades.has(internalName)) {
+				JsonArray upgrades = talisman_upgrades.get(internalName).getAsJsonArray();
+				for (Map.Entry<String, Integer> entry2 : accessories.entrySet()) {
+					if (entry2 != entry) {
+						String internalname2 = entry2.getKey();
+						ArrayList<String> upgradeIDs = new ArrayList<>();
+						for (int j = 0; j < upgrades.size(); j++) {
+							String upgrade = upgrades.get(j).getAsString();
+							upgradeIDs.add(upgrade);
+							if (internalname2.equals(upgrade)) {
+								duplicates.add(internalname2);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		for (Map.Entry<String, Integer> entry : accessories.entrySet()) {
 			if (ignoredTalismans.contains(entry.getKey())) continue;
+			if (duplicates.contains(entry.getKey())) continue;
 
 			JsonArray children = Utils
 				.getElementOrDefault(Constants.PARENTS, entry.getKey(), new JsonArray())
