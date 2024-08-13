@@ -323,61 +323,6 @@ public class PetInfoOverlay extends TextOverlay {
 		return pet;
 	}
 
-	public static float getXpGain(Pet pet, float xp, String xpType) {
-		if (pet.petLevel.getCurrentLevel() >= pet.petLevel.getMaxLevel()) return 0;
-
-		if (validXpTypes == null)
-			validXpTypes = Lists.newArrayList(
-				"mining",
-				"foraging",
-				"enchanting",
-				"farming",
-				"combat",
-				"fishing",
-				"alchemy",
-				"all"
-			);
-		if (!validXpTypes.contains(xpType.toLowerCase(Locale.ROOT))) return 0;
-
-		float tamingPercent = 1.0f + (config.tamingLevel / 100f);
-		xp = xp * tamingPercent;
-		xp = xp + (xp * config.beastMultiplier / 100f);
-
-		if (pet.petXpType != null && !pet.petXpType.equalsIgnoreCase(xpType) && !pet.petXpType.equalsIgnoreCase("all")) {
-			xp = xp / 3f;
-
-			if (xpType.equalsIgnoreCase("alchemy") || xpType.equalsIgnoreCase("enchanting")) {
-				xp = xp / 4f;
-			}
-		}
-		if (xpType.equalsIgnoreCase("mining") || xpType.equalsIgnoreCase("fishing")) {
-			xp = xp * 1.5f;
-		}
-
-		if (pet.petItem != null) {
-			Matcher petItemMatcher = XP_BOOST_PATTERN.matcher(pet.petItem);
-			if ((petItemMatcher.matches() && petItemMatcher.group(1).equalsIgnoreCase(xpType))
-				|| pet.petItem.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
-				xp = xp * getBoostMultiplier(pet.petItem);
-			}
-		}
-		JsonObject pets = Constants.PETS;
-		if (pets != null && pets.has("custom_pet_leveling") &&
-			pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase(Locale.ROOT)) &&
-			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase(Locale.ROOT)).getAsJsonObject().has(
-				"xp_multiplier")) {
-			xp *= pets
-				.get("custom_pet_leveling")
-				.getAsJsonObject()
-				.get(pet.petType.toUpperCase(Locale.ROOT))
-				.getAsJsonObject()
-				.get(
-					"xp_multiplier")
-				.getAsFloat();
-		}
-		return xp;
-	}
-
 	private int firstPetLines = 0;
 	private int secondPetLines = 0;
 
@@ -430,7 +375,7 @@ public class PetInfoOverlay extends TextOverlay {
 		String petName =
 			EnumChatFormatting.GREEN + "[Lvl " + currentPet.petLevel.getCurrentLevel() + "] " +
 				currentPet.rarity.chatFormatting +
-				WordUtils.capitalizeFully(currentPet.petType.replace("_", " "));
+				getPetNameFromId(currentPet.petType);
 
 		float levelPercent = getLevelPercent(currentPet);
 		String lvlStringShort = null;
@@ -554,8 +499,7 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	public void update() {
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo &&
-			!NotEnoughUpdates.INSTANCE.config.itemOverlays.enableMonkeyCheck) {
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo) {
 			overlayStrings = null;
 			return;
 		}
@@ -991,6 +935,8 @@ public class PetInfoOverlay extends TextOverlay {
 			return;
 		}
 
+		if ("rift".equals(SBInfo.getInstance().getLocation())) return;
+
 		for (String line : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PET)) {
 			line = Utils.cleanColour(line).trim().replace(",", "");
 			Matcher normalXPMatcher = TAB_LIST_XP.matcher(line);
@@ -998,7 +944,7 @@ public class PetInfoOverlay extends TextOverlay {
 			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(line);
 			if (petNameMatcher.matches()) {
 				String petName = petNameMatcher.group(2);
-				if (!currentPet.petType.replace("_", " ").equalsIgnoreCase(petName)) {
+				if (!getPetNameFromId(currentPet.petType).equalsIgnoreCase(petName)) {
 					break;
 				}
 
@@ -1168,5 +1114,20 @@ public class PetInfoOverlay extends TextOverlay {
 			rarity = Rarity.getRarityFromColor(col);
 		}
 		return rarity;
+	}
+
+	private static String getPetNameFromId(String petId) {
+		JsonObject pets = Constants.PETS;
+		String defaultName = WordUtils.capitalizeFully(petId.replace("_", " "));
+		if (pets == null) return defaultName;
+		if (!pets.has("id_to_display_name")) {
+			Utils.showOutdatedRepoNotification("pets.json id_to_display_name");
+			return defaultName;
+		}
+		JsonObject idToDisplayName = pets.get("id_to_display_name").getAsJsonObject();
+		if (idToDisplayName.has(petId)) {
+			return idToDisplayName.get(petId).getAsString();
+		}
+		return defaultName;
 	}
 }

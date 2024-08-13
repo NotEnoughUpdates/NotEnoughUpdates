@@ -2286,18 +2286,11 @@ public class Utils {
 	public static void showOutdatedRepoNotification(String missingFile, Throwable exception) {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
-					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
-					EnumChatFormatting.RED +
-						"Data used for many NEU features is not up to date, this should normally not be the case.",
-					EnumChatFormatting.RED +
-						"Please make sure you are on the latest version of NEU.",
-					EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
-						EnumChatFormatting.RED + " and restart your game" +
-						" to see if that fixes the issue.",
-					EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
-						"discord.gg/moulberry" +
-						EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
-						"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
+					"§c§lMissing repo data",
+					"§cData used for many NEU features is not up to date, this should normally not be the case.",
+					"§cYou can try §l/neuresetrepo§r§c and restart your game to see if that fixes the issue.",
+					"§cIf the problem persists please join " +
+						"§ldiscord.gg/moulberry§r§c and message in §l#neu-support§r§c to get support"
 				),
 				false, true
 			);

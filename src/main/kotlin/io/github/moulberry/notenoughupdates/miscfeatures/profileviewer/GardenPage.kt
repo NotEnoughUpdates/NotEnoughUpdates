@@ -160,10 +160,14 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 continue
             }
             visitorRarityToVisits[rarity] = visitorRarityToVisits.getOrDefault(rarity, 0) + amount
+            visitorRarityToVisits[VisitorRarity.TOTAL] =
+                visitorRarityToVisits.getOrDefault(VisitorRarity.TOTAL, 0) + amount
         }
         for ((visitor, amount) in gardenData?.commissionData?.completed ?: return) {
             val rarity = repoData.visitors[visitor] ?: continue
             visitorRarityToCompleted[rarity] = visitorRarityToCompleted.getOrDefault(rarity, 0) + amount
+            visitorRarityToCompleted[VisitorRarity.TOTAL] =
+                visitorRarityToCompleted.getOrDefault(VisitorRarity.TOTAL, 0) + amount
         }
     }
 

@@ -228,7 +228,7 @@ public class DungeonWin {
 					seenDungeonWinOverlayThisRun = true;
 				} else {
 					if (unformatted.trim().length() > 0 && !seenDungeonWinOverlayThisRun) {
-						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode Catacombs") ||
+						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode The Catacombs") ||
 							unformatted.contains("Team Score") || unformatted.contains("Defeated") || unformatted.contains(
 							"Total Damage")
 							|| unformatted.contains("Ally Healing") || unformatted.contains("Enemies Killed") || unformatted.contains(

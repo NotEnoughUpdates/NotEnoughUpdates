@@ -492,6 +492,7 @@ public class TimersOverlay extends TextTabOverlay {
 							if (activeEffectsMatcher.group(i) == null) {
 								continue;
 							}
+							if (activeEffectsMatcher.group(i).startsWith(" ")) break;
 							godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
 							godpotRemainingTimeType = activeEffectsMatcher.group(i + 1);
 							godPotDuration +=
@@ -512,6 +513,7 @@ public class TimersOverlay extends TextTabOverlay {
 							if (godPotionMatcher.group(i) == null) {
 								continue;
 							}
+							if (godPotionMatcher.group(i).startsWith(" ")) break;
 							godpotRemainingTime = Integer.parseInt(godPotionMatcher.group(i));
 							godpotRemainingTimeType = godPotionMatcher.group(i + 1);
 							godPotDuration +=

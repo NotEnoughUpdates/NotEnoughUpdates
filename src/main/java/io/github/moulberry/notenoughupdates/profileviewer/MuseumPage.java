@@ -305,7 +305,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 				for (int i = startIndex; i < endIndex; i++) {
 					JsonArray items = specialItems.get(i);
 					JsonObject item = (JsonObject) items.get(0);
-					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, false);
 
 					if (slot % 7 == 0 && slot > 1) {
 						slot = 0;
@@ -366,7 +366,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 					if (!Objects.equals(item.get("internalname").getAsString(), "_")) {
 						actualItem = true;
 					}
-					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
+					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, false);
 				}
 
 				if ((mouseX >= x && mouseX <= x + 16) &&
@@ -453,7 +453,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 				ItemStack stack = new ItemStack(Blocks.barrier);
 				if (!is_five || i < 5) {
 					JsonObject item = (JsonObject) selectedItem.get(i);
-					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
+					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, false);
 				}
 
 				if (row % 4 == 0 && row > 1) {

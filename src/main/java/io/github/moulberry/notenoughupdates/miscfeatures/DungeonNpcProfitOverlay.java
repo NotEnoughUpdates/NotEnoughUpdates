@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -68,7 +68,7 @@ public class DungeonNpcProfitOverlay {
 	private static final ResourceLocation dungeonProfitResource =
 		new ResourceLocation("notenoughupdates:dungeon_chest_worth.png");
 
-	private static final Pattern chestNamePattern = Pattern.compile(".+ Catacombs - Floor .+");
+	private static final Pattern chestNamePattern = Pattern.compile(".+ Catacombs - Flo.*");
 	private static final Pattern essencePattern = Pattern.compile(
 		"^§.(?<essenceType>\\w+) Essence §.x(?<essenceAmount>\\d+)$");
 	private static final Pattern enchantedBookPattern = Pattern.compile("^§.Enchanted Book \\((?<enchantName>.*)§.\\)");
