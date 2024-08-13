@@ -24,8 +24,10 @@ import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorButton;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorText;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import org.lwjgl.input.Keyboard;
 
 public class ApiData {
 
@@ -109,6 +111,24 @@ public class ApiData {
 	)
 	@ConfigEditorBoolean
 	public boolean repositoryEditing = false;
+
+	@Expose
+	@ConfigAccordionId(id = 0)
+	@ConfigOption(
+		name = "Edit Mode Keybind",
+		desc = "Keybind to open the item editor GUI"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_K)
+	public int repositoryEditingKeybind = Keyboard.KEY_K;
+
+	@Expose
+	@ConfigAccordionId(id = 0)
+	@ConfigOption(
+		name = "Instant Edit Keybind",
+		desc = "Edits the item without opening the GUI"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_NONE)
+	public int instantEditKeybind = Keyboard.KEY_NONE;
 
 	@Expose
 	@ConfigOption(
