@@ -935,6 +935,8 @@ public class PetInfoOverlay extends TextOverlay {
 			return;
 		}
 
+		if ("rift".equals(SBInfo.getInstance().getLocation())) return;
+
 		for (String line : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PET)) {
 			line = Utils.cleanColour(line).trim().replace(",", "");
 			Matcher normalXPMatcher = TAB_LIST_XP.matcher(line);
