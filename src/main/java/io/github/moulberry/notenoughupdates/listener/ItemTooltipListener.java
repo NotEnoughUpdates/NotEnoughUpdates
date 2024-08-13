@@ -500,8 +500,8 @@ public class ItemTooltipListener {
 					String missingItem = null;
 					int totalValue = 0;
 					HashMap<String, Double> itemValues = new HashMap<>();
-					for (int i = 0; i < 5; i++) {
-						ItemStack item = lower.getStackInSlot(11 + i);
+					for (int i = 0; i < 7; i++) {
+						ItemStack item = lower.getStackInSlot(10 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
 						if (internal != null) {
 							internal = internal.replace("\u00CD", "I").replace("\u0130", "I");
