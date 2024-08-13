@@ -568,8 +568,8 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 		float killDeathX = guiLeft + xStart + xOffset * 3;
 
-		int index = 0;
-		int skipCount = 0;
+		int indexKills = 0;
+		int skipCountKills = 0;
 		int renderedKills = 0;
 		for (int killCount : topKills.descendingKeySet()) {
 			Set<String> kills = topKills.get(killCount);
@@ -577,9 +577,9 @@ public class ExtraPage extends GuiProfileViewerPage {
 				boolean isSearch =
 					getInstance().killDeathSearchTextField.getText().isEmpty() || killType.toLowerCase(Locale.ROOT).contains(
 						getInstance().killDeathSearchTextField.getText().toLowerCase(Locale.ROOT));
-				float killY = guiTop + yStartTop + yOffset * ((index - skipCount) - killScroll);
-				if (!isSearch) skipCount++;
-				if (isSearch && killY + 6 < guiTop + yStartTop + 65 && killY >= guiTop + yStartTop) {
+				float killY = guiTop + yStartTop + yOffset * ((indexKills - skipCountKills) - killScroll);
+				if (!isSearch) skipCountKills++;
+				if (isSearch && killY + 6 < guiTop + yStartTop + 75 && killY >= guiTop + yStartTop) {
 					renderedKills++;
 					Utils.renderAlignedString(
 						EnumChatFormatting.YELLOW + "K: " + killType,
@@ -590,12 +590,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 					);
 				}
 
-				index++;
+				indexKills++;
 			}
 		}
 
-		index = 0;
-		skipCount = 0;
+		int indexDeaths = 0;
+		int skipCountDeaths = 0;
 		int renderedDeaths = 0;
 		for (int deathCount : topDeaths.descendingKeySet()) {
 			Set<String> deaths = topDeaths.get(deathCount);
@@ -603,9 +603,9 @@ public class ExtraPage extends GuiProfileViewerPage {
 				boolean isSearch =
 					getInstance().killDeathSearchTextField.getText().isEmpty() || deathType.toLowerCase(Locale.ROOT).contains(
 						getInstance().killDeathSearchTextField.getText().toLowerCase(Locale.ROOT));
-				float deathY = guiTop + yStartBottom + yOffset * ((index - skipCount) - deathScroll);
-				if (!isSearch) skipCount++;
-				if (isSearch && deathY + 6 < guiTop + yStartBottom + 65 && deathY >= guiTop + yStartBottom) {
+				float deathY = guiTop + yStartBottom + yOffset * ((indexDeaths - skipCountDeaths) - deathScroll);
+				if (!isSearch) skipCountDeaths++;
+				if (isSearch && deathY + 6 < guiTop + yStartBottom + 75 && deathY >= guiTop + yStartBottom) {
 					renderedDeaths++;
 					Utils.renderAlignedString(
 						EnumChatFormatting.YELLOW + "D: " + deathType,
@@ -615,7 +615,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 						76
 					);
 				}
-				index++;
+				indexDeaths++;
 			}
 		}
 
@@ -644,11 +644,13 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 		}
 
-		if (killScroll > renderedDeaths) {
-			killScroll = renderedDeaths;
+		int killsMaxScroll = (indexKills - skipCountKills) - renderedKills;
+		if (killScroll > killsMaxScroll) {
+			killScroll = killsMaxScroll;
 		}
-		if (deathScroll > renderedKills) {
-			deathScroll = renderedKills;
+		int deathsMaxScroll = (indexDeaths - skipCountDeaths) - renderedDeaths;
+		if (deathScroll > deathsMaxScroll) {
+			deathScroll = deathsMaxScroll;
 		}
 	}
 
