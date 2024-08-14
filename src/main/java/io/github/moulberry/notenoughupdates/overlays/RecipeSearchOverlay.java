@@ -25,7 +25,9 @@ import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.EnumChatFormatting;
@@ -47,7 +49,7 @@ public class RecipeSearchOverlay extends SearchOverlayScreen {
 
 	@SubscribeEvent
 	public void onSlotClick(SlotClickEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.enableSearchOverlay) return;
+		if (!enableSearchOverlay()) return;
 		ItemStack stack = event.slot.getStack();
 		if ((event.slot.slotNumber == 50 || event.slot.slotNumber == 51) && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch Recipes")) {
 			event.setCanceled(true);
@@ -67,7 +69,9 @@ public class RecipeSearchOverlay extends SearchOverlayScreen {
 
 	@SubscribeEvent
 	public void slotReplace(ReplaceItemEvent event) {
+		if (!enableSearchOverlay()) return;
 		if (event.getSlotNumber() != 32 || !Utils.getOpenChestName().equals("Craft Item")) return;
+		if (event.getOriginal() == null || event.getOriginal().getItem() != Item.getItemFromBlock(Blocks.stained_glass_pane)) return;
 		event.replaceWith(recipeSearchStack);
 	}
 
