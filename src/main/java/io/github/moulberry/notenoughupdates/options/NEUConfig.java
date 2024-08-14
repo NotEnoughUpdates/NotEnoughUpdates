@@ -602,6 +602,9 @@ public class NEUConfig extends Config {
 		@Expose
 		public String externalEditor = null;
 
+		@Expose
+		public boolean disableClientSideSearch = false;
+
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {

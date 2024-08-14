@@ -95,7 +95,9 @@ public class BazaarSearchOverlay extends SearchOverlayScreen {
 
 	@SubscribeEvent
 	public void onSlotClick(SlotClickEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.enableSearchOverlay) return;
+		if (!enableSearchOverlay()) return;
+		if (NotEnoughUpdates.INSTANCE.config.hidden.disableClientSideSearch) return;
+		if (event.clickedButton == 1 && event.clickType == 0) return;
 		if (!CookieWarning.hasActiveBoosterCookie()) return;
 		if (!Utils.getOpenChestName().startsWith("Bazaar ➜")) return;
 		ItemStack stack = event.slot.getStack();
