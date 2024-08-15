@@ -257,6 +257,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
         Utils.renderShadowedString("§eCrop Upgrades", xPos + 70, yPos + 5, 105)
 
+        var averageUpgrade = 0
         for ((index, crop) in CropType.values().withIndex()) {
             if (index == 5) {
                 yPos = startHeight
@@ -265,6 +266,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
             yPos += 14
 
             val upgradeLevel = gardenData?.cropUpgradeLevels?.get(crop) ?: 0
+            averageUpgrade += upgradeLevel
 
             val itemStack = manager.createItem(crop.itemId)
             Utils.drawItemStack(itemStack, xPos + 2, yPos)
@@ -299,6 +301,11 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 instance.tooltipToDisplay = tooltip
             }
         }
+        val x = guiLeft + 70 + 26 - 42
+        val y = startHeight + 5
+        if (mouseX in x..(x + 80) && mouseY in y..(y + 13)) {
+            instance.tooltipToDisplay = listOf("§eAverage Upgrade ${averageUpgrade/10}")
+        }
     }
 
     private fun renderCropMilestones() {
@@ -308,6 +315,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
 
         Utils.renderShadowedString("§eCrop Milestones", xPos + 70, yPos + 5, 105)
 
+        var averageMilestone = 0
         for ((index, crop) in CropType.values().withIndex()) {
             if (index == 5) {
                 yPos = startHeight
@@ -375,7 +383,14 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 50,
                 tooltip
             )
+            averageMilestone += collectionLevel
         }
+        val x = guiLeft + 70 + 26 - 42
+        val y = startHeight + 5
+        if (mouseX in x..(x + 80) && mouseY in y..(y + 13)) {
+            instance.tooltipToDisplay = listOf("§eAverage Milestone ${averageMilestone/10}")
+        }
+
     }
 
     private fun renderVisitorStats() {
