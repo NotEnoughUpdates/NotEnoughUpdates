@@ -400,8 +400,6 @@ public class PetInfoOverlay extends TextOverlay {
 		} else {
 			xpGain = xpGainHourSecondPet;
 		}
-		System.out.println(xpGainHour);
-		System.out.println(xpGainHourLast);
 		if (xpGain < 0) xpGain = 0;
 		String xpGainString = EnumChatFormatting.AQUA + "XP/h: " +
 			EnumChatFormatting.YELLOW + roundFloat(xpGain);
