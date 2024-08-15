@@ -186,6 +186,8 @@ public class PetInfoOverlay extends TextOverlay {
 		xpGainHourSecondPet = xpGainHour;
 		xpGainHourLast = xpGainHour;
 		xpHourMap.clear();
+		xpGainHourLast = -1;
+		xpGainHour = -1;
 		config.selectedPet = index;
 	}
 
@@ -398,6 +400,8 @@ public class PetInfoOverlay extends TextOverlay {
 		} else {
 			xpGain = xpGainHourSecondPet;
 		}
+		System.out.println(xpGainHour);
+		System.out.println(xpGainHourLast);
 		if (xpGain < 0) xpGain = 0;
 		String xpGainString = EnumChatFormatting.AQUA + "XP/h: " +
 			EnumChatFormatting.YELLOW + roundFloat(xpGain);
