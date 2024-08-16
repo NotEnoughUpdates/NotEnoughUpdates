@@ -37,12 +37,22 @@ public class RecipeTweaks {
 
 	@Expose
 	@ConfigOption(
-		name = "Enable Search GUI",
-		desc = "Use the advanced search GUI with autocomplete and history instead of the normal sign GUI"
+		name = "Add Button in /recipes",
+		desc = "Replaces the sign gui with an advanced search GUI for recipes\n" +
+		"You can also use /recipe to open the GUI"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean enableSearchOverlay = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Add Button In Crafting Table",
+		desc = "Adds a button in /craft to open the recipe search overlay"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean addPickaxeStack = true;
 
 	@Expose
 	@ConfigOption(

@@ -37,7 +37,7 @@ public class BazaarTweaks {
 
 		@Expose
 		@ConfigOption(
-			name = "Enable Search GUI",
+			name = "Enable Bazaar Search GUI",
 			desc = "Use the advanced search GUI with autocomplete and history instead of the normal sign GUI"
 		)
 		@ConfigEditorBoolean

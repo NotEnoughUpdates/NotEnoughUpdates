@@ -36,7 +36,7 @@ public class AHTweaks {
 
 	@Expose
 	@ConfigOption(
-		name = "Enable Search GUI",
+		name = "Enable Auction Search GUI",
 		desc = "Use the advanced search GUI with autocomplete and history instead of the normal sign GUI\n\u00a7eStar Selection Texture: Johnny#4567"
 	)
 	@ConfigEditorBoolean
