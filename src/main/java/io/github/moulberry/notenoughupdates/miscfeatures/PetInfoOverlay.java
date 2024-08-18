@@ -186,6 +186,8 @@ public class PetInfoOverlay extends TextOverlay {
 		xpGainHourSecondPet = xpGainHour;
 		xpGainHourLast = xpGainHour;
 		xpHourMap.clear();
+		xpGainHourLast = -1;
+		xpGainHour = -1;
 		config.selectedPet = index;
 	}
 
