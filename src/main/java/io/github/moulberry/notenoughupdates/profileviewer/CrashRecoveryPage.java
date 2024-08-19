@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.profileviewer;
 
 import io.github.moulberry.moulconfig.internal.ClipboardUtils;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -62,6 +63,11 @@ public class CrashRecoveryPage extends GuiProfileViewerPage {
 		parameters.addCrashSection("Viewed Profile", GuiProfileViewer.getProfileName());
 		parameters.addCrashSection("Timestamp", timestamp);
 		parameters.addCrashSection("Last Viewed Page", lastViewedPage);
+		if (NotEnoughUpdates.INSTANCE.manager.onBackupRepo) {
+			parameters.addCrashSection("Repo Commit", "Using Backup");
+		} else {
+			parameters.addCrashSection("Repo Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit);
+		}
 		Bootstrap.printToSYSOUT(crashReport.getCompleteReport());
 	}
 
