@@ -59,7 +59,8 @@ public class CrashRecoveryPage extends GuiProfileViewerPage {
 		crashReport = new CrashReport("NEU Profile Viewer crashed", exception);
 		val parameters = crashReport.makeCategory("Profile Viewer Parameters");
 
-		parameters.addCrashSection("Viewed Player", (profile == null ? "null" : profile.getUuid()));
+		parameters.addCrashSection("Viewed Player", getInstance().getEntityPlayer().getName());
+		parameters.addCrashSection("Viewed Player UUID", (profile == null ? "null" : profile.getUuid()));
 		parameters.addCrashSection("Viewed Profile", GuiProfileViewer.getProfileName());
 		parameters.addCrashSection("Timestamp", timestamp);
 		parameters.addCrashSection("Last Viewed Page", lastViewedPage);
@@ -88,7 +89,8 @@ public class CrashRecoveryPage extends GuiProfileViewerPage {
 		drawString("§cJoin our support server at §adiscord.gg/moulberry§c.");
 
 		val profile = GuiProfileViewer.getProfile();
-		drawString("Viewed Player: " + (profile == null ? "null" : profile.getUuid()));
+		drawString("Viewed Player: " + getInstance().getEntityPlayer().getName());
+		drawString("Viewed Player UUID: " + (profile == null ? "null" : profile.getUuid()));
 		drawString("Viewed Profile: " + GuiProfileViewer.getProfileName());
 		drawString("Timestamp: " + timestamp);
 
