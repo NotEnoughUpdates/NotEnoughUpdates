@@ -377,7 +377,7 @@ public class PetInfoOverlay extends TextOverlay {
 		String petName =
 			EnumChatFormatting.GREEN + "[Lvl " + currentPet.petLevel.getCurrentLevel() + "] " +
 				currentPet.rarity.chatFormatting +
-				getPetNameFromId(currentPet.petType);
+				getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel());
 
 		float levelPercent = getLevelPercent(currentPet);
 		String lvlStringShort = null;
@@ -946,7 +946,7 @@ public class PetInfoOverlay extends TextOverlay {
 			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(line);
 			if (petNameMatcher.matches()) {
 				String petName = petNameMatcher.group(2);
-				if (!getPetNameFromId(currentPet.petType).equalsIgnoreCase(petName)) {
+				if (!getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel()).equalsIgnoreCase(petName)) {
 					break;
 				}
 
@@ -1118,14 +1118,23 @@ public class PetInfoOverlay extends TextOverlay {
 		return rarity;
 	}
 
-	private static String getPetNameFromId(String petId) {
+	static boolean shownMissingRepo = false;
+
+	private static String getPetNameFromId(String petId, int petLevel) {
 		JsonObject pets = Constants.PETS;
 		String defaultName = WordUtils.capitalizeFully(petId.replace("_", " "));
 		if (pets == null) return defaultName;
-		if (!pets.has("id_to_display_name")) {
+		if (!pets.has("id_to_display_name") && !shownMissingRepo) {
 			Utils.showOutdatedRepoNotification("pets.json id_to_display_name");
+			shownMissingRepo = true;
 			return defaultName;
 		}
+
+		if ("GOLDEN_DRAGON".equals(petId)) {
+			if (petLevel < 100) return "Golden Dragon Egg";
+			return defaultName;
+		}
+
 		JsonObject idToDisplayName = pets.get("id_to_display_name").getAsJsonObject();
 		if (idToDisplayName.has(petId)) {
 			return idToDisplayName.get(petId).getAsString();
