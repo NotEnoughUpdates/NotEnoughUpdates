@@ -104,6 +104,7 @@ public class AuctionSearchOverlay extends SearchOverlayScreen {
 		ItemStack stack = event.slot.getStack();
 		if (event.slot.slotNumber == 48 && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
 			event.setCanceled(true);
+			Minecraft.getMinecraft().currentScreen = null;
 			NotEnoughUpdates.INSTANCE.openGui = new AuctionSearchOverlay();
 		}
 	}
