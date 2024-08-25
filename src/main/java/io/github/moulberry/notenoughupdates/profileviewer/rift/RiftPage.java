@@ -342,7 +342,7 @@ public class RiftPage extends GuiProfileViewerPage {
 								int y = 91 + (row * 18);
 								slot++;
 								if (jsonObject != null) {
-									ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
+									ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject, false);
 
 									if ((mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) &&
 										(mouseY >= guiTop + y && mouseY <= guiTop + y + 16)) {
@@ -377,7 +377,7 @@ public class RiftPage extends GuiProfileViewerPage {
 						for (JsonObject jsonObject : hotbar) {
 							if (jsonObject != null) {
 								int drawX = 123 + (hotbarSlot * 18);
-								ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
+								ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject, false);
 
 								if ((mouseX >= guiLeft + drawX && mouseX <= guiLeft + drawX + 16) &&
 									(mouseY >= guiTop + 154 && mouseY <= guiTop + 154 + 16)) {
@@ -404,7 +404,7 @@ public class RiftPage extends GuiProfileViewerPage {
 							}
 
 							if (jsonObject != null) {
-								ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject);
+								ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject, false);
 								int x1 = (inventoryX - guiLeft) + (slot * 18) + 8;
 								int y1 = (inventoryY - guiTop) + (row * 18);
 								if ((mouseX >= guiLeft + x1 && mouseX <= guiLeft + x1 + 16) &&
