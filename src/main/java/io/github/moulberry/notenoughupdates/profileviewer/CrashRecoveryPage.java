@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.profileviewer;
 
 import io.github.moulberry.moulconfig.internal.ClipboardUtils;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -58,10 +59,16 @@ public class CrashRecoveryPage extends GuiProfileViewerPage {
 		crashReport = new CrashReport("NEU Profile Viewer crashed", exception);
 		val parameters = crashReport.makeCategory("Profile Viewer Parameters");
 
-		parameters.addCrashSection("Viewed Player", (profile == null ? "null" : profile.getUuid()));
+		parameters.addCrashSection("Viewed Player", getInstance().getEntityPlayer().getName());
+		parameters.addCrashSection("Viewed Player UUID", (profile == null ? "null" : profile.getUuid()));
 		parameters.addCrashSection("Viewed Profile", GuiProfileViewer.getProfileName());
 		parameters.addCrashSection("Timestamp", timestamp);
 		parameters.addCrashSection("Last Viewed Page", lastViewedPage);
+		if (NotEnoughUpdates.INSTANCE.manager.onBackupRepo) {
+			parameters.addCrashSection("Repo Commit", "Using Backup");
+		} else {
+			parameters.addCrashSection("Repo Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit);
+		}
 		Bootstrap.printToSYSOUT(crashReport.getCompleteReport());
 	}
 
@@ -82,7 +89,8 @@ public class CrashRecoveryPage extends GuiProfileViewerPage {
 		drawString("§cJoin our support server at §adiscord.gg/moulberry§c.");
 
 		val profile = GuiProfileViewer.getProfile();
-		drawString("Viewed Player: " + (profile == null ? "null" : profile.getUuid()));
+		drawString("Viewed Player: " + getInstance().getEntityPlayer().getName());
+		drawString("Viewed Player UUID: " + (profile == null ? "null" : profile.getUuid()));
 		drawString("Viewed Profile: " + GuiProfileViewer.getProfileName());
 		drawString("Timestamp: " + timestamp);
 
