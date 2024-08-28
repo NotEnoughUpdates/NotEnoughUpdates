@@ -153,6 +153,8 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun getVisitorData() {
+        visitorRarityToVisits.clear()
+        visitorRarityToCompleted.clear()
         for ((visitor, amount) in gardenData?.commissionData?.visits ?: return) {
             val rarity = repoData.visitors[visitor]
             if (rarity == null) {
