@@ -44,6 +44,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
+import java.util.concurrent.atomic.AtomicBoolean
 
 class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance) {
     private val manager get() = NotEnoughUpdates.INSTANCE.manager
@@ -54,7 +55,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     private var currentProfile: SkyblockProfiles.SkyblockProfile? = null
     private var gardenData: GardenData? = null
     private var eliteData: EliteWeightJson? = null
-    private var currentlyFetching = false
+    private var currentlyFetching = AtomicBoolean(false)
     private lateinit var repoData: GardenRepoJson
     private var apiData: APIDataJson? = null
 
@@ -89,7 +90,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
         this.mouseX = mouseX
         this.mouseY = mouseY
 
-        if (currentlyFetching) {
+        if (currentlyFetching.get()) {
             Utils.drawStringCentered("§eLoading Data", guiLeft + 220, guiTop + 101, true, 0)
             return
         }
@@ -133,15 +134,13 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
     }
 
     private fun getData() {
-        currentlyFetching = true
+        currentlyFetching.set(true)
         val profileId = selectedProfile?.outerProfileJson?.get("profile_id")?.asString?.replace("-", "")
         Coroutines.launchCoroutine {
             gardenData = loadGardenData(profileId)
             getVisitorData()
-            currentlyFetching = false
-        }
-        Coroutines.launchCoroutine {
             eliteData = loadFarmingWeight(GuiProfileViewer.getProfile()?.uuid, profileId)
+            currentlyFetching.set(false)
         }
     }
 

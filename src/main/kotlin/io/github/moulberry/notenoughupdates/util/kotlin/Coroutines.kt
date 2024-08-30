@@ -24,8 +24,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.concurrent.ForkJoinPool
-import kotlin.coroutines.*
+import java.util.concurrent.Executors
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.createCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 @NEUAutoSubscribe
 object Coroutines {
@@ -57,7 +63,7 @@ object Coroutines {
 
     fun <T> launchCoroutine(block: suspend () -> T): CompletableFuture<T> {
         return launchCoroutineOnCurrentThread {
-            continueOn(ForkJoinPool.commonPool())
+            continueOn(Executors.newWorkStealingPool())
             block()
         }
     }
