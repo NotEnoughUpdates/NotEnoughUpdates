@@ -110,12 +110,13 @@ public class AuctionSearchOverlay extends SearchOverlayScreen {
 	}
 
 	@SubscribeEvent
-	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
+	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Pre event) {
 		if (!isinAhSign() || !(event.gui instanceof GuiEditSign) || event.gui instanceof SearchOverlayScreen)
 			return;
 		GuiEditSign guiEditSign = (GuiEditSign) event.gui;
 		TileEntitySign tileSign = ((AccessorGuiEditSign) guiEditSign).getTileSign();
 		if (tileSign != null) {
+			event.setCanceled(true);
 			Minecraft.getMinecraft().displayGuiScreen(new AuctionSearchOverlay(tileSign));
 		}
 	}

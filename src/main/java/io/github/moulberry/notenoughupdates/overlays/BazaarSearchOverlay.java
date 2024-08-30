@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiEditSign;
@@ -36,6 +37,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 @NEUAutoSubscribe
 public class BazaarSearchOverlay extends SearchOverlayScreen {
@@ -97,10 +99,16 @@ public class BazaarSearchOverlay extends SearchOverlayScreen {
 	public void onSlotClick(SlotClickEvent event) {
 		if (!enableSearchOverlay()) return;
 		if (disableClientSideGUI()) return;
-		if (event.clickedButton == 1 && event.clickType == 0) return;
+		ItemStack stack = event.slot.getStack();
+		if (event.clickedButton == 1 && event.clickType == 0 && stack != null) {
+		    List<String> lore = ItemUtils.getLore(stack);
+		    String clearLine = lore.size() > 4 ? lore.get(4) : null;
+		    if (clearLine != null && clearLine.equals("§bRight-Click to clear!")) {
+		        return;
+		    }
+		}
 		if (!CookieWarning.hasActiveBoosterCookie()) return;
 		if (!Utils.getOpenChestName().startsWith("Bazaar ➜")) return;
-		ItemStack stack = event.slot.getStack();
 		if (event.slot.slotNumber == 45 && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
 			event.setCanceled(true);
 			Minecraft.getMinecraft().currentScreen = null;
@@ -109,12 +117,13 @@ public class BazaarSearchOverlay extends SearchOverlayScreen {
 	}
 
 	@SubscribeEvent
-	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
+	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Pre event) {
 		if (!isinBzSign() || !(event.gui instanceof GuiEditSign) || event.gui instanceof SearchOverlayScreen)
 			return;
 		GuiEditSign guiEditSign = (GuiEditSign) event.gui;
 		TileEntitySign tileSign = ((AccessorGuiEditSign) guiEditSign).getTileSign();
 		if (tileSign != null) {
+			event.setCanceled(true);
 			Minecraft.getMinecraft().displayGuiScreen(new BazaarSearchOverlay(tileSign));
 		}
 	}
