@@ -160,9 +160,7 @@ public class Minion extends OverviewLine {
 			String displayName = Utils.cleanColour(itemStack.getDisplayName());
 			NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + displayName);
 		}
-
 	}
-
 
 	public void setCustomSource(CustomSource customSource) {
 		this.customSource = customSource;
