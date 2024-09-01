@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
+import com.google.common.collect.ArrayListMultimap;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
@@ -26,6 +27,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.Mi
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.item.ItemStack;
@@ -124,29 +126,43 @@ public class Minion extends OverviewLine {
 			if (minionSource instanceof CraftingSource) {
 				CraftingSource craftingSource = (CraftingSource) minionSource;
 				Map<String, Integer> counts = new HashMap<>();
-				for (Map.Entry<String, Integer> entry : craftingSource.getItems().entries()) {
-					counts.compute(entry.getKey(), (k, v) -> (v == null ? 0 : v) + entry.getValue());
-				}
-				Optional<Map.Entry<String, Integer>> resource = counts
-					.entrySet()
-					.stream()
-					.filter(it -> !APIManager.hardcodedVanillaItems.contains(it.getKey()))
-					.max(Comparator.comparingInt(Map.Entry::getValue));
-				if (!resource.isPresent()) return;
-
-				String bazaarName = resource.get().getKey();
-				int totalAmount = resource.get().getValue();
-
-				Utils.copyToClipboard(String.valueOf(totalAmount));
-				ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager).withKnownInternalName(
-					bazaarName).resolveToItemStack();
-				if (itemStack != null) {
-					String displayName = Utils.cleanColour(itemStack.getDisplayName());
-					NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + displayName);
-				}
+				ArrayListMultimap<String, Integer> items = craftingSource.getItems();
+				openBazaar(items, counts);
+			}
+			if (minionSource instanceof NpcSource) {
+				NpcSource npcSource = (NpcSource) minionSource;
+				Map<String, Integer> counts = new HashMap<>();
+				ArrayListMultimap<String, Integer> items = npcSource.getItems();
+				openBazaar(items, counts);
 			}
 		}
 	}
+
+	private static void openBazaar(ArrayListMultimap<String, Integer> items, Map<String, Integer> counts) {
+		for (Map.Entry<String, Integer> entry : items.entries()) {
+			counts.compute(entry.getKey(), (k, v) -> (v == null ? 0 : v) + entry.getValue());
+		}
+		Optional<Map.Entry<String, Integer>> resource = counts
+			.entrySet()
+			.stream()
+			.filter(it -> !APIManager.hardcodedVanillaItems.contains(it.getKey()))
+			.filter(it -> !it.getKey().startsWith("SKYBLOCK_"))
+			.max(Comparator.comparingInt(Map.Entry::getValue));
+		if (!resource.isPresent()) return;
+
+		String bazaarName = resource.get().getKey();
+		int totalAmount = resource.get().getValue();
+
+		Utils.copyToClipboard(String.valueOf(totalAmount));
+		ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager).withKnownInternalName(
+			bazaarName).resolveToItemStack();
+		if (itemStack != null) {
+			String displayName = Utils.cleanColour(itemStack.getDisplayName());
+			NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + displayName);
+		}
+
+	}
+
 
 	public void setCustomSource(CustomSource customSource) {
 		this.customSource = customSource;
