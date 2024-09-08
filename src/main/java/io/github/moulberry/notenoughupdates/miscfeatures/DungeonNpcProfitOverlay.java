@@ -38,6 +38,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -142,6 +143,11 @@ public class DungeonNpcProfitOverlay {
 		}
 		GuiChest guiChest = (GuiChest) event.gui;
 		if (!isChestOverview(guiChest)) {
+			chestProfits.clear();
+			return;
+		}
+		ItemStack stack = guiChest.inventorySlots.inventorySlots.get(11).getStack();
+		if (stack != null && stack.getItem() == Items.filled_map) {
 			chestProfits.clear();
 			return;
 		}
