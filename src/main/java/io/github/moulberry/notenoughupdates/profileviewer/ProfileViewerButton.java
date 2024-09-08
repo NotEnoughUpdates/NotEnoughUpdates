@@ -78,7 +78,7 @@ public class ProfileViewerButton {
 		}
 		if (replaceSlot == event.getSlotNumber()) {
 			event.replaceWith(profileViewerStack);
-		} else if (replaceSlot == -1 && event.getSlotNumber() > 9 &&
+		} else if (!username.isEmpty() && replaceSlot == -1 && event.getSlotNumber() > 9 &&
 			(event.getSlotNumber() % 9 == 6 || event.getSlotNumber() % 9 == 7) &&
 			BetterContainers.isBlankStack(-1, event.getOriginal())) {
 			event.replaceWith(profileViewerStack);
@@ -92,10 +92,11 @@ public class ProfileViewerButton {
 				if (displayName.length() - tagName.length() >= 0 && tagName.equals(displayName.substring(
 					displayName.length() - tagName.length()))) {
 					username = tagName;
+					return;
 				}
 			}
+			username = "";
 		}
-		//username = "";
 	}
 
 	private static boolean isReplacedStack(ItemStack stack) {
