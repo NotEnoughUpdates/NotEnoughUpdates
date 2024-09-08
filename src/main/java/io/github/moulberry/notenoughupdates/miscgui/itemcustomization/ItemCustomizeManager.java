@@ -21,11 +21,15 @@ package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
+import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
@@ -458,9 +462,17 @@ public class ItemCustomizeManager {
 
 		if (data == null || data.customItem == null || data.customItem.isEmpty()) return null;
 		try {
-			String damageString = data.customItem.split(":")[1];
+			String[] customItemSegments = data.customItem.split(":");
+			String damageString = customItemSegments[1];
+			String index = "";
+			if (customItemSegments.length > 2) {
+				index = customItemSegments[2];
+			}
 			if (getCustomItem(stack) == Items.skull) {
-				ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.createItem(damageString.toUpperCase(Locale.ROOT).replace(" ", "_"));
+				String itemID = damageString.toUpperCase(Locale.ROOT).replace(" ", "_");
+				NBTTagCompound animatedCustomSkull = getAnimatedCustomSkull(itemID, 2, index);
+				if (animatedCustomSkull != null) return animatedCustomSkull;
+				ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.createItem(itemID);
 				if (itemStack != null && itemStack.getItem() == Items.skull) {
 					return itemStack.getTagCompound().getCompoundTag("SkullOwner");
 				}
@@ -468,6 +480,27 @@ public class ItemCustomizeManager {
 		} catch (Exception ignored) {
 		}
 		return null;
+	}
+
+	public static NBTTagCompound getAnimatedCustomSkull(String itemID, int ticks, String textureIndex) {
+		JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
+		if (animatedSkulls == null) return null;
+		if (!animatedSkulls.has(itemID)) return null;
+		JsonArray skullTextures = animatedSkulls.get(itemID).getAsJsonArray();
+		int presetIndex = -1;
+		if (!textureIndex.isEmpty()) {
+			try {
+				presetIndex = Integer.parseInt(textureIndex);
+			} catch (NumberFormatException e) {
+			}
+		}
+		int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % skullTextures.size();
+		if (presetIndex != -1 && presetIndex < skullTextures.size()) {
+			animatedIndex = presetIndex;
+		}
+		String skullTexture = skullTextures.get(animatedIndex).getAsString();
+		ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
+		return skull.getTagCompound().getCompoundTag("SkullOwner");
 	}
 
 }
