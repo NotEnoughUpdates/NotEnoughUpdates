@@ -86,16 +86,15 @@ public class ProfileViewerButton {
 		} else if (event.getSlotNumber() == 22) {
 			ItemStack stack = event.getOriginal();
 			if (stack != null && stack.getTagCompound() != null) {
+				username = "";
 				NBTTagCompound tag = stack.getTagCompound();
 				String tagName = tag.getCompoundTag("SkullOwner").getString("Name");
 				String displayName = Utils.cleanColour(stack.getDisplayName());
 				if (displayName.length() - tagName.length() >= 0 && tagName.equals(displayName.substring(
 					displayName.length() - tagName.length()))) {
 					username = tagName;
-					return;
 				}
 			}
-			username = "";
 		}
 	}
 
