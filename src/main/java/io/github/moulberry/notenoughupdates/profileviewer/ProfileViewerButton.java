@@ -78,7 +78,7 @@ public class ProfileViewerButton {
 		}
 		if (replaceSlot == event.getSlotNumber()) {
 			event.replaceWith(profileViewerStack);
-		} else if (replaceSlot == -1 && event.getSlotNumber() > 9 &&
+		} else if (!username.isEmpty() && replaceSlot == -1 && event.getSlotNumber() > 9 &&
 			(event.getSlotNumber() % 9 == 6 || event.getSlotNumber() % 9 == 7) &&
 			BetterContainers.isBlankStack(-1, event.getOriginal())) {
 			event.replaceWith(profileViewerStack);
@@ -86,6 +86,7 @@ public class ProfileViewerButton {
 		} else if (event.getSlotNumber() == 22) {
 			ItemStack stack = event.getOriginal();
 			if (stack != null && stack.getTagCompound() != null) {
+				username = "";
 				NBTTagCompound tag = stack.getTagCompound();
 				String tagName = tag.getCompoundTag("SkullOwner").getString("Name");
 				String displayName = Utils.cleanColour(stack.getDisplayName());
@@ -95,7 +96,6 @@ public class ProfileViewerButton {
 				}
 			}
 		}
-		//username = "";
 	}
 
 	private static boolean isReplacedStack(ItemStack stack) {
