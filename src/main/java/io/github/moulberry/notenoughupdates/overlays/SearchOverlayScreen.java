@@ -186,7 +186,7 @@ public class SearchOverlayScreen extends GuiEditSign {
 		if (!searchStringExtra.isEmpty()) {
 			stringBuilder.append(searchStringExtra);
 		}
-		if (onlyLevel100) {
+		if (currentGuiType() == GuiType.AUCTION_HOUSE && onlyLevel100) {
 			stringBuilder.insert(0, "[Lvl 100] ");
 		}
 
