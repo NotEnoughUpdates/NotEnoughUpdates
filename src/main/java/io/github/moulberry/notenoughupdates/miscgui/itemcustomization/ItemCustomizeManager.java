@@ -485,8 +485,9 @@ public class ItemCustomizeManager {
 	public static NBTTagCompound getAnimatedCustomSkull(String itemID, int ticks, String textureIndex) {
 		JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
 		if (animatedSkulls == null) return null;
-		if (!animatedSkulls.has(itemID)) return null;
-		JsonArray skullTextures = animatedSkulls.get(itemID).getAsJsonArray();
+		if (!animatedSkulls.has("skins")) return null;
+		if (!animatedSkulls.get("skins").getAsJsonObject().has(itemID)) return null;
+		JsonArray skullTextures = animatedSkulls.get("skins").getAsJsonObject().get(itemID).getAsJsonArray();
 		int presetIndex = -1;
 		if (!textureIndex.isEmpty()) {
 			try {
@@ -499,8 +500,27 @@ public class ItemCustomizeManager {
 			animatedIndex = presetIndex;
 		}
 		String skullTexture = skullTextures.get(animatedIndex).getAsString();
+		//dont think the display name is important
 		ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
 		return skull.getTagCompound().getCompoundTag("SkullOwner");
+	}
+
+	public static ArrayList<String> getAnimatedSkullHelp(String damageString) {
+		JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
+		if (animatedSkulls == null) return null;
+		if (!animatedSkulls.has("help")) return null;
+
+		String[] split = damageString.split(":");
+		if (split.length == 1) return null;
+		String itemID = split[1].toUpperCase(Locale.ROOT).replace(" ", "_");
+
+		if (!animatedSkulls.get("help").getAsJsonObject().has(itemID)) return null;
+		JsonArray helpLines = animatedSkulls.get("help").getAsJsonObject().get(itemID).getAsJsonArray();
+		ArrayList<String> helpLinesStrings = new ArrayList<>();
+		for (int i = 0; i < helpLines.size(); i++) {
+			helpLinesStrings.add(helpLines.get(i).getAsString());
+		}
+		return helpLinesStrings;
 	}
 
 }
