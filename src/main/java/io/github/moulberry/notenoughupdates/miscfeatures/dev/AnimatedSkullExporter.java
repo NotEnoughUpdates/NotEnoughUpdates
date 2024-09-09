@@ -75,7 +75,7 @@ public class AnimatedSkullExporter {
 				return;
 			}
 			Utils.addChatMessage(
-				EnumChatFormatting.YELLOW + "[NEU] " + jsonArray.size() + " skull frames copied to clipboard.");
+				EnumChatFormatting.YELLOW + "[NEU] " + jsonArray.size() + " skull frame" + (jsonArray.size() == 0 ? "" : "s") + " copied to clipboard.");
 			ClipboardUtils.copyToClipboard(jsonArray.toString());
 		}
 	}
