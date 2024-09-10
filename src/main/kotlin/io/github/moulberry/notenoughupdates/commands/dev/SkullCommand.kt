@@ -19,10 +19,15 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev
 
+import com.mojang.brigadier.arguments.BoolArgumentType
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.AnimatedSkullExporter
+import io.github.moulberry.notenoughupdates.util.brigadier.get
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
+import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteral
 import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteralExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
 import net.minecraft.util.ChatComponentText
@@ -35,22 +40,16 @@ class SkullCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("neuskull") {
-            thenLiteralExecute("start") {
-                if (!AnimatedSkullExporter.enabled) {
-                    AnimatedSkullExporter.enabled = true
-                    reply(ChatComponentText("${YELLOW}Started recording skull frames"))
-                    reply(ChatComponentText("${YELLOW}Wait for the animation to play out"))
-                    reply(ChatComponentText("${YELLOW}Use /neuskull stop to stop recording"))
-                } else {
-                    AnimatedSkullExporter.finishRecording(false)
-                    AnimatedSkullExporter.enabled = true
-                    reply(ChatComponentText("${YELLOW}Restarted recording skull frames"))
-                    reply(ChatComponentText("${YELLOW}Wait for the animation to play out"))
-                    reply(ChatComponentText("${YELLOW}Use /neuskull stop to stop recording"))
+            thenLiteral("start") {
+                thenArgumentExecute("pet", BoolArgumentType.bool()) { pet ->
+                    AnimatedSkullExporter.startRecording(this[pet])
+                }.withHelp("Records pet texture instead")
+                thenExecute {
+                    AnimatedSkullExporter.startRecording(false)
                 }
             }.withHelp("Starts recording skull frames")
             thenLiteralExecute("stop") {
-                if (AnimatedSkullExporter.enabled) {
+                if (AnimatedSkullExporter.isRecording()) {
                     AnimatedSkullExporter.finishRecording(true)
                     reply(ChatComponentText("${YELLOW}Stopped recording skull frames"))
                 } else {
