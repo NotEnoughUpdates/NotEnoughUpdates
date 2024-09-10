@@ -202,7 +202,7 @@ public class ItemCustomizationUtils {
 
 	public static int getAnimatedDyeColour(String[] dyeColours, int ticks, DyeMode dyeMode) {
 		if (dyeMode == DyeMode.GRADIENT) {
-			int i = (Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length;
+			int i = getTicksForList(ticks, dyeColours.length);
 			int dyeColour1 = ChromaColour.specialToChromaRGB(dyeColours[i]);
 			if (i == dyeColours.length - 1) {
 				i = 0;
@@ -210,10 +210,10 @@ public class ItemCustomizationUtils {
 				i++;
 			}
 			int dyeColour2 = ChromaColour.specialToChromaRGB(dyeColours[i]);
-			return blendColors(dyeColour1, dyeColour2, (float) (Minecraft.getMinecraft().thePlayer.ticksExisted % ticks) / ticks);
+			return blendColors(dyeColour1, dyeColour2, (float) getTicksForList(ticks, dyeColours.length) / ticks);
 		}
 		return ChromaColour.specialToChromaRGB(
-			dyeColours[(Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length]);
+			dyeColours[getTicksForList(ticks, dyeColours.length)]);
 	}
 
 	static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
@@ -374,5 +374,17 @@ public class ItemCustomizationUtils {
 		int blue = (int) (blueStart + (blueEnd - blueStart) * ratio);
 
 		return (red << 16) | (green << 8) | blue;
+	}
+
+	public static int getTicksForList(int speedTicks, int listSize) {
+		return getTicksForList(speedTicks, listSize, -1);
+	}
+
+	public static int getTicksForList(int speedTicks, int listSize, int presetIndex) {
+		int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / speedTicks) % listSize;
+		if (presetIndex >= 0 && presetIndex < listSize) {
+			animatedIndex = presetIndex;
+		}
+		return animatedIndex;
 	}
 }

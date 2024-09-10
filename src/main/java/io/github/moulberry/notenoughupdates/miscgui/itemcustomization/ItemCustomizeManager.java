@@ -493,10 +493,7 @@ public class ItemCustomizeManager {
 				} catch (NumberFormatException e) {
 				}
 			}
-			int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / 2) % testSkulls.size();
-			if (presetIndex != -1 && presetIndex < testSkulls.size()) {
-				animatedIndex = presetIndex;
-			}
+			int animatedIndex = ItemCustomizationUtils.getTicksForList(2, testSkulls.size(), presetIndex);
 			String skullTexture = testSkulls.get(animatedIndex);
 			ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
 			return skull.getTagCompound().getCompoundTag("SkullOwner");
@@ -516,10 +513,7 @@ public class ItemCustomizeManager {
 			}
 		}
 		int ticks = skin.get("ticks").getAsInt();
-		int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % skullTextures.size();
-		if (presetIndex != -1 && presetIndex < skullTextures.size()) {
-			animatedIndex = presetIndex;
-		}
+		int animatedIndex = ItemCustomizationUtils.getTicksForList(ticks, testSkulls.size(), presetIndex);
 		String skullTexture = skullTextures.get(animatedIndex).getAsString();
 		//dont think the display name is important
 		ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
