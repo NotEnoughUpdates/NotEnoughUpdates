@@ -513,7 +513,7 @@ public class ItemCustomizeManager {
 			}
 		}
 		int ticks = skin.get("ticks").getAsInt();
-		int animatedIndex = ItemCustomizationUtils.getTicksForList(ticks, testSkulls.size(), presetIndex);
+		int animatedIndex = ItemCustomizationUtils.getTicksForList(ticks, skullTextures.size(), presetIndex);
 		String skullTexture = skullTextures.get(animatedIndex).getAsString();
 		//dont think the display name is important
 		ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);

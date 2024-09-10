@@ -42,6 +42,7 @@ class SkullCommand {
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("neuskull") {
             thenLiteral("start") {
+                //todo change this to be a sub commad
                 thenArgumentExecute("pet", BoolArgumentType.bool()) { pet ->
                     AnimatedSkullExporter.startRecording(AnimatedSkullExporter.petOrHead(this[pet]))
                 }.withHelp("Records pet texture instead")
