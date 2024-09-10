@@ -25,6 +25,7 @@ import io.github.moulberry.moulconfig.internal.ClipboardUtils;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -38,6 +39,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 
 @NEUAutoSubscribe
@@ -46,6 +48,7 @@ public class AnimatedSkullExporter {
 	static RecordingType recordingState = RecordingType.NOT_RECORDING;
 	static ArrayList<NBTTagCompound> skullsList = new ArrayList<>();
 	public static ArrayList<String> lastSkullsList = new ArrayList<>();
+	public static String trackedPlayer = "";
 
 	@SubscribeEvent
 	public void onTick(TickEvent event) {
@@ -54,12 +57,9 @@ public class AnimatedSkullExporter {
 		if (recordingState == RecordingType.HEAD) {
 			EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 			ItemStack currentArmor = player.getCurrentArmor(3);
-			if (currentArmor != null && currentArmor.hasDisplayName() && currentArmor.getItem() == Items.skull) {
-				if (currentArmor.hasTagCompound() && currentArmor.getTagCompound().hasKey("SkullOwner")) {
-					NBTTagCompound skullOwner = currentArmor.getTagCompound().getCompoundTag("SkullOwner");
-					skullsList.add(skullOwner);
-				}
-			}
+			NBTTagCompound skullOwner = getSkullOwner(currentArmor);
+			if (skullOwner != null) skullsList.add(skullOwner);
+
 		} else if (recordingState == RecordingType.PET) {
 			for (Entity entity : Minecraft.getMinecraft().theWorld.loadedEntityList) {
 				if (entity instanceof EntityArmorStand) {
@@ -69,51 +69,78 @@ public class AnimatedSkullExporter {
 						if (currentArmor == null) continue;
 						String displayName = currentArmor.getDisplayName();
 						if (displayName.contains("Head") || displayName.contains("Lvl")) {
-							if (currentArmor.getItem() == Items.skull && currentArmor.hasTagCompound() &&
-								currentArmor.getTagCompound().hasKey("SkullOwner")) {
-								NBTTagCompound skullOwner = currentArmor.getTagCompound().getCompoundTag("SkullOwner");
-								skullsList.add(skullOwner);
-							}
+							NBTTagCompound skullOwner = getSkullOwner(currentArmor);
+							if (skullOwner != null) skullsList.add(skullOwner);
 						}
+					}
+				}
+			}
+
+		} else if (recordingState == RecordingType.PLAYER) {
+			for (Entity entity : Minecraft.getMinecraft().theWorld.loadedEntityList) {
+				if (entity instanceof EntityOtherPlayerMP) {
+					EntityOtherPlayerMP otherPlayer = (EntityOtherPlayerMP) entity;
+					if (otherPlayer.getName().toLowerCase(Locale.ROOT).contains(trackedPlayer.toLowerCase(Locale.ROOT))) {
+						ItemStack currentArmor = otherPlayer.getCurrentArmor(3);
+						NBTTagCompound skullOwner = getSkullOwner(currentArmor);
+						if (skullOwner != null) skullsList.add(skullOwner);
 					}
 				}
 			}
 		}
 	}
 
-	public static void startRecording(boolean pet) {
-		if (isRecording()) {
-			restartRecording(pet);
-			return;
-		}
-		if (!pet) {
-			recordingState = RecordingType.HEAD;
-			Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Started recording skull frames"));
-		} else if (pet) {
-			recordingState = RecordingType.PET;
-			Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Started recording pet skull frames"));
-			Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Make sure you are near NO OTHER armour stands"));
-			Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] The corner of my island /visit throwpo works"));
-		}
-		Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Wait for the animation to play out"));
-		Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Use /neuskull stop to stop recording"));
+	public static void startRecordingPlayer(String name) {
+		trackedPlayer = name;
+		startRecording(RecordingType.PLAYER);
 	}
 
-	public static void restartRecording(boolean pet) {
+	public static void startRecording(RecordingType recordingType) {
+		if (isRecording()) {
+			restartRecording(recordingType);
+			return;
+		}
+		if (recordingType == RecordingType.HEAD) {
+			recordingState = RecordingType.HEAD;
+			Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Started recording skull frames"));
+		} else if (recordingType == RecordingType.PET) {
+			recordingState = RecordingType.PET;
+			Utils.addChatMessage(new ChatComponentText(
+				EnumChatFormatting.YELLOW + "[NEU] Started recording pet skull frames"));
+			Utils.addChatMessage(new ChatComponentText(
+				EnumChatFormatting.YELLOW + "[NEU] Make sure you are near NO OTHER armour stands"));
+			Utils.addChatMessage(new ChatComponentText(
+				EnumChatFormatting.YELLOW + "[NEU] The corner of my island /visit throwpo works"));
+		} else if (recordingType == RecordingType.PLAYER) {
+			recordingState = RecordingType.PLAYER;
+			Utils.addChatMessage(new ChatComponentText(
+				EnumChatFormatting.YELLOW + "[NEU] Started recording " + trackedPlayer + "'s skull frames"));
+		}
+		Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Wait for the animation to play out"));
+		Utils.addChatMessage(new ChatComponentText(
+			EnumChatFormatting.YELLOW + "[NEU] Use /neuskull stop to stop recording"));
+	}
+
+	public static void restartRecording(RecordingType recordingType) {
 		Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Restarting..."));
-		AnimatedSkullExporter.finishRecording(pet);
-		AnimatedSkullExporter.startRecording(pet);
+		AnimatedSkullExporter.finishRecording(false);
+		AnimatedSkullExporter.startRecording(recordingType);
 	}
 
 	public static void finishRecording(boolean save) {
+		trackedPlayer = "";
 		recordingState = RecordingType.NOT_RECORDING;
 		ArrayList<NBTTagCompound> noDuplicates = removeDuplicates(skullsList);
 		if (save) {
 			JsonArray jsonArray = new JsonArray();
 			for (NBTTagCompound noDuplicate : noDuplicates) {
 				String id = noDuplicate.getString("Id");
-				String value = noDuplicate.getCompoundTag("Properties").getTagList("textures", 10).getCompoundTagAt(0).getString(
-					"Value");
+				String value = noDuplicate
+					.getCompoundTag("Properties")
+					.getTagList("textures", 10)
+					.getCompoundTagAt(0)
+					.getString(
+						"Value");
 				jsonArray.add(new JsonPrimitive(id + ":" + value));
 			}
 			if (jsonArray.size() == 0) {
@@ -121,7 +148,8 @@ public class AnimatedSkullExporter {
 				return;
 			}
 			Utils.addChatMessage(
-				EnumChatFormatting.YELLOW + "[NEU] " + jsonArray.size() + " skull frame" + (jsonArray.size() == 1 ? "" : "s") + " copied to clipboard.");
+				EnumChatFormatting.YELLOW + "[NEU] " + jsonArray.size() + " skull frame" + (jsonArray.size() == 1 ? "" : "s") +
+					" copied to clipboard.");
 			ClipboardUtils.copyToClipboard(jsonArray.toString());
 			lastSkullsList.clear();
 			for (int i = 0; i < jsonArray.size(); i++) {
@@ -139,14 +167,32 @@ public class AnimatedSkullExporter {
 		return list;
 	}
 
-	enum RecordingType {
+	public static NBTTagCompound getSkullOwner(ItemStack stack) {
+		if (stack != null && stack.getItem() == Items.skull) {
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("SkullOwner")) {
+				return stack.getTagCompound().getCompoundTag("SkullOwner");
+			}
+		}
+		return null;
+	}
+
+	public enum RecordingType {
 		NOT_RECORDING,
 		HEAD,
-		PET
+		PET,
+		PLAYER
 	}
 
 	public static boolean isRecording() {
 		return recordingState != RecordingType.NOT_RECORDING;
+	}
+
+	public static RecordingType petOrHead(boolean isPet) {
+		if (isPet) {
+			return RecordingType.PET;
+		} else {
+			return RecordingType.HEAD;
+		}
 	}
 
 }

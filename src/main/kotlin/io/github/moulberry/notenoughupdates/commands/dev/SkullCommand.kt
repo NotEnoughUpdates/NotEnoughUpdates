@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.commands.dev
 
 import com.mojang.brigadier.arguments.BoolArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.AnimatedSkullExporter
@@ -42,12 +43,19 @@ class SkullCommand {
         event.command("neuskull") {
             thenLiteral("start") {
                 thenArgumentExecute("pet", BoolArgumentType.bool()) { pet ->
-                    AnimatedSkullExporter.startRecording(this[pet])
+                    AnimatedSkullExporter.startRecording(AnimatedSkullExporter.petOrHead(this[pet]))
                 }.withHelp("Records pet texture instead")
                 thenExecute {
-                    AnimatedSkullExporter.startRecording(false)
+                    AnimatedSkullExporter.startRecording(AnimatedSkullExporter.RecordingType.HEAD)
                 }
             }.withHelp("Starts recording skull frames")
+
+            thenLiteral("player") {
+                thenArgumentExecute("player", StringArgumentType.string()) { name ->
+                    AnimatedSkullExporter.startRecordingPlayer(this[name])
+                }.withHelp("Starts recording another player's head")
+            }.withHelp("Starts recording another player's head")
+
             thenLiteralExecute("stop") {
                 if (AnimatedSkullExporter.isRecording()) {
                     AnimatedSkullExporter.finishRecording(true)
