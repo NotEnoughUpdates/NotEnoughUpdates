@@ -68,7 +68,7 @@ public class AnimatedSkullExporter {
 					for (ItemStack currentArmor : currentArmorS) {
 						if (currentArmor == null) continue;
 						String displayName = currentArmor.getDisplayName();
-						if (displayName.contains("Head") || displayName.contains("Lvl")) {
+						if (displayName.contains("'s Head") || displayName.contains("Lvl")) {
 							NBTTagCompound skullOwner = getSkullOwner(currentArmor);
 							if (skullOwner != null) skullsList.add(skullOwner);
 						}
