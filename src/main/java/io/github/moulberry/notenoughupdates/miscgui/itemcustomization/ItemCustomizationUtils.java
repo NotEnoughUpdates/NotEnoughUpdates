@@ -210,7 +210,7 @@ public class ItemCustomizationUtils {
 				i++;
 			}
 			int dyeColour2 = ChromaColour.specialToChromaRGB(dyeColours[i]);
-			return blendColors(dyeColour1, dyeColour2, (float) getTicksForList(ticks, dyeColours.length) / ticks);
+			return blendColors(dyeColour1, dyeColour2, (float) (Minecraft.getMinecraft().thePlayer.ticksExisted % ticks) / ticks);
 		}
 		return ChromaColour.specialToChromaRGB(
 			dyeColours[getTicksForList(ticks, dyeColours.length)]);
