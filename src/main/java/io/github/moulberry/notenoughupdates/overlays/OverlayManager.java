@@ -22,6 +22,8 @@ package io.github.moulberry.notenoughupdates.overlays;
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodo;
+import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodoHud;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +73,11 @@ public class OverlayManager {
 				List<String> strings = new ArrayList<>();
 				for (int i : NotEnoughUpdates.INSTANCE.config.miscOverlays.todoText2) {
 					if (i >= 0 && i < todoDummy.size()) strings.add(todoDummy.get(i));
+				}
+				for (CustomTodo customTodo : NotEnoughUpdates.INSTANCE.config.hidden.customTodos) {
+					if (customTodo.isEnabledOnCurrentProfile()) {
+						strings.add(CustomTodoHud.INSTANCE.encodeCustomItem(customTodo.getIcon()) + ":§3" + customTodo.getLabel() + ":§a Ready!");
+					}
 				}
 				return strings;
 			}, () -> {
