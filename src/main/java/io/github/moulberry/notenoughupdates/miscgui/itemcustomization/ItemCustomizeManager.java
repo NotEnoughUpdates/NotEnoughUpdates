@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
+import io.github.moulberry.notenoughupdates.miscfeatures.dev.AnimatedSkullExporter;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -470,7 +471,7 @@ public class ItemCustomizeManager {
 			}
 			if (getCustomItem(stack) == Items.skull) {
 				String itemID = damageString.toUpperCase(Locale.ROOT).replace(" ", "_");
-				NBTTagCompound animatedCustomSkull = getAnimatedCustomSkull(itemID, 2, index);
+				NBTTagCompound animatedCustomSkull = getAnimatedCustomSkull(itemID, index);
 				if (animatedCustomSkull != null) return animatedCustomSkull;
 				ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.createItem(itemID);
 				if (itemStack != null && itemStack.getItem() == Items.skull) {
@@ -482,12 +483,20 @@ public class ItemCustomizeManager {
 		return null;
 	}
 
-	public static NBTTagCompound getAnimatedCustomSkull(String itemID, int ticks, String textureIndex) {
+	public static NBTTagCompound getAnimatedCustomSkull(String itemID, String textureIndex) {
+		if ("TEST".equals(itemID) && !AnimatedSkullExporter.lastSkullsList.isEmpty()) {
+			int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / 2) % AnimatedSkullExporter.lastSkullsList.size();
+			String skullTexture = AnimatedSkullExporter.lastSkullsList.get(animatedIndex);
+			ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
+			return skull.getTagCompound().getCompoundTag("SkullOwner");
+		}
 		JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
 		if (animatedSkulls == null) return null;
 		if (!animatedSkulls.has("skins")) return null;
 		if (!animatedSkulls.get("skins").getAsJsonObject().has(itemID)) return null;
-		JsonArray skullTextures = animatedSkulls.get("skins").getAsJsonObject().get(itemID).getAsJsonArray();
+		JsonObject skin = animatedSkulls.get("skins").getAsJsonObject().get(itemID).getAsJsonObject();
+		if (!skin.has("textures")) return null;
+		JsonArray skullTextures = skin.get("textures").getAsJsonArray();
 		int presetIndex = -1;
 		if (!textureIndex.isEmpty()) {
 			try {
@@ -495,6 +504,7 @@ public class ItemCustomizeManager {
 			} catch (NumberFormatException e) {
 			}
 		}
+		int ticks = skin.get("ticks").getAsInt();
 		int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % skullTextures.size();
 		if (presetIndex != -1 && presetIndex < skullTextures.size()) {
 			animatedIndex = presetIndex;

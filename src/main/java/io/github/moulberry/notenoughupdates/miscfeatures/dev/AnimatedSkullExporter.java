@@ -42,6 +42,7 @@ public class AnimatedSkullExporter {
 
 	public static boolean enabled = false;
 	static ArrayList<NBTTagCompound> skullsList = new ArrayList<>();
+	public static ArrayList<String> lastSkullsList = new ArrayList<>();
 
 	@SubscribeEvent
 	public void onTick(TickEvent event) {
@@ -77,6 +78,10 @@ public class AnimatedSkullExporter {
 			Utils.addChatMessage(
 				EnumChatFormatting.YELLOW + "[NEU] " + jsonArray.size() + " skull frame" + (jsonArray.size() == 1 ? "" : "s") + " copied to clipboard.");
 			ClipboardUtils.copyToClipboard(jsonArray.toString());
+			lastSkullsList.clear();
+			for (int i = 0; i < jsonArray.size(); i++) {
+				lastSkullsList.add(jsonArray.get(i).getAsString());
+			}
 		}
 	}
 
