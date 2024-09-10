@@ -64,14 +64,16 @@ public class AnimatedSkullExporter {
 			for (Entity entity : Minecraft.getMinecraft().theWorld.loadedEntityList) {
 				if (entity instanceof EntityArmorStand) {
 					EntityArmorStand armorStand = (EntityArmorStand) entity;
-					ItemStack currentArmor = armorStand.getInventory()[0];
-					if (currentArmor == null) continue;
-					String displayName = currentArmor.getDisplayName();
-					if (displayName.contains("'s Head")) {
-						if (currentArmor.getItem() == Items.skull && currentArmor.hasTagCompound() &&
-							currentArmor.getTagCompound().hasKey("SkullOwner")) {
-							NBTTagCompound skullOwner = currentArmor.getTagCompound().getCompoundTag("SkullOwner");
-							skullsList.add(skullOwner);
+					ItemStack[] currentArmorS = armorStand.getInventory();
+					for (ItemStack currentArmor : currentArmorS) {
+						if (currentArmor == null) continue;
+						String displayName = currentArmor.getDisplayName();
+						if (displayName.contains("Head") || displayName.contains("Lvl")) {
+							if (currentArmor.getItem() == Items.skull && currentArmor.hasTagCompound() &&
+								currentArmor.getTagCompound().hasKey("SkullOwner")) {
+								NBTTagCompound skullOwner = currentArmor.getTagCompound().getCompoundTag("SkullOwner");
+								skullsList.add(skullOwner);
+							}
 						}
 					}
 				}
@@ -106,7 +108,6 @@ public class AnimatedSkullExporter {
 	public static void finishRecording(boolean save) {
 		recordingState = RecordingType.NOT_RECORDING;
 		ArrayList<NBTTagCompound> noDuplicates = removeDuplicates(skullsList);
-		skullsList.clear();
 		if (save) {
 			JsonArray jsonArray = new JsonArray();
 			for (NBTTagCompound noDuplicate : noDuplicates) {
@@ -127,6 +128,7 @@ public class AnimatedSkullExporter {
 				lastSkullsList.add(jsonArray.get(i).getAsString());
 			}
 		}
+		skullsList.clear();
 	}
 
 	public static ArrayList<NBTTagCompound> removeDuplicates(ArrayList<NBTTagCompound> list) {

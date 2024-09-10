@@ -484,9 +484,20 @@ public class ItemCustomizeManager {
 	}
 
 	public static NBTTagCompound getAnimatedCustomSkull(String itemID, String textureIndex) {
-		if ("TEST".equals(itemID) && !AnimatedSkullExporter.lastSkullsList.isEmpty()) {
-			int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / 2) % AnimatedSkullExporter.lastSkullsList.size();
-			String skullTexture = AnimatedSkullExporter.lastSkullsList.get(animatedIndex);
+		ArrayList<String> testSkulls = AnimatedSkullExporter.lastSkullsList;
+		if ("TEST".equals(itemID) && !testSkulls.isEmpty()) {
+			int presetIndex = -1;
+			if (!textureIndex.isEmpty()) {
+				try {
+					presetIndex = Integer.parseInt(textureIndex);
+				} catch (NumberFormatException e) {
+				}
+			}
+			int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / 2) % testSkulls.size();
+			if (presetIndex != -1 && presetIndex < testSkulls.size()) {
+				animatedIndex = presetIndex;
+			}
+			String skullTexture = testSkulls.get(animatedIndex);
 			ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
 			return skull.getTagCompound().getCompoundTag("SkullOwner");
 		}
