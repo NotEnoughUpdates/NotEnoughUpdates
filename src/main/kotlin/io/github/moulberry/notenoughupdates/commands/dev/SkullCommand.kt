@@ -67,7 +67,7 @@ class SkullCommand {
                 }
                 thenExecute {
                     if (AnimatedSkullExporter.isRecording()) {
-                        AnimatedSkullExporter.finishRecording(true, true)
+                        AnimatedSkullExporter.finishRecording(true, false)
                         reply(ChatComponentText("${YELLOW}Stopped recording skull frames"))
                     } else {
                         reply(ChatComponentText("${YELLOW}Not recording skull frames"))
