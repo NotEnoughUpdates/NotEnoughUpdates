@@ -64,7 +64,7 @@ class SkullCommand {
                         reply(ChatComponentText("${YELLOW}Not recording skull frames"))
                         reply(ChatComponentText("${YELLOW}Use /neuskull start to start recording"))
                     }
-                }
+                }.withHelp("True to also record frames that are already in the mod")
                 thenExecute {
                     if (AnimatedSkullExporter.isRecording()) {
                         AnimatedSkullExporter.finishRecording(true, false)
