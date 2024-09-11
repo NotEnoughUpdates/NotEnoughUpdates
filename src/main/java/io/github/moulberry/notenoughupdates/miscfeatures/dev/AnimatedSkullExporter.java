@@ -20,9 +20,12 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.dev;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.moulconfig.internal.ClipboardUtils;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
@@ -40,6 +43,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 @NEUAutoSubscribe
@@ -53,6 +57,10 @@ public class AnimatedSkullExporter {
 	@SubscribeEvent
 	public void onTick(TickEvent event) {
 		if (!isRecording()) return;
+		if (Minecraft.getMinecraft().theWorld == null) {
+			finishRecording(true, true);
+			return;
+		}
 
 		if (recordingState == RecordingType.HEAD) {
 			EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
@@ -123,11 +131,11 @@ public class AnimatedSkullExporter {
 
 	public static void restartRecording(RecordingType recordingType) {
 		Utils.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Restarting..."));
-		AnimatedSkullExporter.finishRecording(false);
+		AnimatedSkullExporter.finishRecording(false, true);
 		AnimatedSkullExporter.startRecording(recordingType);
 	}
 
-	public static void finishRecording(boolean save) {
+	public static void finishRecording(boolean save, boolean recordExisting) {
 		trackedPlayer = "";
 		recordingState = RecordingType.NOT_RECORDING;
 		ArrayList<NBTTagCompound> noDuplicates = removeDuplicates(skullsList);
@@ -141,6 +149,7 @@ public class AnimatedSkullExporter {
 					.getCompoundTagAt(0)
 					.getString(
 						"Value");
+				if (!recordExisting && checkIfAlreadyInConstant(id, value)) continue;
 				jsonArray.add(new JsonPrimitive(id + ":" + value));
 			}
 			if (jsonArray.size() == 0) {
@@ -157,6 +166,25 @@ public class AnimatedSkullExporter {
 			}
 		}
 		skullsList.clear();
+	}
+
+	static boolean checkIfAlreadyInConstant(String id, String value) {
+		JsonObject animatedskulls = Constants.ANIMATEDSKULLS;
+		if (animatedskulls == null) return false;
+		if (!animatedskulls.has("skins")) return false;
+		JsonObject skins = animatedskulls.get("skins").getAsJsonObject();
+		for (Map.Entry<String, JsonElement> stringJsonElementEntry : skins.entrySet()) {
+			JsonArray textures =
+				skins.get(stringJsonElementEntry.getKey()).getAsJsonObject().get("textures").getAsJsonArray();
+			for (JsonElement texture : textures) {
+				String textureStr = texture.getAsString();
+				String[] split = textureStr.split(":");
+				if (split.length == 1) continue;
+				if (value.equals(split[1])) return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static ArrayList<NBTTagCompound> removeDuplicates(ArrayList<NBTTagCompound> list) {
@@ -185,14 +213,6 @@ public class AnimatedSkullExporter {
 
 	public static boolean isRecording() {
 		return recordingState != RecordingType.NOT_RECORDING;
-	}
-
-	public static RecordingType petOrHead(boolean isPet) {
-		if (isPet) {
-			return RecordingType.PET;
-		} else {
-			return RecordingType.HEAD;
-		}
 	}
 
 }
