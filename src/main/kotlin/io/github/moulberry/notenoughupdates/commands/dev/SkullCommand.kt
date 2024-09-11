@@ -41,14 +41,8 @@ class SkullCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("neuskull") {
-            thenLiteral("start") {
-                //todo change this to be a sub commad
-                thenArgumentExecute("pet", BoolArgumentType.bool()) { pet ->
-                    AnimatedSkullExporter.startRecording(AnimatedSkullExporter.petOrHead(this[pet]))
-                }.withHelp("Records pet texture instead")
-                thenExecute {
-                    AnimatedSkullExporter.startRecording(AnimatedSkullExporter.RecordingType.HEAD)
-                }
+            thenLiteralExecute("start") {
+                AnimatedSkullExporter.startRecording(AnimatedSkullExporter.RecordingType.HEAD)
             }.withHelp("Starts recording skull frames")
 
             thenLiteral("player") {
@@ -57,13 +51,28 @@ class SkullCommand {
                 }.withHelp("Starts recording another player's head")
             }.withHelp("Starts recording another player's head")
 
-            thenLiteralExecute("stop") {
-                if (AnimatedSkullExporter.isRecording()) {
-                    AnimatedSkullExporter.finishRecording(true)
-                    reply(ChatComponentText("${YELLOW}Stopped recording skull frames"))
-                } else {
-                    reply(ChatComponentText("${YELLOW}Not recording skull frames"))
-                    reply(ChatComponentText("${YELLOW}Use /neuskull start to start recording"))
+            thenLiteralExecute("pet") {
+                    AnimatedSkullExporter.startRecording(AnimatedSkullExporter.RecordingType.PET)
+                }.withHelp("Records pet texture instead")
+
+            thenLiteral("stop") {
+                thenArgumentExecute("recordExisting", BoolArgumentType.bool()) { record ->
+                    if (AnimatedSkullExporter.isRecording()) {
+                        AnimatedSkullExporter.finishRecording(true, this[record])
+                        reply(ChatComponentText("${YELLOW}Stopped recording skull frames"))
+                    } else {
+                        reply(ChatComponentText("${YELLOW}Not recording skull frames"))
+                        reply(ChatComponentText("${YELLOW}Use /neuskull start to start recording"))
+                    }
+                }
+                thenExecute {
+                    if (AnimatedSkullExporter.isRecording()) {
+                        AnimatedSkullExporter.finishRecording(true, true)
+                        reply(ChatComponentText("${YELLOW}Stopped recording skull frames"))
+                    } else {
+                        reply(ChatComponentText("${YELLOW}Not recording skull frames"))
+                        reply(ChatComponentText("${YELLOW}Use /neuskull start to start recording"))
+                    }
                 }
             }.withHelp("Stops recording skull frames")
         }
