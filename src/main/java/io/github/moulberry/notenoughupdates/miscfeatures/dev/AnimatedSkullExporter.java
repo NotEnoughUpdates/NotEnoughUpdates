@@ -66,7 +66,7 @@ public class AnimatedSkullExporter {
 			EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 			ItemStack currentArmor = player.getCurrentArmor(3);
 			NBTTagCompound skullOwner = getSkullOwner(currentArmor);
-			if (skullOwner != null && !skullsList.contains(skullOwner)) skullsList.add(skullOwner);
+			if (skullOwner != null) skullsList.add(skullOwner);
 
 		} else if (recordingState == RecordingType.PET) {
 			for (Entity entity : Minecraft.getMinecraft().theWorld.loadedEntityList) {
@@ -78,7 +78,7 @@ public class AnimatedSkullExporter {
 						String displayName = currentArmor.getDisplayName();
 						if (displayName.contains("Head") || displayName.contains("Lvl")) {
 							NBTTagCompound skullOwner = getSkullOwner(currentArmor);
-							if (skullOwner != null && !skullsList.contains(skullOwner)) skullsList.add(skullOwner);
+							if (skullOwner != null) skullsList.add(skullOwner);
 						}
 					}
 				}
@@ -91,7 +91,7 @@ public class AnimatedSkullExporter {
 					if (otherPlayer.getName().toLowerCase(Locale.ROOT).contains(trackedPlayer.toLowerCase(Locale.ROOT))) {
 						ItemStack currentArmor = otherPlayer.getCurrentArmor(3);
 						NBTTagCompound skullOwner = getSkullOwner(currentArmor);
-						if (skullOwner != null && !skullsList.contains(skullOwner)) skullsList.add(skullOwner);
+						if (skullOwner != null) skullsList.add(skullOwner);
 					}
 				}
 			}
@@ -154,6 +154,7 @@ public class AnimatedSkullExporter {
 			}
 			if (jsonArray.size() == 0) {
 				Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] No skull frames recorded.");
+				skullsList.clear();
 				return;
 			}
 			Utils.addChatMessage(
