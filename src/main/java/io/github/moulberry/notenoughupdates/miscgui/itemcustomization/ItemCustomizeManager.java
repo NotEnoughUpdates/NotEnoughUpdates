@@ -22,12 +22,14 @@ package io.github.moulberry.notenoughupdates.miscgui.itemcustomization;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
+import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.AnimatedSkullExporter;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -483,28 +485,14 @@ public class ItemCustomizeManager {
 		return null;
 	}
 
+	public static HashMap<String, AnimatedSkull> customSkulls = new HashMap<>();
+
+	@SubscribeEvent
+	public void onRepoReload(RepositoryReloadEvent event) {
+		customSkulls.clear();
+	}
+
 	public static NBTTagCompound getAnimatedCustomSkull(String itemID, String textureIndex) {
-		ArrayList<String> testSkulls = AnimatedSkullExporter.lastSkullsList;
-		if ("TEST".equals(itemID) && !testSkulls.isEmpty()) {
-			int presetIndex = -1;
-			if (!textureIndex.isEmpty()) {
-				try {
-					presetIndex = Integer.parseInt(textureIndex);
-				} catch (NumberFormatException e) {
-				}
-			}
-			int animatedIndex = ItemCustomizationUtils.getTicksForList(2, testSkulls.size(), presetIndex);
-			String skullTexture = testSkulls.get(animatedIndex);
-			ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
-			return skull.getTagCompound().getCompoundTag("SkullOwner");
-		}
-		JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
-		if (animatedSkulls == null) return null;
-		if (!animatedSkulls.has("skins")) return null;
-		if (!animatedSkulls.get("skins").getAsJsonObject().has(itemID)) return null;
-		JsonObject skin = animatedSkulls.get("skins").getAsJsonObject().get(itemID).getAsJsonObject();
-		if (!skin.has("textures")) return null;
-		JsonArray skullTextures = skin.get("textures").getAsJsonArray();
 		int presetIndex = -1;
 		if (!textureIndex.isEmpty()) {
 			try {
@@ -512,12 +500,43 @@ public class ItemCustomizeManager {
 			} catch (NumberFormatException e) {
 			}
 		}
+
+		ArrayList<String> testSkulls = AnimatedSkullExporter.lastSkullsList;
+		if ("TEST".equals(itemID) && !testSkulls.isEmpty()) {
+			int animatedIndex = ItemCustomizationUtils.getTicksForList(2, testSkulls.size(), presetIndex);
+			String skullTexture = testSkulls.get(animatedIndex);
+			ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
+			return skull.getTagCompound().getCompoundTag("SkullOwner");
+		}
+
+		if (customSkulls.containsKey(itemID)) {
+			AnimatedSkull animatedSkull = customSkulls.get(itemID);
+			int ticks = animatedSkull.ticks;
+			int animatedIndex = ItemCustomizationUtils.getTicksForList(ticks, animatedSkull.skullOwners.size(), presetIndex);
+			return animatedSkull.skullOwners.get(animatedIndex);
+		}
+
+		JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
+		if (animatedSkulls == null) return null;
+		if (!animatedSkulls.has("skins")) return null;
+		if (!animatedSkulls.get("skins").getAsJsonObject().has(itemID)) return null;
+		JsonObject skin = animatedSkulls.get("skins").getAsJsonObject().get(itemID).getAsJsonObject();
+		if (!skin.has("textures")) return null;
+		JsonArray skullTextures = skin.get("textures").getAsJsonArray();
+
 		int ticks = skin.get("ticks").getAsInt();
 		int animatedIndex = ItemCustomizationUtils.getTicksForList(ticks, skullTextures.size(), presetIndex);
-		String skullTexture = skullTextures.get(animatedIndex).getAsString();
-		//dont think the display name is important
-		ItemStack skull = Utils.createSkull("test", skullTexture.split(":")[0], skullTexture.split(":")[1]);
-		return skull.getTagCompound().getCompoundTag("SkullOwner");
+		AnimatedSkull animatedSkull = new AnimatedSkull();
+		animatedSkull.ticks = ticks;
+		animatedSkull.skullOwners = new ArrayList<>();
+		for (JsonElement skullTexture : skullTextures) {
+			String texture = skullTexture.getAsString();
+			//dont think the display name is important
+			ItemStack skull = Utils.createSkull("test", texture.split(":")[0], texture.split(":")[1]);
+			animatedSkull.skullOwners.add(skull.getTagCompound().getCompoundTag("SkullOwner"));
+		}
+		customSkulls.put(itemID, animatedSkull);
+		return animatedSkull.skullOwners.get(animatedIndex);
 	}
 
 	public static ArrayList<String> getAnimatedSkullHelp(String damageString) {
@@ -536,6 +555,11 @@ public class ItemCustomizeManager {
 			helpLinesStrings.add(helpLines.get(i).getAsString());
 		}
 		return helpLinesStrings;
+	}
+
+	static class AnimatedSkull {
+		ArrayList<NBTTagCompound> skullOwners;
+		int ticks;
 	}
 
 }
