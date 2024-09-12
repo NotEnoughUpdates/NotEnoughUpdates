@@ -49,7 +49,7 @@ class SkullCommand {
                 thenArgumentExecute("player", StringArgumentType.string()) { name ->
                     AnimatedSkullExporter.startRecordingPlayer(this[name])
                 }.withHelp("Starts recording another player's head")
-            }.withHelp("Starts recording another player's head")
+            }
 
             thenLiteralExecute("pet") {
                     AnimatedSkullExporter.startRecording(AnimatedSkullExporter.RecordingType.PET)
