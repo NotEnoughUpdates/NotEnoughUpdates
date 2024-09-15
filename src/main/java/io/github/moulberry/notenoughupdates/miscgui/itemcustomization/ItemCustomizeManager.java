@@ -352,9 +352,13 @@ public class ItemCustomizeManager {
 				}
 				return damageMap.get(stack.getTagCompound().hashCode());
 			} else if (getCustomItem(stack) == Items.skull) {
-				ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.createItem(damageString.toUpperCase(Locale.ROOT).replace(" ", "_"));
+				String itemID = damageString.toUpperCase(Locale.ROOT).replace(" ", "_");
+				ItemStack itemStack = NotEnoughUpdates.INSTANCE.manager.createItem(itemID);
 				if (itemStack != null && itemStack.getItem() == Items.skull) {
 					return 3;
+				} else {
+					NBTTagCompound animatedCustomSkull = getAnimatedCustomSkull(itemID, "");
+					if (animatedCustomSkull != null) return 3;
 				}
 			}
 			return Integer.parseInt(data.customItem.split(":")[1]);
