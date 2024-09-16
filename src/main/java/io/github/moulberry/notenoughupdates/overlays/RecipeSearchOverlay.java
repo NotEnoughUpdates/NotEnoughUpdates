@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntitySign;
@@ -67,7 +68,7 @@ public class RecipeSearchOverlay extends SearchOverlayScreen {
 
 	@SubscribeEvent
 	public void slotReplace(ReplaceItemEvent event) {
-		if (event.getSlotNumber() != 32 || !Utils.getOpenChestName().equals("Craft Item")) return;
+		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.enableSearchOverlay || event.getInventory() instanceof InventoryPlayer || event.getSlotNumber() != 32 || !Utils.getOpenChestName().equals("Craft Item")) return;
 		event.replaceWith(recipeSearchStack);
 	}
 
