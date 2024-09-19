@@ -1414,6 +1414,7 @@ public class NEUOverlay extends Gui {
 				"DRILL",
 				"GAUNTLET",
 				"LONGSWORD",
+				"DUNGEON LONGSWORD",
 				"DEPLOYABLE"
 			) >= 0;
 		} else if (getSortMode() == SORT_MODE_ARMOR) {
