@@ -403,7 +403,8 @@ public class PetInfoOverlay extends TextOverlay {
 		if (xpGain < 0) xpGain = 0;
 		String xpGainString = EnumChatFormatting.AQUA + "XP/h: " +
 			EnumChatFormatting.YELLOW + roundFloat(xpGain);
-		if (!secondPet && xpGain > 0 && (levelXp != levelXpLast || System.currentTimeMillis() - lastXpUpdateNonZero > 3500)) {
+		if (!secondPet && xpGain > 0 &&
+			(levelXp != levelXpLast || System.currentTimeMillis() - lastXpUpdateNonZero > 3500)) {
 			if (pauseCountdown <= 0) {
 				xpGainString += EnumChatFormatting.RED + " (PAUSED)";
 			} else {
@@ -422,7 +423,8 @@ public class PetInfoOverlay extends TextOverlay {
 			JsonObject json = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petItem);
 			if (json != null) {
 				String name;
-				if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petItemIcon) name = NotEnoughUpdates.INSTANCE.manager.jsonToStack(json).getDisplayName();
+				if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petItemIcon)
+					name = NotEnoughUpdates.INSTANCE.manager.jsonToStack(json).getDisplayName();
 				else name = "";
 				petItemStr = EnumChatFormatting.AQUA + "Held Item: " + name;
 			}
@@ -1124,9 +1126,11 @@ public class PetInfoOverlay extends TextOverlay {
 		JsonObject pets = Constants.PETS;
 		String defaultName = WordUtils.capitalizeFully(petId.replace("_", " "));
 		if (pets == null) return defaultName;
-		if (!pets.has("id_to_display_name") && !shownMissingRepo) {
-			Utils.showOutdatedRepoNotification("pets.json id_to_display_name");
-			shownMissingRepo = true;
+		if (!pets.has("id_to_display_name")) {
+			if (!shownMissingRepo) {
+				Utils.showOutdatedRepoNotification("pets.json id_to_display_name");
+				shownMissingRepo = true;
+			}
 			return defaultName;
 		}
 
