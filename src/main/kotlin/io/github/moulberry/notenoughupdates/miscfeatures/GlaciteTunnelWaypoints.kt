@@ -40,7 +40,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object GlaciteTunnelWaypoints {
     val glaciteTunnelLocations = setOf(
         "Glacite Tunnels",
-        "Glacite Lake",
+        "Great Glacite Lake",
         "Dwarven Base Camp",
         "Inside the Wall",
         "Fossil Research Center",
