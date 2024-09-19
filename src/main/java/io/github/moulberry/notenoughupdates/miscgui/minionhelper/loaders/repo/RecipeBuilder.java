@@ -68,6 +68,10 @@ public class RecipeBuilder {
 			}
 		}
 		if (!isParent) {
+			if (split.length != 2) {
+				items.put("AIR", 0);
+				return;
+			}
 			int amount = Integer.parseInt(split[1]);
 			items.put(itemName, amount);
 		}
