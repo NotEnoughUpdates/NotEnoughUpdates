@@ -181,7 +181,9 @@ public class DungeonNpcProfitOverlay {
 		dungeonChest.name = stack.getDisplayName();
 		List<SkyblockItem> items = new ArrayList<>();
 		boolean isInCost = false;
+		int counter = -1;
 		for (String s : lore) {
+			counter++;
 
 			if ("§7Contents".equals(s) || "".equals(s) || "§cCan't open another chest!".equals(s) ||
 				"§aAlready opened!".equals(s) ||
@@ -203,7 +205,18 @@ public class DungeonNpcProfitOverlay {
 				} else if (s.equals("§aFREE")) {
 					dungeonChest.costToOpen = 0;
 				}
-				continue;
+				if (NotEnoughUpdates.INSTANCE.config.dungeons.useChestKeyCost && lore.size() > counter) {
+					String nextLore = lore.get(counter + 1);
+					if ((s.contains("Dungeon Chest Key") || nextLore.contains("Dungeon Chest Key"))) {
+						JsonObject dungeonChestKey = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(
+							"DUNGEON_CHEST_KEY");
+						if (dungeonChestKey != null && dungeonChestKey.has("curr_buy")) {
+							float bazaarPrice = dungeonChestKey.get("curr_buy").getAsFloat();
+							dungeonChest.costToOpen += bazaarPrice;
+						}
+					}
+				}
+				break;
 			}
 			//check if the line can be converted to a SkyblockItem
 			SkyblockItem skyblockItem = SkyblockItem.createFromLoreEntry(s);
