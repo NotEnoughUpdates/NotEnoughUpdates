@@ -254,6 +254,9 @@ public class MinionHelperOverlayHover {
 				lines.add(" §8- §a" + amount + "§7x §d" + "North Star");
 				continue;
 			}
+			if (internalName.equals("AIR")) {
+				continue;
+			}
 
 			String name = NotEnoughUpdates.INSTANCE.manager.getDisplayName(internalName);
 			double price = manager.getPriceCalculation().getPrice(internalName);
