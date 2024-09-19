@@ -25,7 +25,9 @@ import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.EnumChatFormatting;
@@ -47,13 +49,12 @@ public class RecipeSearchOverlay extends SearchOverlayScreen {
 
 	@SubscribeEvent
 	public void onSlotClick(SlotClickEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.recipeTweaks.enableSearchOverlay) return;
 		ItemStack stack = event.slot.getStack();
-		if ((event.slot.slotNumber == 50 || event.slot.slotNumber == 51) && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch Recipes")) {
+		if (enableSearchOverlay() && (event.slot.slotNumber == 50 || event.slot.slotNumber == 51) && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch Recipes")) {
 			event.setCanceled(true);
 			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
 		}
-		if (event.slot.slotNumber == 32 && Utils.getOpenChestName().equals("Craft Item")) {
+		if (shouldAddPickaxe() && event.slot.slotNumber == 32 && Utils.getOpenChestName().equals("Craft Item")) {
 			event.setCanceled(true);
 			NotEnoughUpdates.INSTANCE.openGui = new RecipeSearchOverlay();
 		}
@@ -67,14 +68,21 @@ public class RecipeSearchOverlay extends SearchOverlayScreen {
 
 	@SubscribeEvent
 	public void slotReplace(ReplaceItemEvent event) {
+		if (!shouldAddPickaxe()) return;
 		if (event.getSlotNumber() != 32 || !Utils.getOpenChestName().equals("Craft Item")) return;
+		if (event.getOriginal() == null || event.getOriginal().getItem() != Item.getItemFromBlock(Blocks.stained_glass_pane) ||
+		!event.getOriginal().getDisplayName().equals(" ")) return;
 		event.replaceWith(recipeSearchStack);
 	}
 
 
 	@Override
-	public boolean enableSearchOverlay() {
+	public boolean enableSearchOverlay() { // enables the button in /recipes, not the whole overlay
 		return NotEnoughUpdates.INSTANCE.config.recipeTweaks.enableSearchOverlay;
+	}
+
+	public boolean shouldAddPickaxe() {
+		return NotEnoughUpdates.INSTANCE.config.recipeTweaks.addPickaxeStack;
 	}
 
 	@Override

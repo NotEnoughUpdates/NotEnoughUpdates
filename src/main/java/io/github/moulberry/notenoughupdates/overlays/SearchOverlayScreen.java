@@ -39,6 +39,7 @@ import net.minecraft.network.play.client.C12PacketUpdateSign;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -737,6 +738,10 @@ public class SearchOverlayScreen extends GuiEditSign {
 
 	public boolean keepPreviousSearch() {
 		return false;
+	}
+
+	public boolean disableClientSideGUI() {
+		return Loader.isModLoaded("skyblockcatia") || NotEnoughUpdates.INSTANCE.config.hidden.disableClientSideSearch;
 	}
 
 	public GuiType currentGuiType() {

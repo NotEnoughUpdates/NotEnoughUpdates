@@ -97,22 +97,26 @@ public class AuctionSearchOverlay extends SearchOverlayScreen {
 	@SubscribeEvent
 	public void onSlotClick(SlotClickEvent event) {
 		if (!enableSearchOverlay()) return;
+		if (disableClientSideGUI()) return;
+		if (event.clickedButton == 1 && event.clickType == 0) return;
 		if (!CookieWarning.hasActiveBoosterCookie()) return;
 		if (!Utils.getOpenChestName().startsWith("Auctions")) return;
 		ItemStack stack = event.slot.getStack();
 		if (event.slot.slotNumber == 48 && stack != null && stack.hasDisplayName() && stack.getItem() == Items.sign && stack.getDisplayName().equals("§aSearch")) {
 			event.setCanceled(true);
+			Minecraft.getMinecraft().currentScreen = null;
 			NotEnoughUpdates.INSTANCE.openGui = new AuctionSearchOverlay();
 		}
 	}
 
 	@SubscribeEvent
-	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
+	public void onSignDrawn(GuiScreenEvent.DrawScreenEvent.Pre event) {
 		if (!isinAhSign() || !(event.gui instanceof GuiEditSign) || event.gui instanceof SearchOverlayScreen)
 			return;
 		GuiEditSign guiEditSign = (GuiEditSign) event.gui;
 		TileEntitySign tileSign = ((AccessorGuiEditSign) guiEditSign).getTileSign();
 		if (tileSign != null) {
+			event.setCanceled(true);
 			Minecraft.getMinecraft().displayGuiScreen(new AuctionSearchOverlay(tileSign));
 		}
 	}
