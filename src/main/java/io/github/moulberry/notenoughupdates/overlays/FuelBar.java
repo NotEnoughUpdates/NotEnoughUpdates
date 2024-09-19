@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 @NEUAutoSubscribe
 public class FuelBar {
 	public static final ResourceLocation FUEL_BAR = new ResourceLocation("notenoughupdates:fuel_bar.png");
-	private static final Pattern FUEL_PATTERN = Pattern.compile("§7Fuel: .*/([0-9km]+)");
+	private static final Pattern FUEL_PATTERN = Pattern.compile("§7§7Fuel: .*/([0-9km]+)");
 	private int currentFuel = -1;
 	private int maxFuel = -1;
 
