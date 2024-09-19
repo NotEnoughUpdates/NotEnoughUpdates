@@ -205,10 +205,7 @@ public class AbiphoneFavourites {
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiContainerBackgroundDrawnEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()
-			|| !NotEnoughUpdates.INSTANCE.config.misc.abiphoneFavourites
-			|| Utils.getOpenChestName().equals("Abiphone Shop")
-			|| !Utils.getOpenChestName().startsWith("Abiphone ")) return;
+		if (isWrongInventory()) return;
 
 		GuiContainer container = event.getContainer();
 
@@ -237,7 +234,7 @@ public class AbiphoneFavourites {
 		return !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()
 			|| !NotEnoughUpdates.INSTANCE.config.misc.abiphoneFavourites
 			|| Utils.getOpenChestName().equals("Abiphone Shop")
-			|| !Utils.getOpenChestName().startsWith("Abiphone ")
+			|| !(Utils.getOpenChestName().startsWith("Abiphone ") || Utils.getOpenChestName().equals("AⒷiphone"))
 			|| isInShowMenu;
 	}
 
