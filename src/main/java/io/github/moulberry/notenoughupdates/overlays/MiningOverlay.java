@@ -99,18 +99,18 @@ public class MiningOverlay extends TextTabOverlay {
 		}
 
 		itemLoop:
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < MAX_FORGE_SLOTS; i++) {
 			ItemStack stack = lower.getStackInSlot(i + 11);
 			if (stack != null) {
 				String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 
 				for (String line : lore) {
 					Matcher matcher = timeRemainingForge.matcher(line);
-					if (stack.getDisplayName().matches("\\xA7cSlot #([1-5])")) {
+					if (stack.getDisplayName().matches("\\xA7cSlot #([1-" + MAX_FORGE_SLOTS + "])")) {
 						ForgeItem newForgeItem = new ForgeItem(i, 1, false);
 						replaceForgeOrAdd(newForgeItem, hidden.forgeItems, true);
 						//empty Slot
-					} else if (stack.getDisplayName().matches("\\xA7aSlot #([1-5])")) {
+					} else if (stack.getDisplayName().matches("\\xA7aSlot #([1-" + MAX_FORGE_SLOTS + "])")) {
 						ForgeItem newForgeItem = new ForgeItem(i, 0, false);
 						replaceForgeOrAdd(newForgeItem, hidden.forgeItems, true);
 					} else if (matcher.matches()) {
@@ -232,12 +232,13 @@ public class MiningOverlay extends TextTabOverlay {
 		}
 	}
 
+	private static final int MAX_FORGE_SLOTS = 7;
 	private static final Pattern timeRemainingForge = Pattern.compile(
 		"\\xA77Time Remaining: \\xA7a((?<Completed>Completed!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern timeRemainingTab = Pattern.compile(
 		".*[1-5]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern forgeIntPattern = Pattern.compile(
-		"[^)]*([1-5])\\).*");
+		"[^)]*([1-" + MAX_FORGE_SLOTS + "])\\).*");
 
 	@Override
 	public boolean isEnabled() {
@@ -375,7 +376,7 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 
 			if (profileConfig != null)
-				for (int i = 0; i < 5; i++) {
+				for (int i = 0; i < MAX_FORGE_SLOTS; i++) {
 					if (foundForges.contains(i)) continue;
 					ForgeItem item = new ForgeItem(i, 0, true);
 					replaceForgeOrAdd(item, profileConfig.forgeItems, true);
@@ -696,7 +697,7 @@ public class MiningOverlay extends TextTabOverlay {
 		List<String> forgeString = new ArrayList<>();
 		long currentTimeMillis = System.currentTimeMillis();
 		forgeIDLabel:
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < MAX_FORGE_SLOTS; i++) {
 			for (ForgeItem item : forgeItems) {
 				if (item.forgeID == i) {
 					if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplay == 0) {
