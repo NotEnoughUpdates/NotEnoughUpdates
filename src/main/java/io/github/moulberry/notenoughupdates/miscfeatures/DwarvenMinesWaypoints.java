@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.options.separatesections.Mining;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -114,16 +115,18 @@ public class DwarvenMinesWaypoints {
 	private final Pattern fallenStarRegex = Pattern.compile(
 		"\u00A7r\u00A75Fallen Star \u00A7r\u00A7ehas crashed at \u00A7r\u00A7b(.+)\u00A7r\u00A7e!");
 
+	Mining config = NotEnoughUpdates.INSTANCE.config.mining;
+
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {
 		Matcher matcherGhast = ghastRegex.matcher(event.message.getFormattedText());
-		if (matcherGhast.find() && NotEnoughUpdates.INSTANCE.config.mining.powderGhastWaypoint) {
+		if (matcherGhast.find() && config.powderGhastWaypoint) {
 			dynamicLocation = Utils.cleanColour(matcherGhast.group(1).trim());
 			dynamicName = EnumChatFormatting.GOLD + "Powder Ghast";
 			dynamicMillis = System.currentTimeMillis();
 		} else {
 			Matcher matcherStar = fallenStarRegex.matcher(event.message.getFormattedText());
-			if (matcherStar.find() && NotEnoughUpdates.INSTANCE.config.mining.fallenStarWaypoint) {
+			if (matcherStar.find() && config.fallenStarWaypoint) {
 				dynamicLocation = Utils.cleanColour(matcherStar.group(1).trim());
 				dynamicName = EnumChatFormatting.DARK_PURPLE + "Fallen Star";
 				dynamicMillis = System.currentTimeMillis();
@@ -213,7 +216,7 @@ public class DwarvenMinesWaypoints {
 		if (SBInfo.getInstance().getLocation() == null) return;
 		if (!SBInfo.getInstance().getLocation().equals("mining_3")) return;
 
-		int locWaypoint = NotEnoughUpdates.INSTANCE.config.mining.locWaypoints;
+		int locWaypoint = config.locWaypoints;
 		if (dynamicLocation != null && dynamicName != null &&
 			System.currentTimeMillis() - dynamicMillis < 30 * 1000) {
 			for (Map.Entry<String, Vector3f> entry : waypointsMap.entrySet()) {
@@ -235,7 +238,7 @@ public class DwarvenMinesWaypoints {
 				} else {
 					String commissionLocation = entry.getKey().toLowerCase(Locale.ROOT);
 					for (String commissionName : MiningOverlay.commissionProgress.keySet()) {
-						if (NotEnoughUpdates.INSTANCE.config.mining.hideWaypointIfAtLocation)
+						if (config.hideWaypointIfAtLocation)
 							if (commissionLocation.replace("'", "").equals(skyblockLocation)) continue;
 						if (commissionName.toLowerCase(Locale.ROOT).contains(commissionLocation)) {
 							if (commissionName.contains("Titanium")) {
@@ -257,9 +260,13 @@ public class DwarvenMinesWaypoints {
 			}
 		}
 
-		commissionFinished = NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints >= 2;
+		commissionFinished = config.emissaryWaypoints >= 2;
 
-		if (NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints == 0) return;
+		String sideBarLocation = SBInfo.getInstance().getScoreboardLocation();
+
+		if (config.emissaryWaypoints == 0) return;
+		if (GlaciteTunnelWaypoints.INSTANCE.getGlaciteTunnelLocations().contains(sideBarLocation) &&
+			config.hideEmissaryWaypointInTunnels) return;
 
 		if (!commissionFinished) {
 			for (float f : MiningOverlay.commissionProgress.values()) {
