@@ -87,11 +87,11 @@ class SkyMallDisplay {
     enum class SkyMallPerk(val displayName: String, val displayItemId: String, val chatMessage: String) {
         PICKAXE_COOLDOWN(
             "20% §6Pickaxe Ability cooldown", "DIAMOND_PICKAXE",
-            "§r§fReduce Pickaxe Ability cooldown by §r§a20%§r§f."
+            "§r§a-20%§r§f Pickaxe Ability cooldowns."
         ),
         MORE_POWDER("+15% more §6Powder", "MITHRIL_ORE", "§r§fGain §r§a+15% §r§fmore Powder while mining."),
-        MINING_FORTUNE("+50 §6☘ Mining Fortune", "ENCHANTED_RABBIT_FOOT", "§r§fGain §r§a+50 §r§6☘ Mining Fortune§r§f."),
-        MINING_SPEED("+100 §6⸕ Mining Speed", "ENCHANTED_FEATHER", "§r§fGain §r§a+100 §r§6⸕ Mining Speed§r§f."),
+        MINING_FORTUNE("+50 §6☘ Mining Fortune", "ENCHANTED_RABBIT_FOOT", "§r§fGain §r§6+50☘ Mining Fortune§r§f."),
+        MINING_SPEED("+100 §6⸕ Mining Speed", "ENCHANTED_FEATHER", "§r§fGain §r§6+100⸕ Mining Speed§r§f."),
         MORE_GOBLINS("10x §6Goblin chance", "GOBLIN_HELMET", "§r§f§r§a10x §r§fchance to find Golden and Diamond Goblins."),
         TITANIUM_DROPS("5x §9Titanium drops", "TITANIUM_ORE", "§r§fGain §r§a5x §r§9Titanium §r§fdrops"),
 
