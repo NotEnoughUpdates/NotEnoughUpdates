@@ -92,6 +92,17 @@ public class ItemCustomizationUtils {
 		EnumChatFormatting.GRAY + "This means if speed is set to 1 it's the same as §aCycling mode"
 	);
 
+	public static List<String> skullGuide = Lists.newArrayList(
+		EnumChatFormatting.GOLD + "How to use custom skulls",
+		EnumChatFormatting.YELLOW + "1. Search for the skull in the item list",
+		EnumChatFormatting.YELLOW + "2. Middle click on the item in the item list, this should give you the item id",
+		EnumChatFormatting.YELLOW + "3. Copy the item id and put it after \"skull:\". Make sure you remove the \"id:\"",
+		EnumChatFormatting.YELLOW + "",
+		EnumChatFormatting.GREEN  + "Examples:",
+		EnumChatFormatting.YELLOW + "skull:YOUNG DRAGON HELMET",
+		EnumChatFormatting.YELLOW + "skull:WITHER_GOGGLES_CELESTIAL"
+	);
+
 	public static ItemStack copy(ItemStack stack, GuiItemCustomize instance) {
 		ItemStack customStack = stack.copy();
 		if (!instance.textFieldCustomItem.getText().isEmpty()) {

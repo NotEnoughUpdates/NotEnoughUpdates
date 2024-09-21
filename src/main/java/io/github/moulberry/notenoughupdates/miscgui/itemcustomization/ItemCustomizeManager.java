@@ -58,6 +58,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -543,7 +544,10 @@ public class ItemCustomizeManager {
 		return animatedSkull.skullOwners.get(animatedIndex);
 	}
 
-	public static ArrayList<String> getAnimatedSkullHelp(String damageString) {
+	public static List<String> getAnimatedSkullHelp(String damageString) {
+		if (damageString.replace(":", "").equals("skull")) {
+			return ItemCustomizationUtils.skullGuide;
+		}
 		JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
 		if (animatedSkulls == null) return null;
 		if (!animatedSkulls.has("help")) return null;
