@@ -229,6 +229,7 @@ public class NEUOverlay extends Gui {
 		this.manager = manager;
 		textField.setFocused(true);
 		textField.setCanLoseFocus(false);
+		textField.setMaxStringLength(50);
 
 		guiGroup = createGuiGroup();
 	}
