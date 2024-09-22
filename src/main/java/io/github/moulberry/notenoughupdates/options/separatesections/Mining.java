@@ -81,6 +81,15 @@ public class Mining {
 
 	@Expose
 	@ConfigOption(
+		name = "Hide Emissary Waypoints in Tunnels",
+		desc = "Hides the Emissary Waypoints while being in the Glacite Tunnels."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean hideEmissaryWaypointInTunnels = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Enable Powder Ghast Waypoints",
 		desc = "Shows a waypoint at the location of the Powder Ghast"
 	)
