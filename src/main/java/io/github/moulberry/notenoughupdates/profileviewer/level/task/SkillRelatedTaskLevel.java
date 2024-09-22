@@ -71,27 +71,35 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel {
 
 		float mithrilPowder = data.mining_core.powder_mithril;
 		float gemstonePowder = data.mining_core.powder_gemstone;
+		float glacitePowder = data.mining_core.powder_glacite;
 		float mithril = data.mining_core.powder_spent_mithril + mithrilPowder;
 		float gemstone = data.mining_core.powder_spent_gemstone + gemstonePowder;
+		float glacite = data.mining_core.powder_spent_glacite + glacitePowder;
 
 		// PUNKT NULL
 
 		double totalMithril = mithril + mithrilPowder;
 		double totalGemstone = gemstone + gemstonePowder;
+		double totalGlacite = glacite + glacitePowder;
 		double mithrilUnder = Math.min(350000.0, totalMithril);
 		double mithrilOver = Math.max(0, Math.min(totalMithril, 12_500_000.0) - 350000.0);
 		double gemstoneUnder = Math.min(350000.0, totalGemstone);
 		double gemstoneOver = Math.max(0, Math.min(totalGemstone, 20_000_000.0) - 350000.0);
+		double glaciteUnder = Math.min(350000.0, totalGlacite);
+		double glaciteOver = Math.max(0, Math.min(totalGlacite, 20_000_000.0) - 350000.0);
 
 		double mithrilXP = Math.floor(mithrilUnder / 2400.0);
 		double gemstoneXP = Math.floor(gemstoneUnder / 2500.0);
+		double glaciteXP = Math.floor(glaciteUnder / 2500.0);
 		double mithrilExcess = Math.floor(
 			3.75 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 12_500_000.0) * mithrilOver + 9)) - 3));
 		double gemstoneExcess = Math.floor(
 			4.25 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 20_000_000.0) * gemstoneOver + 9)) - 3));
+		double glaciteExcess = Math.floor(
+			4.25 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 20_000_000.0) * glaciteOver + 9)) - 3));
 
 		double sbXpHotmTier =
-			(mithrilXP + mithrilExcess) + (gemstoneXP + gemstoneExcess)
+			(mithrilXP + mithrilExcess) + (gemstoneXP + gemstoneExcess) + (glaciteXP + glaciteExcess)
 				+ hotmXP;
 
 		int sbXpPotmTier = 0;
