@@ -480,24 +480,26 @@ public class BasicPage extends GuiProfileViewerPage {
 						.getMinecraft()
 						.getSessionService()
 						.fillProfileProperties(new GameProfile(playerUUID, "CoolGuy123"), false);
-					entityPlayer =
-						new EntityOtherPlayerMP(Minecraft.getMinecraft().theWorld, fakeProfile) {
-							public ResourceLocation getLocationSkin() {
-								return playerLocationSkin == null
-									? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID())
-									: playerLocationSkin;
-							}
+					Minecraft.getMinecraft().addScheduledTask(() -> {
+						entityPlayer =
+							new EntityOtherPlayerMP(Minecraft.getMinecraft().theWorld, fakeProfile) {
+								public ResourceLocation getLocationSkin() {
+									return playerLocationSkin == null
+										? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID())
+										: playerLocationSkin;
+								}
 
-							public ResourceLocation getLocationCape() {
-								return playerLocationCape;
-							}
+								public ResourceLocation getLocationCape() {
+									return playerLocationCape;
+								}
 
-							public String getSkinType() {
-								return skinType == null ? DefaultPlayerSkin.getSkinType(this.getUniqueID()) : skinType;
-							}
-						};
-					entityPlayer.setAlwaysRenderNameTag(false);
-					entityPlayer.setCustomNameTag("");
+								public String getSkinType() {
+									return skinType == null ? DefaultPlayerSkin.getSkinType(this.getUniqueID()) : skinType;
+								}
+							};
+						entityPlayer.setAlwaysRenderNameTag(false);
+						entityPlayer.setCustomNameTag("");
+					});
 				});
 			}
 		} else {
