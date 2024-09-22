@@ -34,6 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.text.WordUtils;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -115,8 +116,9 @@ public class MiningPage extends GuiProfileViewerPage {
 
 		// Render stats
 		Map<String, ProfileViewer.Level> levelingInfo = selectedProfile.getLevelingInfo();
+		ProfileViewer.Level hotmLevelingInfo = null;
 		if (levelingInfo != null) {
-			ProfileViewer.Level hotmLevelingInfo = levelingInfo.get("hotm");
+			hotmLevelingInfo = levelingInfo.get("hotm");
 
 			// HOTM
 			getInstance().renderXpBar(
@@ -265,7 +267,8 @@ public class MiningPage extends GuiProfileViewerPage {
 			guiTop + 185,
 			nodes,
 			mouseX,
-			mouseY
+			mouseY,
+			hotmLevelingInfo
 		);
 	}
 
@@ -279,7 +282,8 @@ public class MiningPage extends GuiProfileViewerPage {
 	private void renderHotmTree(
 		int left, int top, int right, int bottom, Map<String, JsonElement> levels,
 		int mouseX,
-		int mouseY
+		int mouseY,
+		@Nullable ProfileViewer.Level hotmLevelingInfo
 	) {
 		ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
 		GlScissorStack.push(left, top, right, bottom, sr);
@@ -295,6 +299,7 @@ public class MiningPage extends GuiProfileViewerPage {
 			scroll = Math.min(maxScroll + 4, Math.max(0, scroll));
 			renderer.renderPerks(
 				levels,
+				hotmLevelingInfo,
 				left + (right - left) / 2 - renderer.getXSize() * 24 / 2 + 4 / 2,
 				top - maxScroll + scroll, mouseX, mouseY,
 				isHovered,

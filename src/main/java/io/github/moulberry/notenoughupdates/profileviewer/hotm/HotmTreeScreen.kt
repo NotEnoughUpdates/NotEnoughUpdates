@@ -26,10 +26,15 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.GlScissorStack
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory
-import moe.nea.lisp.*
+import moe.nea.lisp.CoreBindings
+import moe.nea.lisp.LispData
+import moe.nea.lisp.LispExecutionContext
+import moe.nea.lisp.LispParser
+import moe.nea.lisp.StackFrame
 import moe.nea.lisp.bind.AutoBinder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
@@ -38,7 +43,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.floor
-import kotlin.math.roundToInt
 
 class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>) {
     val lec = LispExecutionContext()
@@ -84,9 +88,11 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
     val xSize = hotmLayout.perks.maxOf { it.value.x }
 
     fun renderPerks(
-        levels: Map<String, JsonElement>,
-        x: Int, y: Int,
-        mouseX: Int, mouseY: Int,
+        levels: MutableMap<String, out JsonElement>,
+        hotmLevelingInfo: ProfileViewer.Level?,
+        x: Int,
+        y: Int, mouseX: Int,
+        mouseY: Int,
         renderTooltip: Boolean,
         gridSize: Int,
         gridSpacing: Int,
@@ -97,7 +103,7 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
         val gridOffset = (gridSize - 16) / 2
         for ((key, perk) in hotmLayout.perks) {
             val level = levels[key]?.asInt ?: 0
-            val (values, bindings) = calculatePerkProperties(perk, level, levels)
+            val (values, bindings) = calculatePerkProperties(perk, level, levels, hotmLevelingInfo)
             val tooltip = createPerkTooltip(perk, level, values, bindings)
             val perkItem = getPerkItem(perk, level, values, bindings, tooltip) ?: ItemStack(Items.painting, 1, 10)
             Minecraft.getMinecraft().textureManager.bindTexture(perkBackground)
@@ -126,8 +132,8 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
                 )
             }
             if (renderTooltip &&
-                relX in (perk.x * gridSize + gridSpacing / 2 .. perk.x * gridSize + gridSize - gridSpacing / 2) &&
-                relY in (perk.y * gridSize + gridSpacing / 2 .. perk.y * gridSize + gridSize - gridSpacing / 2)) {
+                relX in (perk.x * gridSize + gridSpacing / 2..perk.x * gridSize + gridSize - gridSpacing / 2) &&
+                relY in (perk.y * gridSize + gridSpacing / 2..perk.y * gridSize + gridSize - gridSpacing / 2)) {
                 GlScissorStack.disableTemporary()
                 Utils.drawHoveringText(
                     tooltip,
@@ -162,10 +168,19 @@ class HotmTreeRenderer(val hotmLayout: HotmTreeLayout, val prelude: List<String>
     fun calculatePerkProperties(
         perk: LayoutedHotmPerk,
         level: Int,
-        levels: Map<String, JsonElement>
+        levels: Map<String, JsonElement>,
+        hotmLevelingInfo: ProfileViewer.Level?
     ): Pair<Map<String, LispData?>, StackFrame> {
         val bindings = lec.genBindings()
         bindings.setValueLocal("potm", LispData.LispNumber((levels["special_0"]?.asInt ?: 0).toDouble()))
+        bindings.setValueLocal("hotm", LispData.LispNumber(hotmLevelingInfo?.level?.toDouble() ?: 0.0))
+        bindings.setValueLocal(
+            "other-perk-level",
+            LispData.externalCall("other-perk-level") { lispData, errorReporter ->
+                val perkName =
+                    lispData.singleOrNull() as? LispData.LispString ?: return@externalCall errorReporter("Need exactly one perk name to look up")
+                return@externalCall LispData.LispNumber((levels[perkName.string]?.asInt ?: 0).toDouble())
+            })
         bindings.setValueLocal("level", LispData.LispNumber(if (level == 0) 1.0 else level.toDouble()))
         bindings.setValueLocal("maxLevel", LispData.LispNumber(perk.maxLevel.toDouble()))
         bindings.setValueLocal("level0", LispData.LispNumber(level.toDouble()))

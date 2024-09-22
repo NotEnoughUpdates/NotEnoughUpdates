@@ -93,6 +93,8 @@ object RepoExporters {
                 Utils.addChatMessage("Repo export completed")
             } catch (e: RepoExportingInterruptedException) {
                 Utils.addChatMessage("Repo exporting interrupted")
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
     }
