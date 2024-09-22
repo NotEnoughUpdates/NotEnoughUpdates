@@ -70,7 +70,8 @@ class CountdownCalculator {
         CALENDARDETAILS(" (§e", "Starts at"), // calendar details
         COMMUNITYPROJECTSSUCK("Contribute again", "Come back at"), // nopo i just woke up i really hope this works
         CHOCOLATEFACTORY("Next Charge", "Available at"),
-        STONKSAUCTION("Auction ends in", "Ends at");
+        STONKSAUCTION("Auction ends in", "Ends at"),
+        LIZSTONKREDEMPTION("Resets in:", "Resets at");
     }
 
     @SubscribeEvent
