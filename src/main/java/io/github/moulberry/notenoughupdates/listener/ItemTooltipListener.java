@@ -773,7 +773,7 @@ public class ItemTooltipListener {
 			boolean f = Keyboard.isKeyDown(Keyboard.KEY_F);
 			boolean b = Keyboard.isKeyDown(Keyboard.KEY_B);
 			boolean y = Keyboard.isKeyDown(Keyboard.KEY_Y);
-			boolean j = Keyboard.isKeyDown(Keyboard.KEY_Y);
+			boolean j = Keyboard.isKeyDown(Keyboard.KEY_J);
 
 			boolean isDev = NotEnoughUpdates.INSTANCE.config.hidden.dev;
 			if (!copied && f && isDev) {
