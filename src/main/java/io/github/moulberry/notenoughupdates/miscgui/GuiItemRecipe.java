@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.AhBzKeybind;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
@@ -36,16 +37,19 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -125,6 +129,10 @@ public class GuiItemRecipe extends GuiScreen {
 												.addAll(getCurrentRecipe().getSlots()).build();
 	}
 
+	private static final ResourceLocation EDITOR = new ResourceLocation("notenoughupdates:invbuttons/editor.png");
+
+	List<String> tooltipToDisplay = null;
+
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
@@ -162,14 +170,34 @@ public class GuiItemRecipe extends GuiScreen {
 		for (RecipeSlot slot : slots) {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
 				if (slot.getItemStack() == null) continue;
-				Utils.drawHoveringText(
-					slot.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false),
-					mouseX, mouseY, width, height, -1
+				tooltipToDisplay = slot.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false);
+			}
+		}
+
+		if (currentRecipe instanceof CraftingRecipe) {
+			String internalItemId = ((CraftingRecipe) currentRecipe).getOutput().getInternalItemId();
+			if (!NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalItemId)) {
+				int x = guiLeft + 123;
+				int y = guiTop + 105;
+				Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
+				GlStateManager.color(1, 1, 1, 1);
+				Utils.drawTexturedRect(x - 1, y - 1, 18, 18,
+					0 / 256f, 18 / 256f, 0 / 256f, 18 / 256f, GL11.GL_NEAREST
 				);
+				Utils.drawItemStack(new ItemStack(Items.golden_pickaxe), x, y);
+
+				if (isWithinRect(mouseX, mouseY, x, y, SLOT_SIZE, SLOT_SIZE)) {
+					tooltipToDisplay = Collections.singletonList("§aClick for Supercraft");
+				}
 			}
 		}
 		currentRecipe.drawHoverInformation(this, mouseX, mouseY);
 		drawTabHoverInformation(mouseX, mouseY);
+
+		if (tooltipToDisplay != null) {
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
+			tooltipToDisplay = null;
+		}
 	}
 
 	private void drawTabHoverInformation(int mouseX, int mouseY) {
@@ -184,12 +212,9 @@ public class GuiItemRecipe extends GuiScreen {
 				TAB_SIZE_Y
 			)) {
 				RecipeType type = tabs.get(i);
-				Utils.drawHoveringText(
-					Arrays.asList(
-						"" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN + type.getLabel(),
-						"" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + craftingRecipes.get(type).size() + " Recipes"
-					),
-					mouseX, mouseY, width, height, -1
+				tooltipToDisplay = Arrays.asList(
+					"" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN + type.getLabel(),
+					"" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + craftingRecipes.get(type).size() + " Recipes"
 				);
 				return;
 			}
@@ -324,6 +349,18 @@ public class GuiItemRecipe extends GuiScreen {
 					return;
 				} else if (mouseButton == 1) {
 					manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
+					return;
+				}
+			}
+		}
+
+		if (currentRecipe instanceof CraftingRecipe) {
+			int x = guiLeft + 123;
+			int y = guiTop + 105;
+			if (isWithinRect(mouseX, mouseY, x, y, SLOT_SIZE, SLOT_SIZE) && mouseButton == 0) {
+				String internalItemId = ((CraftingRecipe) currentRecipe).getOutput().getInternalItemId();
+				if (!NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalItemId)) {
+					NotEnoughUpdates.INSTANCE.sendChatMessage("/viewrecipe " + internalItemId);
 					return;
 				}
 			}
