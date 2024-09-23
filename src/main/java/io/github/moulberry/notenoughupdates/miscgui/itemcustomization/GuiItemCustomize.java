@@ -404,6 +404,18 @@ public class GuiItemCustomize extends GuiScreen {
 
 		ItemCustomizationUtils.renderTextBox(textFieldCustomItem, "§7Enter Custom Item ID...", xCenter - textFieldCustomItem.getWidth() / 2 - 10 + 11, yTopText + offset, 180);
 
+		List<String> animatedSkullHelp = ItemCustomizeManager.getAnimatedSkullHelp(textFieldCustomItem.getText());
+		if (animatedSkullHelp != null) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.help);
+			GlStateManager.color(1, 1, 1, 1);
+			int skullHelpX = xCenter + textFieldRename.getWidth() / 2;
+			Utils.drawTexturedRect(skullHelpX, yTop -1, 20, 20, GL11.GL_LINEAR);
+
+			if (mouseX >= helpX && mouseX <= skullHelpX + 20 && mouseY >= yTop && mouseY <= yTop + 20) {
+				tooltipToDisplay = animatedSkullHelp;
+			}
+		}
+
 		if (supportCustomLeatherColour) {
 			yTop += 25;
 			ItemCustomizationUtils.renderFooter(xCenter, yTop, guiType);

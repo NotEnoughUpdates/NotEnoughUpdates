@@ -695,6 +695,9 @@ public class ItemTooltipListener {
 	 * Remove reforge stats for Legendary items from Hypixel if enabled
 	 * Show NBT data when holding LCONTROL
 	 */
+
+	JsonArray skullTextures = new JsonArray();
+
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!neu.isOnSkyblock()) return;
@@ -778,9 +781,17 @@ public class ItemTooltipListener {
 			boolean n = Keyboard.isKeyDown(Keyboard.KEY_N);
 			boolean f = Keyboard.isKeyDown(Keyboard.KEY_F);
 			boolean b = Keyboard.isKeyDown(Keyboard.KEY_B);
+			boolean y = Keyboard.isKeyDown(Keyboard.KEY_Y);
+			boolean j = Keyboard.isKeyDown(Keyboard.KEY_J);
 
-			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+			boolean isDev = NotEnoughUpdates.INSTANCE.config.hidden.dev;
+			if (!copied && f && isDev) {
 				Utils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
+			}
+
+			if (!copied && j && isDev) {
+				skullTextures = new JsonArray();
+				Utils.addChatMessage("Reset skull texture list");
 			}
 
 			event.toolTip.add(
@@ -800,6 +811,17 @@ public class ItemTooltipListener {
 				}
 
 				if (tag.hasKey("SkullOwner", 10)) {
+					if (!copied && y && isDev) {
+						NBTTagCompound skullOwner = event.itemStack.getTagCompound().getCompoundTag("SkullOwner");
+						String id = skullOwner.getString("Id");
+						String value = skullOwner.getCompoundTag("Properties").getTagList("textures", 10).getCompoundTagAt(0).getString(
+							"Value");
+						skullTextures.add(new JsonPrimitive(id + ":" + value));
+						Utils.addChatMessage("Added " + event.itemStack.getDisplayName() + " to the texture list. Size: " + skullTextures.size());
+
+						Utils.copyToClipboard(skullTextures.toString());
+					}
+
 					GameProfile gameprofile = NBTUtil.readGameProfileFromNBT(tag.getCompoundTag("SkullOwner"));
 
 					if (gameprofile != null) {
@@ -826,7 +848,7 @@ public class ItemTooltipListener {
 				}
 			}
 
-			copied = k || m || n || f || b;
+			copied = k || m || n || f || b || y || j;
 		}
 	}
 }

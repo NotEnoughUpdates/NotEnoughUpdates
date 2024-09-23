@@ -92,6 +92,17 @@ public class ItemCustomizationUtils {
 		EnumChatFormatting.GRAY + "This means if speed is set to 1 it's the same as §aCycling mode"
 	);
 
+	public static List<String> skullGuide = Lists.newArrayList(
+		EnumChatFormatting.GOLD + "How to use custom skulls",
+		EnumChatFormatting.YELLOW + "1. Search for the skull in the item list",
+		EnumChatFormatting.YELLOW + "2. Middle click on the item in the item list, this should give you the item id",
+		EnumChatFormatting.YELLOW + "3. Copy the item id and put it after \"skull:\". Make sure you remove the \"id:\"",
+		EnumChatFormatting.YELLOW + "",
+		EnumChatFormatting.GREEN  + "Examples:",
+		EnumChatFormatting.YELLOW + "skull:YOUNG DRAGON HELMET",
+		EnumChatFormatting.YELLOW + "skull:WITHER_GOGGLES_CELESTIAL"
+	);
+
 	public static ItemStack copy(ItemStack stack, GuiItemCustomize instance) {
 		ItemStack customStack = stack.copy();
 		if (!instance.textFieldCustomItem.getText().isEmpty()) {
@@ -202,7 +213,7 @@ public class ItemCustomizationUtils {
 
 	public static int getAnimatedDyeColour(String[] dyeColours, int ticks, DyeMode dyeMode) {
 		if (dyeMode == DyeMode.GRADIENT) {
-			int i = (Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length;
+			int i = getTicksForList(ticks, dyeColours.length);
 			int dyeColour1 = ChromaColour.specialToChromaRGB(dyeColours[i]);
 			if (i == dyeColours.length - 1) {
 				i = 0;
@@ -213,7 +224,7 @@ public class ItemCustomizationUtils {
 			return blendColors(dyeColour1, dyeColour2, (float) (Minecraft.getMinecraft().thePlayer.ticksExisted % ticks) / ticks);
 		}
 		return ChromaColour.specialToChromaRGB(
-			dyeColours[(Minecraft.getMinecraft().thePlayer.ticksExisted / ticks) % dyeColours.length]);
+			dyeColours[getTicksForList(ticks, dyeColours.length)]);
 	}
 
 	static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
@@ -374,5 +385,17 @@ public class ItemCustomizationUtils {
 		int blue = (int) (blueStart + (blueEnd - blueStart) * ratio);
 
 		return (red << 16) | (green << 8) | blue;
+	}
+
+	public static int getTicksForList(int speedTicks, int listSize) {
+		return getTicksForList(speedTicks, listSize, -1);
+	}
+
+	public static int getTicksForList(int speedTicks, int listSize, int presetIndex) {
+		int animatedIndex = (Minecraft.getMinecraft().thePlayer.ticksExisted / speedTicks) % listSize;
+		if (presetIndex >= 0 && presetIndex < listSize) {
+			animatedIndex = presetIndex;
+		}
+		return animatedIndex;
 	}
 }
