@@ -52,7 +52,7 @@ class SimpleDevCommands {
         }.withHelp("Reload the NEU data repository from disk (not from network)")
         event.command("neureloadrepoconstants") {
             thenExecute {
-                RepositoryReloadEvent(NotEnoughUpdates.INSTANCE.manager.repoLocation, true).post()
+                RepositoryReloadEvent(NotEnoughUpdates.INSTANCE.manager.repoLocation, false).post()
                 reply("Reloaded repository constants.")
             }
         }.withHelp("Reload the NEU repository constants from disk (not from network)")
