@@ -175,17 +175,20 @@ public class GuiItemRecipe extends GuiScreen {
 		}
 
 		if (currentRecipe instanceof CraftingRecipe) {
-			int x = guiLeft + 123;
-			int y = guiTop + 105;
-			Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
-			GlStateManager.color(1, 1, 1, 1);
-			Utils.drawTexturedRect(x - 1, y - 1, 18, 18,
-				0 / 256f, 18 / 256f, 0 / 256f, 18 / 256f, GL11.GL_NEAREST
-			);
-			Utils.drawItemStack(new ItemStack(Items.golden_pickaxe), x, y);
+			String internalItemId = ((CraftingRecipe) currentRecipe).getOutput().getInternalItemId();
+			if (!NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalItemId)) {
+				int x = guiLeft + 123;
+				int y = guiTop + 105;
+				Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
+				GlStateManager.color(1, 1, 1, 1);
+				Utils.drawTexturedRect(x - 1, y - 1, 18, 18,
+					0 / 256f, 18 / 256f, 0 / 256f, 18 / 256f, GL11.GL_NEAREST
+				);
+				Utils.drawItemStack(new ItemStack(Items.golden_pickaxe), x, y);
 
-			if (isWithinRect(mouseX, mouseY, x, y, SLOT_SIZE, SLOT_SIZE)) {
-				tooltipToDisplay = Collections.singletonList("§aClick for Supercraft");
+				if (isWithinRect(mouseX, mouseY, x, y, SLOT_SIZE, SLOT_SIZE)) {
+					tooltipToDisplay = Collections.singletonList("§aClick for Supercraft");
+				}
 			}
 		}
 		currentRecipe.drawHoverInformation(this, mouseX, mouseY);
@@ -355,7 +358,11 @@ public class GuiItemRecipe extends GuiScreen {
 			int x = guiLeft + 123;
 			int y = guiTop + 105;
 			if (isWithinRect(mouseX, mouseY, x, y, SLOT_SIZE, SLOT_SIZE) && mouseButton == 0) {
-				NotEnoughUpdates.INSTANCE.sendChatMessage("/viewrecipe " + ((CraftingRecipe) currentRecipe).getOutput().getInternalItemId());
+				String internalItemId = ((CraftingRecipe) currentRecipe).getOutput().getInternalItemId();
+				if (!NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalItemId)) {
+					NotEnoughUpdates.INSTANCE.sendChatMessage("/viewrecipe " + internalItemId);
+					return;
+				}
 			}
 		}
 
