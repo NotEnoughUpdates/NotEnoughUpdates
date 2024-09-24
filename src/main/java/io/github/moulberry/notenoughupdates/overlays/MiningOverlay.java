@@ -688,6 +688,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
 			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
 			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
+			if (name.equals("Maniac Slayer")) return "Kill mobs in a Glacite Mineshaft";
 		}
 
 		return null;
