@@ -222,10 +222,10 @@ public class APIDataJson {
 		}
 	}
 
-	public @Nullable Events events;
+	public Events events = new Events();
 
 	public static class Events {
-		public @Nullable EasterEventData easter;
+		public EasterEventData easter = new EasterEventData();
 
 		public static class EasterEventData {
 			public @Nullable JsonObject rabbits;
