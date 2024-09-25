@@ -37,6 +37,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,10 +54,10 @@ public class ItemTooltipRngListener {
 	private boolean pressedArrowLast = false;
 	private boolean repoReloadNeeded = true;
 
-	private final Pattern ODDS_PATTERN = Pattern.compile("§5§o§7Odds: (.+) §7\\(§7(.*)%\\)");
-	private final Pattern ODDS_SELECTED_PATTERN = Pattern.compile("§5§o§7Odds: (.+) §7\\(§8§m(.*)%§r §7(.+)%\\)");
+	private final Pattern ODDS_PATTERN = Pattern.compile("§5§o(?:§7)+Odds: (.+) §7\\(§7(.*)%\\)");
+	private final Pattern ODDS_SELECTED_PATTERN = Pattern.compile("§5§o(?:§7)+Odds: (.+) §7\\(§8§m(.*)%§r §7(.+)%\\)");
 
-	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(?:Dungeon Score|Slayer XP): §d(.*)§5/§d(.+)");
+	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(?:Dungeon Score|Slayer XP|Nucleus XP): §d(.*)§5/§d(.+)");
 	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile(
 		"(?:§5§o)?§d§l§m *(?:§f§l§m *)?§r §d([0-9,]+)§5/§d([0-9kKmM,.]+)");
 
@@ -66,6 +67,7 @@ public class ItemTooltipRngListener {
 
 	private final Map<String, Integer> dungeonData = new LinkedHashMap<>();
 	private final Map<String, LinkedHashMap<String, Integer>> slayerData = new LinkedHashMap<>();
+	private final Map<String, Integer> nucleusData = Collections.singletonMap("§6Completion", 1000);
 
 	public ItemTooltipRngListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -91,7 +93,7 @@ public class ItemTooltipRngListener {
 				}
 			}
 
-			if (nextLineProgress || line.contains("Dungeon Score:") || line.contains("Slayer XP:")) {
+			if (nextLineProgress || line.contains("Dungeon Score:") || line.contains("Slayer XP:") || line.contains("Nucleus XP:")) {
 				Matcher matcher = RUNS_PATTERN.matcher(line);
 				Matcher matcherSelected = RUNS_SELECTED_PATTERN.matcher(line);
 				Matcher m = null;
@@ -297,6 +299,11 @@ public class ItemTooltipRngListener {
 			labelPlural = "Runs";
 			labelSingular = "Run";
 			repoCategory = "catacombs";
+		} else if (openChestName.contains("Crystal Nucleus")) {
+			runsData = nucleusData;
+			labelPlural = "Runs";
+			labelSingular = "Run";
+			repoCategory = "nucleus";
 		} else { // Slayer
 			Matcher matcher = SLAYER_INVENTORY_TITLE_PATTERN.matcher(openChestName);
 			if (!matcher.matches()) {
