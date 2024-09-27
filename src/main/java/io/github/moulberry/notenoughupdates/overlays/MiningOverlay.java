@@ -236,7 +236,7 @@ public class MiningOverlay extends TextTabOverlay {
 	private static final Pattern timeRemainingForge = Pattern.compile(
 		"\\xA77Time Remaining: \\xA7a((?<Completed>Completed!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern timeRemainingTab = Pattern.compile(
-		".*[1-5]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
+		".*[1-" + MAX_FORGE_SLOTS + "]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern forgeIntPattern = Pattern.compile(
 		"[^)]*([1-" + MAX_FORGE_SLOTS + "])\\).*");
 
