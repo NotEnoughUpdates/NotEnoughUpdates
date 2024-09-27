@@ -21,6 +21,8 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -281,6 +283,7 @@ public class PetInfoOverlay extends TextOverlay {
 		String heldItem = null;
 		PetLeveling.PetLevel level = null;
 		String skin = null;
+		int skinVariantSelected = -1;
 
 		if (tag != null && tag.hasKey("ExtraAttributes")) {
 			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
@@ -302,6 +305,13 @@ public class PetInfoOverlay extends TextOverlay {
 				if (petInfo.has("skin")) {
 					skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
 				}
+				// rn only golden dragon has selectable pet skins
+				if (petInfo.has("extraData")) {
+					JsonObject extraData = petInfo.get("extraData").getAsJsonObject();
+					if (petInfo.has("favorite_ancient_gdrag")) {
+						skinVariantSelected = extraData.get("favorite_ancient_gdrag").getAsInt();
+					}
+				}
 			}
 		}
 
@@ -321,6 +331,7 @@ public class PetInfoOverlay extends TextOverlay {
 				.getAsString()
 				.toLowerCase(Locale.ROOT) : "unknown";
 		pet.skin = skin;
+		pet.skinVariantSelected = skinVariantSelected;
 
 		return pet;
 	}
@@ -380,10 +391,12 @@ public class PetInfoOverlay extends TextOverlay {
 				getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel());
 		if (currentPet.skin != null) {
 			JsonObject skinJson = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.skin);
-			char colour = NotEnoughUpdates.INSTANCE.manager.jsonToStack(skinJson).getDisplayName().charAt(1);
-			String colourSt = Character.toString(colour);
-			EnumChatFormatting rarity = getRarityByColor(colourSt).chatFormatting;
-			petName += rarity + " ✦";
+			if (skinJson != null) {
+				String displayName = NotEnoughUpdates.INSTANCE.manager.jsonToStack(skinJson).getDisplayName();
+				String colourSt = Character.toString(Utils.getPrimaryColourCode(displayName));
+				EnumChatFormatting rarity = getRarityByColor(colourSt).chatFormatting;
+				petName += rarity + " ✦";
+			}
 		}
 
 		float levelPercent = getLevelPercent(currentPet);
@@ -704,7 +717,18 @@ public class PetInfoOverlay extends TextOverlay {
 	private void getAnimatedSkin(ItemStack stack, Pet currentPet) {
 		NBTTagCompound tagCompound = stack.getTagCompound();
 		if (tagCompound != null) {
-			NBTTagCompound customSkull = ItemCustomizeManager.getAnimatedCustomSkull(currentPet.skin, "");
+			String skin = currentPet.skin;
+			if (currentPet.skinVariantSelected >= 0) {
+				JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
+				if (animatedSkulls == null) return;
+				if (!animatedSkulls.has("pet_skin_variant")) return;
+				JsonElement pet_skin_variant = animatedSkulls.get("pet_skin_variant");
+				if (!pet_skin_variant.getAsJsonObject().has(skin)) return;
+				JsonArray skinsArray = pet_skin_variant.getAsJsonObject().get(skin).getAsJsonArray();
+				if (skinsArray.size() <= currentPet.skinVariantSelected) return;
+				skin = skinsArray.get(currentPet.skinVariantSelected).getAsString();
+			}
+			NBTTagCompound customSkull = ItemCustomizeManager.getAnimatedCustomSkull(skin, "");
 			if (customSkull != null) {
 				tagCompound.removeTag("SkullOwner");
 				tagCompound.setTag("SkullOwner", customSkull);
@@ -1025,6 +1049,7 @@ public class PetInfoOverlay extends TextOverlay {
 		public String petXpType;
 		public String petItem;
 		public String skin;
+		public int skinVariantSelected;
 		public int candyUsed;
 
 		public String getPetId(boolean withoutBoost) {
