@@ -343,7 +343,7 @@ public class ItemTooltipRngListener {
 			progressString = toolTip.remove(toolTip.size() - 1);
 		}
 
-		toolTip.add("§9Stats for " + name + "§9: [§l§m< §9Switch§l➡§9]");
+		toolTip.add("§9Stats for " + name + "§9: " + (runsData.size() != 1 ? "[§l§m< §9Switch§l➡§9]" : ""));
 		toolTip.add(
 			"   §7" + labelPlural + " completed: §e" + runsHavingFormat + " §7(of §e" + runsNeededFormat + " §7needed)");
 
