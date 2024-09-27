@@ -96,7 +96,7 @@ public class ProfileViewerUtils {
 			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
 			String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
 			if (lastElement.contains(EnumChatFormatting.OBFUSCATED.toString())) {
-				lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
+				lastElement = lastElement.substring(lastElement.indexOf(' ')).trim();
 			}
 			JsonArray lastElementJsonArray = new JsonArray();
 			lastElementJsonArray.add(new JsonPrimitive(lastElement));
