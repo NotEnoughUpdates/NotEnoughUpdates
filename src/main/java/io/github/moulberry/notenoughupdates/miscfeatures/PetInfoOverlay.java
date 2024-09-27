@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonNull;
@@ -33,6 +32,7 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
@@ -378,6 +378,13 @@ public class PetInfoOverlay extends TextOverlay {
 			EnumChatFormatting.GREEN + "[Lvl " + currentPet.petLevel.getCurrentLevel() + "] " +
 				currentPet.rarity.chatFormatting +
 				getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel());
+		if (currentPet.skin != null) {
+			JsonObject skinJson = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.skin);
+			char colour = NotEnoughUpdates.INSTANCE.manager.jsonToStack(skinJson).getDisplayName().charAt(1);
+			String colourSt = Character.toString(colour);
+			EnumChatFormatting rarity = getRarityByColor(colourSt).chatFormatting;
+			petName += rarity + " ✦";
+		}
 
 		float levelPercent = getLevelPercent(currentPet);
 		String lvlStringShort = null;
@@ -465,11 +472,12 @@ public class PetInfoOverlay extends TextOverlay {
 		String finalPetItemStr = petItemStr;
 		String finalLvlString = lvlString;
 		String finalLvlStringShort = lvlStringShort;
+		String finalPetName = petName;
 		return new ArrayList<String>() {{
 			for (int index : NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText) {
 				switch (index) {
 					case 0:
-						add(petName);
+						add(finalPetName);
 						break;
 					case 1:
 						if (finalLvlStringShort != null) add(finalLvlStringShort);
@@ -583,6 +591,7 @@ public class PetInfoOverlay extends TextOverlay {
 				int y = (int) position.y;
 
 				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
+				getAnimatedSkin(stack, currentPet);
 				GlStateManager.enableDepth();
 				GlStateManager.pushMatrix();
 				Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
@@ -607,6 +616,7 @@ public class PetInfoOverlay extends TextOverlay {
 					int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
 
 					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
+					getAnimatedSkin(stack, currentPet2);
 					GlStateManager.enableDepth();
 					GlStateManager.pushMatrix();
 					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
@@ -691,35 +701,16 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
-	public static float getBoostMultiplier(String boostName) {
-		if (boostName == null) return 1;
-		boostName = boostName.toLowerCase(Locale.ROOT);
-		if (boostName.equalsIgnoreCase("PET_ITEM_ALL_SKILLS_BOOST_COMMON")) {
-			return 1.1f;
-		} else if (boostName.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
-			return 1.2f;
-		} else if (boostName.endsWith("epic")) {
-			return 1.5f;
-		} else if (boostName.endsWith("rare")) {
-			return 1.4f;
-		} else if (boostName.endsWith("uncommon")) {
-			return 1.3f;
-		} else if (boostName.endsWith("common")) {
-			return 1.2f;
-		} else {
-			return 1;
+	private void getAnimatedSkin(ItemStack stack, Pet currentPet) {
+		NBTTagCompound tagCompound = stack.getTagCompound();
+		if (tagCompound != null) {
+			NBTTagCompound customSkull = ItemCustomizeManager.getAnimatedCustomSkull(currentPet.skin, "");
+			if (customSkull != null) {
+				tagCompound.removeTag("SkullOwner");
+				tagCompound.setTag("SkullOwner", customSkull);
+			}
 		}
 	}
-
-	private static List<String> validXpTypes = Lists.newArrayList(
-		"mining",
-		"foraging",
-		"enchanting",
-		"farming",
-		"combat",
-		"fishing",
-		"alchemy"
-	);
 
 	@SubscribeEvent
 	public void onStackClick(SlotClickEvent event) {
@@ -942,7 +933,7 @@ public class PetInfoOverlay extends TextOverlay {
 		if ("rift".equals(SBInfo.getInstance().getLocation())) return;
 
 		for (String line : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PET)) {
-			line = Utils.cleanColour(line).trim().replace(",", "");
+			line = Utils.cleanColour(line).replace(",", "").replace("✦", "").trim();
 			Matcher normalXPMatcher = TAB_LIST_XP.matcher(line);
 			Matcher overflowXPMatcher = TAB_LIST_XP_OVERFLOW.matcher(line);
 			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(line);
