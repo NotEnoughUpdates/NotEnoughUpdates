@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
@@ -160,10 +161,15 @@ public class ItemCooldowns {
 	}
 
 	@SubscribeEvent
+	public void onLocationChange(LocationChangeEvent event) {
+		if ("mineshaft".equals(event.newLocation) && pickaxeCooldown > 0) {
+			pickaxeUseCooldownMillisRemaining = 0;
+		}
+	}
+
+	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
 		blocksClicked.clear();
-		if (pickaxeCooldown > 0) pickaxeUseCooldownMillisRemaining = 60 * 1000;
-		pickaxeCooldown = -1;
 	}
 
 	@SubscribeEvent
