@@ -418,7 +418,7 @@ public class ItemCooldowns {
 	}
 
 	private static float durabilityOverride(float millisRemaining, long cooldown, ItemStack stack) {
-		if (millisRemaining < 0) {
+		if (millisRemaining < 0 || cooldown <= 0) {
 			durabilityOverrideMap.put(stack, -1f);
 			return -1;
 		}
