@@ -103,7 +103,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 	private final GuiElementTextField dungeonLevelTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private int floorLevelTo = -1;
 	private long floorLevelToXP = -1;
-	private boolean onMasterMode = false;
 
 	public DungeonPage(GuiProfileViewer instance) {
 		super(instance);
@@ -134,6 +133,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		JsonObject hypixelInfo = GuiProfileViewer.getProfile().getHypixelProfile();
 
 		int sectionWidth = 110;
+		boolean onMasterMode = GuiProfileViewer.onSecondPage;
 		String dungeonString = onMasterMode ? "master_catacombs" : "catacombs";
 
 		Utils.renderShadowedString(
@@ -646,9 +646,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 		}
 		if (mouseX >= guiLeft - 29 && mouseX <= guiLeft) {
 			if (mouseY >= guiTop && mouseY <= guiTop + 28) {
-				onMasterMode = false;
+				GuiProfileViewer.onSecondPage = false;
 			} else if (mouseY + 28 >= guiTop && mouseY <= guiTop + 28 * 2) {
-				onMasterMode = true;
+				GuiProfileViewer.onSecondPage = true;
 			}
 		}
 		return false;
@@ -662,7 +662,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 	private void drawSideButtons(int mouseX, int mouseY) {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
-		if (onMasterMode) {
+		if (GuiProfileViewer.onSecondPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), true, getInstance(), mouseX, mouseY);
 		} else {
 			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), true, getInstance(), mouseX, mouseY);
@@ -670,7 +670,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
-		if (!onMasterMode) {
+		if (!GuiProfileViewer.onSecondPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), false, getInstance(), mouseX, mouseY);
 		} else {
 			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), false, getInstance(), mouseX, mouseY);

@@ -191,6 +191,7 @@ public class GuiProfileViewer extends GuiScreen {
 	private boolean profileDropdownSelected = false;
 	private double lastBgBlurFactor = -1;
 	private boolean showBingoPage;
+	public static boolean onSecondPage;
 
 	public GuiProfileViewer(SkyblockProfiles profile) {
 		GuiProfileViewer.profile = profile;
@@ -205,6 +206,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 		if (currentPage.isTransient()) {
 			currentPage = ProfileViewerPage.BASIC;
+			onSecondPage = false;
 		}
 
 		try {
@@ -800,6 +802,7 @@ public class GuiProfileViewer extends GuiScreen {
 					if (mouseY > y && mouseY < y + 32) {
 						if (currentPage != page) Utils.playPressSound();
 						currentPage = page;
+						onSecondPage = false;
 						inventoryTextField.otherComponentClick();
 						playerNameTextField.otherComponentClick();
 						killDeathSearchTextField.otherComponentClick();
