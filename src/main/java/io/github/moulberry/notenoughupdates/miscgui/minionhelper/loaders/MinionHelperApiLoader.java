@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
@@ -70,6 +71,7 @@ public class MinionHelperApiLoader {
 
 	@SubscribeEvent
 	public void onApiDataLoaded(ProfileDataLoadedEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
 		JsonObject data = event.getData();
 		if (data == null) {
 			invalidApiKey = true;
