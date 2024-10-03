@@ -742,6 +742,13 @@ public class PetInfoOverlay extends TextOverlay {
 				boolean isPets = isPetMenu(containerName,container);
 
 				if (isPets) {
+					try {
+						Matcher matcher = PET_CONTAINER.matcher(containerName);
+						if (matcher.find()) {
+							page = Integer.parseInt(matcher.group(1)) - 1;
+						}
+					} catch (NumberFormatException ignored) {
+					}
 					boolean isRemoving = event.clickedButton == 1;
 
 					int newSelected = (event.slotId - 10) - (event.slotId - 10) / 9 * 2 + page * 28;
@@ -783,6 +790,14 @@ public class PetInfoOverlay extends TextOverlay {
 				boolean isPets = isPetMenu(containerName,container);
 
 				if (isPets) {
+					try {
+						Matcher matcher = PET_CONTAINER.matcher(containerName);
+						if (matcher.find()) {
+							page = Integer.parseInt(matcher.group(1)) - 1;
+							maxPage = Integer.parseInt(matcher.group(2));
+						}
+					} catch (NumberFormatException ignored) {
+					}
 					boolean hasItem = false;
 					for (int i = 0; i < lower.getSizeInventory(); i++) {
 						if (lower.getStackInSlot(i) != null) {
