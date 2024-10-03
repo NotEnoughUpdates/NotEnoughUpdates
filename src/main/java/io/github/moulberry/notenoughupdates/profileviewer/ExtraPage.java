@@ -74,7 +74,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 	private int killScroll = 0;
 	private boolean clickedLoadGuildInfoButton = false;
 
-	private boolean onHoppityPage;
 	private final HoppityPage hoppityPage;
 
 	public static final ItemStack hoppitySkull = Utils.createSkull(
@@ -130,17 +129,17 @@ public class ExtraPage extends GuiProfileViewerPage {
 		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
 			case 1:
-				onHoppityPage = false;
+				GuiProfileViewer.onSecondPage = false;
 				break;
 			case 2:
-				onHoppityPage = true;
+				GuiProfileViewer.onSecondPage = true;
 				break;
 
 			default:
 				break;
 		}
 
-		if (onHoppityPage) {
+		if (GuiProfileViewer.onSecondPage) {
 			return hoppityPage.mouseClicked(mouseX, mouseY, mouseButton);
 		}
 
@@ -230,7 +229,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 		drawSideButtons(mouseX, mouseY);
 
-		if (onHoppityPage) {
+		if (GuiProfileViewer.onSecondPage) {
 			hoppityPage.drawPage(mouseX, mouseY, partialTicks);
 			return;
 		}
@@ -672,7 +671,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 	private void drawSideButtons(int mouseX, int mouseY) {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
-		if (onHoppityPage) {
+		if (GuiProfileViewer.onSecondPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("hoppity"), true, getInstance(), mouseX, mouseY);
 		} else {
 			Utils.drawPvSideButton(0, pageModeIcon.get("stats"), true, getInstance(), mouseX, mouseY);
@@ -680,7 +679,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
-		if (!onHoppityPage) {
+		if (!GuiProfileViewer.onSecondPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("hoppity"), false, getInstance(), mouseX, mouseY);
 		} else {
 			Utils.drawPvSideButton(0, pageModeIcon.get("stats"), false, getInstance(), mouseX, mouseY);

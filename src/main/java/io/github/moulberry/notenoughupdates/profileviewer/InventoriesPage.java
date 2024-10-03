@@ -132,7 +132,6 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		put("intelligence", 2f);
 	}};
 
-	private boolean onSacksPage;
 	private final SacksPage sacksPage;
 
 	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
@@ -170,7 +169,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		drawSideButtons(mouseX, mouseY);
 
-		if (onSacksPage) {
+		if (GuiProfileViewer.onSecondPage) {
 			sacksPage.drawPage(mouseX, mouseY, partialTicks);
 			return;
 		}
@@ -557,7 +556,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		if (!onSacksPage) {
+		if (!GuiProfileViewer.onSecondPage) {
 			getInstance().inventoryTextField.setSize(88, 20);
 			if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88) {
 				if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
@@ -571,10 +570,10 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
 			case 1:
-				onSacksPage = false;
+				GuiProfileViewer.onSecondPage = false;
 				break;
 			case 2:
-				onSacksPage = true;
+				GuiProfileViewer.onSecondPage = true;
 				break;
 
 			default:
@@ -910,7 +909,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	private void drawSideButtons(int mouseX, int mouseY) {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
-		if (onSacksPage) {
+		if (GuiProfileViewer.onSecondPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), true, getInstance(), mouseX, mouseY);
 		} else {
 			Utils.drawPvSideButton(0, pageModeIcon.get("inventories"), true, getInstance(), mouseX, mouseY);
@@ -918,7 +917,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
-		if (!onSacksPage) {
+		if (!GuiProfileViewer.onSecondPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), false, getInstance(), mouseX, mouseY);
 		} else {
 			Utils.drawPvSideButton(0, pageModeIcon.get("inventories"), false, getInstance(), mouseX, mouseY);
