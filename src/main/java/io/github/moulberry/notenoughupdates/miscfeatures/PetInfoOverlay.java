@@ -955,9 +955,13 @@ public class PetInfoOverlay extends TextOverlay {
 			String line = widgetLines.get(i);
 			String lineWithColours = line.replace("§r", "").trim();
 			line = Utils.cleanColour(line).trim().replace(",", "");
+
 			Matcher normalXPMatcher = TAB_LIST_XP.matcher(line);
 			Matcher overflowXPMatcher = TAB_LIST_XP_OVERFLOW.matcher(line);
+
 			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(lineWithColours);
+			Matcher petItemMatcher = TAB_LIST_PET_ITEM.matcher(lineWithColours);
+
 			if (petNameMatcher.matches()) {
 				String petName = petNameMatcher.group(3);
 				int petLevel = 1;
@@ -973,9 +977,9 @@ public class PetInfoOverlay extends TextOverlay {
 						String petItem = "";
 						if (widgetLines.size() > i) {
 							String nextLine = widgetLines.get(i + 1).replace("§r", "").trim();
-							Matcher petItemMatcher = TAB_LIST_PET_ITEM.matcher(nextLine);
-							if (petItemMatcher.matches()) {
-								petItem = getInternalIdForPetItemDisplayName(petItemMatcher.group(0));
+							Matcher nextLinePetItemMatcher = TAB_LIST_PET_ITEM.matcher(nextLine);
+							if (nextLinePetItemMatcher.matches()) {
+								petItem = getInternalIdForPetItemDisplayName(nextLinePetItemMatcher.group(0));
 							}
 						}
 
@@ -984,7 +988,7 @@ public class PetInfoOverlay extends TextOverlay {
 						if (split.length > 0) {
 							internalName = split[0];
 						}
-						System.out.println(petItem);
+
 						setCurrentPet(getClosestPetIndex(internalName, rarity, petItem, petLevel));
 						lastPetCorrect = System.currentTimeMillis();
 					}
@@ -1001,6 +1005,23 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 
 			}
+
+			if (petItemMatcher.matches()) {
+				String petItem = getInternalIdForPetItemDisplayName(petItemMatcher.group(0));
+				if (!Objects.equals(currentPet.petItem, petItem)) {
+					int closestPetIndex = getClosestPetIndex(
+						currentPet.petType,
+						currentPet.rarity.petId,
+						petItem,
+						currentPet.petLevel.getCurrentLevel()
+					);
+
+					if (config.selectedPet != closestPetIndex && closestPetIndex != -1) {
+						setCurrentPet(closestPetIndex);
+					}
+				}
+			}
+
 			if (normalXPMatcher.matches() || overflowXPMatcher.matches()) {
 				String xpString;
 				if (normalXPMatcher.matches()) xpString = normalXPMatcher.group(1);
