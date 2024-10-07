@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GuiEditSign.class)
+@Mixin(value = GuiEditSign.class, priority = 999)
 public class MixinGuiEditSign {
 
 	@Redirect(method = "onGuiClosed", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/tileentity/TileEntitySign;signText:[Lnet/minecraft/util/IChatComponent;"))
