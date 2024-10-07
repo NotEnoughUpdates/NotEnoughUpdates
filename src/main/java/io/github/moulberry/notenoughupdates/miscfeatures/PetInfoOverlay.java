@@ -1016,7 +1016,7 @@ public class PetInfoOverlay extends TextOverlay {
 						averageXp += value;
 					}
 
-					if (!xpHourMap.isEmpty()) xpGainHour = (averageXp / xpHourMap.size()) * ((float) (60 * 60) / seconds);
+					if (!xpHourMap.isEmpty()) xpGainHour = (averageXp) * ((float) (60 * 60) / seconds);
 					else xpGainHour = 0;
 				} else {
 					lastPaused = System.currentTimeMillis();
