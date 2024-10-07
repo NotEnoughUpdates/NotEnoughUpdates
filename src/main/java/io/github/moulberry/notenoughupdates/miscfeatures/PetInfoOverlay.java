@@ -37,6 +37,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -81,7 +82,8 @@ public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern TAB_LIST_XP = Pattern.compile(
 		"([0-9,]+\\.?[0-9]*)/([0-9,]+\\.?[0-9]*)[kM]? XP \\(\\d+\\.?\\d*%\\)");
 	private static final Pattern TAB_LIST_XP_OVERFLOW = Pattern.compile("\\+([0-9,]+\\.?[0-9]*) XP");
-	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("\\[Lvl (\\d+)\\] (.+)");
+	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("§.\\[Lvl (\\d+)\\] §(.)(.+)");
+	private static final Pattern TAB_LIST_PET_ITEM = Pattern.compile("§[fa956d4][a-zA-Z- ]+");
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -933,6 +935,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private long lastXpUpdate = -1;
 	private long lastXpUpdateNonZero = -1;
 	private long lastPaused = -1;
+	private long lastPetCorrect = -1;
 
 	public void updatePetLevels() {
 		float totalGain = 0;
@@ -947,27 +950,54 @@ public class PetInfoOverlay extends TextOverlay {
 
 		if ("rift".equals(SBInfo.getInstance().getLocation())) return;
 
-		for (String line : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PET)) {
+		List<String> widgetLines = TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PET);
+		for (int i = 0; i < widgetLines.size(); i++) {
+			String line = widgetLines.get(i);
+			String lineWithColours = line.replace("§r", "").trim();
 			line = Utils.cleanColour(line).trim().replace(",", "");
 			Matcher normalXPMatcher = TAB_LIST_XP.matcher(line);
 			Matcher overflowXPMatcher = TAB_LIST_XP_OVERFLOW.matcher(line);
-			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(line);
+			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(lineWithColours);
 			if (petNameMatcher.matches()) {
-				String petName = petNameMatcher.group(2);
-				if (!getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel()).equalsIgnoreCase(petName)) {
-					break;
-				}
-
+				String petName = petNameMatcher.group(3);
+				int petLevel = 1;
 				try {
-					int petLevel = Integer.parseInt(petNameMatcher.group(1));
-					PetLeveling.ExpLadder petLadder = PetLeveling.getPetLevelingForPet(currentPet.petType, currentPet.rarity);
-					if (currentPet.petLevel.getCurrentLevel() != petLevel) {
-						long baseLevelXp = petLadder.getPetExpForLevel(petLevel);
-						currentPet.petLevel.setExpTotal(baseLevelXp);
-						currentPet.petLevel = petLadder.getPetLevel(currentPet.petLevel.getExpTotal());
-					}
+					petLevel = Integer.parseInt(petNameMatcher.group(1));
 				} catch (NumberFormatException ignored) {
 					Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] Invalid number in tab list: " + petNameMatcher.group(1));
+				}
+
+				if (!getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel()).equalsIgnoreCase(petName)) {
+					if (lastPetCorrect == -1 || lastPetCorrect > 0 && System.currentTimeMillis() - lastPetCorrect > 5000) {
+						int rarity = getRarityByColor(petNameMatcher.group(2)).petId;
+						String petItem = "";
+						if (widgetLines.size() > i) {
+							String nextLine = widgetLines.get(i + 1).replace("§r", "").trim();
+							Matcher petItemMatcher = TAB_LIST_PET_ITEM.matcher(nextLine);
+							if (petItemMatcher.matches()) {
+								petItem = getInternalIdForPetItemDisplayName(petItemMatcher.group(0));
+							}
+						}
+
+						String internalName = ItemResolutionQuery.findInternalNameByDisplayName(lineWithColours, true);
+						String[] split = internalName.split(";");
+						if (split.length > 0) {
+							internalName = split[0];
+						}
+						System.out.println(petItem);
+						setCurrentPet(getClosestPetIndex(internalName, rarity, petItem, petLevel));
+						lastPetCorrect = System.currentTimeMillis();
+					}
+					break;
+				} else {
+					lastPetCorrect = System.currentTimeMillis();
+				}
+
+				PetLeveling.ExpLadder petLadder = PetLeveling.getPetLevelingForPet(currentPet.petType, currentPet.rarity);
+				if (currentPet.petLevel.getCurrentLevel() != petLevel) {
+					long baseLevelXp = petLadder.getPetExpForLevel(petLevel);
+					currentPet.petLevel.setExpTotal(baseLevelXp);
+					currentPet.petLevel = petLadder.getPetLevel(currentPet.petLevel.getExpTotal());
 				}
 
 			}
