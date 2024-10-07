@@ -883,7 +883,7 @@ public class PetInfoOverlay extends TextOverlay {
 						}
 					}
 					removeMap.keySet().retainAll(removeSet);
-				} else if (containerName.equals("Your Equipment")) {
+				} else if (containerName.startsWith("Your Equipment")) {
 					ItemStack petStack = lower.getStackInSlot(47);
 					if (petStack != null && petStack.getItem() == Items.skull) {
 						NBTTagCompound tag = petStack.getTagCompound();
@@ -911,7 +911,12 @@ public class PetInfoOverlay extends TextOverlay {
 								double petLevel = PetLeveling.getPetLevelingForPet(name, Rarity.valueOf(rarityString))
 																						 .getPetLevel(petXp)
 																						 .getCurrentLevel();
-								int index = getClosestPetIndex(name, rarity, "", (float) petLevel);
+
+								String petItem = "";
+								if (petInfoObject.has("heldItem")) {
+									petItem = petInfoObject.get("heldItem").getAsString();
+								}
+								int index = getClosestPetIndex(name, rarity, petItem, (float) petLevel);
 								if (index != config.selectedPet) {
 									clearPet();
 									setCurrentPet(index);
