@@ -225,7 +225,7 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		));
 
 
-		int totalXp =sbXpDojo + sbXpGainedHarp + sbXpAbiphone +
+		int totalXp = sbXpDojo + sbXpGainedHarp + sbXpAbiphone +
 			sbXpCommunityUpgrade + sbXpPersonalBank + sbXpTimeCharm + sbXpRelays + xpConsumableItems;
 		levelPage.renderLevelBar(
 			"Misc. Task",
