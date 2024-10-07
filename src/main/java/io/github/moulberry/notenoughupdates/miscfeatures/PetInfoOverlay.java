@@ -989,7 +989,11 @@ public class PetInfoOverlay extends TextOverlay {
 							internalName = split[0];
 						}
 
-						setCurrentPet(getClosestPetIndex(internalName, rarity, petItem, petLevel));
+						int closestPetIndex = getClosestPetIndex(internalName, rarity, petItem, petLevel);
+						if (closestPetIndex != -1) {
+							//If it is -1 your petcache is probably outdated and you need to open /pets, but im sure they can work it out
+							setCurrentPet(closestPetIndex);
+						}
 						lastPetCorrect = System.currentTimeMillis();
 					}
 					break;
