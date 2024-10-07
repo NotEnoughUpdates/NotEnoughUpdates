@@ -407,7 +407,7 @@ public class PetInfoOverlay extends TextOverlay {
 		String xpGainString = EnumChatFormatting.AQUA + "XP/h: " +
 			EnumChatFormatting.YELLOW + roundFloat(xpGain);
 		if (!secondPet && xpGain > 0 &&
-			(levelXp != levelXpLast || System.currentTimeMillis() - lastXpUpdateNonZero > 3500)) {
+			(levelXp != levelXpLast || System.currentTimeMillis() - lastXpUpdateNonZero > 4500)) {
 			if (pauseCountdown <= 0) {
 				xpGainString += EnumChatFormatting.RED + " (PAUSED)";
 			} else {
@@ -1038,7 +1038,7 @@ public class PetInfoOverlay extends TextOverlay {
 						}
 					}
 
-					if (totalGain != 0 || System.currentTimeMillis() - lastXpUpdate > 3500) {
+					if (totalGain != 0 || System.currentTimeMillis() - lastXpUpdate > 4500) {
 						xpHourMap.put(System.currentTimeMillis(), totalGain);
 						lastXpUpdate = System.currentTimeMillis();
 					}
