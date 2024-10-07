@@ -75,8 +75,7 @@ import java.util.stream.Collectors;
 public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern XP_BOOST_PATTERN = Pattern.compile(
 		"PET_ITEM_(COMBAT|FISHING|MINING|FORAGING|ALL|FARMING)_(SKILL|SKILLS)_BOOST_(COMMON|UNCOMMON|RARE|EPIC)");
-	private static final Pattern PET_CONTAINER_PAGE = Pattern.compile("Pets \\((\\d)/(\\d)\\) *");
-	private static final Pattern PET_CONTAINER_SEARCH = Pattern.compile("Pets: \".+\"");
+	private static final Pattern PET_CONTAINER = Pattern.compile("^Pets(?::)?(?: \"\\w+\")?(?: \\((\\d)\\/(\\d)\\))?");
 	private static final Pattern TAB_LIST_XP = Pattern.compile(
 		"([0-9,]+\\.?[0-9]*)/([0-9,]+\\.?[0-9]*)[kM]? XP \\(\\d+\\.?\\d*%\\)");
 	private static final Pattern TAB_LIST_XP_OVERFLOW = Pattern.compile("\\+([0-9,]+\\.?[0-9]*) XP");
@@ -740,25 +739,16 @@ public class PetInfoOverlay extends TextOverlay {
 
 			if (lower.getSizeInventory() >= 54 && event.guiContainer.inventorySlots.windowId == container.windowId) {
 				int page = 0;
-				boolean isPets = false;
-
-				if (containerName.equals("Pets")) {
-					isPets = true;
-				} else {
-					Matcher matcher = PET_CONTAINER_PAGE.matcher(containerName);
-					Matcher matcherSearch = PET_CONTAINER_SEARCH.matcher(containerName);
-					if (matcher.matches()) {
-						try {
-							page = Integer.parseInt(matcher.group(1)) - 1;
-							isPets = true;
-						} catch (NumberFormatException ignored) {
-						}
-					} else if (matcherSearch.matches()) {
-						isPets = true;
-					}
-				}
+				boolean isPets = isPetMenu(containerName,container);
 
 				if (isPets) {
+					try {
+						Matcher matcher = PET_CONTAINER.matcher(containerName);
+						if (matcher.find()) {
+							page = Integer.parseInt(matcher.group(1)) - 1;
+						}
+					} catch (NumberFormatException ignored) {
+					}
 					boolean isRemoving = event.clickedButton == 1;
 
 					int newSelected = (event.slotId - 10) - (event.slotId - 10) / 9 * 2 + page * 28;
@@ -797,25 +787,17 @@ public class PetInfoOverlay extends TextOverlay {
 			if (lower.getSizeInventory() >= 54) {
 				int page = 0;
 				int maxPage = 1;
-				boolean isPets = false;
+				boolean isPets = isPetMenu(containerName,container);
 
-				if (containerName.equals("Pets")) {
-					isPets = true;
-				} else {
-					Matcher matcher = PET_CONTAINER_PAGE.matcher(containerName);
-					Matcher matcherSearch = PET_CONTAINER_SEARCH.matcher(containerName);
-					if (matcher.matches()) {
-						try {
+				if (isPets) {
+					try {
+						Matcher matcher = PET_CONTAINER.matcher(containerName);
+						if (matcher.find()) {
 							page = Integer.parseInt(matcher.group(1)) - 1;
 							maxPage = Integer.parseInt(matcher.group(2));
-							isPets = true;
-						} catch (NumberFormatException ignored) {
 						}
-					} else if (matcherSearch.matches()) {
-						isPets = true;
+					} catch (NumberFormatException ignored) {
 					}
-				}
-				if (isPets) {
 					boolean hasItem = false;
 					for (int i = 0; i < lower.getSizeInventory(); i++) {
 						if (lower.getStackInSlot(i) != null) {
@@ -921,6 +903,24 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 		}
+	}
+
+	private boolean isPetMenu(String containerName, ContainerChest container) {
+		Matcher matcher = PET_CONTAINER.matcher(containerName);
+		if (!matcher.find()) return false;
+
+		List<String> backLore;
+		try {
+			backLore = container.getSlot(48).getStack().getTooltip(null, false);
+		} catch (Exception _) {
+			return false;
+		}
+		for (String line : backLore) {
+			if (line.contains("To Select Process (Slot #")) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static HashMap<Long, Float> xpHourMap = new HashMap<>();
