@@ -50,6 +50,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -1083,10 +1084,16 @@ public class PetInfoOverlay extends TextOverlay {
 					String pet = Utils.cleanColour(petName)
 														.replaceAll("[^\\w ]", "").trim()
 														.replace(" ", "_").toUpperCase(Locale.ROOT);
-
-					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
+					List<IChatComponent> siblings = event.message.getChatStyle().getChatHoverEvent().getValue().getSiblings();
+					String petItem = "";
+					if (siblings.size() > 6) {
+						IChatComponent iChatComponent = siblings.get(6);
+						String formattedText = iChatComponent.getChatStyle().getColor() + iChatComponent.getUnformattedText();
+						petItem = getInternalIdForPetItemDisplayName(formattedText);
+					}
+					setCurrentPet(getClosestPetIndex(pet, rarity.petId, petItem, lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
-						setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, "", lastLevelHovered));
+							setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, petItem, lastLevelHovered));
 						if (getCurrentPet() != null && !"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
 							PetInfoOverlay.config.selectedPet = -1;
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
@@ -1143,6 +1150,24 @@ public class PetInfoOverlay extends TextOverlay {
 		if (idToDisplayName.has(petId)) {
 			return idToDisplayName.get(petId).getAsString();
 		}
+		return defaultName;
+	}
+
+	private static String getInternalIdForPetItemDisplayName(String displayName) {
+		JsonObject pets = Constants.PETS;
+		String defaultName = displayName.replace(" ", "_").replace("-", "_").toUpperCase(Locale.ROOT);
+		defaultName = Utils.cleanColour(defaultName).trim();
+		if (pets == null) return defaultName;
+		if (!pets.has("pet_item_display_name_to_id")) {
+			Utils.showOutdatedRepoNotification("pets.json pet_item_display_name_to_id");
+			return defaultName;
+		}
+
+		JsonObject petItemDisplayNameToId = pets.get("pet_item_display_name_to_id").getAsJsonObject();
+		if (petItemDisplayNameToId.has(displayName)) {
+			return petItemDisplayNameToId.get(displayName).getAsString();
+		}
+
 		return defaultName;
 	}
 }
