@@ -24,19 +24,10 @@ import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
-import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class Notifications {
-	@Expose
-	@ConfigOption(
-		name = "Update Messages",
-		desc = "Give a notification in chat whenever a new version of NEU is released"
-	)
-	@ConfigEditorDropdown(values = {"Off", "Releases", "Pre-Releases"})
-	public int updateChannel = 1;
-
 	@Expose
 	@ConfigOption(
 		name = "Missing repo warning",
