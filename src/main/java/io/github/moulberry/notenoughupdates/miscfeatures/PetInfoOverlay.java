@@ -363,6 +363,9 @@ public class PetInfoOverlay extends TextOverlay {
 	public float getLevelPercent(Pet pet) {
 		if (pet == null) return 0;
 		try {
+			if (pet.petLevel.getMaxLevel() == pet.petLevel.getCurrentLevel()) {
+				return 100;
+			}
 			return Float.parseFloat(StringUtils.formatToTenths(Math.min(
 				pet.petLevel.getPercentageToNextLevel() * 100f,
 				100f
@@ -387,13 +390,20 @@ public class PetInfoOverlay extends TextOverlay {
 		String lvlString = null;
 
 		if (levelPercent != 100 || !NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetLevelProgress) {
-			lvlStringShort = EnumChatFormatting.AQUA + "" + roundFloat(levelXp) + "/" +
-				roundFloat(currentPet.petLevel.getExpRequiredForNextLevel())
+			long xpForNextLevel = currentPet.petLevel.getExpRequiredForNextLevel();
+			float visualXp = levelXp;
+			if (levelPercent == 100) {
+				if (xpForNextLevel > levelXp) {
+					visualXp = xpForNextLevel;
+				}
+			}
+			lvlStringShort = EnumChatFormatting.AQUA + "" + roundFloat(visualXp) + "/" +
+				roundFloat(xpForNextLevel)
 				+ EnumChatFormatting.YELLOW + " (" + levelPercent + "%)";
 
 			lvlString = EnumChatFormatting.AQUA + "" +
-				Utils.shortNumberFormat(Math.min(levelXp, currentPet.petLevel.getExpRequiredForNextLevel()), 0) + "/" +
-				Utils.shortNumberFormat(currentPet.petLevel.getExpRequiredForNextLevel(), 0)
+				Utils.shortNumberFormat(Math.min(visualXp, xpForNextLevel), 0) + "/" +
+				Utils.shortNumberFormat(xpForNextLevel, 0)
 				+ EnumChatFormatting.YELLOW + " (" + levelPercent + "%)";
 		}
 
