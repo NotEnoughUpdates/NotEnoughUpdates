@@ -1223,13 +1223,16 @@ public class PetInfoOverlay extends TextOverlay {
 		return defaultName;
 	}
 
+	private static boolean hasRepoPopupped = false;
+
 	private static String getInternalIdForPetItemDisplayName(String displayName) {
 		JsonObject pets = Constants.PETS;
 		String defaultName = displayName.replace(" ", "_").replace("-", "_").toUpperCase(Locale.ROOT);
 		defaultName = Utils.cleanColour(defaultName).trim();
 		if (pets == null) return defaultName;
 		if (!pets.has("pet_item_display_name_to_id")) {
-			Utils.showOutdatedRepoNotification("pets.json pet_item_display_name_to_id");
+			if (!hasRepoPopupped) Utils.showOutdatedRepoNotification("pets.json pet_item_display_name_to_id");
+			hasRepoPopupped = true;
 			return defaultName;
 		}
 
