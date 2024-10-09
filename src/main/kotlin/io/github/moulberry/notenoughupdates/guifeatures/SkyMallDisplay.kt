@@ -92,7 +92,7 @@ class SkyMallDisplay {
         MORE_GOBLINS("10x §6Goblin chance", "GOBLIN_HELMET", "§r§f§r§a10x §r§fchance to find Golden and Diamond Goblins."),
         TITANIUM_DROPS("5x §9Titanium drops", "TITANIUM_ORE", "§r§fGain §r§a5x §r§9Titanium §r§fdrops"),
 
-        // In case hypixel finds some day the missing dot at the end.
+        // Just in case the Hypixel dev team, someday, find the missing dot at the end.
         TITANIUM_DROPS_WITH_DOT("5x §9Titanium drops", "TITANIUM_ORE", "§r§fGain §r§a5x §r§9Titanium §r§fdrops."),
         ;
     }
