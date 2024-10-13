@@ -41,6 +41,7 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -727,6 +728,19 @@ public class PetInfoOverlay extends TextOverlay {
 				JsonArray skinsArray = pet_skin_variant.getAsJsonObject().get(skin).getAsJsonArray();
 				if (skinsArray.size() <= currentPet.skinVariantSelected) return;
 				skin = skinsArray.get(currentPet.skinVariantSelected).getAsString();
+			}
+			if ("PET_SKIN_FOUR_SEASONS_GRIFFIN".equals(skin)) {
+				String monthName = SkyBlockTime.now().getMonthName();
+				if (monthName.contains("Spring")) {
+					skin = "PET_SKIN_FOUR_SEASONS_GRIFFIN_SPRING";
+				} else if (monthName.contains("Summer")) {
+					skin = "PET_SKIN_FOUR_SEASONS_GRIFFIN_SUMMER";
+				} else if (monthName.contains("Autumn")) {
+					skin = "PET_SKIN_FOUR_SEASONS_GRIFFIN_AUTUMN";
+				} else if (monthName.contains("Winter")) {
+					skin = "PET_SKIN_FOUR_SEASONS_GRIFFIN_WINTER";
+				}
+
 			}
 			NBTTagCompound customSkull = ItemCustomizeManager.getAnimatedCustomSkull(skin, "");
 			if (customSkull != null) {
