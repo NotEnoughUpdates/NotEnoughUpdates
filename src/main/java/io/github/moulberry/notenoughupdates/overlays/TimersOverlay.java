@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -1101,7 +1101,7 @@ public class TimersOverlay extends TextTabOverlay {
 		return false;
 	}
 
-	AxisAlignedBB matriarchArea = new AxisAlignedBB(-555, 36, -904, -532, 52, -870);
+	AxisAlignedBB matriarchArea = new AxisAlignedBB(-555, 36, -904, -520, 52, -870);
 
 	@SubscribeEvent
 	public void onMatriarchTick(TickEvent.ClientTickEvent event) {
