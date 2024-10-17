@@ -19,9 +19,10 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -33,12 +34,14 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.tablisttutorial.TablistAPI;
+import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -280,6 +283,7 @@ public class PetInfoOverlay extends TextOverlay {
 		String heldItem = null;
 		PetLeveling.PetLevel level = null;
 		String skin = null;
+		int skinVariantSelected = -1;
 
 		if (tag != null && tag.hasKey("ExtraAttributes")) {
 			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
@@ -301,6 +305,13 @@ public class PetInfoOverlay extends TextOverlay {
 				if (petInfo.has("skin")) {
 					skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
 				}
+				// rn only golden dragon has selectable pet skins
+				if (petInfo.has("extraData")) {
+					JsonObject extraData = petInfo.get("extraData").getAsJsonObject();
+					if (petInfo.has("favorite_ancient_gdrag")) {
+						skinVariantSelected = extraData.get("favorite_ancient_gdrag").getAsInt();
+					}
+				}
 			}
 		}
 
@@ -320,6 +331,7 @@ public class PetInfoOverlay extends TextOverlay {
 				.getAsString()
 				.toLowerCase(Locale.ROOT) : "unknown";
 		pet.skin = skin;
+		pet.skinVariantSelected = skinVariantSelected;
 
 		return pet;
 	}
@@ -377,6 +389,15 @@ public class PetInfoOverlay extends TextOverlay {
 			EnumChatFormatting.GREEN + "[Lvl " + currentPet.petLevel.getCurrentLevel() + "] " +
 				currentPet.rarity.chatFormatting +
 				getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel());
+		if (currentPet.skin != null) {
+			JsonObject skinJson = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.skin);
+			if (skinJson != null) {
+				String displayName = NotEnoughUpdates.INSTANCE.manager.jsonToStack(skinJson).getDisplayName();
+				String colourSt = Character.toString(Utils.getPrimaryColourCode(displayName));
+				EnumChatFormatting rarity = getRarityByColor(colourSt).chatFormatting;
+				petName += rarity + " ✦";
+			}
+		}
 
 		float levelPercent = getLevelPercent(currentPet);
 		String lvlStringShort = null;
@@ -464,11 +485,12 @@ public class PetInfoOverlay extends TextOverlay {
 		String finalPetItemStr = petItemStr;
 		String finalLvlString = lvlString;
 		String finalLvlStringShort = lvlStringShort;
+		String finalPetName = petName;
 		return new ArrayList<String>() {{
 			for (int index : NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText) {
 				switch (index) {
 					case 0:
-						add(petName);
+						add(finalPetName);
 						break;
 					case 1:
 						if (finalLvlStringShort != null) add(finalLvlStringShort);
@@ -582,6 +604,7 @@ public class PetInfoOverlay extends TextOverlay {
 				int y = (int) position.y;
 
 				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
+				getAnimatedSkin(stack, currentPet);
 				GlStateManager.enableDepth();
 				GlStateManager.pushMatrix();
 				Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
@@ -606,6 +629,7 @@ public class PetInfoOverlay extends TextOverlay {
 					int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
 
 					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
+					getAnimatedSkin(stack, currentPet2);
 					GlStateManager.enableDepth();
 					GlStateManager.pushMatrix();
 					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
@@ -690,35 +714,40 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
-	public static float getBoostMultiplier(String boostName) {
-		if (boostName == null) return 1;
-		boostName = boostName.toLowerCase(Locale.ROOT);
-		if (boostName.equalsIgnoreCase("PET_ITEM_ALL_SKILLS_BOOST_COMMON")) {
-			return 1.1f;
-		} else if (boostName.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
-			return 1.2f;
-		} else if (boostName.endsWith("epic")) {
-			return 1.5f;
-		} else if (boostName.endsWith("rare")) {
-			return 1.4f;
-		} else if (boostName.endsWith("uncommon")) {
-			return 1.3f;
-		} else if (boostName.endsWith("common")) {
-			return 1.2f;
-		} else {
-			return 1;
+	private void getAnimatedSkin(ItemStack stack, Pet currentPet) {
+		NBTTagCompound tagCompound = stack.getTagCompound();
+		if (tagCompound != null) {
+			String skin = currentPet.skin;
+			if (currentPet.skinVariantSelected >= 0) {
+				JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
+				if (animatedSkulls == null) return;
+				if (!animatedSkulls.has("pet_skin_variant")) return;
+				JsonElement pet_skin_variant = animatedSkulls.get("pet_skin_variant");
+				if (!pet_skin_variant.getAsJsonObject().has(skin)) return;
+				JsonArray skinsArray = pet_skin_variant.getAsJsonObject().get(skin).getAsJsonArray();
+				if (skinsArray.size() <= currentPet.skinVariantSelected) return;
+				skin = skinsArray.get(currentPet.skinVariantSelected).getAsString();
+			}
+			if ("PET_SKIN_FOUR_SEASONS_GRIFFIN".equals(skin)) {
+				String monthName = SkyBlockTime.now().getMonthName();
+				if (monthName.contains("Spring")) {
+					skin = "PET_SKIN_FOUR_SEASONS_GRIFFIN_SPRING";
+				} else if (monthName.contains("Summer")) {
+					skin = "PET_SKIN_FOUR_SEASONS_GRIFFIN_SUMMER";
+				} else if (monthName.contains("Autumn")) {
+					skin = "PET_SKIN_FOUR_SEASONS_GRIFFIN_AUTUMN";
+				} else if (monthName.contains("Winter")) {
+					skin = "PET_SKIN_FOUR_SEASONS_GRIFFIN_WINTER";
+				}
+
+			}
+			NBTTagCompound customSkull = ItemCustomizeManager.getAnimatedCustomSkull(skin, "");
+			if (customSkull != null) {
+				tagCompound.removeTag("SkullOwner");
+				tagCompound.setTag("SkullOwner", customSkull);
+			}
 		}
 	}
-
-	private static List<String> validXpTypes = Lists.newArrayList(
-		"mining",
-		"foraging",
-		"enchanting",
-		"farming",
-		"combat",
-		"fishing",
-		"alchemy"
-	);
 
 	@SubscribeEvent
 	public void onStackClick(SlotClickEvent event) {
@@ -942,7 +971,7 @@ public class PetInfoOverlay extends TextOverlay {
 		if ("rift".equals(SBInfo.getInstance().getLocation())) return;
 
 		for (String line : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PET)) {
-			line = Utils.cleanColour(line).trim().replace(",", "");
+			line = Utils.cleanColour(line).replace(",", "").replace("✦", "").trim();
 			Matcher normalXPMatcher = TAB_LIST_XP.matcher(line);
 			Matcher overflowXPMatcher = TAB_LIST_XP_OVERFLOW.matcher(line);
 			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(line);
@@ -1034,6 +1063,7 @@ public class PetInfoOverlay extends TextOverlay {
 		public String petXpType;
 		public String petItem;
 		public String skin;
+		public int skinVariantSelected;
 		public int candyUsed;
 
 		public String getPetId(boolean withoutBoost) {
