@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -18,11 +18,14 @@
  */
 
 
-import neubs.*
+import com.xpdustry.ksr.kotlinRelocate
+import neubs.CustomSignTask
+import neubs.DownloadBackupRepo
+import neubs.NEUBuildFlags
+import neubs.applyPublishingInformation
+import neubs.setVersionFromEnvironment
 import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import java.net.URL
-import com.xpdustry.ksr.kotlinRelocate
 
 plugins {
 	idea
@@ -181,7 +184,7 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 	testAnnotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
 	detektPlugins("org.notenoughupdates:detektrules:1.0.0")
-	devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
+	devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.2.1")
 }
 
 
