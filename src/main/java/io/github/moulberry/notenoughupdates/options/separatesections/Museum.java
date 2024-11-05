@@ -61,4 +61,14 @@ public class Museum {
 	)
 	public int museumCheapestItemOverlayValueSource = 0;
 
+	@Expose
+	@ConfigOption(
+		name = "Sorting Method",
+		desc = "Sort by Skyblock XP or by Raw Value"
+	)
+	@ConfigEditorDropdown(
+		values = {"Skyblock XP", "Raw Value"}
+	)
+	public int museumCheapestItemOverlayUseXp = 0;
+
 }
