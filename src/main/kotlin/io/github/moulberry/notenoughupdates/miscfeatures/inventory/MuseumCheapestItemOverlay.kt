@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -26,8 +26,13 @@ import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumTooltipManager.isItemDonated
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
 import io.github.moulberry.notenoughupdates.options.separatesections.Museum
-import io.github.moulberry.notenoughupdates.util.*
+import io.github.moulberry.notenoughupdates.util.Constants
+import io.github.moulberry.notenoughupdates.util.ItemUtils
+import io.github.moulberry.notenoughupdates.util.MuseumUtil
 import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
+import io.github.moulberry.notenoughupdates.util.Rectangle
+import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -284,6 +289,7 @@ object MuseumCheapestItemOverlay {
                 height,
                 -1
             )
+            GlStateManager.color(1f, 1f, 1f, 1f)
         }
 
         // Coins per xp button
