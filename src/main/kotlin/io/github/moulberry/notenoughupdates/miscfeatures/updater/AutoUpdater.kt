@@ -129,7 +129,13 @@ object AutoUpdater {
                                 )
                             )
                         })
-                    NotificationHandler.displayNotification(listOf("§7NEU has found a new update: §a${it.update.versionName}", "  §7Run /neu and click \"Download update\" to install.  "), true)
+                        NotificationHandler.displayNotification(
+                            listOf(
+                                "",
+                                "§7NEU has found a new update: §a${it.update.versionName}",
+                                "  §7Run /neu and click \"Download update\" to install.  "
+                            ), true
+                        )
                     }
                 }
             }, MinecraftExecutor.OnThread)
