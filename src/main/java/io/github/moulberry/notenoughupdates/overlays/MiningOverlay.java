@@ -86,7 +86,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 			if (containerName.equals("Commissions") && lower.getSizeInventory() >= 27) {
 				updateCommissions(lower);
-			} else if (containerName.equals("Forge") && lower.getSizeInventory() >= 36) {
+			} else if (containerName.equals("The Forge") && lower.getSizeInventory() >= 36) {
 				updateForge(lower);
 			}
 		}
@@ -100,7 +100,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 		itemLoop:
 		for (int i = 0; i < MAX_FORGE_SLOTS; i++) {
-			ItemStack stack = lower.getStackInSlot(i + 11);
+			ItemStack stack = lower.getStackInSlot(i + 10);
 			if (stack != null) {
 				String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 
