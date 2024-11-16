@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.util
 
-import io.github.moulberry.notenoughupdates.NEUManager
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import net.minecraft.inventory.IInventory
@@ -86,68 +85,37 @@ object MuseumUtil {
 
     }
 
-    fun findMuseumItemByName(displayName: String): String? =
+    private fun findMuseumItemByName(displayName: String): String? =
         ItemResolutionQuery.findInternalNameByDisplayName(displayName, true)
 
 
-    fun findMuseumArmorSetByName(displayName: String): List<String?> {
-        val armorSlots = arrayOf(
-            "HELMET",
-            "LEGGINGS",
-            "CHESTPLATE",
-            "BOOTS",
-            "NECKLACE",
-            "CLOAK",
-            "BELT",
-            "GAUNTLET",
-            "HOOD",
-            "TROUSERS",
-            "TUNIC",
-            "SLIPPERS",
-            "HAT",
-        )
-        val monochromeName = NEUManager.cleanForTitleMapSearch(displayName)
-        val results = ItemResolutionQuery.findInternalNameCandidatesForDisplayName(displayName)
-            .asSequence()
-            .filter {
-                val item = NotEnoughUpdates.INSTANCE.manager.createItem(it)
-                val name = NEUManager.cleanForTitleMapSearch(item.displayName)
-                monochromeName.replace("armor", "") in name
-            }
-            .toSet()
-        return armorSlots.map { armorSlot ->
-            var singleOrNull = results.singleOrNull { armorSlot in it }
-            if (singleOrNull == null) {
-                convertArmourNameToId(monochromeName, armorSlot)
-            } else {
-                singleOrNull
-            }
-        }
-    }
+    private fun findMuseumArmorSetByName(displayName: String): List<String?> {
+        var cleanedString = StringUtils.cleanColour(displayName)
+            .replace("'s", "").replace("- ", "").lowercase().trim()
+            .removeSuffix(" armor").removeSuffix(" equipment").removeSuffix(" set")
+            .replace(" ", "_").uppercase()
 
-    fun convertArmourNameToId(name: String, armorSlot: String): String? {
-        var internalId = ""
-        if (name.contains("perfect ")) {
-            try {
-                Utils.parseRomanNumeral(name.replace("perfect armor  tier ", "").uppercase()).let {
-                    internalId = "PERFECT_${armorSlot}_$it"
-                }
-            } catch (_: Exception) {
-            }
-        } else if (name.contains("divan")) {
-            internalId = "DIVAN_$armorSlot"
-        } else {
-            internalId = "${name.replace("armor",  "").uppercase().replace(" ", "_")}$armorSlot"
+        val museumJson = Constants.MUSEUM
+        museumJson?.get("set_exceptions")?.asJsonObject?.get(cleanedString)?.let { pieces ->
+            cleanedString = pieces.asString
         }
-        val findInternalId = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(internalId).resolveToItemStack()
-        return if (findInternalId != null) {
-            internalId
-        } else {
-            null
+        museumJson?.get("sets_to_items")?.asJsonObject?.get(cleanedString)?.let { pieces ->
+            return pieces.asJsonArray.map { it.asString }
         }
+        val withArmor = "${cleanedString}_ARMOR"
+        museumJson?.get("sets_to_items")?.asJsonObject?.get(withArmor)?.let { pieces ->
+            return pieces.asJsonArray.map { it.asString }
+        }
+        println("Could not find $cleanedString in museum sets for name: \"$displayName\"")
+        return emptyList()
     }
 
     fun isMuseumInventory(inventory: IInventory): Boolean {
         return StringUtils.cleanColour(inventory.displayName.unformattedText).startsWith("Museum ➜")
+    }
+
+    fun isValidSlot(slot: Int): Boolean {
+        if (slot % 9 !in 1..7) return false
+        return slot in 9..44
     }
 }

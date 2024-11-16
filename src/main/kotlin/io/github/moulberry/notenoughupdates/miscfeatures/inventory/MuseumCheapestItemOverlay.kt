@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -23,10 +23,16 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumTooltipManager.isItemDonated
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
 import io.github.moulberry.notenoughupdates.options.separatesections.Museum
-import io.github.moulberry.notenoughupdates.util.*
+import io.github.moulberry.notenoughupdates.util.Constants
+import io.github.moulberry.notenoughupdates.util.ItemUtils
+import io.github.moulberry.notenoughupdates.util.MuseumUtil
 import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
+import io.github.moulberry.notenoughupdates.util.Rectangle
+import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -72,7 +78,8 @@ object MuseumCheapestItemOverlay {
         var internalNames: List<String>,
         var value: Double,
         var priceRefreshedAt: Long,
-        var category: Category
+        var category: Category,
+        var sbXp: Int = 0
     )
 
     private const val ITEMS_PER_PAGE = 10
@@ -90,6 +97,7 @@ object MuseumCheapestItemOverlay {
     private var itemsToDonate: MutableList<MuseumItem> = emptyList<MuseumItem>().toMutableList()
     private var leftButtonRect = Rectangle(0, 0, 0, 0)
     private var rightButtonRect = Rectangle(0, 0, 0, 0)
+    private var xpButtonRect = Rectangle(0, 0, 0, 0)
     private var selectedCategory = Category.NOT_APPLICABLE
     private var totalPages = 0
 
@@ -166,6 +174,9 @@ object MuseumCheapestItemOverlay {
             updateAllValues()
         } else if (Mouse.getEventButtonState() && rightButtonRect.contains(mouseX, mouseY)) {
             advanceSelectedCategory()
+        } else if (Mouse.getEventButtonState() && xpButtonRect.contains(mouseX, mouseY)) {
+            config.museumCheapestItemOverlayUseXp = 1 - config.museumCheapestItemOverlayUseXp
+            updateAllValues()
         }
     }
 
@@ -177,12 +188,16 @@ object MuseumCheapestItemOverlay {
         selectedCategory = enumValues<Category>()[nextValueIndex]
     }
 
+
+    val BUTTON = ResourceLocation("notenoughupdates:icon_from_minion_helper.png");
+
     /**
      * Draw the two clickable buttons on the bottom right and display a tooltip if needed
      */
     private fun drawButtons(guiLeft: Int, xSize: Int, guiTop: Int) {
         RenderHelper.enableGUIStandardItemLighting()
         val useBIN = config.museumCheapestItemOverlayValueSource == 0
+        val useCoinsPerXp = config.museumCheapestItemOverlayUseXp == 0
         val mouseX = Utils.getMouseX()
         val mouseY = Utils.getMouseY()
         val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
@@ -227,8 +242,7 @@ object MuseumCheapestItemOverlay {
                 mouseY,
                 width,
                 height,
-                -1,
-                Minecraft.getMinecraft().fontRendererObj
+                -1
             )
         }
 
@@ -273,8 +287,51 @@ object MuseumCheapestItemOverlay {
                 mouseY,
                 width,
                 height,
-                -1,
-                Minecraft.getMinecraft().fontRendererObj
+                -1
+            )
+            GlStateManager.color(1f, 1f, 1f, 1f)
+        }
+
+        // Coins per xp button
+        val skyblockXpItemStack = if (useCoinsPerXp) {
+            ItemStack(Items.experience_bottle)
+        } else {
+            ItemStack(Items.glass_bottle)
+        }
+        xpButtonRect = Rectangle(
+            guiLeft + xSize + 112,
+            guiTop + 106,
+            16,
+            16
+        )
+        Minecraft.getMinecraft().textureManager.bindTexture(BUTTON)
+        Utils.drawTexturedRect(xpButtonRect.x.toFloat(), xpButtonRect.y.toFloat(), 16f, 16f, 0f, 1f, 0f, 1f, GL11.GL_NEAREST)
+        Minecraft.getMinecraft().renderItem.renderItemIntoGUI(
+            skyblockXpItemStack,
+            xpButtonRect.x,
+            xpButtonRect.y - 1
+        )
+        if (xpButtonRect.contains(mouseX, mouseY)) {
+            val tooltip = if (useCoinsPerXp) {
+                listOf(
+                    "${EnumChatFormatting.GREEN}Sort by SkyBlock XP",
+                    "",
+                    "${EnumChatFormatting.YELLOW}Click to switch to Raw Value!"
+                )
+            } else {
+                listOf(
+                    "${EnumChatFormatting.GREEN}Sort by Raw Value",
+                    "",
+                    "${EnumChatFormatting.YELLOW}Click to switch Skyblock XP!"
+                )
+            }
+            Utils.drawHoveringText(
+                tooltip,
+                mouseX,
+                mouseY,
+                width,
+                height,
+                -1
             )
         }
         RenderHelper.disableStandardItemLighting()
@@ -284,7 +341,13 @@ object MuseumCheapestItemOverlay {
      * Sort the collected items by their calculated value
      */
     private fun sortByValue() {
-        itemsToDonate.sortBy { it.value }
+        itemsToDonate.sortBy {
+            if (config.museumCheapestItemOverlayUseXp == 0 && it.sbXp > 0) {
+                it.value / it.sbXp
+            } else {
+                it.value
+            }
+        }
     }
 
     /**
@@ -412,10 +475,13 @@ object MuseumCheapestItemOverlay {
                         tooltip.add("")
                     }
 
+                    if (line.sbXp > 0) {
+                        tooltip.add("${EnumChatFormatting.GRAY}Reward: ${EnumChatFormatting.AQUA}+${line.sbXp} SkyBlock XP")
+                    }
+
                     if (line.internalNames.isEmpty()) {
                         tooltip.add("${EnumChatFormatting.RED}Could not determine item!")
-                    }
-                    else if (NotEnoughUpdates.INSTANCE.manager.getRecipesFor(line.internalNames[0]).isNotEmpty()) {
+                    } else if (NotEnoughUpdates.INSTANCE.manager.getRecipesFor(line.internalNames[0]).isNotEmpty()) {
                         tooltip.add("${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Click to open recipe!")
                     } else {
                         tooltip.add("${EnumChatFormatting.RED}${EnumChatFormatting.BOLD}No recipe available!")
@@ -484,6 +550,7 @@ object MuseumCheapestItemOverlay {
             }
             val armor = category == Category.ARMOUR_SETS
             for (i in 0..53) {
+                if (!MuseumUtil.isValidSlot(i)) continue
                 val stack = slots[i].stack ?: continue
                 val parsedItems = MuseumUtil.findMuseumItem(stack, armor) ?: continue
                 when (parsedItems.state) {
@@ -501,13 +568,15 @@ object MuseumCheapestItemOverlay {
 
                         //if the list does not already contain it, insert this MuseumItem
                         if (itemsToDonate.none { it.internalNames == parsedItems.skyblockItemIds }) {
+                            val xp = calculateSkyblockXp(parsedItems.skyblockItemIds, false)
                             itemsToDonate.add(
                                 MuseumItem(
                                     displayName,
                                     parsedItems.skyblockItemIds,
                                     calculateValue(parsedItems.skyblockItemIds),
                                     time,
-                                    category
+                                    category,
+                                    xp
                                 )
                             )
                         }
@@ -518,6 +587,51 @@ object MuseumCheapestItemOverlay {
             }
             sortByValue()
         }.start()
+    }
+
+    private fun calculateSkyblockXp(internalNames: List<String>, factorDonatedItems: Boolean): Int {
+        var xp = 0
+        val reversedJsonObject = Constants.MUSEUM?.get("armor_to_id")?.asJsonObject?.entrySet()
+            ?.associateBy({ it.value.asString }, { it.key })
+        var currentItem = ""
+        if (internalNames.size == 1) {
+            val xpAmount = Constants.MUSEUM?.get("itemToXp")?.asJsonObject?.get(
+                internalNames.first()
+            )?.asInt ?: 0
+            if (isItemDonated(internalNames.first()) && !factorDonatedItems) {
+                xp = 0
+            } else {
+                xp = xpAmount
+            }
+            currentItem = internalNames.first()
+        } else {
+            for (skyblockItemId in internalNames) {
+                val xpAmount = Constants.MUSEUM?.get("itemToXp")?.asJsonObject?.get(
+                    reversedJsonObject?.get(skyblockItemId)
+                )?.asInt ?: 0
+                if (isItemDonated(internalNames.first()) && !factorDonatedItems) {
+                    xp = 0
+                } else {
+                    xp = xpAmount
+                }
+                if (xp != 0) {
+                    currentItem = skyblockItemId
+                    break
+                }
+            }
+        }
+
+        var child = Constants.MUSEUM?.get("children")?.asJsonObject?.get(currentItem)?.asString
+        if (child != null) {
+            xp += calculateSkyblockXp(listOf(child), factorDonatedItems)
+        } else {
+            val armour = reversedJsonObject?.get(currentItem) ?: currentItem
+            child = Constants.MUSEUM?.get("children")?.asJsonObject?.get(armour)?.asString
+            if (child != null) {
+                xp += calculateSkyblockXp(listOf(child), factorDonatedItems)
+            }
+        }
+        return xp
     }
 
     /**
