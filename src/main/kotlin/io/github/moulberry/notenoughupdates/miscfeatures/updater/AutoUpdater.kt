@@ -24,10 +24,17 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.ApiUtil
 import io.github.moulberry.notenoughupdates.util.MinecraftExecutor
+import io.github.moulberry.notenoughupdates.util.NotificationHandler
+import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
-import moe.nea.libautoupdate.*
+import moe.nea.libautoupdate.CurrentVersion
+import moe.nea.libautoupdate.PotentialUpdate
+import moe.nea.libautoupdate.UpdateContext
+import moe.nea.libautoupdate.UpdateTarget
+import moe.nea.libautoupdate.UpdateUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.event.ClickEvent
+import net.minecraft.event.HoverEvent
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
@@ -115,7 +122,20 @@ object AutoUpdater {
                                     "/neuinternalupdatenow"
                                 )
                             )
+                            this.chatStyle.setChatHoverEvent(
+                                HoverEvent(
+                                    HoverEvent.Action.SHOW_TEXT,
+                                    ChatComponentText("§aClick to install the update")
+                                )
+                            )
                         })
+                        NotificationHandler.displayNotification(
+                            listOf(
+                                "",
+                                "§7NEU has found a new update: §a${it.update.versionName}",
+                                "  §7Run /neu and click \"Download update\" to install.  "
+                            ), true
+                        )
                     }
                 }
             }, MinecraftExecutor.OnThread)
@@ -124,13 +144,16 @@ object AutoUpdater {
     fun queueUpdate() {
         if (updateState != UpdateState.AVAILABLE) {
             logger.error("Trying to enqueue an update while another one is already downloaded or none is present")
+            return
         }
         updateState = UpdateState.QUEUED
         activePromise = CompletableFuture.supplyAsync {
             logger.info("Update download started")
+            Utils.addChatMessage("§e[NEU] §aUpdate download started")
             potentialUpdate!!.prepareUpdate()
         }.thenAcceptAsync({
             logger.info("Update download completed, setting exit hook")
+            Utils.addChatMessage("§e[NEU] §aUpdate download completed. Restart Minecraft to apply")
             updateState = UpdateState.DOWNLOADED
             potentialUpdate!!.executePreparedUpdate()
         }, MinecraftExecutor.OnThread)

@@ -25,9 +25,15 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
+import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking
-import io.github.moulberry.notenoughupdates.util.brigadier.*
+import io.github.moulberry.notenoughupdates.util.brigadier.get
+import io.github.moulberry.notenoughupdates.util.brigadier.reply
+import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteralExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.BlockPos
@@ -44,6 +50,12 @@ class SimpleDevCommands {
                 reply("Reloaded repository.")
             }
         }.withHelp("Reload the NEU data repository from disk (not from network)")
+        event.command("neureloadrepoconstants") {
+            thenExecute {
+                RepositoryReloadEvent(NotEnoughUpdates.INSTANCE.manager.repoLocation, false).post()
+                reply("Reloaded repository constants.")
+            }
+        }.withHelp("Reload the NEU repository constants from disk (not from network)")
         event.command("neudungeonwintest") {
             thenArgumentExecute("file", string()) { file ->
                 DungeonWin.TEAM_SCORE = ResourceLocation("notenoughupdates:dungeon_win/${this[file].lowercase()}.png")

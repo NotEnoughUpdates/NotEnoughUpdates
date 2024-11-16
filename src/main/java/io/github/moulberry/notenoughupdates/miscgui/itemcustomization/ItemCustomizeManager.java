@@ -566,7 +566,7 @@ public class ItemCustomizeManager {
 		if (!animatedSkulls.has("help")) return null;
 
 		String[] split = damageString.split(":");
-		if (split.length == 1) return null;
+		if (split.length < 2) return null;
 		String itemID = split[1].toUpperCase(Locale.ROOT).replace(" ", "_");
 
 		if (!animatedSkulls.get("help").getAsJsonObject().has(itemID)) return null;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2023-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -54,18 +54,33 @@ public class StoryTaskLevel extends GuiTaskLevel {
 			}
 		}
 
+		JsonArray riftGuideTaskNames = storyTask.getAsJsonArray("rift_guide_names");
+		int riftGuideXp = storyTask.get("rift_guide_xp").getAsInt();
+		int sbXpRiftGuide = 0;
+		for (JsonElement riftGuideTaskName : riftGuideTaskNames) {
+			String value = riftGuideTaskName.getAsString();
+			if (objectives != null && objectives.has(value)) {
+				JsonObject jsonObject = objectives.get(value).getAsJsonObject();
+				if (jsonObject != null && jsonObject.has("status") && jsonObject.get("status").getAsString().equals("COMPLETE")) {
+					sbXpRiftGuide += riftGuideXp;
+				}
+			}
+		}
+
 		List<String> lore = new ArrayList<>();
 		lore.add(levelPage.buildLore("Complete Objectives",
 			sbXpStory, storyTask.get("complete_objectives").getAsInt(), false
 		));
+		lore.add(levelPage.buildLore("Rift Guide", sbXpRiftGuide, storyTask.get("rift_guide").getAsInt(), false));
 
+		int totalXp = sbXpStory + sbXpRiftGuide;
 		levelPage.renderLevelBar(
 			"Story Task",
 			new ItemStack(Items.map),
 			guiLeft + 299, guiTop + 85,
 			110,
 			0,
-			sbXpStory,
+			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("story_task").getAsInt(),
 			mouseX, mouseY,
 			true,

@@ -49,6 +49,7 @@
     "MixinRenderGlobal",
     "MixinRenderItem",
     "MixinRenderList",
+    "MixinSkyhanniUpdaterFix",
     "MixinTextureManager",
     "MixinTileEntitySkullRenderer",
     "MixinTileEntitySpecialRenderer",

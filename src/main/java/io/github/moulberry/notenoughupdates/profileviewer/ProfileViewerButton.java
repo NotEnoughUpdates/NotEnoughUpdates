@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -71,6 +72,9 @@ public class ProfileViewerButton {
 
 	@SubscribeEvent
 	public void itemReplace(ReplaceItemEvent event) {
+		if (event.getInventory() instanceof InventoryPlayer) {
+			return;
+		}
 		if (!Utils.getOpenChestName().contains(" Profile")) {
 			username = "";
 			replaceSlot = -1;

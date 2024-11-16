@@ -86,7 +86,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 			if (containerName.equals("Commissions") && lower.getSizeInventory() >= 27) {
 				updateCommissions(lower);
-			} else if (containerName.equals("Forge") && lower.getSizeInventory() >= 36) {
+			} else if (containerName.equals("The Forge") && lower.getSizeInventory() >= 36) {
 				updateForge(lower);
 			}
 		}
@@ -100,7 +100,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 		itemLoop:
 		for (int i = 0; i < MAX_FORGE_SLOTS; i++) {
-			ItemStack stack = lower.getStackInSlot(i + 11);
+			ItemStack stack = lower.getStackInSlot(i + 10);
 			if (stack != null) {
 				String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 
@@ -236,7 +236,7 @@ public class MiningOverlay extends TextTabOverlay {
 	private static final Pattern timeRemainingForge = Pattern.compile(
 		"\\xA77Time Remaining: \\xA7a((?<Completed>Completed!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern timeRemainingTab = Pattern.compile(
-		".*[1-5]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
+		".*[1-" + MAX_FORGE_SLOTS + "]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern forgeIntPattern = Pattern.compile(
 		"[^)]*([1-" + MAX_FORGE_SLOTS + "])\\).*");
 
@@ -688,6 +688,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Aquamarine Gemstone Collector")) return "Break aqua glass";
 			if (name.equals("Peridot Gemstone Collector")) return "Break dark green glass";
 			if (name.equals("Citrine Gemstone Collector")) return "Break brown glass";
+			if (name.equals("Maniac Slayer")) return "Kill mobs in a Glacite Mineshaft";
 		}
 
 		return null;

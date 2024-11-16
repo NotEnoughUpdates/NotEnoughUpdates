@@ -39,6 +39,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
@@ -53,6 +54,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -78,12 +80,12 @@ import java.util.stream.Collectors;
 public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern XP_BOOST_PATTERN = Pattern.compile(
 		"PET_ITEM_(COMBAT|FISHING|MINING|FORAGING|ALL|FARMING)_(SKILL|SKILLS)_BOOST_(COMMON|UNCOMMON|RARE|EPIC)");
-	private static final Pattern PET_CONTAINER_PAGE = Pattern.compile("Pets \\((\\d)/(\\d)\\) *");
-	private static final Pattern PET_CONTAINER_SEARCH = Pattern.compile("Pets: \".+\"");
+	private static final Pattern PET_CONTAINER = Pattern.compile("^Pets(?::)?(?: \"\\w+\")?(?: \\((\\d)\\/(\\d)\\))?");
 	private static final Pattern TAB_LIST_XP = Pattern.compile(
 		"([0-9,]+\\.?[0-9]*)/([0-9,]+\\.?[0-9]*)[kM]? XP \\(\\d+\\.?\\d*%\\)");
 	private static final Pattern TAB_LIST_XP_OVERFLOW = Pattern.compile("\\+([0-9,]+\\.?[0-9]*) XP");
-	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("\\[Lvl (\\d+)\\] (.+)");
+	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("§.\\[Lvl (\\d+)\\] §(.)(.+)");
+	private static final Pattern TAB_LIST_PET_ITEM = Pattern.compile("§[fa956d4][a-zA-Z- ]+");
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -372,6 +374,9 @@ public class PetInfoOverlay extends TextOverlay {
 	public float getLevelPercent(Pet pet) {
 		if (pet == null) return 0;
 		try {
+			if (pet.petLevel.getMaxLevel() == pet.petLevel.getCurrentLevel()) {
+				return 100;
+			}
 			return Float.parseFloat(StringUtils.formatToTenths(Math.min(
 				pet.petLevel.getPercentageToNextLevel() * 100f,
 				100f
@@ -405,13 +410,20 @@ public class PetInfoOverlay extends TextOverlay {
 		String lvlString = null;
 
 		if (levelPercent != 100 || !NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetLevelProgress) {
-			lvlStringShort = EnumChatFormatting.AQUA + "" + roundFloat(levelXp) + "/" +
-				roundFloat(currentPet.petLevel.getExpRequiredForNextLevel())
+			long xpForNextLevel = currentPet.petLevel.getExpRequiredForNextLevel();
+			float visualXp = levelXp;
+			if (levelPercent == 100) {
+				if (xpForNextLevel > levelXp) {
+					visualXp = xpForNextLevel;
+				}
+			}
+			lvlStringShort = EnumChatFormatting.AQUA + "" + roundFloat(visualXp) + "/" +
+				roundFloat(xpForNextLevel)
 				+ EnumChatFormatting.YELLOW + " (" + levelPercent + "%)";
 
 			lvlString = EnumChatFormatting.AQUA + "" +
-				Utils.shortNumberFormat(Math.min(levelXp, currentPet.petLevel.getExpRequiredForNextLevel()), 0) + "/" +
-				Utils.shortNumberFormat(currentPet.petLevel.getExpRequiredForNextLevel(), 0)
+				Utils.shortNumberFormat(Math.min(visualXp, xpForNextLevel), 0) + "/" +
+				Utils.shortNumberFormat(xpForNextLevel, 0)
 				+ EnumChatFormatting.YELLOW + " (" + levelPercent + "%)";
 		}
 
@@ -425,7 +437,7 @@ public class PetInfoOverlay extends TextOverlay {
 		String xpGainString = EnumChatFormatting.AQUA + "XP/h: " +
 			EnumChatFormatting.YELLOW + roundFloat(xpGain);
 		if (!secondPet && xpGain > 0 &&
-			(levelXp != levelXpLast || System.currentTimeMillis() - lastXpUpdateNonZero > 3500)) {
+			(levelXp != levelXpLast || System.currentTimeMillis() - lastXpUpdateNonZero > 4500)) {
 			if (pauseCountdown <= 0) {
 				xpGainString += EnumChatFormatting.RED + " (PAUSED)";
 			} else {
@@ -769,25 +781,16 @@ public class PetInfoOverlay extends TextOverlay {
 
 			if (lower.getSizeInventory() >= 54 && event.guiContainer.inventorySlots.windowId == container.windowId) {
 				int page = 0;
-				boolean isPets = false;
-
-				if (containerName.equals("Pets")) {
-					isPets = true;
-				} else {
-					Matcher matcher = PET_CONTAINER_PAGE.matcher(containerName);
-					Matcher matcherSearch = PET_CONTAINER_SEARCH.matcher(containerName);
-					if (matcher.matches()) {
-						try {
-							page = Integer.parseInt(matcher.group(1)) - 1;
-							isPets = true;
-						} catch (NumberFormatException ignored) {
-						}
-					} else if (matcherSearch.matches()) {
-						isPets = true;
-					}
-				}
+				boolean isPets = isPetMenu(containerName,container);
 
 				if (isPets) {
+					try {
+						Matcher matcher = PET_CONTAINER.matcher(containerName);
+						if (matcher.find()) {
+							page = Integer.parseInt(matcher.group(1)) - 1;
+						}
+					} catch (NumberFormatException ignored) {
+					}
 					boolean isRemoving = event.clickedButton == 1;
 
 					int newSelected = (event.slotId - 10) - (event.slotId - 10) / 9 * 2 + page * 28;
@@ -826,25 +829,17 @@ public class PetInfoOverlay extends TextOverlay {
 			if (lower.getSizeInventory() >= 54) {
 				int page = 0;
 				int maxPage = 1;
-				boolean isPets = false;
+				boolean isPets = isPetMenu(containerName,container);
 
-				if (containerName.equals("Pets")) {
-					isPets = true;
-				} else {
-					Matcher matcher = PET_CONTAINER_PAGE.matcher(containerName);
-					Matcher matcherSearch = PET_CONTAINER_SEARCH.matcher(containerName);
-					if (matcher.matches()) {
-						try {
+				if (isPets) {
+					try {
+						Matcher matcher = PET_CONTAINER.matcher(containerName);
+						if (matcher.find()) {
 							page = Integer.parseInt(matcher.group(1)) - 1;
 							maxPage = Integer.parseInt(matcher.group(2));
-							isPets = true;
-						} catch (NumberFormatException ignored) {
 						}
-					} else if (matcherSearch.matches()) {
-						isPets = true;
+					} catch (NumberFormatException ignored) {
 					}
-				}
-				if (isPets) {
 					boolean hasItem = false;
 					for (int i = 0; i < lower.getSizeInventory(); i++) {
 						if (lower.getStackInSlot(i) != null) {
@@ -911,7 +906,7 @@ public class PetInfoOverlay extends TextOverlay {
 						}
 					}
 					removeMap.keySet().retainAll(removeSet);
-				} else if (containerName.equals("Your Equipment")) {
+				} else if (containerName.startsWith("Your Equipment")) {
 					ItemStack petStack = lower.getStackInSlot(47);
 					if (petStack != null && petStack.getItem() == Items.skull) {
 						NBTTagCompound tag = petStack.getTagCompound();
@@ -939,7 +934,12 @@ public class PetInfoOverlay extends TextOverlay {
 								double petLevel = PetLeveling.getPetLevelingForPet(name, Rarity.valueOf(rarityString))
 																						 .getPetLevel(petXp)
 																						 .getCurrentLevel();
-								int index = getClosestPetIndex(name, rarity, "", (float) petLevel);
+
+								String petItem = "";
+								if (petInfoObject.has("heldItem")) {
+									petItem = petInfoObject.get("heldItem").getAsString();
+								}
+								int index = getClosestPetIndex(name, rarity, petItem, (float) petLevel);
 								if (index != config.selectedPet) {
 									clearPet();
 									setCurrentPet(index);
@@ -952,10 +952,29 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
+	private boolean isPetMenu(String containerName, ContainerChest container) {
+		Matcher matcher = PET_CONTAINER.matcher(containerName);
+		if (!matcher.find()) return false;
+
+		List<String> backLore;
+		try {
+			backLore = container.getSlot(48).getStack().getTooltip(null, false);
+		} catch (Exception _) {
+			return false;
+		}
+		for (String line : backLore) {
+			if (line.contains("To Select Process (Slot #")) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private static HashMap<Long, Float> xpHourMap = new HashMap<>();
 	private long lastXpUpdate = -1;
 	private long lastXpUpdateNonZero = -1;
 	private long lastPaused = -1;
+	private long lastPetCorrect = -1;
 
 	public void updatePetLevels() {
 		float totalGain = 0;
@@ -970,30 +989,81 @@ public class PetInfoOverlay extends TextOverlay {
 
 		if ("rift".equals(SBInfo.getInstance().getLocation())) return;
 
-		for (String line : TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PET)) {
+		List<String> widgetLines = TablistAPI.getWidgetLines(TablistAPI.WidgetNames.PET);
+		for (int i = 0; i < widgetLines.size(); i++) {
+			String line = widgetLines.get(i);
+			String lineWithColours = line.replace("§r", "").trim();
 			line = Utils.cleanColour(line).replace(",", "").replace("✦", "").trim();
 			Matcher normalXPMatcher = TAB_LIST_XP.matcher(line);
 			Matcher overflowXPMatcher = TAB_LIST_XP_OVERFLOW.matcher(line);
-			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(line);
-			if (petNameMatcher.matches()) {
-				String petName = petNameMatcher.group(2);
-				if (!getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel()).equalsIgnoreCase(petName)) {
-					break;
-				}
 
+			Matcher petNameMatcher = TAB_LIST_PET_NAME.matcher(lineWithColours);
+			Matcher petItemMatcher = TAB_LIST_PET_ITEM.matcher(lineWithColours);
+
+			if (petNameMatcher.matches()) {
+				String petName = petNameMatcher.group(3);
+				int petLevel = 1;
 				try {
-					int petLevel = Integer.parseInt(petNameMatcher.group(1));
-					PetLeveling.ExpLadder petLadder = PetLeveling.getPetLevelingForPet(currentPet.petType, currentPet.rarity);
-					if (currentPet.petLevel.getCurrentLevel() != petLevel) {
-						long baseLevelXp = petLadder.getPetExpForLevel(petLevel);
-						currentPet.petLevel.setExpTotal(baseLevelXp);
-						currentPet.petLevel = petLadder.getPetLevel(currentPet.petLevel.getExpTotal());
-					}
+					petLevel = Integer.parseInt(petNameMatcher.group(1));
 				} catch (NumberFormatException ignored) {
 					Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] Invalid number in tab list: " + petNameMatcher.group(1));
 				}
 
+				if (!getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel()).equalsIgnoreCase(petName)) {
+					if (lastPetCorrect == -1 || lastPetCorrect > 0 && System.currentTimeMillis() - lastPetCorrect > 5000) {
+						int rarity = getRarityByColor(petNameMatcher.group(2)).petId;
+						String petItem = "";
+						if (widgetLines.size() > i) {
+							String nextLine = widgetLines.get(i + 1).replace("§r", "").trim();
+							Matcher nextLinePetItemMatcher = TAB_LIST_PET_ITEM.matcher(nextLine);
+							if (nextLinePetItemMatcher.matches()) {
+								petItem = getInternalIdForPetItemDisplayName(nextLinePetItemMatcher.group(0));
+							}
+						}
+
+						String internalName = ItemResolutionQuery.findInternalNameByDisplayName(lineWithColours, true);
+						String[] split = internalName.split(";");
+						if (split.length > 0) {
+							internalName = split[0];
+						}
+
+						int closestPetIndex = getClosestPetIndex(internalName, rarity, petItem, petLevel);
+						if (closestPetIndex != -1) {
+							//If it is -1 your petcache is probably outdated and you need to open /pets, but im sure they can work it out
+							setCurrentPet(closestPetIndex);
+						}
+						lastPetCorrect = System.currentTimeMillis();
+					}
+					break;
+				} else {
+					lastPetCorrect = System.currentTimeMillis();
+				}
+
+				PetLeveling.ExpLadder petLadder = PetLeveling.getPetLevelingForPet(currentPet.petType, currentPet.rarity);
+				if (currentPet.petLevel.getCurrentLevel() != petLevel) {
+					long baseLevelXp = petLadder.getPetExpForLevel(petLevel);
+					currentPet.petLevel.setExpTotal(baseLevelXp);
+					currentPet.petLevel = petLadder.getPetLevel(currentPet.petLevel.getExpTotal());
+				}
+
 			}
+
+			if (petItemMatcher.matches()) {
+				String petItem = getInternalIdForPetItemDisplayName(petItemMatcher.group(0));
+				if (!Objects.equals(currentPet.petItem, petItem)) {
+					int closestPetIndex = getClosestPetIndex(
+						currentPet.petType,
+						currentPet.rarity.petId,
+						petItem,
+						currentPet.petLevel.getCurrentLevel()
+					);
+
+					if (config.selectedPet != closestPetIndex && closestPetIndex != -1) {
+						setCurrentPet(closestPetIndex);
+					}
+				}
+			}
+
 			if (normalXPMatcher.matches() || overflowXPMatcher.matches()) {
 				String xpString;
 				if (normalXPMatcher.matches()) xpString = normalXPMatcher.group(1);
@@ -1031,7 +1101,7 @@ public class PetInfoOverlay extends TextOverlay {
 						}
 					}
 
-					if (totalGain != 0 || System.currentTimeMillis() - lastXpUpdate > 3500) {
+					if (totalGain != 0 || System.currentTimeMillis() - lastXpUpdate > 4500) {
 						xpHourMap.put(System.currentTimeMillis(), totalGain);
 						lastXpUpdate = System.currentTimeMillis();
 					}
@@ -1045,7 +1115,7 @@ public class PetInfoOverlay extends TextOverlay {
 						averageXp += value;
 					}
 
-					if (!xpHourMap.isEmpty()) xpGainHour = (averageXp / xpHourMap.size()) * ((float) (60 * 60) / seconds);
+					if (!xpHourMap.isEmpty()) xpGainHour = (averageXp) * ((float) (60 * 60) / seconds);
 					else xpGainHour = 0;
 				} else {
 					lastPaused = System.currentTimeMillis();
@@ -1113,10 +1183,16 @@ public class PetInfoOverlay extends TextOverlay {
 					String pet = Utils.cleanColour(petName)
 														.replaceAll("[^\\w ]", "").trim()
 														.replace(" ", "_").toUpperCase(Locale.ROOT);
-
-					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
+					List<IChatComponent> siblings = event.message.getChatStyle().getChatHoverEvent().getValue().getSiblings();
+					String petItem = "";
+					if (siblings.size() > 6) {
+						IChatComponent iChatComponent = siblings.get(6);
+						String formattedText = iChatComponent.getChatStyle().getColor() + iChatComponent.getUnformattedText();
+						petItem = getInternalIdForPetItemDisplayName(formattedText);
+					}
+					setCurrentPet(getClosestPetIndex(pet, rarity.petId, petItem, lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
-						setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, "", lastLevelHovered));
+							setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, petItem, lastLevelHovered));
 						if (getCurrentPet() != null && !"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
 							PetInfoOverlay.config.selectedPet = -1;
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
@@ -1173,6 +1249,27 @@ public class PetInfoOverlay extends TextOverlay {
 		if (idToDisplayName.has(petId)) {
 			return idToDisplayName.get(petId).getAsString();
 		}
+		return defaultName;
+	}
+
+	private static boolean hasRepoPopupped = false;
+
+	private static String getInternalIdForPetItemDisplayName(String displayName) {
+		JsonObject pets = Constants.PETS;
+		String defaultName = displayName.replace(" ", "_").replace("-", "_").toUpperCase(Locale.ROOT);
+		defaultName = Utils.cleanColour(defaultName).trim();
+		if (pets == null) return defaultName;
+		if (!pets.has("pet_item_display_name_to_id")) {
+			if (!hasRepoPopupped) Utils.showOutdatedRepoNotification("pets.json pet_item_display_name_to_id");
+			hasRepoPopupped = true;
+			return defaultName;
+		}
+
+		JsonObject petItemDisplayNameToId = pets.get("pet_item_display_name_to_id").getAsJsonObject();
+		if (petItemDisplayNameToId.has(displayName)) {
+			return petItemDisplayNameToId.get(displayName).getAsString();
+		}
+
 		return defaultName;
 	}
 }

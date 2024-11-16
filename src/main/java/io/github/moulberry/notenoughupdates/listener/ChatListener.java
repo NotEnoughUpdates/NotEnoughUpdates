@@ -133,6 +133,7 @@ public class ChatListener {
 		}
 		if (chatClickCommand == null) return chatComponent;
 
+		if (targetedComponent.getChatStyle().getChatClickEvent() == null) return chatComponent;
 		String username = chatClickCommand.equals("/viewprofile") ?
 			Utils.getNameFromChatComponent(chatComponent) :
 			targetedComponent.getChatStyle().getChatClickEvent().getValue().substring(15);

@@ -122,8 +122,6 @@ public class BasicPage extends GuiProfileViewerPage {
 
 	private int backgroundClickedX = -1;
 
-	private boolean onSecondPage;
-
 	private final LevelPage levelPage;
 	private boolean clickedLoadStatusButton = false;
 
@@ -140,7 +138,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		if (onSecondPage) {
+		if (GuiProfileViewer.onSecondPage) {
 			levelPage.drawPage(mouseX, mouseY, partialTicks);
 			return;
 		}
@@ -678,7 +676,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
 			if (mouseY >= guiTop + 49 && mouseY <= guiTop + 113) {
-				if (Mouse.isButtonDown(0)) onSecondPage = true;
+				if (Mouse.isButtonDown(0)) GuiProfileViewer.onSecondPage = true;
 			}
 		}
 
@@ -1055,10 +1053,10 @@ public class BasicPage extends GuiProfileViewerPage {
 		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
 			case 1:
-				onSecondPage = false;
+				GuiProfileViewer.onSecondPage = false;
 				break;
 			case 2:
-				onSecondPage = true;
+				GuiProfileViewer.onSecondPage = true;
 				break;
 
 			default:
@@ -1071,7 +1069,7 @@ public class BasicPage extends GuiProfileViewerPage {
 	public void drawSideButtons(int mouseX, int mouseY) {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
-		if (onSecondPage) {
+		if (GuiProfileViewer.onSecondPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), true, guiProfileViewer, mouseX, mouseY);
 		} else {
 			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), true, guiProfileViewer, mouseX, mouseY);
@@ -1079,7 +1077,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
-		if (!onSecondPage) {
+		if (!GuiProfileViewer.onSecondPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), false, guiProfileViewer, mouseX, mouseY);
 		} else {
 			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), false, guiProfileViewer, mouseX, mouseY);
