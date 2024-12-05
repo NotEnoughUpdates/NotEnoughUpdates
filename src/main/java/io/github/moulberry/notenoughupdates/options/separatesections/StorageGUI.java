@@ -116,7 +116,7 @@ public class StorageGUI {
 		desc = "Replace the glass pane textures in your storage containers with a fancy connected texture"
 	)
 	@ConfigEditorDropdown(
-		values = {"On", "Locked", "Off"}
+		values = {"On", "Locked", "Off", "No connecting", "Locked & No connecting" }
 	)
 	@ConfigAccordionId(id = 1)
 	public int fancyPanes = 0;
