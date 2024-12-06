@@ -299,7 +299,9 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 
 				if ("PET_ITEM_TIER_BOOST".equals(heldItem)) {
-					rarity = rarity.nextRarity();
+					if (rarity != Rarity.MYTHIC) {
+						rarity = rarity.nextRarity();
+					}
 				}
 
 				// Should only default if from item list and repo missing exp: 0
