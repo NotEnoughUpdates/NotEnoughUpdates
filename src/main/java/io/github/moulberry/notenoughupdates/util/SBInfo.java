@@ -297,8 +297,8 @@ public class SBInfo {
 		return location;
 	}
 
-	public void setScoreboardLocation(String location) {
-		this.location = location;
+	public void resetScoreboardLocation() {
+		this.location = "";
 	}
 
 	/**
