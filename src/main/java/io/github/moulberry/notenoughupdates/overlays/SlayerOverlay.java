@@ -72,7 +72,7 @@ public class SlayerOverlay extends TextOverlay {
 			return true;
 		}
 
-		String scoreboardLocation = SBInfo.getInstance().location;
+		String scoreboardLocation = SBInfo.getInstance().getScoreboardLocation();
 		String locrawLocation = SBInfo.getInstance().getLocation();
 		if ("None".equals(scoreboardLocation)) {
 			scoreboardLocation = SBInfo.getInstance().getLastScoreboardLocation();

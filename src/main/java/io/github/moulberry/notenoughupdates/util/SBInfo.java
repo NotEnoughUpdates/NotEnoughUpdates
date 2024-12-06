@@ -79,8 +79,8 @@ public class SBInfo {
 	public IChatComponent footer;
 	public IChatComponent header;
 
-	public @NotNull String location = "";
-	public @NotNull String lastLocation = "";
+	private @NotNull String location = "";
+	private @NotNull String lastLocation = "";
 	public String date = "";
 	public String time = "";
 	public String objective = "";
@@ -295,6 +295,10 @@ public class SBInfo {
 	 */
 	public @NotNull String getScoreboardLocation() {
 		return location;
+	}
+
+	public void setScoreboardLocation(String location) {
+		this.location = location;
 	}
 
 	/**

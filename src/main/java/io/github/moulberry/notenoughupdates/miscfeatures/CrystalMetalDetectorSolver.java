@@ -362,7 +362,7 @@ public class CrystalMetalDetectorSolver {
 		int beaconRGB = 0x1fd8f1;
 
 		if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("crystal_hollows") &&
-			SBInfo.getInstance().location.equals("Mines of Divan")) {
+			SBInfo.getInstance().getScoreboardLocation().equals("Mines of Divan")) {
 
 			if (possibleBlocks.size() == 1) {
 				BlockPos block = possibleBlocks.iterator().next();

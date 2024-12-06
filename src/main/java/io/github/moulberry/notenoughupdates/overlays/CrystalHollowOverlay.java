@@ -374,17 +374,17 @@ public class CrystalHollowOverlay extends TextOverlay {
 	private boolean automatonCheck() {
 		return NotEnoughUpdates.INSTANCE.config.mining.crystalHollowAutomatonLocation == 0 ||
 			NotEnoughUpdates.INSTANCE.config.mining.crystalHollowAutomatonLocation == 1 &&
-				SBInfo.getInstance().location.equals("Precursor Remnants") ||
+				SBInfo.getInstance().getScoreboardLocation().equals("Precursor Remnants") ||
 			NotEnoughUpdates.INSTANCE.config.mining.crystalHollowAutomatonLocation >= 1 &&
-				SBInfo.getInstance().location.equals("Lost Precursor City");
+				SBInfo.getInstance().getScoreboardLocation().equals("Lost Precursor City");
 	}
 
 	private boolean divanCheck() {
 		return NotEnoughUpdates.INSTANCE.config.mining.crystalHollowDivanLocation == 0 ||
 			NotEnoughUpdates.INSTANCE.config.mining.crystalHollowDivanLocation == 1 &&
-				SBInfo.getInstance().location.equals("Mithril Deposits") ||
+				SBInfo.getInstance().getScoreboardLocation().equals("Mithril Deposits") ||
 			NotEnoughUpdates.INSTANCE.config.mining.crystalHollowDivanLocation >= 1 &&
-				SBInfo.getInstance().location.equals("Mines of Divan");
+				SBInfo.getInstance().getScoreboardLocation().equals("Mines of Divan");
 	}
 
 	private boolean crystalCheck() {

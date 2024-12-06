@@ -53,6 +53,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.brigadier.BrigadierRoot;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
@@ -269,7 +270,8 @@ public class NotEnoughUpdates {
 				config.profileViewer.pageLayout.add(13);
 			}
 
-			if ((config.apiData.repoUser.isEmpty() || config.apiData.repoName.isEmpty() || config.apiData.repoBranch.isEmpty()) && config.apiData.autoupdate_new) {
+			if ((config.apiData.repoUser.isEmpty() || config.apiData.repoName.isEmpty() ||
+				config.apiData.repoBranch.isEmpty()) && config.apiData.autoupdate_new) {
 				config.apiData.repoUser = "NotEnoughUpdates";
 				config.apiData.repoName = "NotEnoughUpdates-REPO";
 				config.apiData.repoBranch = "master";
@@ -482,6 +484,7 @@ public class NotEnoughUpdates {
 		if (mc != null && mc.theWorld != null && mc.thePlayer != null) {
 			if (mc.isSingleplayer() || mc.thePlayer.getClientBrand() == null ||
 				!mc.thePlayer.getClientBrand().toLowerCase(Locale.ROOT).contains("hypixel")) {
+				SBInfo.getInstance().setScoreboardLocation("");
 				hasSkyblockScoreboard = false;
 				return;
 			}
@@ -498,6 +501,7 @@ public class NotEnoughUpdates {
 				}
 			}
 
+			SBInfo.getInstance().setScoreboardLocation("");
 			hasSkyblockScoreboard = false;
 		}
 	}
