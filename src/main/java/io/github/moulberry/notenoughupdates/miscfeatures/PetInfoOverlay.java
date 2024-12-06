@@ -1012,7 +1012,7 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 
 				if (!getPetNameFromId(currentPet.petType, currentPet.petLevel.getCurrentLevel()).equalsIgnoreCase(petName)) {
-					if (lastPetCorrect == -1 || lastPetCorrect > 0 && System.currentTimeMillis() - lastPetCorrect > 5000) {
+					if (lastPetCorrect == -1 || lastPetCorrect > 0 && System.currentTimeMillis() - lastPetCorrect > 6000) {
 						int rarity = getRarityByColor(petNameMatcher.group(2)).petId;
 						String petItem = "";
 						if (widgetLines.size() > i) {
@@ -1029,10 +1029,14 @@ public class PetInfoOverlay extends TextOverlay {
 							internalName = split[0];
 						}
 
-						int closestPetIndex = getClosestPetIndex(internalName, rarity, petItem, petLevel);
-						if (closestPetIndex != -1) {
-							//If it is -1 your petcache is probably outdated and you need to open /pets, but im sure they can work it out
-							setCurrentPet(closestPetIndex);
+						if (!currentPet.petItem.equals(petItem) || currentPet.rarity.petId != rarity ||
+							currentPet.petLevel.getCurrentLevel() != petLevel) {
+							int closestPetIndex = getClosestPetIndex(internalName, rarity, petItem, petLevel);
+
+							if (closestPetIndex != -1 && closestPetIndex != config.selectedPet) {
+								//If it is -1 your petcache is probably outdated and you need to open /pets, but im sure they can work it out
+								setCurrentPet(closestPetIndex);
+							}
 						}
 						lastPetCorrect = System.currentTimeMillis();
 					}
