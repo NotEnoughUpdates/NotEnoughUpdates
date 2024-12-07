@@ -143,7 +143,8 @@ public class RiftPage extends GuiProfileViewerPage {
 
 				if ((mouseX > guiLeft + 37 && mouseX < guiLeft + 37 + 20) &&
 					(mouseY > guiTop + 158 && mouseY < guiTop + 158 + 20)) {
-					List<String> tooltip = petItemStackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					List<String> tooltip = petItemStackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 					ListIterator<String> iterator = tooltip.listIterator();
 					while (iterator.hasNext()) {
 						String next = iterator.next();
