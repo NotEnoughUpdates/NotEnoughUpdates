@@ -106,7 +106,7 @@ public class CoreTaskLevel extends GuiTaskLevel {
 		// museum is not possible
 
 		// fairy soul
-		int sbXpGainedFairy = data.fairy_soul.total_collected / 5 * coreTask.get("fairy_souls_xp").getAsInt();
+		int sbXpGainedFairy = (data.fairy_soul.total_collected - data.fairy_soul.unspent_souls) / 5 * coreTask.get("fairy_souls_xp").getAsInt();
 
 		int sbXpCollection = -1;
 		int sbXpMinionTier = -1; // keeping at -1 here because cobblestone 1 minion XP isn't included for some reason?
