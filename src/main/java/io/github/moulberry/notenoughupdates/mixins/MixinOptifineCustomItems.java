@@ -35,9 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinOptifineCustomItems {
 	@Inject(method = "getCustomItemProperties", at = @At(value = "HEAD"), cancellable = true)
 	private static void getCustomItemProperties(ItemStack itemStack, int type, CallbackInfoReturnable<?> cir) {
-		if (NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT)
-			if (StorageManager.getInstance().isStorageOpen && Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-				cir.setReturnValue(null);
-			}
+		if (NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT &&	StorageManager.getInstance().isStorageOpen &&
+			Minecraft.getMinecraft().currentScreen instanceof GuiChest) cir.setReturnValue(null);
 	}
 }
