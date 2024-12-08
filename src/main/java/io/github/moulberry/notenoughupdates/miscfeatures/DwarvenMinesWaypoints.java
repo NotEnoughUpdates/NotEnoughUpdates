@@ -230,7 +230,7 @@ public class DwarvenMinesWaypoints {
 				}
 			}
 		}
-		String skyblockLocation = SBInfo.getInstance().location.toLowerCase(Locale.ROOT);
+		String skyblockLocation = SBInfo.getInstance().getScoreboardLocation().toLowerCase(Locale.ROOT);
 		if (locWaypoint >= 1) {
 			for (Map.Entry<String, Vector3f> entry : waypointsMap.entrySet()) {
 				if (locWaypoint >= 2) {
