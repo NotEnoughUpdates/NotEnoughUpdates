@@ -879,119 +879,122 @@ public class StorageOverlay extends GuiElement {
 					ctmIndexCaches[storageId] != null && ctmIndexCaches[storageId].length == rows * 9;
 
 				//Render item connections
-				for (int k = 0; k < rows * 9; k++) {
-					ItemStack stack = page.items[k];
+				int fancyPaneValue = NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes;
+				if (fancyPaneValue == 0 || fancyPaneValue == 1) {
+					for (int k = 0; k < rows * 9; k++) {
+						ItemStack stack = page.items[k];
 
-					if (stack != null && hasCaches) {
-						int itemX = storageX + 1 + 18 * (k % 9);
-						int itemY = storageY + 1 + 18 * (k / 9);
+						if (stack != null && hasCaches) {
+							int itemX = storageX + 1 + 18 * (k % 9);
+							int itemY = storageY + 1 + 18 * (k / 9);
 
-						int[] isPaneCache = isPaneCaches[storageId];
-						int[] ctmIndexCache = ctmIndexCaches[storageId];
+							int[] isPaneCache = isPaneCaches[storageId];
+							int[] ctmIndexCache = ctmIndexCaches[storageId];
 
-						if (isPaneCache[k] == 17) {
-							int ctmIndex = getCTMIndex(page, k, isPaneCache, ctmIndexCache);
-							int startCTMX = (ctmIndex % 12) * 19;
-							int startCTMY = (ctmIndex / 12) * 19;
+							if (isPaneCache[k] == 17) {
+								int ctmIndex = getCTMIndex(page, k, isPaneCache, ctmIndexCache);
+								int startCTMX = (ctmIndex % 12) * 19;
+								int startCTMY = (ctmIndex / 12) * 19;
 
-							int rgb = getRGBFromPane(isPaneCache[k] - 1);
-							int a = (rgb >> 24) & 0xFF;
-							int r = (rgb >> 16) & 0xFF;
-							int g = (rgb >> 8) & 0xFF;
-							int b = rgb & 0xFF;
-							Minecraft.getMinecraft().getTextureManager().bindTexture(STORAGE_PANE_CTM_TEXTURE);
-							GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f);
-							GlStateManager.translate(0, 0, 110);
-							Utils.drawTexturedRect(itemX - 1, itemY - 1, 18, 18,
-								startCTMX / 227f, (startCTMX + 18) / 227f, startCTMY / 75f, (startCTMY + 18) / 75f, GL11.GL_NEAREST
-							);
-							GlStateManager.translate(0, 0, -110);
+								int rgb = getRGBFromPane(isPaneCache[k] - 1);
+								int a = (rgb >> 24) & 0xFF;
+								int r = (rgb >> 16) & 0xFF;
+								int g = (rgb >> 8) & 0xFF;
+								int b = rgb & 0xFF;
+								Minecraft.getMinecraft().getTextureManager().bindTexture(STORAGE_PANE_CTM_TEXTURE);
+								GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f);
+								GlStateManager.translate(0, 0, 110);
+								Utils.drawTexturedRect(itemX - 1, itemY - 1, 18, 18,
+									startCTMX / 227f, (startCTMX + 18) / 227f, startCTMY / 75f, (startCTMY + 18) / 75f, GL11.GL_NEAREST
+								);
+								GlStateManager.translate(0, 0, -110);
 
-							RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
-							itemRender.renderItemOverlayIntoGUI(Minecraft.getMinecraft().fontRendererObj, stack, itemX, itemY, null);
-							GlStateManager.enableDepth();
-						} else if (isPaneCache[k] < 0) {
-							boolean hasConnection = false;
+								RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
+								itemRender.renderItemOverlayIntoGUI(Minecraft.getMinecraft().fontRendererObj, stack, itemX, itemY, null);
+								GlStateManager.enableDepth();
+							} else if (isPaneCache[k] < 0) {
+								boolean hasConnection = false;
 
-							int upIndex = k - 9;
-							int leftIndex = k % 9 > 0 ? k - 1 : -1;
-							int rightIndex = k % 9 < 8 ? k + 1 : -1;
-							int downIndex = k + 9;
+								int upIndex = k - 9;
+								int leftIndex = k % 9 > 0 ? k - 1 : -1;
+								int rightIndex = k % 9 < 8 ? k + 1 : -1;
+								int downIndex = k + 9;
 
-							int[] indexArr = {rightIndex, downIndex, leftIndex, upIndex};
+								int[] indexArr = {rightIndex, downIndex, leftIndex, upIndex};
 
-							for (int j = 0; j < 4; j++) {
-								int index = indexArr[j];
-								int type = index >= 0 && index < isPaneCache.length
-									? getPaneType(page.items[index], index, isPaneCache)
-									: -1;
-								if (type > 0) {
-									int ctmIndex = getCTMIndex(page, index, isPaneCache, ctmIndexCache);
-									if (ctmIndex < 0) continue;
+								for (int j = 0; j < 4; j++) {
+									int index = indexArr[j];
+									int type = index >= 0 && index < isPaneCache.length
+										? getPaneType(page.items[index], index, isPaneCache)
+										: -1;
+									if (type > 0) {
+										int ctmIndex = getCTMIndex(page, index, isPaneCache, ctmIndexCache);
+										if (ctmIndex < 0) continue;
 
-									boolean renderConnection;
-									boolean horizontal = ctmIndex == 1 || ctmIndex == 2 || ctmIndex == 3;
-									boolean vertical = ctmIndex == 12 || ctmIndex == 24 || ctmIndex == 36;
-									if ((k % 9 == 0 && index % 9 == 0) || (k % 9 == 8 && index % 9 == 8)) {
-										renderConnection = horizontal || vertical;
-									} else if (index == leftIndex || index == rightIndex) {
-										renderConnection = horizontal;
-									} else {
-										renderConnection = vertical;
-									}
-
-									if (renderConnection) {
-										shouldLimitBorder[k] = true;
-										hasConnection = true;
-
-										Minecraft.getMinecraft().getTextureManager().bindTexture(STORAGE_PANE_CTM_TEXTURE);
-										int rgb = getRGBFromPane(type - 1);
-										int a = (rgb >> 24) & 0xFF;
-										int r = (rgb >> 16) & 0xFF;
-										int g = (rgb >> 8) & 0xFF;
-										int b = rgb & 0xFF;
-										GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f);
-
-										GlStateManager.pushMatrix();
-										GlStateManager.translate(itemX - 1 + 9, itemY - 1 + 9, 10);
-										GlStateManager.rotate(j * 90, 0, 0, 1);
-										GlStateManager.enableAlpha();
-										GlStateManager.disableLighting();
-
-										boolean horzFlip = false;
-										boolean vertFlip = false;
-
-										if (index == leftIndex) {
-											vertFlip = true;
-										} else if (index == downIndex) {
-											vertFlip = true;
+										boolean renderConnection;
+										boolean horizontal = ctmIndex == 1 || ctmIndex == 2 || ctmIndex == 3;
+										boolean vertical = ctmIndex == 12 || ctmIndex == 24 || ctmIndex == 36;
+										if ((k % 9 == 0 && index % 9 == 0) || (k % 9 == 8 && index % 9 == 8)) {
+											renderConnection = horizontal || vertical;
+										} else if (index == leftIndex || index == rightIndex) {
+											renderConnection = horizontal;
+										} else {
+											renderConnection = vertical;
 										}
 
-										GlStateManager.enableDepth();
-										Utils.drawTexturedRect(0, -9, 8, 18,
-											!horzFlip ? 209 / 227f : 219 / 227f, horzFlip ? 227 / 227f : 217 / 227f,
-											!vertFlip ? 57 / 75f : 75f / 75f, vertFlip ? 57 / 75f : 75f / 75f, GL11.GL_NEAREST
-										);
-										GlStateManager.translate(0, 0, 120);
-										Utils.drawTexturedRect(8, -9, 10, 18,
-											!horzFlip ? 217 / 227f : 209 / 227f, horzFlip ? 219 / 227f : 227 / 227f,
-											!vertFlip ? 57 / 75f : 75f / 75f, vertFlip ? 57 / 75f : 75f / 75f, GL11.GL_NEAREST
-										);
-										GlStateManager.translate(0, 0, -120);
+										if (renderConnection) {
+											shouldLimitBorder[k] = true;
+											hasConnection = true;
 
-										GlStateManager.popMatrix();
+											Minecraft.getMinecraft().getTextureManager().bindTexture(STORAGE_PANE_CTM_TEXTURE);
+											int rgb = getRGBFromPane(type - 1);
+											int a = (rgb >> 24) & 0xFF;
+											int r = (rgb >> 16) & 0xFF;
+											int g = (rgb >> 8) & 0xFF;
+											int b = rgb & 0xFF;
+											GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f);
+
+											GlStateManager.pushMatrix();
+											GlStateManager.translate(itemX - 1 + 9, itemY - 1 + 9, 10);
+											GlStateManager.rotate(j * 90, 0, 0, 1);
+											GlStateManager.enableAlpha();
+											GlStateManager.disableLighting();
+
+											boolean horzFlip = false;
+											boolean vertFlip = false;
+
+											if (index == leftIndex) {
+												vertFlip = true;
+											} else if (index == downIndex) {
+												vertFlip = true;
+											}
+
+											GlStateManager.enableDepth();
+											Utils.drawTexturedRect(0, -9, 8, 18,
+												!horzFlip ? 209 / 227f : 219 / 227f, horzFlip ? 227 / 227f : 217 / 227f,
+												!vertFlip ? 57 / 75f : 75f / 75f, vertFlip ? 57 / 75f : 75f / 75f, GL11.GL_NEAREST
+											);
+											GlStateManager.translate(0, 0, 120);
+											Utils.drawTexturedRect(8, -9, 10, 18,
+												!horzFlip ? 217 / 227f : 209 / 227f, horzFlip ? 219 / 227f : 227 / 227f,
+												!vertFlip ? 57 / 75f : 75f / 75f, vertFlip ? 57 / 75f : 75f / 75f, GL11.GL_NEAREST
+											);
+											GlStateManager.translate(0, 0, -120);
+
+											GlStateManager.popMatrix();
+										}
 									}
 								}
-							}
 
-							if (hasConnection) {
-								page.shouldDarkenIfNotSelected[k] = false;
+								if (hasConnection) {
+									page.shouldDarkenIfNotSelected[k] = false;
 
-								GlStateManager.disableAlpha();
-								GlStateManager.translate(0, 0, 10);
-								Gui.drawRect(itemX - 1, itemY - 1, itemX + 17, itemY + 17, 0x01000000);
-								GlStateManager.translate(0, 0, -10);
-								GlStateManager.enableAlpha();
+									GlStateManager.disableAlpha();
+									GlStateManager.translate(0, 0, 10);
+									Gui.drawRect(itemX - 1, itemY - 1, itemX + 17, itemY + 17, 0x01000000);
+									GlStateManager.translate(0, 0, -10);
+									GlStateManager.enableAlpha();
+								}
 							}
 						}
 					}
@@ -1030,8 +1033,9 @@ public class StorageOverlay extends GuiElement {
 
 					if (mouseInsideStorages && mouseX >= guiLeft + itemX && mouseX < guiLeft + itemX + 18 &&
 						mouseY >= guiTop + itemY && mouseY < guiTop + itemY + 18) {
-						boolean allowHover = NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes != 1 || !hasCaches ||
-							isPaneCaches[storageId][k] <= 0;
+						boolean allowHover = (fancyPaneValue != 1 && fancyPaneValue != 4) ||
+							!hasCaches || isPaneCaches[storageId][k] <= 0;
+
 
 						if (storageId != StorageManager.getInstance().getCurrentPageId()) {
 							hoveringOtherBackpack = true;
@@ -1433,9 +1437,21 @@ public class StorageOverlay extends GuiElement {
 					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.masonryMode ? 1 : 0;
 					break;
 				case 6:
-					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes == 2
-						? 0
-						: NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes + 1;
+					int x = NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes;
+					switch (x) {
+						case 2:
+							vIndex = 0;
+							break;
+						case 3:
+							vIndex = 1;
+							break;
+						case 4:
+							vIndex = 2;
+							break;
+						default:
+							vIndex = x + 1;
+							break;
+					}
 					break;
 				case 7:
 					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus ? 1 : 0;
@@ -1525,7 +1541,9 @@ public class StorageOverlay extends GuiElement {
 							NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes,
 							"On",
 							"Locked",
-							"Off"
+							"Off",
+							"No connecting",
+							"Locked & No connecting"
 						);
 						tooltipToDisplay.add(1, "\u00a7eReplace the glass pane textures");
 						tooltipToDisplay.add(2, "\u00a7ein your storage containers with");
@@ -1954,8 +1972,8 @@ public class StorageOverlay extends GuiElement {
 					} else {
 						fancyPanes--;
 					}
-					if (fancyPanes < 0) fancyPanes = 2;
-					if (fancyPanes >= 3) fancyPanes = 0;
+					if (fancyPanes < 0) fancyPanes = 4;
+					if (fancyPanes >= 5) fancyPanes = 0;
 
 					NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes = fancyPanes;
 					break;
@@ -2095,10 +2113,13 @@ public class StorageOverlay extends GuiElement {
 						if (xClicked >= 0 && xClicked <= 8 &&
 							yClicked >= 0 && yClicked <= 5) {
 							if (xClicked + yClicked * 9 + 9 == slotId) {
-								if (NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes == 1 && slot.getHasStack() &&
-									getPaneType(slot.getStack(), -1, null) > 0) {
-									cir.setReturnValue(false);
-									return;
+								int fancyPaneValue = NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes;
+								if (fancyPaneValue == 1 || fancyPaneValue == 4) {
+									if (slot.getHasStack() &&
+										getPaneType(slot.getStack(), -1, null) > 0) {
+										cir.setReturnValue(false);
+										return;
+									}
 								}
 								cir.setReturnValue(true);
 								return;
