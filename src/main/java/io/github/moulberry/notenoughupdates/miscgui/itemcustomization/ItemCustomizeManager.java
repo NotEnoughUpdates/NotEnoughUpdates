@@ -516,17 +516,30 @@ public class ItemCustomizeManager {
 
 		if (customSkulls.containsKey(itemID)) {
 			AnimatedSkull animatedSkull = customSkulls.get(itemID);
+			if (animatedSkull == null) return null;
 			int ticks = animatedSkull.ticks;
 			int animatedIndex = ItemCustomizationUtils.getTicksForList(ticks, animatedSkull.skullOwners.size(), presetIndex);
 			return animatedSkull.skullOwners.get(animatedIndex);
 		}
 
 		JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
-		if (animatedSkulls == null) return null;
-		if (!animatedSkulls.has("skins")) return null;
-		if (!animatedSkulls.get("skins").getAsJsonObject().has(itemID)) return null;
+		if (animatedSkulls == null) {
+			customSkulls.put(itemID, null);
+			return null;
+		}
+		if (!animatedSkulls.has("skins")) {
+			customSkulls.put(itemID, null);
+			return null;
+		}
+		if (!animatedSkulls.get("skins").getAsJsonObject().has(itemID)) {
+			customSkulls.put(itemID, null);
+			return null;
+		}
 		JsonObject skin = animatedSkulls.get("skins").getAsJsonObject().get(itemID).getAsJsonObject();
-		if (!skin.has("textures")) return null;
+		if (!skin.has("textures")) {
+			customSkulls.put(itemID, null);
+			return null;
+		}
 		JsonArray skullTextures = skin.get("textures").getAsJsonArray();
 
 		int ticks = skin.get("ticks").getAsInt();
