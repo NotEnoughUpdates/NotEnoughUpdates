@@ -1438,10 +1438,20 @@ public class StorageOverlay extends GuiElement {
 					break;
 				case 6:
 					int x = NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes;
-					vIndex = (x == 2) ? 0
-						: (x == 3) ? 1
-							: (x == 4) ? 2
-								: x + 1;
+					switch (x) {
+						case 2:
+							vIndex = 0;
+							break;
+						case 3:
+							vIndex = 1;
+							break;
+						case 4:
+							vIndex = 2;
+							break;
+						default:
+							vIndex = x + 1;
+							break;
+					}
 					break;
 				case 7:
 					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus ? 1 : 0;
@@ -2104,8 +2114,8 @@ public class StorageOverlay extends GuiElement {
 							yClicked >= 0 && yClicked <= 5) {
 							if (xClicked + yClicked * 9 + 9 == slotId) {
 								int fancyPaneValue = NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes;
-								if(fancyPaneValue == 1 || fancyPaneValue == 4){
-									if ( slot.getHasStack() &&
+								if (fancyPaneValue == 1 || fancyPaneValue == 4) {
+									if (slot.getHasStack() &&
 										getPaneType(slot.getStack(), -1, null) > 0) {
 										cir.setReturnValue(false);
 										return;
