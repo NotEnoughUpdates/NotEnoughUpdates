@@ -186,8 +186,12 @@ public class ItemResolutionQuery {
 		boolean isOnBazaar = isBazaar(inventorySlots.getLowerChestInventory());
 		String displayName = ItemUtils.getDisplayName(compound);
 		if (displayName == null) return null;
+		displayName = displayName.replaceFirst("^§6§lSELL ", "").replaceFirst("^§a§lBUY ", "");
 		if (itemType == Items.enchanted_book && isOnBazaar && compound != null) {
 			return resolveEnchantmentByName(displayName);
+		}
+		if (itemType == Items.skull && displayName.contains("Essence")) {
+			return findInternalNameByDisplayName(displayName, false);
 		}
 		if (displayName.endsWith("Enchanted Book") && guiName.startsWith("Superpairs")) {
 			for (String loreLine : ItemUtils.getLore(compound)) {
@@ -310,11 +314,11 @@ public class ItemResolutionQuery {
 		Matcher matcher = ENCHANTED_BOOK_NAME_PATTERN.matcher(name);
 		if (!matcher.matches()) return null;
 		String format = matcher.group(1).toLowerCase(Locale.ROOT);
-		String enchantmentName = matcher.group(2).trim();
+		String enchantmentName = NEUManager.cleanForTitleMapSearch(matcher.group(2));
 		String romanLevel = matcher.group(3);
 		boolean ultimate = (format.contains("§l"));
 
-		return ((ultimate && !enchantmentName.equals("Ultimate Wise")) ? "ULTIMATE_" : "")
+		return ((ultimate && !enchantmentName.equals("Ultimate Wise") && !enchantmentName.equals("Ultimate Jerry")) ? "ULTIMATE_" : "")
 			+ turboCheck(enchantmentName).replace(" ", "_").replace("-", "_").toUpperCase(Locale.ROOT)
 			+ ";" + Utils.parseRomanNumeral(romanLevel);
 	}
