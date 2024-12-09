@@ -170,7 +170,8 @@ public class GuiItemRecipe extends GuiScreen {
 		for (RecipeSlot slot : slots) {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
 				if (slot.getItemStack() == null) continue;
-				tooltipToDisplay = slot.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false);
+				tooltipToDisplay = slot.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer,
+					Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 			}
 		}
 

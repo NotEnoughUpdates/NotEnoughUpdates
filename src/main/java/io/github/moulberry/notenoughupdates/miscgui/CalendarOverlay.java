@@ -671,16 +671,19 @@ public class CalendarOverlay {
 		if (mouseY >= guiTop + 26 && mouseY <= guiTop + 26 + 141) {
 			if (mouseX >= guiLeft + 3 && mouseX <= guiLeft + 3 + 14) {
 				if (mayorStack != null)
-					tooltipToDisplay = mayorStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					tooltipToDisplay = mayorStack.getTooltip(Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 			} else if (mouseX >= guiLeft + 151 && mouseX <= guiLeft + 151 + 14) {
 				if (mouseY <= guiTop + 26 + 70) {
 					ItemStack calendarStack = cc.getLowerChestInventory().getStackInSlot(41);
 					if (calendarStack != null)
-						tooltipToDisplay = calendarStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+						tooltipToDisplay = calendarStack.getTooltip(Minecraft.getMinecraft().thePlayer,
+							Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 				} else {
 					ItemStack rewardsStack = cc.getLowerChestInventory().getStackInSlot(36);
 					if (rewardsStack != null)
-						tooltipToDisplay = rewardsStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+						tooltipToDisplay = rewardsStack.getTooltip(Minecraft.getMinecraft().thePlayer,
+							Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 				}
 			}
 		}

@@ -206,7 +206,8 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 			if (mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) {
 				if (mouseY >= guiTop + y && mouseY <= guiTop + y + 16) {
-					getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 					if (Objects.equals(entry.getKey(), "talisman_bag")) {
 						StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
 						int magicalPower = getSelectedProfile().getMagicalPower();
@@ -340,7 +341,8 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			Utils.drawItemStack(stack, guiLeft + 143, guiTop + 13 + 18 * i, true);
 			if (mouseX >= guiLeft + 143 - 1 && mouseX <= guiLeft + 143 + 16 + 1) {
 				if (mouseY >= guiTop + 13 + 18 * i - 1 && mouseY <= guiTop + 13 + 18 * i + 16 + 1) {
-					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 				}
 			}
 		}
@@ -351,7 +353,8 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			Utils.drawItemStack(stack, guiLeft + 143, guiTop + 137 + 18 * i, true);
 			if (mouseX >= guiLeft + 143 - 1 && mouseX <= guiLeft + 143 + 16 + 1) {
 				if (mouseY >= guiTop + 137 + 18 * i - 1 && mouseY <= guiTop + 137 + 18 * i + 16 + 1) {
-					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 				}
 			}
 		}
@@ -547,7 +550,8 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			}
 		}
 		if (stackToRender != null) {
-			getInstance().tooltipToDisplay = stackToRender.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+			getInstance().tooltipToDisplay = stackToRender.getTooltip(Minecraft.getMinecraft().thePlayer,
+				Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 		}
 	}
 

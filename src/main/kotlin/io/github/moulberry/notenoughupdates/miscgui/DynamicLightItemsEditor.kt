@@ -159,7 +159,8 @@ class DynamicLightItemsEditor() : GuiScreen() {
             if (mouseX >= guiLeft + 27 + i % 9 * 18 && mouseX <= guiLeft + 45 + i % 9 * 18) {
                 if (mouseY >= guiTop + 24 + j * 18 && mouseY <= guiTop + 42 + j * 18) {
                     hoveredItem = item
-                    val tooltip = itemStack.getTooltip(Minecraft.getMinecraft().thePlayer, false)
+                    val tooltip = itemStack.getTooltip(Minecraft.getMinecraft().thePlayer,
+                        Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
                     Utils.drawHoveringText(tooltip, mouseX, mouseY, width, height, -1)
                 }
             }
