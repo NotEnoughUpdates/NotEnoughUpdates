@@ -314,7 +314,7 @@ public class ItemResolutionQuery {
 		Matcher matcher = ENCHANTED_BOOK_NAME_PATTERN.matcher(name);
 		if (!matcher.matches()) return null;
 		String format = matcher.group(1).toLowerCase(Locale.ROOT);
-		String enchantmentName = NEUManager.cleanForTitleMapSearch(matcher.group(2));
+		String enchantmentName = matcher.group(2).trim().replace("'", "");
 		String romanLevel = matcher.group(3);
 		boolean ultimate = (format.contains("§l"));
 
