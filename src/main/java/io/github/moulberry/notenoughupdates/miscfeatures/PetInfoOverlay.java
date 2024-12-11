@@ -1029,7 +1029,7 @@ public class PetInfoOverlay extends TextOverlay {
 							internalName = split[0];
 						}
 
-						if (!currentPet.petItem.equals(petItem) || currentPet.rarity.petId != rarity ||
+						if ((currentPet.petItem != null && !currentPet.petItem.equals(petItem)) || currentPet.rarity.petId != rarity ||
 							currentPet.petLevel.getCurrentLevel() != petLevel) {
 							int closestPetIndex = getClosestPetIndex(internalName, rarity, petItem, petLevel);
 
