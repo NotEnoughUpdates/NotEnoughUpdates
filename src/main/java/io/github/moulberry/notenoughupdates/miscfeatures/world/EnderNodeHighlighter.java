@@ -44,7 +44,6 @@ public class EnderNodeHighlighter extends GenericBlockHighlighter {
 		return INSTANCE;
 	}
 
-
 	@SubscribeEvent
 	public void onParticleSpawn(SpawnParticleEvent event) {
 		if (!isEnabled()) return;
@@ -89,7 +88,7 @@ public class EnderNodeHighlighter extends GenericBlockHighlighter {
 		World w = Minecraft.getMinecraft().theWorld;
 		if (w == null) return false;
 		Block b = w.getBlockState(key).getBlock();
-		return b == Blocks.end_stone || b == Blocks.obsidian;
+		return b == Blocks.end_stone || b == Blocks.obsidian ||b == Blocks.stained_hardened_clay;
 	}
 
 	@Override
