@@ -197,7 +197,8 @@ public class ProfileViewer {
 						"HALF_EATEN_CARROT",
 						"HEMOVIBE",
 						"METAL_HEART",
-						"WILTED_BERBERIS"
+						"WILTED_BERBERIS",
+						"TIMITE"
 					)
 				);
 			}
@@ -476,6 +477,12 @@ public class ProfileViewer {
 						"ewogICJ0aW1lc3RhbXAiIDogMTY3NjQ3NjQ1NjcyNywKICAicHJvZmlsZUlkIiA6ICI5MGQ1NDY0OGEzNWE0YmExYTI2Yjg1YTg4NTU4OGJlOSIsCiAgInByb2ZpbGVOYW1lIiA6ICJFdW4wbWlhIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2YwMjc4ZWU1M2E1M2I3NzMzYzdiODQ1MmZjZjc5NGRmYmZiYzNiMDMyZTc1MGE2OTkzNTczYjViZDAyOTkxMzUiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ"
 					));
 				put("WILTED_BERBERIS", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.DARK_PURPLE + "Wilted Berberis"));
+				put("TIMITE",
+					Utils.createSkull(
+						EnumChatFormatting.DARK_PURPLE + "Timite",
+						"268a3d23-43c7-3f4e-9c25-14c314e7126b",
+						"ewogICJ0aW1lc3RhbXAiIDogMTcyNTMyNTgwNDE0MywKICAicHJvZmlsZUlkIiA6ICIxMTM1Njg1ZTk3ZGE0ZjYyYTliNDQ3MzA0NGFiZjQ0MSIsCiAgInByb2ZpbGVOYW1lIiA6ICJNYXJpb1dsZXMiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDIxNzdhYzk5N2ZmOTcwOTAwY2QxNzkyN2ZiMzFjNGUyMGZhYzI2MzY0OWIxYjU1ODU1NWJjYzZmMGQ1YjVkZCIKICAgIH0KICB9Cn0="
+					));
 			}
 		};
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
