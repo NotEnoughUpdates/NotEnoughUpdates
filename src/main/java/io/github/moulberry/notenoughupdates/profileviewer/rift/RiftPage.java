@@ -187,7 +187,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			JsonArray timecharm = rift.gallery.secured_trophies;
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + "Timecharms:",
-				EnumChatFormatting.WHITE.toString() + timecharm.size() + "/7",
+				EnumChatFormatting.WHITE.toString() + timecharm.size() + "/8",
 				guiLeft + 336,
 				guiTop + 39,
 				83
@@ -270,7 +270,7 @@ public class RiftPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.DARK_PURPLE + "Enigma Souls:",
-				EnumChatFormatting.WHITE.toString() + foundSouls + "/42",
+				EnumChatFormatting.WHITE.toString() + foundSouls + "/52",
 				guiLeft + 331,
 				guiTop + 110,
 				83
