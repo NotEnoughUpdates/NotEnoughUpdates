@@ -113,7 +113,7 @@ public class TimersOverlay extends TextTabOverlay {
 				hidden.firstCakeAte = currentTime;
 				return;
 			}
-			if ("§r§d§lINFUSED! §r§7Used your free dimensional infusion!§r".equals(event.message.getFormattedText())) {
+			if ("§r§d§lINFUSED! §r§7Used one of your free Rift charges!§r".equals(event.message.getFormattedText())) {
 				hidden.lastFreeRiftInfusionApplied = currentTime;
 				return;
 			}
