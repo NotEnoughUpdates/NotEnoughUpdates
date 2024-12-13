@@ -127,7 +127,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			List<String> foundCats = deadCats.found_cats;
 
 			int size = foundCats.size();
-			int riftTime = size * 15;
+			int riftTime = 25 + (size - 1) * 15;
 			int manaRegen = size * 2;
 
 			APIDataJson.Rift.RiftDeadCats.Pet montezuma = deadCats.montezuma;
