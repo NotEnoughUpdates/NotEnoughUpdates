@@ -133,6 +133,9 @@ public class ItemResolutionQuery {
 				case "BALLOON_HAT_2024":
 					resolvedName = resolveBalloonHatName();
 					break;
+				case "ATTRIBUTE_SHARD":
+					resolvedName = resolveAttributeShardName();
+					break;
 			}
 		}
 
@@ -396,6 +399,13 @@ public class ItemResolutionQuery {
 	private String resolveBalloonHatName() {
 		String color = getExtraAttributes().getString("party_hat_color");
 		return "BALLOON_HAT_2024_" + color.toUpperCase(Locale.ROOT);
+	}
+
+	private String resolveAttributeShardName() {
+		NBTTagCompound attributes = getExtraAttributes().getCompoundTag("attributes");
+		String attributeName = IteratorUtils.getOnlyElement(attributes.getKeySet(), null);
+		if (attributeName == null || attributeName.isEmpty()) return null;
+		return "ATTRIBUTE_SHARD_" + attributeName.toUpperCase(Locale.ROOT) + ";" + attributes.getInteger(attributeName);
 	}
 
 	private NBTTagCompound getExtraAttributes() {
