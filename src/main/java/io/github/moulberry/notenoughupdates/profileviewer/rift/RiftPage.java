@@ -148,7 +148,6 @@ public class RiftPage extends GuiProfileViewerPage {
 					ListIterator<String> iterator = tooltip.listIterator();
 					while (iterator.hasNext()) {
 						String next = iterator.next();
-						System.out.println(next);
 						if (next.startsWith("§5§o§7Found: §9")) {
 							iterator.set("§7Found: §9" + size + "/9 Soul Pieces");
 						} else if (next.startsWith("§5§o§7Rift Time: §a+")) {
