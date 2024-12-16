@@ -928,8 +928,7 @@ public class PetInfoOverlay extends TextOverlay {
 								int rarity = Utils.getRarityFromLore(jsonStack.get("lore").getAsJsonArray());
 								String rarityString = Utils.getRarityFromInt(rarity);
 
-								String name = StringUtils.cleanColour(petStack.getDisplayName());
-								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase(Locale.ROOT);
+								String name = petInfoObject.get("type").getAsString();
 
 								float petXp = petInfoObject.get("exp").getAsFloat();
 
