@@ -1194,6 +1194,9 @@ public class PetInfoOverlay extends TextOverlay {
 						IChatComponent iChatComponent = siblings.get(6);
 						String formattedText = iChatComponent.getChatStyle().getColor() + iChatComponent.getUnformattedText();
 						petItem = getInternalIdForPetItemDisplayName(formattedText);
+					} else {
+						//this *should* make it only match with only pets without items
+						petItem = null;
 					}
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, petItem, lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
