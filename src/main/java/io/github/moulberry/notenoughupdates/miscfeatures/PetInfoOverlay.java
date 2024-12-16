@@ -403,8 +403,7 @@ public class PetInfoOverlay extends TextOverlay {
 			if (skinJson != null) {
 				String displayName = NotEnoughUpdates.INSTANCE.manager.jsonToStack(skinJson).getDisplayName();
 				String colourSt = Character.toString(Utils.getPrimaryColourCode(displayName));
-				EnumChatFormatting rarity = getRarityByColor(colourSt).chatFormatting;
-				petName += rarity + " ✦";
+				petName += "§" + colourSt + " ✦";
 			}
 		}
 
