@@ -1055,7 +1055,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 			if (petItemMatcher.matches()) {
 				String petItem = getInternalIdForPetItemDisplayName(petItemMatcher.group(0));
-				if (!Objects.equals(currentPet.petItem, petItem)) {
+				if (!Objects.equals(currentPet.petItem, petItem) && currentPet.petItem != null && !currentPet.petItem.isEmpty()) {
 					int closestPetIndex = getClosestPetIndex(
 						currentPet.petType,
 						currentPet.rarity.petId,
