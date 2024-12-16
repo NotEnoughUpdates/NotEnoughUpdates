@@ -194,6 +194,7 @@ public class PetInfoOverlay extends TextOverlay {
 		xpGainHourLast = -1;
 		xpGainHour = -1;
 		config.selectedPet = index;
+		lastPetCorrect = System.currentTimeMillis();
 	}
 
 	public static Pet getCurrentPet() {
@@ -975,7 +976,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private long lastXpUpdate = -1;
 	private long lastXpUpdateNonZero = -1;
 	private long lastPaused = -1;
-	private long lastPetCorrect = -1;
+	private static long lastPetCorrect = -1;
 
 	public void updatePetLevels() {
 		float totalGain = 0;
