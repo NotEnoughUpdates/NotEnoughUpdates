@@ -84,7 +84,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern TAB_LIST_XP = Pattern.compile(
 		"([0-9,]+\\.?[0-9]*)/([0-9,]+\\.?[0-9]*)[kM]? XP \\(\\d+\\.?\\d*%\\)");
 	private static final Pattern TAB_LIST_XP_OVERFLOW = Pattern.compile("\\+([0-9,]+\\.?[0-9]*) XP");
-	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("§.\\[Lvl (\\d+)\\] §(.)(.+)");
+	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("§.\\[Lvl (\\d+)\\](?: §8\\[§6\\d+§8§.✦§8])? §(.)(.+)");
 	private static final Pattern TAB_LIST_PET_ITEM = Pattern.compile("§[fa956d4][a-zA-Z- ]+");
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
