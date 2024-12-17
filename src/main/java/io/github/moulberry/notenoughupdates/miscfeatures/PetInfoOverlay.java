@@ -1014,7 +1014,7 @@ public class PetInfoOverlay extends TextOverlay {
 					if (lastPetCorrect == -1 || lastPetCorrect > 0 && System.currentTimeMillis() - lastPetCorrect > 6000) {
 						int rarity = getRarityByColor(petNameMatcher.group(2)).petId;
 						String petItem = "";
-						if (widgetLines.size() > i) {
+						if (widgetLines.size() > i + 1) {
 							String nextLine = widgetLines.get(i + 1).replace("§r", "").trim();
 							Matcher nextLinePetItemMatcher = TAB_LIST_PET_ITEM.matcher(nextLine);
 							if (nextLinePetItemMatcher.matches()) {
