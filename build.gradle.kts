@@ -93,7 +93,6 @@ repositories {
 	maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 	maven("https://jitpack.io")
 	maven("https://repo.nea.moe/releases")
-	maven("https://repo.polyfrost.cc/releases")
 }
 
 val shadowImplementation: Configuration by configurations.creating {
@@ -123,17 +122,8 @@ val mixinRTDependencies: Configuration by configurations.creating {
 	configurations.implementation.get().extendsFrom(this)
 }
 
-val oneconfigQuarantineSourceSet: SourceSet = sourceSets.create("oneconfig") {
-	java {
-		srcDir(layout.projectDirectory.dir("src/main/oneconfig"))
-	}
-}
-
 configurations {
 	val main = getByName(sourceSets.main.get().compileClasspathConfigurationName)
-	"oneconfigImplementation" {
-		extendsFrom(main)
-	}
 }
 
 dependencies {
@@ -141,15 +131,6 @@ dependencies {
 	mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
 	forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
-
-	if (project.findProperty("neu.buildflags.oneconfig") == "true") {
-		shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
-		runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
-	}
-
-	"oneconfigCompileOnly"(project(":oneconfigquarantine", configuration = "namedElements"))
-	"oneconfigImplementation"(sourceSets.main.get().output)
-	"runtimeOnly"(oneconfigQuarantineSourceSet.output)
 
 	// Please keep this version in sync with KotlinLoadingTweaker
 	implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
@@ -162,7 +143,6 @@ dependencies {
 	compileOnly(ksp(project(":annotations"))!!)
 	compileOnly("org.projectlombok:lombok:1.18.24")
 	annotationProcessor("org.projectlombok:lombok:1.18.24")
-	"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
 
 	shadowImplementation("com.mojang:brigadier:1.0.18")
 	shadowImplementation("moe.nea:libautoupdate:1.3.1")
@@ -200,12 +180,6 @@ tasks.withType(JavaCompile::class) {
 	options.encoding = "UTF-8"
 	options.isFork = true
 }
-tasks.named("compileOneconfigJava", JavaCompile::class) {
-	doFirst {
-		println("oneconfig args: ${this@named.options.compilerArgs}")
-	}
-}
-
 
 tasks.named<Test>("test") {
 	useJUnitPlatform()
@@ -218,7 +192,6 @@ tasks.named<Test>("test") {
 val badJars = layout.buildDirectory.dir("badjars")
 
 tasks.named("jar", Jar::class) {
-	from(oneconfigQuarantineSourceSet.output)
 	archiveClassifier.set("named")
 	destinationDirectory.set(badJars)
 }
@@ -282,7 +255,6 @@ tasks.shadowJar {
 				listOf("logback-classic", "commons-logging", "commons-codec", "logback-core")
 		}
 	}
-	from(oneconfigQuarantineSourceSet.output)
 	from(kotlinDependencyCollectionJar)
 	from(mixinDependencyCollectionJar)
 	dependsOn(kotlinDependencyCollectionJar)

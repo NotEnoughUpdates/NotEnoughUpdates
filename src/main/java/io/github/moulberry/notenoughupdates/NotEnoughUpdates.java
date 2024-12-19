@@ -48,7 +48,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapes
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
 import io.github.moulberry.notenoughupdates.miscgui.itemcustomization.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
-import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -295,8 +294,6 @@ public class NotEnoughUpdates {
 		if (config != null)
 			if (config.mining.powderGrindingTrackerResetMode == 2)
 				OverlayManager.powderGrindingOverlay.load();
-
-		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config));
 
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
 		MinecraftForge.EVENT_BUS.register(new RecipeGenerator(this));
