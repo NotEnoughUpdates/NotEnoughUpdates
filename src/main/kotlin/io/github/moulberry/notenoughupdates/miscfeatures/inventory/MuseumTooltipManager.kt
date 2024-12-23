@@ -20,9 +20,11 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.inventory
 
 import com.google.gson.Gson
+import com.google.gson.JsonPrimitive
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent
+import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.MuseumUtil
 import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.Utils
@@ -102,6 +104,21 @@ object MuseumTooltipManager {
         val profileData = loadedMuseumData.profiles[profile] ?: return false
         return profileData.donatedItems.contains(item)
 
+    }
+
+    fun canItemBeDonated(id: String): Boolean {
+        val museum = Constants.MUSEUM ?: return false
+        val normalItems = museum.get("weapons")?.asJsonArray ?: return false
+        val rarities = museum.get("rarities")?.asJsonArray ?: return false
+        normalItems.addAll(rarities)
+        if (normalItems.contains(JsonPrimitive(id))) {
+            return true
+        }
+
+        val helmetToSetID = Constants.MUSEUM?.get("armor_to_id")?.asJsonObject?.entrySet()
+            ?.associateBy({ it.value.asString }, { it.key }) ?: return false
+
+        return helmetToSetID.containsKey(id)
     }
 
     /***
