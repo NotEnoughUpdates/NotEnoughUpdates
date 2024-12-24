@@ -237,7 +237,7 @@ public class ItemResolutionQuery {
 		if (isPet) {
 			Matcher matcher = PET_PATTERN.matcher(displayName);
 			if (matcher.matches()) {
-				displayName = displayName.replace(matcher.group(1), "");
+				displayName = displayName.replace(matcher.group(1), "").replace("✦", "").trim();
 				petRarity = matcher.group(2);
 			}
 		}
