@@ -127,7 +127,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			List<String> foundCats = deadCats.found_cats;
 
 			int size = foundCats.size();
-			int riftTime = size * 15;
+			int riftTime = 10 + (size * 15);
 			int manaRegen = size * 2;
 
 			APIDataJson.Rift.RiftDeadCats.Pet montezuma = deadCats.montezuma;
@@ -148,11 +148,11 @@ public class RiftPage extends GuiProfileViewerPage {
 					ListIterator<String> iterator = tooltip.listIterator();
 					while (iterator.hasNext()) {
 						String next = iterator.next();
-						if (next.startsWith("§7Found: §9")) {
+						if (next.startsWith("§5§o§7Found: §9")) {
 							iterator.set("§7Found: §9" + size + "/9 Soul Pieces");
-						} else if (next.startsWith("§7Rift Time: §a+")) {
+						} else if (next.startsWith("§5§o§7Rift Time: §a+")) {
 							iterator.set("§7Rift Time: §a+" + riftTime + "s");
-						} else if (next.startsWith("§7Mana Regen: §a") && pet.rarity == PetInfoOverlay.Rarity.EPIC) {
+						} else if (next.startsWith("§5§o§7Mana Regen: §a") && pet.rarity == PetInfoOverlay.Rarity.EPIC) {
 							iterator.set("§7Mana Regen: §a+" + manaRegen + "%");
 						}
 					}
