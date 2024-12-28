@@ -211,6 +211,10 @@ public class EquipmentOverlay {
 		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
+		if ("rift".equals(SBInfo.getInstance().getLocation())) {
+			shouldRenderPets = false;
+		}
+
 		// Draw Backgrounds before anything, so hover overlay isn't occluded by the background
 		renderHudBackground(inventory);
 
@@ -423,6 +427,11 @@ public class EquipmentOverlay {
 				return;
 		}
 
+		//this is scuffed but works
+		if ("rift".equals(SBInfo.getInstance().getLocation())) {
+			slot += 100;
+		}
+
 		JsonObject currentEquipment = profileSpecific.savedEquipment.get(slot);
 		if (currentEquipment == null) return;
 
@@ -441,7 +450,7 @@ public class EquipmentOverlay {
 				if (profileSpecific == null) return;
 
 				profileSpecific.savedEquipment.put(itemsToAdd.get(item), enrichItemStack(item));
-				profileCache.get(SBInfo.getInstance().currentProfile).put(itemsToAdd.get(item), item);
+				profileCache.get(getProfile()).put(itemsToAdd.get(item), item);
 				itemsToAdd.remove(item);
 				return;
 			}
@@ -453,36 +462,40 @@ public class EquipmentOverlay {
 			return null;
 		}
 
-		if (!Objects.equals(SBInfo.getInstance().currentProfile, lastProfile)) {
-			lastProfile = SBInfo.getInstance().currentProfile;
+		if (!Objects.equals(getProfile(), lastProfile)) {
+			lastProfile = getProfile();
 			slot1 = null;
 			slot2 = null;
 			slot3 = null;
 			slot4 = null;
 		}
+		int newArmourSlot = armourSlot;
+		if ("rift".equals(SBInfo.getInstance().getLocation())) {
+			newArmourSlot += 100;
+		}
 
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific == null) return null;
 
-		profileCache.putIfAbsent(lastProfile, new HashMap<>());
-		Map<Integer, ItemStack> cache = profileCache.get(lastProfile);
+		profileCache.putIfAbsent(getProfile(), new HashMap<>());
+		Map<Integer, ItemStack> cache = profileCache.get(getProfile());
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
 			if (itemStack != null) {
-				profileSpecific.savedEquipment.put(armourSlot, enrichItemStack(itemStack));
+				profileSpecific.savedEquipment.put(newArmourSlot, enrichItemStack(itemStack));
 				cache.put(armourSlot, itemStack);
 				return itemStack;
 			}
 		} else {
-			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
-				if (cache.containsKey(armourSlot)) {
-					return cache.get(armourSlot);
+			if (profileSpecific.savedEquipment.containsKey(newArmourSlot)) {
+				if (cache.containsKey(newArmourSlot)) {
+					return cache.get(newArmourSlot);
 				}
 				//don't use cache since the internalName is identical in most cases
-				JsonObject jsonObject = profileSpecific.savedEquipment.get(armourSlot);
+				JsonObject jsonObject = profileSpecific.savedEquipment.get(newArmourSlot);
 				if (jsonObject != null) {
 					ItemStack result = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject.getAsJsonObject(), false);
-					cache.put(armourSlot, result);
+					cache.put(newArmourSlot, result);
 					return result;
 				}
 			}
@@ -583,6 +596,16 @@ public class EquipmentOverlay {
 
 		Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 	}
+
+	private String getProfile() {
+		String currentProfile = SBInfo.getInstance().currentProfile;
+		if (currentProfile == null) return "null";
+		if ("rift".equals(SBInfo.getInstance().getLocation())) {
+			currentProfile += "_rift";
+		}
+		return currentProfile;
+	}
+
 
 	public ItemStack slot1 = null;
 	public ItemStack slot2 = null;
