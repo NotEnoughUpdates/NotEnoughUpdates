@@ -450,7 +450,7 @@ public class EquipmentOverlay {
 				if (profileSpecific == null) return;
 
 				profileSpecific.savedEquipment.put(itemsToAdd.get(item), enrichItemStack(item));
-				profileCache.get(getProfile()).put(itemsToAdd.get(item), item);
+				profileCache.get(SBInfo.getInstance().currentProfile).put(itemsToAdd.get(item), item);
 				itemsToAdd.remove(item);
 				return;
 			}
@@ -462,8 +462,8 @@ public class EquipmentOverlay {
 			return null;
 		}
 
-		if (!Objects.equals(getProfile(), lastProfile)) {
-			lastProfile = getProfile();
+		if (!Objects.equals(SBInfo.getInstance().currentProfile, lastProfile)) {
+			lastProfile = SBInfo.getInstance().currentProfile;
 			slot1 = null;
 			slot2 = null;
 			slot3 = null;
@@ -477,8 +477,8 @@ public class EquipmentOverlay {
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific == null) return null;
 
-		profileCache.putIfAbsent(getProfile(), new HashMap<>());
-		Map<Integer, ItemStack> cache = profileCache.get(getProfile());
+		profileCache.putIfAbsent(lastProfile, new HashMap<>());
+		Map<Integer, ItemStack> cache = profileCache.get(lastProfile);
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
 			if (itemStack != null) {
@@ -596,16 +596,6 @@ public class EquipmentOverlay {
 
 		Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 	}
-
-	private String getProfile() {
-		String currentProfile = SBInfo.getInstance().currentProfile;
-		if (currentProfile == null) return "null";
-		if ("rift".equals(SBInfo.getInstance().getLocation())) {
-			currentProfile += "_rift";
-		}
-		return currentProfile;
-	}
-
 
 	public ItemStack slot1 = null;
 	public ItemStack slot2 = null;
