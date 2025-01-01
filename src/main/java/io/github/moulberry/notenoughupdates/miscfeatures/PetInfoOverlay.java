@@ -310,11 +310,19 @@ public class PetInfoOverlay extends TextOverlay {
 				if (petInfo.has("skin")) {
 					skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
 				}
-				// rn only golden dragon has selectable pet skins
+
 				if (petInfo.has("extraData")) {
-					JsonObject extraData = petInfo.get("extraData").getAsJsonObject();
-					if (petInfo.has("favorite_ancient_gdrag")) {
-						skinVariantSelected = extraData.get("favorite_ancient_gdrag").getAsInt();
+					JsonObject animatedSkulls = Constants.ANIMATEDSKULLS;
+					if (animatedSkulls != null && animatedSkulls.has("pet_skin_nbt_name")) {
+						JsonObject extraData = petInfo.get("extraData").getAsJsonObject();
+						JsonArray nbtNames = animatedSkulls.get("pet_skin_nbt_name").getAsJsonArray();
+
+						for (JsonElement nbtName : nbtNames) {
+							String nbt = nbtName.getAsString();
+							if (petInfo.has(nbt)) {
+								skinVariantSelected = extraData.get(nbt).getAsInt();
+							}
+						}
 					}
 				}
 			}
