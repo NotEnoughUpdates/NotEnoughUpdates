@@ -319,7 +319,6 @@ public class PetInfoOverlay extends TextOverlay {
 
 						for (JsonElement nbtName : nbtNames) {
 							String nbt = nbtName.getAsString();
-							System.out.println(nbt);
 							if (petInfo.has(nbt)) {
 								skinVariantSelected = extraData.get(nbt).getAsInt();
 							}
