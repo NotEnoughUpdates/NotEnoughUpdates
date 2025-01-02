@@ -237,7 +237,7 @@ public class ProfileViewerUtils {
 					levelObj.level = level + xp / levelXp;
 				}
 
-				if (levelObj.level > levelCap) {
+				if (levelObj.level >= levelCap) {
 					levelObj.level = levelCap;
 					levelObj.maxed = true;
 				}
