@@ -68,7 +68,7 @@ public class Calculator {
 	}
 
 	static String binops = "+-*/^x";
-	static String postops = "mkbts%";
+	static String postops = "mkbtse%";
 	static String digits = "0123456789";
 	static String nameCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 
@@ -368,6 +368,9 @@ public class Calculator {
 						switch (command.operatorValue.intern()) {
 							case "s":
 								values.push(p.multiply(new BigDecimal(64)).setScale(precision, RoundingMode.HALF_UP));
+								break;
+							case "e":
+								values.push(p.multiply(new BigDecimal(160)).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "k":
 								values.push(p.multiply(new BigDecimal(1_000)).setScale(precision, RoundingMode.HALF_UP));
