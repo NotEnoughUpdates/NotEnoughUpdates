@@ -972,7 +972,7 @@ public class SkyblockProfiles {
 				ProfileViewerUtils.getLevel(
 					Utils.getElement(leveling, "catacombs").getAsJsonArray(),
 					Utils.getElementAsFloat(Utils.getElement(profileJson, "dungeons.dungeon_types.catacombs.experience"), 0),
-					99,
+					100,
 					false
 				)
 			);
