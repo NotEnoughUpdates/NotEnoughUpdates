@@ -125,7 +125,6 @@ public class RenderListener {
 	private boolean doInventoryButtons = false;
 	private NEUConfig.InventoryButton buttonHovered = null;
 	private long buttonHoveredMillis = 0;
-	private int inventoryLoadedTicks = 0;
 	private String loadedInvName = "";
 	private int lastTickCount = 0;
 	private int ticksStable = 0;
@@ -226,7 +225,7 @@ public class RenderListener {
 			lastTickCount = nonNullCount;
 
 			// if stable for N ticks in a row, we're loaded
-			inventoryLoaded = ticksStable >= 2;
+			inventoryLoaded = ticksStable >= REQUIRED_STABLE_TICKS;
 		} else {
 			inventoryLoaded = false;
 			ticksStable = 0;
@@ -257,7 +256,6 @@ public class RenderListener {
 
 		BetterContainers.reset();
 		inventoryLoaded = false;
-		inventoryLoadedTicks = 3;
 
 		//OPEN
 		if (Minecraft.getMinecraft().currentScreen == null && event.gui instanceof GuiContainer) {
