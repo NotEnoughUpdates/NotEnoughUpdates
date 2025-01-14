@@ -640,7 +640,7 @@ public class AccessoryBagOverlay {
 						if (noAcessories) {
 							// add all remaining page numbers to visited
 							for (int i = currentPageNumber + 1; i <= secondInt; i++) {
-								if (pagesVisited.contains(i))) continue;
+								if (pagesVisited.contains(i)) continue;
 								pagesVisited.add(i);
 							}
 						}
