@@ -23,7 +23,12 @@ import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.EnumChatFormatting.*
+import net.minecraft.util.EnumChatFormatting.BLUE
+import net.minecraft.util.EnumChatFormatting.BOLD
+import net.minecraft.util.EnumChatFormatting.GREEN
+import net.minecraft.util.EnumChatFormatting.LIGHT_PURPLE
+import net.minecraft.util.EnumChatFormatting.RED
+import net.minecraft.util.EnumChatFormatting.YELLOW
 import net.minecraft.util.IChatComponent
 import net.minecraftforge.fml.common.Loader
 
@@ -49,7 +54,7 @@ class EnchantsCheck {
         if (Loader.isModLoaded("skyhanni")) messages.add(modMessage(shMsg, shHelp, "/sh enchant parsing"))
         if (Loader.isModLoaded("Danker's Skyblock Mod")) messages.add(modMessage(dsmMsg, dsmHelp, "/dsm"))
         if (Loader.isModLoaded("SkyblockExtras")) messages.add(modMessage(sbeMsg, sbeHelp, "/sbe"))
-        if (false && messages.isNotEmpty()) {
+        if (messages.isNotEmpty()) {
             messages.addAll(
                 listOf(
                     ChatComponentText(""),
