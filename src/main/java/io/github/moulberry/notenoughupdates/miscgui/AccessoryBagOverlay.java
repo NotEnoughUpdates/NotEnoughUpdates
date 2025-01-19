@@ -605,7 +605,7 @@ public class AccessoryBagOverlay {
 						String first = containerName.trim().split("\\(")[1].split("/")[0];
 						Integer currentPageNumber = Integer.parseInt(first);
 						boolean hasStack = false;
-						boolean noAcessories = true;
+						boolean newAccessories = false;
 						if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest) {
 							IInventory inv =
 								((ContainerChest) Minecraft.getMinecraft().thePlayer.openContainer).getLowerChestInventory();
@@ -625,8 +625,8 @@ public class AccessoryBagOverlay {
 											}
 										}
 										if (toAdd) {
+											newAccessories = true;
 											accessoryStacks.add(stack);
-											noAcessories = false;
 										}
 									}
 								}
@@ -637,16 +637,9 @@ public class AccessoryBagOverlay {
 
 						String second = containerName.trim().split("/")[1].split("\\)")[0];
 						int secondInt = Integer.parseInt(second);
-						if (noAcessories) {
-							// add all remaining page numbers to visited
-							for (int i = currentPageNumber + 1; i <= secondInt; i++) {
-								if (pagesVisited.contains(i)) continue;
-								pagesVisited.add(i);
-							}
-						}
 
 						//System.out.println(second + ":" + pagesVisited.size());
-						if (Integer.parseInt(second) > pagesVisited.size()) {
+						if (secondInt > pagesVisited.size() && !newAccessories) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
 							GlStateManager.disableLighting();
