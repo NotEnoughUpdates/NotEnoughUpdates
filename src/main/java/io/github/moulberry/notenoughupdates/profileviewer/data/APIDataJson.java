@@ -111,6 +111,7 @@ public class APIDataJson {
 
 	public static class FairySouls {
 		public int total_collected = 0;
+		public int unspent_souls = 0;
 	}
 
 	public @Nullable NetherData nether_island_player_data;

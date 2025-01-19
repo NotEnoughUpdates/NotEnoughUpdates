@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2024 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -113,7 +113,7 @@ public class TimersOverlay extends TextTabOverlay {
 				hidden.firstCakeAte = currentTime;
 				return;
 			}
-			if ("§r§d§lINFUSED! §r§7Used your free dimensional infusion!§r".equals(event.message.getFormattedText())) {
+			if ("§r§d§lINFUSED! §r§7Used one of your free Rift charges!§r".equals(event.message.getFormattedText())) {
 				hidden.lastFreeRiftInfusionApplied = currentTime;
 				return;
 			}
@@ -237,7 +237,7 @@ public class TimersOverlay extends TextTabOverlay {
 								.get("SUPERBOOM_TNT")),
 							new ItemStack(Blocks.pumpkin, 1, 0),
 							new ItemStack(Items.flint_and_steel, 1, 0),
-							new ItemStack(Blocks.emerald_ore, 50, 0),
+							new ItemStack(Items.emerald, 50, 0),
 							//new ItemStack(Items.ender_pearl, 16, 0)
 						};
 					}
@@ -1101,7 +1101,7 @@ public class TimersOverlay extends TextTabOverlay {
 		return false;
 	}
 
-	AxisAlignedBB matriarchArea = new AxisAlignedBB(-555, 36, -904, -532, 52, -870);
+	AxisAlignedBB matriarchArea = new AxisAlignedBB(-555, 36, -904, -520, 52, -870);
 
 	@SubscribeEvent
 	public void onMatriarchTick(TickEvent.ClientTickEvent event) {

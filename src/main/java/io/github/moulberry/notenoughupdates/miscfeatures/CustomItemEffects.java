@@ -100,7 +100,8 @@ public class CustomItemEffects {
 		"ASPECT_OF_THE_END",
 		"ASPECT_OF_THE_VOID",
 		"ASPECT_OF_THE_LEECH_1",
-		"ASPECT_OF_THE_LEECH_2"
+		"ASPECT_OF_THE_LEECH_2",
+		"ASPECT_OF_THE_LEECH_3"
 	);
 
 	public int aoteTeleportationMillis = 0;

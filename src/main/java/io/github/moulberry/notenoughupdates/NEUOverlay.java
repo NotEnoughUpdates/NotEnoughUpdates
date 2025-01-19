@@ -2289,7 +2289,8 @@ public class NEUOverlay extends Gui {
 				stack.setTagCompound(tag);
 			}
 
-			List<String> text = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+			List<String> text = stack.getTooltip(Minecraft.getMinecraft().thePlayer,
+				Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 
 			String internalname = json.get("internalname").getAsString();
 			if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.showPriceInfoInvItem) {

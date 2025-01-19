@@ -338,7 +338,8 @@ public class EquipmentOverlay {
 			// draw the slot overlay
 			drawHoverOverlay(x, y);
 
-			List<String> tt = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+			List<String> tt = stack.getTooltip(Minecraft.getMinecraft().thePlayer,
+				Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 			if (shouldShowEquipmentTooltip(tt))
 				tooltip.addAll(tt);
 			if (NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand
@@ -375,7 +376,8 @@ public class EquipmentOverlay {
 			// draw the slot overlay
 			drawHoverOverlay(overlayLeft + 8, overlayTop + 8);
 
-			tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+			tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer,
+				Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 			Utils.drawHoveringText(
 				tooltipToDisplay,
 				mouseX - calculateTooltipXOffset(tooltipToDisplay),

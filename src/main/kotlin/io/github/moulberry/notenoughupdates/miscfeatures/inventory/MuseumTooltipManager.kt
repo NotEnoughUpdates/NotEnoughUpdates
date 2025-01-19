@@ -130,6 +130,7 @@ object MuseumTooltipManager {
 
         if (!slots.equals(previousSlots)) {
             for (i in 0..53) {
+                if (!MuseumUtil.isValidSlot(i)) continue
                 val slot = slots[i]
                 if (slot == null || slot.stack == null) continue
                 val item = MuseumUtil.findMuseumItem(slot.stack, armor) ?: continue

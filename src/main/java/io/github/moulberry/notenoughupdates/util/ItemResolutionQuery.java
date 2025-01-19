@@ -133,6 +133,9 @@ public class ItemResolutionQuery {
 				case "BALLOON_HAT_2024":
 					resolvedName = resolveBalloonHatName();
 					break;
+				case "ATTRIBUTE_SHARD":
+					resolvedName = resolveAttributeShardName();
+					break;
 			}
 		}
 
@@ -186,8 +189,12 @@ public class ItemResolutionQuery {
 		boolean isOnBazaar = isBazaar(inventorySlots.getLowerChestInventory());
 		String displayName = ItemUtils.getDisplayName(compound);
 		if (displayName == null) return null;
+		displayName = displayName.replaceFirst("^§6§lSELL ", "").replaceFirst("^§a§lBUY ", "");
 		if (itemType == Items.enchanted_book && isOnBazaar && compound != null) {
 			return resolveEnchantmentByName(displayName);
+		}
+		if (itemType == Items.skull && displayName.contains("Essence")) {
+			return findInternalNameByDisplayName(displayName, false);
 		}
 		if (displayName.endsWith("Enchanted Book") && guiName.startsWith("Superpairs")) {
 			for (String loreLine : ItemUtils.getLore(compound)) {
@@ -230,7 +237,7 @@ public class ItemResolutionQuery {
 		if (isPet) {
 			Matcher matcher = PET_PATTERN.matcher(displayName);
 			if (matcher.matches()) {
-				displayName = displayName.replace(matcher.group(1), "");
+				displayName = displayName.replace(matcher.group(1), "").replace("✦", "").trim();
 				petRarity = matcher.group(2);
 			}
 		}
@@ -310,11 +317,11 @@ public class ItemResolutionQuery {
 		Matcher matcher = ENCHANTED_BOOK_NAME_PATTERN.matcher(name);
 		if (!matcher.matches()) return null;
 		String format = matcher.group(1).toLowerCase(Locale.ROOT);
-		String enchantmentName = matcher.group(2).trim();
+		String enchantmentName = matcher.group(2).trim().replace("'", "");
 		String romanLevel = matcher.group(3);
 		boolean ultimate = (format.contains("§l"));
 
-		return ((ultimate && !enchantmentName.equals("Ultimate Wise")) ? "ULTIMATE_" : "")
+		return ((ultimate && !enchantmentName.equals("Ultimate Wise") && !enchantmentName.equals("Ultimate Jerry")) ? "ULTIMATE_" : "")
 			+ turboCheck(enchantmentName).replace(" ", "_").replace("-", "_").toUpperCase(Locale.ROOT)
 			+ ";" + Utils.parseRomanNumeral(romanLevel);
 	}
@@ -392,6 +399,13 @@ public class ItemResolutionQuery {
 	private String resolveBalloonHatName() {
 		String color = getExtraAttributes().getString("party_hat_color");
 		return "BALLOON_HAT_2024_" + color.toUpperCase(Locale.ROOT);
+	}
+
+	private String resolveAttributeShardName() {
+		NBTTagCompound attributes = getExtraAttributes().getCompoundTag("attributes");
+		String attributeName = IteratorUtils.getOnlyElement(attributes.getKeySet(), null);
+		if (attributeName == null || attributeName.isEmpty()) return null;
+		return "ATTRIBUTE_SHARD_" + attributeName.toUpperCase(Locale.ROOT) + ";" + attributes.getInteger(attributeName);
 	}
 
 	private NBTTagCompound getExtraAttributes() {

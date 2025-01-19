@@ -87,7 +87,7 @@ public class NEUEventListener {
 	}
 
 	@SubscribeEvent
-	public void onWorldLoad(WorldEvent.Unload event) {
+	public void onWorldLoad(WorldEvent.Load event) {
 		NotEnoughUpdates.INSTANCE.saveConfig();
 		CrystalMetalDetectorSolver.initWorld();
 	}

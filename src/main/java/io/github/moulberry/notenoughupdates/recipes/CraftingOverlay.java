@@ -139,7 +139,8 @@ public class CraftingOverlay {
 			ItemStack actualItem = slot.getStack();
 			if (actualItem == null && recipeIngredient != null) {
 				Utils.drawHoveringText(
-					recipeIngredient.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false),
+					recipeIngredient.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips),
 					mouseX, mouseY,
 					Utils.peekGuiScale().getScaledWidth(), Utils.peekGuiScale().getScaledHeight(), -1
 				);
