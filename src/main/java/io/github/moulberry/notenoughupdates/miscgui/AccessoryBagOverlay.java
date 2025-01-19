@@ -61,6 +61,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -605,7 +606,6 @@ public class AccessoryBagOverlay {
 						String first = containerName.trim().split("\\(")[1].split("/")[0];
 						Integer currentPageNumber = Integer.parseInt(first);
 						boolean hasStack = false;
-						boolean newAccessories = false;
 						if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest) {
 							IInventory inv =
 								((ContainerChest) Minecraft.getMinecraft().thePlayer.openContainer).getLowerChestInventory();
@@ -625,7 +625,6 @@ public class AccessoryBagOverlay {
 											}
 										}
 										if (toAdd) {
-											newAccessories = true;
 											accessoryStacks.add(stack);
 										}
 									}
@@ -633,13 +632,18 @@ public class AccessoryBagOverlay {
 							}
 						}
 
-						if (hasStack) pagesVisited.add(currentPageNumber);
-
 						String second = containerName.trim().split("/")[1].split("\\)")[0];
 						int secondInt = Integer.parseInt(second);
+						if (hasStack) pagesVisited.add(currentPageNumber);
+						else if (!pagesVisited.isEmpty() && !pagesVisited.contains(secondInt)) {
+							pagesVisited.clear();
+							for (int i = 1; i < secondInt; i++) {
+								pagesVisited.add(i);
+							}
+						}
 
 						//System.out.println(second + ":" + pagesVisited.size());
-						if (secondInt > pagesVisited.size() && !newAccessories) {
+						if (secondInt > pagesVisited.size()) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
 							GlStateManager.disableLighting();
