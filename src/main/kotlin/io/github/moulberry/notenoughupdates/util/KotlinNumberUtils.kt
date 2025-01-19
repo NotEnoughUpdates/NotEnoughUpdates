@@ -51,7 +51,7 @@ private val romanSymbols = TreeMap(
 fun Int.toRoman(): String {
     if (this <= 0) {
         Utils.addChatMessage("$YELLOW[NEU] ${RED}Invalid number roman numeral conversion: $this")
-        Utils.addChatMessage("$YELLOW[NEU] ${RED}Please report this to discord.gg/moulberry")
+        Utils.addChatMessage("$YELLOW[NEU] ${RED}Please report this to ${Utils.getDiscordInvite()}")
         return "?"
     }
     val l = romanSymbols.floorKey(this)

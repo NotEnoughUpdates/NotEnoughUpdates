@@ -2289,8 +2289,8 @@ public class Utils {
 					"§c§lMissing repo data",
 					"§cData used for many NEU features is not up to date, this should normally not be the case.",
 					"§cYou can try §l/neuresetrepo§r§c and restart your game to see if that fixes the issue.",
-					"§cIf the problem persists please join " +
-						"§ldiscord.gg/moulberry§r§c and message in §l#neu-support§r§c to get support"
+					"§cIf the problem persists please join §l" + Utils.getDiscordInvite() +
+						"§r§c and message in §l#neu-support§r§c to get support"
 				),
 				false, true
 			);
@@ -2472,5 +2472,19 @@ public class Utils {
 			clipboardCache = null;
 			return null;
 		}
+	}
+
+	private static final String DISCORD_INVITE = "tNSkq8KjA8";
+
+	public static String getDiscordInvite() {
+		if (NotEnoughUpdates.INSTANCE.manager.onBackupRepo) {
+			return "discord.gg/" + DISCORD_INVITE;
+		}
+		JsonObject misc = Constants.MISC;
+		if (misc == null || !misc.has("discordInvite")) {
+			return "discord.gg/" + DISCORD_INVITE;
+		}
+
+		return "discord.gg/" + misc.get("discordInvite").getAsString();
 	}
 }
