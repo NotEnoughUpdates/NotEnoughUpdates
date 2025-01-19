@@ -205,7 +205,7 @@ public class RiftPage extends GuiProfileViewerPage {
 					} else {
 						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "ERROR LOADING TIMECHARM!");
 						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "PLEASE REPORT THIS AT " +
-							EnumChatFormatting.GOLD + "discord.gg/moulberry");
+							EnumChatFormatting.GOLD + Utils.getDiscordInvite());
 						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "WITH THE FOLLOWING TEXT: " +
 							EnumChatFormatting.AQUA + timecharmType);
 					}

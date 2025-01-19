@@ -172,7 +172,7 @@ public class NEUConfig extends Config {
 			social(
 				"Discord",
 				"discord",
-				"https://discord.gg/moulberry"
+				"https://" + Utils.getDiscordInvite()
 			)
 		);
 	}

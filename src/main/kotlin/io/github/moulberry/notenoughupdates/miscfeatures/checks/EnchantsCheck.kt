@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.checks
 
+import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
@@ -48,7 +49,7 @@ class EnchantsCheck {
         if (Loader.isModLoaded("skyhanni")) messages.add(modMessage(shMsg, shHelp, "/sh enchant parsing"))
         if (Loader.isModLoaded("Danker's Skyblock Mod")) messages.add(modMessage(dsmMsg, dsmHelp, "/dsm"))
         if (Loader.isModLoaded("SkyblockExtras")) messages.add(modMessage(sbeMsg, sbeHelp, "/sbe"))
-        if (messages.isNotEmpty()) {
+        if (false && messages.isNotEmpty()) {
             messages.addAll(
                 listOf(
                     ChatComponentText(""),
@@ -58,8 +59,8 @@ class EnchantsCheck {
                 )
             )
         } else {
-            val discordHover = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("${BLUE}discord.gg/moulberry"))
-            val discordClick = ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/moulberry")
+            val discordHover = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("${BLUE}${Utils.getDiscordInvite()}"))
+            val discordClick = ClickEvent(ClickEvent.Action.OPEN_URL, "https://${Utils.getDiscordInvite()}")
             messages.addAll(
                 listOf(
                     ChatComponentText("${GREEN}Your enchant colors should not be overriden by any mods!"),

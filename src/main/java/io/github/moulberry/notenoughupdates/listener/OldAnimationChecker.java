@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -60,7 +61,7 @@ public class OldAnimationChecker {
 				"\u00a77These mods break features in NEU and other mods",
 				"\u00a77Please remove them and optionally replace them with the OldAnimations mod from Sk1er",
 				"\u00a77It can be found at the following website: \u00a79sk1er.club/beta",
-				"\u00a77For more information join the discord at \u00a79discord.gg/moulberry\u00a77 and message in \u00a79#neu-support",
+				"\u00a77For more information join the discord at \u00a79" + Utils.getDiscordInvite() + "\u00a77 and message in \u00a79#neu-support",
 				"\u00a77",
 				"\u00a77Press X on your keyboard to close this notification or turn it off in the config"
 			), true, true);

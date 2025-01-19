@@ -86,7 +86,7 @@ public class CrashRecoveryPage extends GuiProfileViewerPage {
 
 		drawString("§cLooks like your profile viewer crashed.");
 		drawString("§cPlease immediately send a screenshot of this screen into #neu-support.");
-		drawString("§cJoin our support server at §adiscord.gg/moulberry§c.");
+		drawString("§cJoin our support server at §a" + Utils.getDiscordInvite() + "§c.");
 
 		val profile = GuiProfileViewer.getProfile();
 		drawString("Viewed Player: " + getInstance().getEntityPlayer().getName());
