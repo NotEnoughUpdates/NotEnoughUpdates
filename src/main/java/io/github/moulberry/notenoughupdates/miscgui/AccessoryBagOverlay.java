@@ -637,7 +637,7 @@ public class AccessoryBagOverlay {
 						if (hasStack) pagesVisited.add(currentPageNumber);
 						else if (!pagesVisited.isEmpty() && !pagesVisited.contains(secondInt)) {
 							pagesVisited.clear();
-							for (int i = 1; i < secondInt; i++) {
+							for (int i = 1; i <= secondInt; i++) {
 								pagesVisited.add(i);
 							}
 						}
