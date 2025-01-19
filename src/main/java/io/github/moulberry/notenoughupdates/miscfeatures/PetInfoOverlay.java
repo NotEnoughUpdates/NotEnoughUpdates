@@ -1201,7 +1201,9 @@ public class PetInfoOverlay extends TextOverlay {
 					if (siblings.size() > 6) {
 						IChatComponent iChatComponent = siblings.get(siblings.size()-1);
 						String formattedText = iChatComponent.getChatStyle().getColor() + iChatComponent.getUnformattedText();
+						System.out.println(formattedText);
 						petItem = getInternalIdForPetItemDisplayName(formattedText);
+						System.out.println(petItem);
 					} else {
 						//this *should* make it only match with only pets without items
 						petItem = null;
