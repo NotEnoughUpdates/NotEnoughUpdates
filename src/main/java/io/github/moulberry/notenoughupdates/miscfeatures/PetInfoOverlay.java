@@ -84,7 +84,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern TAB_LIST_XP = Pattern.compile(
 		"([0-9,]+\\.?[0-9]*)/([0-9,]+\\.?[0-9]*)[kM]? XP \\(\\d+\\.?\\d*%\\)");
 	private static final Pattern TAB_LIST_XP_OVERFLOW = Pattern.compile("\\+([0-9,]+\\.?[0-9]*) XP");
-	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("§.\\[Lvl (\\d+)\\] §(.)(.+)");
+	private static final Pattern TAB_LIST_PET_NAME = Pattern.compile("§.\\[Lvl (\\d+)\\](?: §8\\[§6\\d+§8§.✦§8])? §(.)(.+)");
 	private static final Pattern TAB_LIST_PET_ITEM = Pattern.compile("§[fa956d4][a-zA-Z- ]+");
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -194,6 +194,7 @@ public class PetInfoOverlay extends TextOverlay {
 		xpGainHourLast = -1;
 		xpGainHour = -1;
 		config.selectedPet = index;
+		lastPetCorrect = System.currentTimeMillis();
 	}
 
 	public static Pet getCurrentPet() {
@@ -410,8 +411,7 @@ public class PetInfoOverlay extends TextOverlay {
 			if (skinJson != null) {
 				String displayName = NotEnoughUpdates.INSTANCE.manager.jsonToStack(skinJson).getDisplayName();
 				String colourSt = Character.toString(Utils.getPrimaryColourCode(displayName));
-				EnumChatFormatting rarity = getRarityByColor(colourSt).chatFormatting;
-				petName += rarity + " ✦";
+				petName += "§" + colourSt + " ✦";
 			}
 		}
 
@@ -936,8 +936,7 @@ public class PetInfoOverlay extends TextOverlay {
 								int rarity = Utils.getRarityFromLore(jsonStack.get("lore").getAsJsonArray());
 								String rarityString = Utils.getRarityFromInt(rarity);
 
-								String name = StringUtils.cleanColour(petStack.getDisplayName());
-								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase(Locale.ROOT);
+								String name = petInfoObject.get("type").getAsString();
 
 								float petXp = petInfoObject.get("exp").getAsFloat();
 
@@ -984,7 +983,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private long lastXpUpdate = -1;
 	private long lastXpUpdateNonZero = -1;
 	private long lastPaused = -1;
-	private long lastPetCorrect = -1;
+	private static long lastPetCorrect = -1;
 
 	public void updatePetLevels() {
 		float totalGain = 0;
@@ -1023,7 +1022,7 @@ public class PetInfoOverlay extends TextOverlay {
 					if (lastPetCorrect == -1 || lastPetCorrect > 0 && System.currentTimeMillis() - lastPetCorrect > 6000) {
 						int rarity = getRarityByColor(petNameMatcher.group(2)).petId;
 						String petItem = "";
-						if (widgetLines.size() > i) {
+						if (widgetLines.size() > i + 1) {
 							String nextLine = widgetLines.get(i + 1).replace("§r", "").trim();
 							Matcher nextLinePetItemMatcher = TAB_LIST_PET_ITEM.matcher(nextLine);
 							if (nextLinePetItemMatcher.matches()) {
@@ -1037,7 +1036,7 @@ public class PetInfoOverlay extends TextOverlay {
 							internalName = split[0];
 						}
 
-						if ((currentPet.petItem != null && !currentPet.petItem.equals(petItem)) || currentPet.rarity.petId != rarity ||
+						if ((currentPet.petItem != null && !petItem.isEmpty() && !currentPet.petItem.equals(petItem)) || currentPet.rarity.petId != rarity ||
 							currentPet.petLevel.getCurrentLevel() != petLevel) {
 							int closestPetIndex = getClosestPetIndex(internalName, rarity, petItem, petLevel);
 
@@ -1064,7 +1063,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 			if (petItemMatcher.matches()) {
 				String petItem = getInternalIdForPetItemDisplayName(petItemMatcher.group(0));
-				if (!Objects.equals(currentPet.petItem, petItem)) {
+				if (!Objects.equals(currentPet.petItem, petItem) && currentPet.petItem != null && !currentPet.petItem.isEmpty()) {
 					int closestPetIndex = getClosestPetIndex(
 						currentPet.petType,
 						currentPet.rarity.petId,
@@ -1203,6 +1202,9 @@ public class PetInfoOverlay extends TextOverlay {
 						IChatComponent iChatComponent = siblings.get(6);
 						String formattedText = iChatComponent.getChatStyle().getColor() + iChatComponent.getUnformattedText();
 						petItem = getInternalIdForPetItemDisplayName(formattedText);
+					} else {
+						//this *should* make it only match with only pets without items
+						petItem = null;
 					}
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, petItem, lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
