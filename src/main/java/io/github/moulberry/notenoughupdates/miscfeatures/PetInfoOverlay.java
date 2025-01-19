@@ -1199,7 +1199,7 @@ public class PetInfoOverlay extends TextOverlay {
 					List<IChatComponent> siblings = event.message.getChatStyle().getChatHoverEvent().getValue().getSiblings();
 					String petItem = "";
 					if (siblings.size() > 6) {
-						IChatComponent iChatComponent = siblings.get(6);
+						IChatComponent iChatComponent = siblings.get(siblings.size()-1);
 						String formattedText = iChatComponent.getChatStyle().getColor() + iChatComponent.getUnformattedText();
 						petItem = getInternalIdForPetItemDisplayName(formattedText);
 					} else {
