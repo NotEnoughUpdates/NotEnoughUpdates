@@ -101,7 +101,8 @@ public class ItemShopRecipe implements NeuRecipe {
 			slots.add(new RecipeSlot(
 				startX + (i / 4) * ROW_SPACING + 1,
 				startY + (i % 4) * (SLOT_IMAGE_SIZE + COST_SLOT_SPACING) + 1,
-				ingredient.getItemStack()
+				ingredient.getItemStack(),
+				ingredient.getCount()
 			));
 			i++;
 		}
