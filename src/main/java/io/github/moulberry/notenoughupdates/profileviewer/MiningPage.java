@@ -397,7 +397,7 @@ public class MiningPage extends GuiProfileViewerPage {
 
 			if (showError) {
 				tooltip.add("§cPlease report this to the NEU Discord");
-				tooltip.add("§cdiscord.gg/moulberry");
+				tooltip.add("§c" + Utils.getDiscordInvite());
 			}
 
 			tooltip.add(EnumChatFormatting.GOLD + "Forge");
