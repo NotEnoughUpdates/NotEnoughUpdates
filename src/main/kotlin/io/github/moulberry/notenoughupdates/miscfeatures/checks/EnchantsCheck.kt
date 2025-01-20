@@ -19,10 +19,16 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.checks
 
+import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.EnumChatFormatting.*
+import net.minecraft.util.EnumChatFormatting.BLUE
+import net.minecraft.util.EnumChatFormatting.BOLD
+import net.minecraft.util.EnumChatFormatting.GREEN
+import net.minecraft.util.EnumChatFormatting.LIGHT_PURPLE
+import net.minecraft.util.EnumChatFormatting.RED
+import net.minecraft.util.EnumChatFormatting.YELLOW
 import net.minecraft.util.IChatComponent
 import net.minecraftforge.fml.common.Loader
 
@@ -58,8 +64,8 @@ class EnchantsCheck {
                 )
             )
         } else {
-            val discordHover = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("${BLUE}discord.gg/moulberry"))
-            val discordClick = ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/moulberry")
+            val discordHover = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("${BLUE}${Utils.getDiscordInvite()}"))
+            val discordClick = ClickEvent(ClickEvent.Action.OPEN_URL, "https://${Utils.getDiscordInvite()}")
             messages.addAll(
                 listOf(
                     ChatComponentText("${GREEN}Your enchant colors should not be overriden by any mods!"),

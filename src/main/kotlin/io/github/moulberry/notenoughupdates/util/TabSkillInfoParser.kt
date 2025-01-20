@@ -65,7 +65,7 @@ object TabSkillInfoParser {
         }
 
         if (Constants.LEVELING == null) {
-            sendError("${EnumChatFormatting.RED}[NEU] There is an error with your repo, please report this in the discord at ${EnumChatFormatting.AQUA}discord.gg/moulberry")
+            sendError("${EnumChatFormatting.RED}[NEU] There is an error with your repo, please report this in the discord at ${EnumChatFormatting.AQUA}${Utils.getDiscordInvite()}")
             return
         }
 

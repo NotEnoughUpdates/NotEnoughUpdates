@@ -261,13 +261,11 @@ public class SkyblockProfiles {
 			});
 
 		long currentTime = System.currentTimeMillis();
-		if (ProfileViewerUtils.lastSoopyRequestTime.containsKey(uuid)) {
-			if (currentTime - ProfileViewerUtils.lastSoopyRequestTime.get(uuid) < 5 * 1000 * 60) {
-				if (ProfileViewerUtils.soopyDataCache.containsKey(uuid)) {
-					updateSoopyNetworth(ProfileViewerUtils.soopyDataCache.get(uuid));
-					callback.run();
-				}
-			}
+		if (ProfileViewerUtils.lastSoopyRequestTime.containsKey(uuid)
+			&& currentTime - ProfileViewerUtils.lastSoopyRequestTime.get(uuid) < 5 * 1000 * 60
+			&& ProfileViewerUtils.soopyDataCache.containsKey(uuid)) {
+			updateSoopyNetworth(ProfileViewerUtils.soopyDataCache.get(uuid));
+			callback.run();
 		} else {
 			ProfileViewerUtils.lastSoopyRequestTime.put(uuid, currentTime);
 			profileViewer.getManager().apiUtils
@@ -972,7 +970,7 @@ public class SkyblockProfiles {
 				ProfileViewerUtils.getLevel(
 					Utils.getElement(leveling, "catacombs").getAsJsonArray(),
 					Utils.getElementAsFloat(Utils.getElement(profileJson, "dungeons.dungeon_types.catacombs.experience"), 0),
-					99,
+					100,
 					false
 				)
 			);

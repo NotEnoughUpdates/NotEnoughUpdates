@@ -49,6 +49,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -184,6 +185,12 @@ public class NEUItemEditor extends GuiScreen {
 			Color.ORANGE.getRGB(),
 			() -> nbtTag.setTag("ench", new NBTTagList())
 		));
+		rightOptions.add(new GuiElementButton(
+			"Remove lore under dashes",
+			Color.PINK.getRGB(),
+				this::removeLoreUnderDashes
+			)
+		);
 
 		resetScrollToTop();
 		if (savedRepoItem != null) {
@@ -204,6 +211,7 @@ public class NEUItemEditor extends GuiScreen {
 	 */
 	public static boolean saveOnly(String internalName, JsonObject item) {
 		NEUItemEditor editor = new NEUItemEditor(internalName, item);
+		editor.removeLoreUnderDashes();
 		return editor.save();
 	}
 
@@ -499,5 +507,29 @@ public class NEUItemEditor extends GuiScreen {
 		RenderHelper.disableStandardItemLighting();
 
 		itemRender.renderItemOverlayIntoGUI(font, stack, x, y, null);
+	}
+
+	private void removeLoreUnderDashes() {
+		//im just praying 7 is always the lore field
+		GuiElement guiElement = options.get(7);
+		if (guiElement instanceof GuiElementTextField) {
+			String loreArray = ((GuiElementTextField) guiElement).getText();
+			ArrayList<String> loreList = new ArrayList<>(Arrays.asList(loreArray.split("\n")));
+			Iterator<String> iterator = loreList.iterator();
+			boolean foundSillyLine = false;
+			while (iterator.hasNext()) {
+				String line = iterator.next();
+				if (foundSillyLine) {
+					iterator.remove();
+					continue;
+				}
+				if (line.startsWith("§8§m------------")) {
+					foundSillyLine = true;
+					iterator.remove();
+				}
+			}
+			String newLore = String.join("\n", loreList);
+			((GuiElementTextField) guiElement).setText(newLore);
+		}
 	}
 }
