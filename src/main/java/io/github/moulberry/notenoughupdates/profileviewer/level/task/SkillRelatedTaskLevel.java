@@ -209,7 +209,7 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel {
 		));
 		lore.add(levelPage.buildLore("Peak of the Mountain", sbXpPotmTier, miningObj.get("potm").getAsInt(), false));
 		lore.add(levelPage.buildLore(
-			"Fossil Resarch",
+			"Fossil Research",
 			sbXpFossilResearch,
 			miningObj.get("fossil_research").getAsInt(),
 			false
