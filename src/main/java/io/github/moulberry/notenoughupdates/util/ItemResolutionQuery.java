@@ -329,6 +329,8 @@ public class ItemResolutionQuery {
 	private static String turboCheck(String text) {
 		if (text.equals("Turbo-Cocoa")) return "Turbo-Coco";
 		if (text.equals("Turbo-Cacti")) return "Turbo-Cactus";
+		if (text.equals("Prismatic")) return "Pristine";
+		if (text.equals("Dragon Tracer")) return "Aiming";
 
 		return text;
 	}
