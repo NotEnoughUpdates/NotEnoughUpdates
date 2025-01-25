@@ -31,6 +31,9 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -72,6 +75,8 @@ public class ConfigUtil {
 		return null;
 	}
 
+	private static List<String> unimportantConfigs = Arrays.asList("auctionable_items", "currentCommit", "petCache", "storageItems");
+
 	public static void saveConfig(Object config, File file, Gson gson) {
 		saveConfig(config, file, gson, false);
 	}
@@ -93,7 +98,7 @@ public class ConfigUtil {
 
 			if (loadConfig(config.getClass(), tempFile, gson, useGzip, false) == null) {
 				System.out.println("Config verification failed for " + tempFile + ", could not save config properly.");
-				makeBackup(tempFile, ".backup");
+				if (!unimportantConfigs.contains(tempFile.getName())) makeBackup(tempFile, ".backup");
 				return;
 			}
 
@@ -105,7 +110,7 @@ public class ConfigUtil {
 				Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			}
 		} catch (Exception e) {
-			makeBackup(tempFile, ".backup");
+			if (!unimportantConfigs.contains(tempFile.getName())) makeBackup(tempFile, ".backup");
 			e.printStackTrace();
 		}
 	}
