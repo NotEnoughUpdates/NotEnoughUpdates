@@ -230,7 +230,7 @@ public class ItemUtils {
 				"§cNull Pet",
 				"",
 				"§cIf you expected it to be there please send a message in",
-				"§c§l#neu-support §r§con §ldiscord.gg/moulberry"
+				"§c§l#neu-support §r§con §l" + Utils.getDiscordInvite()
 			));
 			return stack;
 		}
@@ -259,7 +259,7 @@ public class ItemUtils {
 				"§cThis pet is not saved in the repository",
 				"",
 				"§cIf you expected it to be there please send a message in",
-				"§c§l#neu-support §r§con §ldiscord.gg/moulberry"
+				"§c§l#neu-support §r§con §l" + Utils.getDiscordInvite()
 			));
 		}
 		Map<String, String> replacements = NotEnoughUpdates.INSTANCE.manager.getPetLoreReplacements(

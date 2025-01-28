@@ -253,7 +253,7 @@ public class NEUEventListener {
 								),
 								EnumChatFormatting.GRAY + "It is recommended to allocated between 2-4GB of memory",
 								EnumChatFormatting.GRAY + "More than 4GB MAY cause FPS issues, EVEN if you have 16GB+ available",
-								EnumChatFormatting.GRAY + "For more information, visit #ram-info in discord.gg/moulberry",
+								EnumChatFormatting.GRAY + "For more information, visit #ram-info in " + Utils.getDiscordInvite(),
 								"",
 								EnumChatFormatting.GRAY + "Press X on your keyboard to close this notification"
 							), false);

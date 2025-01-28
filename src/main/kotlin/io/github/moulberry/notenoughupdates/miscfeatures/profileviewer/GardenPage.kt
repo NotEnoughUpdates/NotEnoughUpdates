@@ -244,7 +244,7 @@ class GardenPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance
                 instance.tooltipToDisplay = listOf(
                     "§cUnknown barn Skin: ${gardenData?.selectedBarnSkin}",
                     "§cIf you expected it to be there please send a message in",
-                    "§c§l#neu-support §r§con §ldiscord.gg/moulberry"
+                    "§c§l#neu-support §r§con §l" + Utils.getDiscordInvite()
                 )
             }
         }

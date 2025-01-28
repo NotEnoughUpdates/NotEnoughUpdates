@@ -26,6 +26,7 @@ public class RecipeSlot {
 	private final int x;
 	private final int y;
 	private final ItemStack itemStack;
+	private double stackSize = -1;
 
 	public RecipeSlot(int x, int y, ItemStack itemStack) {
 		this.x = x;
@@ -33,8 +34,19 @@ public class RecipeSlot {
 		this.itemStack = itemStack;
 	}
 
+	public RecipeSlot(int x, int y, ItemStack itemStack, double stackSize) {
+		this.x = x;
+		this.y = y;
+		this.itemStack = itemStack;
+		this.stackSize = stackSize;
+	}
+
 	public ItemStack getItemStack() {
 		return itemStack;
+	}
+
+	public double getStackSize() {
+		return stackSize;
 	}
 
 	public int getX(GuiItemRecipe recipe) {
