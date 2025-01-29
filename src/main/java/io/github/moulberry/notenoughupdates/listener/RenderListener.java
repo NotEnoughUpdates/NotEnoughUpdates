@@ -128,7 +128,7 @@ public class RenderListener {
 	private String loadedInvName = "";
 	private int lastTickCount = 0;
 	private int ticksStable = 0;
-	private static final int REQUIRED_STABLE_TICKS = 5;
+	private static final int REQUIRED_STABLE_TICKS = 10;
 
 	//NPC parsing
 
@@ -211,17 +211,17 @@ public class RenderListener {
 				ticksStable = 0;
 			}
 
+			if (inventoryLoaded) return;
+
 			// sum items that are non-null
 			int nonNullCount = 0;
 			for (int i = 0; i < cc.getLowerChestInventory().getSizeInventory(); i++) {
 				if (cc.getLowerChestInventory().getStackInSlot(i) != null) nonNullCount++;
 			}
 
-			if (nonNullCount == lastTickCount) {
-				ticksStable++;
-			} else {
-				ticksStable = 0;
-			}
+			if (nonNullCount == lastTickCount && nonNullCount != 0) ticksStable++;
+			else ticksStable = 0;
+
 			lastTickCount = nonNullCount;
 
 			// if stable for N ticks in a row, we're loaded

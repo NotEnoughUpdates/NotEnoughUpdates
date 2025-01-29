@@ -56,6 +56,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -612,7 +613,7 @@ public class AccessoryBagOverlay {
 							for (int i = 0; i < inv.getSizeInventory(); i++) {
 								ItemStack stack = inv.getStackInSlot(i);
 								if (stack != null) {
-									hasStack = true;
+									hasStack = hasStack || (i < 45);
 									if (isAccessory(stack)) {
 										boolean toAdd = true;
 										for (ItemStack accessoryStack : accessoryStacks) {
@@ -624,9 +625,7 @@ public class AccessoryBagOverlay {
 												break;
 											}
 										}
-										if (toAdd) {
-											accessoryStacks.add(stack);
-										}
+										if (toAdd) accessoryStacks.add(stack);
 									}
 								}
 							}
@@ -634,15 +633,15 @@ public class AccessoryBagOverlay {
 
 						String second = containerName.trim().split("/")[1].split("\\)")[0];
 						int secondInt = Integer.parseInt(second);
+
 						if (hasStack) pagesVisited.add(currentPageNumber);
 						else if (!pagesVisited.isEmpty() && !pagesVisited.contains(secondInt)) {
 							pagesVisited.clear();
-							for (int i = 1; i <= secondInt; i++) {
-								pagesVisited.add(i);
-							}
+							pagesVisited = new HashSet<Integer>() {{
+								for (int i = 1; i <= secondInt; i++) add(i);
+							}};
 						}
 
-						//System.out.println(second + ":" + pagesVisited.size());
 						if (secondInt > pagesVisited.size()) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(accessory_bag_overlay);
