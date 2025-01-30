@@ -1199,9 +1199,14 @@ public class PetInfoOverlay extends TextOverlay {
 					List<IChatComponent> siblings = event.message.getChatStyle().getChatHoverEvent().getValue().getSiblings();
 					String petItem = "";
 					if (siblings.size() > 6) {
-						IChatComponent iChatComponent = siblings.get(6);
-						String formattedText = iChatComponent.getChatStyle().getColor() + iChatComponent.getUnformattedText();
-						petItem = getInternalIdForPetItemDisplayName(formattedText);
+						int i = -1;
+						for (IChatComponent sibling : siblings) {
+							i++;
+							if (!sibling.getUnformattedText().startsWith("Held Item:")) continue;
+							IChatComponent iChatComponent = siblings.get(i+1);
+							String formattedText = iChatComponent.getChatStyle().getColor() + iChatComponent.getUnformattedText();
+							petItem = getInternalIdForPetItemDisplayName(formattedText);
+						}
 					} else {
 						//this *should* make it only match with only pets without items
 						petItem = null;
