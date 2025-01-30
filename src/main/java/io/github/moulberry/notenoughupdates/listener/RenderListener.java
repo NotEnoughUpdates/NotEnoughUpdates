@@ -125,8 +125,11 @@ public class RenderListener {
 	private boolean doInventoryButtons = false;
 	private NEUConfig.InventoryButton buttonHovered = null;
 	private long buttonHoveredMillis = 0;
-	private int inventoryLoadedTicks = 0;
 	private String loadedInvName = "";
+	private int lastTickCount = 0;
+	private int ticksStable = 0;
+	private static final int REQUIRED_STABLE_TICKS = 10;
+
 	//NPC parsing
 
 	private boolean inDungeonPage = false;
@@ -198,32 +201,36 @@ public class RenderListener {
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
 			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) chest.inventorySlots;
+			String name = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
-			if (!loadedInvName.equals(cc.getLowerChestInventory().getDisplayName().getUnformattedText())) {
-				loadedInvName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
+			// check if the chest name has changed
+			if (!loadedInvName.equals(name)) {
+				loadedInvName = name;
 				inventoryLoaded = false;
-				inventoryLoadedTicks = 3;
+				lastTickCount = 0;
+				ticksStable = 0;
 			}
 
-			if (!inventoryLoaded) {
-				if (cc.getLowerChestInventory().getStackInSlot(cc.getLowerChestInventory().getSizeInventory() - 1) != null) {
-					inventoryLoaded = true;
-				} else {
-					for (ItemStack stack : chest.inventorySlots.getInventory()) {
-						if (stack != null) {
-							if (--inventoryLoadedTicks <= 0) {
-								inventoryLoaded = true;
-							}
-							break;
-						}
-					}
-				}
+			if (inventoryLoaded) return;
+
+			// sum items that are non-null
+			int nonNullCount = 0;
+			for (int i = 0; i < cc.getLowerChestInventory().getSizeInventory(); i++) {
+				if (cc.getLowerChestInventory().getStackInSlot(i) != null) nonNullCount++;
 			}
+
+			if (nonNullCount == lastTickCount && nonNullCount != 0) ticksStable++;
+			else ticksStable = 0;
+
+			lastTickCount = nonNullCount;
+
+			// if stable for N ticks in a row, we're loaded
+			inventoryLoaded = ticksStable >= REQUIRED_STABLE_TICKS;
 		} else {
 			inventoryLoaded = false;
-			inventoryLoadedTicks = 3;
+			ticksStable = 0;
+			lastTickCount = 0;
 		}
-
 	}
 
 	@SubscribeEvent
@@ -249,7 +256,6 @@ public class RenderListener {
 
 		BetterContainers.reset();
 		inventoryLoaded = false;
-		inventoryLoadedTicks = 3;
 
 		//OPEN
 		if (Minecraft.getMinecraft().currentScreen == null && event.gui instanceof GuiContainer) {
