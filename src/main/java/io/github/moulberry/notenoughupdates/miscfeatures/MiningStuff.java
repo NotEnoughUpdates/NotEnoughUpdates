@@ -78,8 +78,7 @@ public class MiningStuff {
 					if (existingBlock.getBlock() == Blocks.stone &&
 						existingBlock.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH)
 						return;
-					if (!checkIfAnyIsAir(getAttachedBlocks(pos)) &&
-						NotEnoughUpdates.INSTANCE.config.mining.titaniumAlertMustBeVisible)
+					if (!checkIfAnyIsAir(getAttachedBlocks(pos)))
 						return;
 					BlockPos player = Minecraft.getMinecraft().thePlayer.getPosition();
 
