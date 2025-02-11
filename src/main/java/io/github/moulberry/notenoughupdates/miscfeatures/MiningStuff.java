@@ -48,50 +48,10 @@ import java.util.Map;
 @NEUAutoSubscribe
 public class MiningStuff {
 	private static BlockPos overlayLoc = null;
-	private static long titaniumNotifMillis = 0;
 	private static Minecraft mc;
 
 	public MiningStuff() {
 		mc = Minecraft.getMinecraft();
-	}
-
-	public static void processBlockChangePacket(S23PacketBlockChange packetIn) {
-		if (!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert) {
-			return;
-		}
-
-		IBlockState state = packetIn.getBlockState();
-		if (SBInfo.getInstance().getLocation() != null &&
-			SBInfo.getInstance().getLocation().startsWith("mining_") &&
-			state.getBlock() == Blocks.stone && state.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH) {
-
-			for (Map.Entry<String, Float> entry : MiningOverlay.commissionProgress.entrySet()) {
-				String s = entry.getKey();
-				if (s.contains("Titanium")) {
-					if (entry.getValue() == 1f) {
-						return;
-					}
-					BlockPos pos = packetIn.getBlockPosition();
-
-					IBlockState existingBlock = Minecraft.getMinecraft().theWorld.getBlockState(pos);
-					if (existingBlock == null) return;
-					if (existingBlock.getBlock() == Blocks.stone &&
-						existingBlock.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH)
-						return;
-					if (!checkIfAnyIsAir(getAttachedBlocks(pos)) &&
-						NotEnoughUpdates.INSTANCE.config.mining.titaniumAlertMustBeVisible)
-						return;
-					BlockPos player = Minecraft.getMinecraft().thePlayer.getPosition();
-
-					double distSq = pos.distanceSq(player);
-
-					if (distSq < 12 * 12) {
-						titaniumNotifMillis = System.currentTimeMillis();
-					}
-					return;
-				}
-			}
-		}
 	}
 
 	private static BlockPos[] getAttachedBlocks(BlockPos block) {
@@ -112,52 +72,6 @@ public class MiningStuff {
 			}
 		}
 		return false;
-	}
-
-	@SubscribeEvent
-	public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
-		if (!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert) {
-			return;
-		}
-		if (titaniumNotifMillis <= 0) return;
-
-		int delta = (int) (System.currentTimeMillis() - titaniumNotifMillis);
-		int notifLen = 5000;
-		int fadeLen = 500;
-		if (delta > 0 && delta < notifLen && event.type == RenderGameOverlayEvent.ElementType.ALL) {
-			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-			int width = scaledResolution.getScaledWidth();
-			int height = scaledResolution.getScaledHeight();
-
-			GlStateManager.enableBlend();
-			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-
-			GlStateManager.pushMatrix();
-			GlStateManager.translate((float) (width / 2), (float) (height / 2), 0.0F);
-			GlStateManager.scale(4.0F, 4.0F, 4.0F);
-
-			int colour1 = 0xcc;
-			int colour2 = 0xff;
-
-			double factor = (Math.sin(delta * 2 * Math.PI / 1000) + 1) / 2;
-			int colour = (int) (colour1 * factor + colour2 * (1 - factor));
-
-			int alpha = 255;
-			if (delta < fadeLen) {
-				alpha = delta * 255 / fadeLen;
-			} else if (delta > notifLen - fadeLen) {
-				alpha = (notifLen - delta) * 255 / fadeLen;
-			}
-
-			if (alpha > 10) {
-				TextRenderUtils.drawStringCenteredScaledMaxWidth(
-					"Titanium has spawned nearby!",
-					0, 0, true, width / 4 - 20, colour | (colour << 8) | (colour << 16) | (alpha << 24)
-				);
-			}
-
-			GlStateManager.popMatrix();
-		}
 	}
 
 	@SubscribeEvent

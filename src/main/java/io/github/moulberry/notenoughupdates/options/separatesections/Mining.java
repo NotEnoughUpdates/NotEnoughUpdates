@@ -951,22 +951,6 @@ public class Mining {
 	@ConfigEditorBoolean
 	public boolean puzzlerSolver = true;
 
-	@Expose
-	@ConfigOption(
-		name = "Titanium Alert",
-		desc = "Show an alert whenever titanium appears nearby"
-	)
-	@ConfigEditorBoolean
-	public boolean titaniumAlert = true;
-
-	@Expose
-	@ConfigOption(
-		name = "Titanium must touch air",
-		desc = "Only show an alert if the Titanium touches air. (kinda sus)"
-	)
-	@ConfigEditorBoolean
-	public boolean titaniumAlertMustBeVisible = false;
-
 	@ConfigOption(
 		name = "Custom Textures",
 		desc = ""

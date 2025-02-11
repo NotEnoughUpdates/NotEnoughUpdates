@@ -120,7 +120,6 @@ public class MixinNetHandlerPlayClient {
 
 	@Inject(method = "handleBlockChange", at = @At("HEAD"))
 	public void handleBlockChange(S23PacketBlockChange packetIn, CallbackInfo ci) {
-		MiningStuff.processBlockChangePacket(packetIn);
 		ItemCooldowns.processBlockChangePacket(packetIn);
 		CrystalHollowChestHighlighter.processBlockChangePacket(packetIn);
 	}

@@ -267,7 +267,6 @@ public class MiningOverlay extends TextTabOverlay {
 
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay &&
 			NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints == 0 &&
-			!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert &&
 			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0
 			&& NotEnoughUpdates.INSTANCE.config.mining.tunnelWaypoints.get() != Mining.GlaciteTunnelWaypointBehaviour.NONE
 			&& HotmDesires.wantsPowderInfo()) {
@@ -275,7 +274,7 @@ public class MiningOverlay extends TextTabOverlay {
 		}
 
 		// Get commission and forge info even if the overlay isn't going to be rendered since it is used elsewhere
-		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
+		//thanks to "Pure Genie#7250" for helping with this (makes waypoints work without mine overlay)
 		if (SBInfo.getInstance().getLocation() == null) return;
 		if (SBInfo.getInstance().getLocation().equals("mining_3") ||
 			SBInfo.getInstance().getLocation().equals("crystal_hollows")
