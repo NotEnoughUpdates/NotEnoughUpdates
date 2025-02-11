@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.world.GenericBlockHighlighter;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
@@ -78,7 +79,7 @@ public class MiningStuff {
 					if (existingBlock.getBlock() == Blocks.stone &&
 						existingBlock.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH)
 						return;
-					if (!checkIfAnyIsAir(getAttachedBlocks(pos)))
+					if (!canPlayerSeeNearBlocks(pos.getX(), pos.getY(), pos.getZ()))
 						return;
 					BlockPos player = Minecraft.getMinecraft().thePlayer.getPosition();
 
@@ -91,26 +92,6 @@ public class MiningStuff {
 				}
 			}
 		}
-	}
-
-	private static BlockPos[] getAttachedBlocks(BlockPos block) {
-		BlockPos[] blocks = new BlockPos[6];
-		blocks[0] = new BlockPos(block.getX() - 1, block.getY(), block.getZ());
-		blocks[1] = new BlockPos(block.getX() + 1, block.getY(), block.getZ());
-		blocks[2] = new BlockPos(block.getX(), block.getY() - 1, block.getZ());
-		blocks[3] = new BlockPos(block.getX(), block.getY() + 1, block.getZ());
-		blocks[4] = new BlockPos(block.getX(), block.getY(), block.getZ() - 1);
-		blocks[5] = new BlockPos(block.getX(), block.getY(), block.getZ() + 1);
-		return blocks;
-	}
-
-	private static boolean checkIfAnyIsAir(BlockPos[] blocks) {
-		for (BlockPos block : blocks) {
-			if (mc.theWorld.getBlockState(block).getBlock() instanceof BlockAir) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@SubscribeEvent

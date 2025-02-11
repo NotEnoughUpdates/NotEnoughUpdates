@@ -60,7 +60,7 @@ public abstract class GenericBlockHighlighter {
 			!canPlayerSeeNearBlocks(it.getX(), it.getY(), it.getZ()));
 	}
 
-	protected boolean canPlayerSeeNearBlocks(double x, double y, double z) {
+	public boolean canPlayerSeeNearBlocks(double x, double y, double z) {
 		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
 		if (p == null) return false;
 		World world = p.worldObj;
