@@ -60,14 +60,6 @@ public abstract class GenericBlockHighlighter {
 			!canPlayerSeeNearBlocks(it.getX(), it.getY(), it.getZ()));
 	}
 
-	protected boolean canPlayerSeeBlock(double xCoord, double yCoord, double zCoord) {
-		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-		if (p == null) return false;
-		Vec3 playerPosition = new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ);
-		MovingObjectPosition hitResult = rayTraceBlocks(p.worldObj, playerPosition, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
-		return canSee(hitResult, new BlockPos(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5));
-	}
-
 	protected boolean canPlayerSeeNearBlocks(double x, double y, double z) {
 		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
 		if (p == null) return false;
