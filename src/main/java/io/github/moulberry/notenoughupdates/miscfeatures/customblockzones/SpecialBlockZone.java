@@ -34,6 +34,7 @@ public enum SpecialBlockZone {
 	SMOLDERING_TOMB(NotEnoughUpdates.smolderingTomb, false, false, true, false, true),
 	GLACITE_MINESHAFT(NotEnoughUpdates.glaciteMineshaft, true, true, true, true, false),
 	GLACITE_TUNNELS(NotEnoughUpdates.glaciteTunnels, true, true, true, true, false),
+	RIFT(NotEnoughUpdates.rift, true, true, true, true, true),
 	NON_SPECIAL_ZONE(null, false, false, false, false, false);
 
 	private final BiomeGenBase customBiome;

@@ -68,6 +68,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenEnd;
 import net.minecraft.world.biome.BiomeGenHell;
 import net.minecraft.world.biome.BiomeGenJungle;
 import net.minecraft.world.biome.BiomeGenMesa;
@@ -168,6 +169,10 @@ public class NotEnoughUpdates {
 		(new BiomeGenSnow(109, false))
 			.setColor(16777215)
 			.setBiomeName("NeuGlaciteTunnels");
+	public static final BiomeGenBase rift =
+		(new BiomeGenEnd(110))
+			.setColor(16777215)
+			.setBiomeName("NeuRift");
 	private static final long CHAT_MSG_COOLDOWN = 200;
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =
