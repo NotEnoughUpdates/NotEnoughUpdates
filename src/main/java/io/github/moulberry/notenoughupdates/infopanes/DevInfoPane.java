@@ -63,7 +63,7 @@ public class DevInfoPane extends TextInfoPane {
 			if (!manager.isValidInternalName(internalname)) {
 				if (internalname.equals("RUNE") || internalname.contains("PARTY_HAT_CRAB") || internalname.equals("ABICASE") ||
 					internalname.equals("PARTY_HAT_SLOTH") || internalname.equals("UNIQUE_RUNE") ||
-					internalname.equals("BALLOON_HAT_2024"))
+					internalname.equals("BALLOON_HAT_2024") || internalname.equals("ATTRIBUTE_SHARD"))
 					continue;
 				text.append(internalname).append("\n");
 			}
