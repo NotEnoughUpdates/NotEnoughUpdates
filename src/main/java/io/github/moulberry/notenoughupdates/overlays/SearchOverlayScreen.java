@@ -309,6 +309,10 @@ public class SearchOverlayScreen extends GuiEditSign {
 				autocompletedItems.clear();
 				autocompletedItems.addAll(title);
 				autocompletedItems.addAll(desc);
+				if (autocompletedItems.contains("ATTRIBUTE_SHARD_TROPHY_HUNTER;1")) {
+					autocompletedItems.removeIf(s -> s.contains("ATTRIBUTE_SHARD_"));
+					autocompletedItems.add("ATTRIBUTE_SHARD_TROPHY_HUNTER;1");
+				}
 			}
 		});
 	}
