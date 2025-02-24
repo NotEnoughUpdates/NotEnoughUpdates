@@ -1046,6 +1046,7 @@ public class SkyblockProfiles {
 
 			if (petsArray.size() > 0) {
 				JsonObject activePet = null;
+
 				for (JsonElement petEle : petsArray) {
 					JsonObject petObj = petEle.getAsJsonObject();
 					if (petObj.has("active") && petObj.get("active").getAsBoolean()) {
@@ -1054,6 +1055,7 @@ public class SkyblockProfiles {
 					}
 				}
 
+				// TODO: STOP DOING THIS AAAAA
 				petsInfo = new JsonObject();
 				petsInfo.add("active_pet", activePet);
 				petsInfo.add("pets", petsArray);
