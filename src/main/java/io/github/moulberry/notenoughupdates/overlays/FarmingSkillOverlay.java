@@ -265,7 +265,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 				if (red == null || brown == null) {
 					coins = 0;
 				} else {
-					coins = (red * 160 + brown * 160) / 2;
+					coins = (red / 160 + brown / 160) / 2;
 				}
 			}
 		} else {
