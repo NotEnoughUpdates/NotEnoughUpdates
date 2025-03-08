@@ -151,7 +151,7 @@ public class CrystalMetalDetectorSolver {
 		// Delay to keep old chest location from being treated as the new chest location
 		if (chestRecentlyFound) {
 			long currentTimeMillis = System.currentTimeMillis();
-			if (currentTimeMillis - chestLastFoundMillis < 1000 && distToTreasure < 5.0) return;
+			if (currentTimeMillis - chestLastFoundMillis < 500 && distToTreasure < 5.0) return;
 			chestLastFoundMillis = currentTimeMillis;
 			chestRecentlyFound = false;
 		}
