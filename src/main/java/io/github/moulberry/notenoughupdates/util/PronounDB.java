@@ -109,7 +109,7 @@ public class PronounDB {
 	@Getter
 	public enum Pronoun {
 		HE("he", "him"),
-		IT("it", "its"), // The object is "it" but common usage is "it/its"
+		IT("it", "its"), // The object is "it" but PronounDB displays it as "it/its", matching common usage
 		SHE("she", "her"),
 		THEY("they", "them"),
 		ANY("any", null, "Any pronouns"),
