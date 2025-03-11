@@ -108,32 +108,29 @@ public class PronounDB {
 
 	@Getter
 	public enum Pronoun {
-		HE("he", "him", "his"),
-		IT("it", "it", "its"),
-		SHE("she", "her", "hers"),
-		THEY("they", "them", "theirs"),
-		ANY("any", "Any pronouns"),
-		OTHER("other", "Other"),
-		ASK("ask", "Ask for pronouns"),
-		AVOID("avoid", "Avoid pronouns");
+		HE("he", "him"),
+		IT("it", "its"), // The object is "it" but common usage is "it/its"
+		SHE("she", "her"),
+		THEY("they", "them"),
+		ANY("any", null, "Any pronouns"),
+		OTHER("other", null, "Other"),
+		ASK("ask", null, "Ask for pronouns"),
+		AVOID("avoid", null, "Avoid pronouns");
 
 		private final String id;
 		private final String object;
-		private final String possessive;
 		private final String override;
 
-		Pronoun(String id, String object, String possessive) {
+		Pronoun(String id, String object) {
 			this.id = id;
 			this.object = object;
-			this.possessive = possessive;
 			this.override = null;
 		}
 
-		Pronoun(String id, String override) {
+		Pronoun(String id, String object, String override) {
 			this.id = id;
+			this.object = object;
 			this.override = override;
-			this.object = null;
-			this.possessive = null;
 		}
 	}
 
