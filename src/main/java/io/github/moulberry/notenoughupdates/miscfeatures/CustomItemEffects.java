@@ -309,7 +309,7 @@ public class CustomItemEffects {
 					Block block = etherwarpRaycast.state.getBlock();
 					if (!block.isCollidable() ||
 						//Don't allow teleport at this block
-						block == Blocks.carpet || block == Blocks.skull || block == Blocks.snow_layer ||
+						block == Blocks.carpet || block == Blocks.skull || block == Blocks.snow_layer || block == Blocks.end_portal ||
 						block.getCollisionBoundingBox(world, etherwarpRaycast.pos, etherwarpRaycast.state) == null &&
 							//Allow teleport at this block
 							block != Blocks.wall_sign && block != Blocks.standing_sign) {
