@@ -21,15 +21,21 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GlScissorStack;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.data.APIDataJson;
 import io.github.moulberry.notenoughupdates.profileviewer.hotm.HotmTreeRenderer;
+import io.github.moulberry.notenoughupdates.recipes.ForgeRecipe;
+import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -39,14 +45,18 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class MiningPage extends GuiProfileViewerPage {
 
 	private static final ResourceLocation miningPageTexture = new ResourceLocation(
 		"notenoughupdates:profile_viewer/mining/background.png");
+	private static final ResourceLocation FORGE_SLOT_BACKGROUND = new ResourceLocation("notenoughupdates:profile_viewer/mining/perk_background.png");
+
 	private static final ItemStack hotmSkillIcon = new ItemStack(Items.iron_pickaxe);
 	private static final Map<String, EnumChatFormatting> crystalToColor =
 		new LinkedHashMap<String, EnumChatFormatting>() {{
@@ -270,6 +280,131 @@ public class MiningPage extends GuiProfileViewerPage {
 			mouseY,
 			hotmLevelingInfo
 		);
+
+		int forgeX = guiLeft + 149;
+		int forgeY = guiTop + 20;
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(FORGE_SLOT_BACKGROUND);
+		Utils.drawTexturedRect(
+			forgeX, forgeY,
+			16, 16, 0F, 1f, 0f, 1f
+		);
+
+		ItemStack anvil = new ItemStack(Item.getItemFromBlock(Blocks.anvil));
+		Utils.drawItemStack(anvil, forgeX, forgeY);
+
+		if (mouseX >= forgeX && mouseX < forgeX + 16 && mouseY >= forgeY && mouseY < forgeY + 16) {
+			if (data.forge == null) return;
+			if (data.forge.forge_processes == null) return;
+			Map<String, APIDataJson.ForgeData.ForgeProcessesData.Node> forgeData = data.forge.forge_processes.forge_1;
+			if (forgeData == null) return;
+
+			ArrayList<String> tooltip = new ArrayList<>();
+
+			ItemResolutionQuery itemResolutionQuery = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery();
+
+			int hotmLevel = 0;
+			if (hotmLevelingInfo != null) hotmLevel = (int) Math.floor(hotmLevelingInfo.level);
+			ArrayList<String> forgeSlots = new ArrayList<String>() {{
+				add("1: §cEmpty");
+				add("2: §cEmpty");
+				add("3: §7Locked");
+				add("4: §7Locked");
+				add("5: §7Locked");
+				add("6: §7Locked");
+				add("7: §7Locked");
+			}};
+
+			for (int i = 2; i < 7; i++) {
+				if (hotmLevel > i) {
+					forgeSlots.set(i, (i+1) + ": §cEmpty");
+				}
+			}
+
+			long currentTime = System.currentTimeMillis();
+			boolean showError = false;
+
+			for (APIDataJson.ForgeData.ForgeProcessesData.Node value : forgeData.values()) {
+				if (value.slot > 7) {
+					forgeSlots.add(value.slot + ": §cEmpty");
+				}
+
+				String id = value.id;
+				Set<NeuRecipe> recipes = NotEnoughUpdates.INSTANCE.manager.getRecipesFor(id);
+
+				//just assuming that every forge pet will be legendary
+				if (recipes.isEmpty() && value.type.equals("PETS")) {
+					id = id + ";4";
+					recipes = NotEnoughUpdates.INSTANCE.manager.getRecipesFor(id);
+				}
+
+				if (recipes != null) {
+					ForgeRecipe forgeRecipe = null;
+					for (NeuRecipe recipe : recipes) {
+						if (recipe instanceof ForgeRecipe) {
+							forgeRecipe = (ForgeRecipe) recipe;
+							break;
+						}
+					}
+					if (forgeRecipe == null) {
+						tooltip.add("§cMissing recipe " + id);
+						showError = true;
+					}
+
+					int level = 0;
+					JsonObject hotm = miningCore.getAsJsonObject();
+					if (hotm.has("nodes") && hotm.get("nodes").getAsJsonObject().has("forge_time")) {
+						level = hotm.get("nodes").getAsJsonObject().get("forge_time").getAsInt();
+					}
+					int duration = 0;
+					if (forgeRecipe != null) {
+						duration = forgeRecipe.getReducedTime(level);
+					}
+
+					//convert to ms
+					duration = duration * 1000;
+					//we do this so all the timers update at the same time
+					long startTime = (value.startTime / 1000 * 1000);
+					long durationLeft = startTime + duration - currentTime;
+					boolean finished  = durationLeft < 0;
+					ItemStack itemStack = itemResolutionQuery.withKnownInternalName(id).resolveToItemStack();
+					String displayName = id;
+					if (itemStack == null) {
+						tooltip.add("§cMissing item " + id);
+						showError = true;
+					} else {
+						displayName = itemStack.getDisplayName().replace("[Lvl {LVL}] ", "");
+					}
+
+					if (forgeRecipe == null) {
+						forgeSlots.set(value.slot - 1, value.slot + ": §4" + displayName + " §7Time Remaining: §cUnknown");
+					} else {
+						if (finished) {
+							forgeSlots.set(value.slot - 1, value.slot + ": §4" + displayName + " §aCompleted!");
+						} else {
+							forgeSlots.set(
+								value.slot - 1,
+								value.slot + ": §4" + displayName + " §7Time Remaining: §a" + Utils.prettyTime(durationLeft)
+							);
+						}
+					}
+
+				} else {
+					tooltip.add("§cCant find item: " + value.id);
+					showError = true;
+				}
+			}
+
+			if (showError) {
+				tooltip.add("§cPlease report this to the NEU Discord");
+				tooltip.add("§c" + Utils.getDiscordInvite());
+			}
+
+			tooltip.add(EnumChatFormatting.GOLD + "Forge");
+			tooltip.add("");
+			tooltip.addAll(forgeSlots);
+			getInstance().tooltipToDisplay = tooltip;
+		}
 	}
 
 	int scroll = 0;

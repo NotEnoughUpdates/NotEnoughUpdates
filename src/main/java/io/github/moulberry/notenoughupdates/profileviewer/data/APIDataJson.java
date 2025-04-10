@@ -286,4 +286,26 @@ public class APIDataJson {
 	public static class GlacitePlayerData {
 		public List<String> fossils_donated = new ArrayList<>();
 	}
+
+	public @Nullable ForgeData forge = new ForgeData();
+
+	public static class ForgeData {
+
+		public @Nullable ForgeProcessesData forge_processes = new ForgeProcessesData();
+
+		public static class ForgeProcessesData {
+
+			public @Nullable Map<String, Node> forge_1 = new HashMap<>();
+
+			public static class Node {
+				public String type = "";
+				public String id = "";
+				public long startTime = 0;
+				public int slot = 0;
+				public boolean notified = false;
+				//there is "oldItem": null but idk what that is
+			}
+
+		}
+	}
 }
