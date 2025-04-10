@@ -1031,6 +1031,7 @@ public class PetInfoOverlay extends TextOverlay {
 						}
 
 						String internalName = ItemResolutionQuery.findInternalNameByDisplayName(lineWithColours, true);
+						if (internalName == null) continue;
 						String[] split = internalName.split(";");
 						if (split.length > 0) {
 							internalName = split[0];
