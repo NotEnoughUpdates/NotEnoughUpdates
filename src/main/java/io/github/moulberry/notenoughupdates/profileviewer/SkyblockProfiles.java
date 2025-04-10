@@ -62,6 +62,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.StreamSupport;
 
 public class SkyblockProfiles {
 	private static final String defaultNbtData = "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=";
@@ -1033,13 +1034,20 @@ public class SkyblockProfiles {
 				return petsInfo;
 			}
 
-			JsonArray petsArray = Utils
+			JsonArray allPets = Utils
 				.getElementOrDefault(getProfileJson(), "pets_data.pets", new JsonArray())
 				.getAsJsonArray();
+
+			JsonArray petsArray = StreamSupport.stream(allPets.spliterator(), false)
+																				 .map(JsonElement::getAsJsonObject)
+																				 .filter(petObj -> petObj.has("tier") && petObj.has("exp"))
+																				 .collect(JsonArray::new, JsonArray::add, JsonArray::addAll);
+
+
 			if (petsArray.size() > 0) {
 				JsonObject activePet = null;
 
-				for (JsonElement petEle : petsArray.getAsJsonArray()) {
+				for (JsonElement petEle : petsArray) {
 					JsonObject petObj = petEle.getAsJsonObject();
 					if (petObj.has("active") && petObj.get("active").getAsBoolean()) {
 						activePet = petObj;
