@@ -506,6 +506,9 @@ public class ItemPriceInformation {
 			if (MuseumTooltipManager.INSTANCE.isItemDonated(internalname)) {
 				tooltip.add(
 					EnumChatFormatting.YELLOW + "Item already donated to museum");
+			} else if (MuseumTooltipManager.INSTANCE.canItemBeDonated(internalname)) {
+				tooltip.add(
+					EnumChatFormatting.RED + "Item not donated to museum");
 			}
 		}
 	}
