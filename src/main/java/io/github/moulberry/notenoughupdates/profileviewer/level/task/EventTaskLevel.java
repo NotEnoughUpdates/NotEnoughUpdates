@@ -31,7 +31,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EventTaskLevel extends GuiTaskLevel {
 
@@ -78,10 +80,25 @@ public class EventTaskLevel extends GuiTaskLevel {
 			}
 		}
 
-		int sbXpUniqueMedals = Utils
-			.getElementOrDefault(object, "jacobs_contest.unique_brackets.gold", new JsonArray())
-			.getAsJsonArray()
-			.size() * eventTask.get("jacob_farming_contest_xp").getAsInt();
+		JsonArray golds = Utils.getElementOrDefault(object, "jacobs_contest.unique_brackets.gold", new JsonArray())
+													 .getAsJsonArray();
+		JsonArray platinums = Utils.getElementOrDefault(object, "jacobs_contest.unique_brackets.platinum", new JsonArray())
+													 .getAsJsonArray();
+		JsonArray diamonds = Utils.getElementOrDefault(object, "jacobs_contest.unique_brackets.diamond", new JsonArray())
+													 .getAsJsonArray();
+
+		Set<String> uniqueElements = new HashSet<>();
+		for (JsonElement element : golds) {
+			uniqueElements.add(element.getAsString());
+		}
+		for (JsonElement element : platinums) {
+			uniqueElements.add(element.getAsString());
+		}
+		for (JsonElement element : diamonds) {
+			uniqueElements.add(element.getAsString());
+		}
+
+		int sbXpUniqueMedals = uniqueElements.size() * eventTask.get("jacob_farming_contest_xp").getAsInt();
 
 		lore.add(levelPage.buildLore("Mining Fiesta", sbXpMiningFiesta, eventTask.get("mining_fiesta").getAsInt(), false));
 		lore.add(levelPage.buildLore(
