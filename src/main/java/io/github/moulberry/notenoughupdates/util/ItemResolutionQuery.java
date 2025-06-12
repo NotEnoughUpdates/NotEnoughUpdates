@@ -131,6 +131,7 @@ public class ItemResolutionQuery {
 					resolvedName = resolvePotionName();
 					break;
 				case "BALLOON_HAT_2024":
+				case "BALLOON_HAT_2025":
 					resolvedName = resolveBalloonHatName();
 					break;
 				case "ATTRIBUTE_SHARD":
@@ -403,7 +404,8 @@ public class ItemResolutionQuery {
 
 	private String resolveBalloonHatName() {
 		String color = getExtraAttributes().getString("party_hat_color");
-		return "BALLOON_HAT_2024_" + color.toUpperCase(Locale.ROOT);
+		int balloonHatYear = getExtraAttributes().getInteger("party_hat_year");
+		return "BALLOON_HAT_" + balloonHatYear + "_" + color.toUpperCase(Locale.ROOT);
 	}
 
 	private String resolveAttributeShardName() {
