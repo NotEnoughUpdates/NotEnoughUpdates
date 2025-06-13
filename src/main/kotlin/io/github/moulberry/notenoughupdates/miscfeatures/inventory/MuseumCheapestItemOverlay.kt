@@ -516,6 +516,7 @@ object MuseumCheapestItemOverlay {
                 155,
                 0
             )
+            fillItemsToDonate()
         }
 
         ArrowPagesUtils.onDraw(guiLeft, guiTop, topLeft, currentPage, totalPages)
@@ -566,20 +567,7 @@ object MuseumCheapestItemOverlay {
                                 ?.get("displayname")?.asString ?: "${EnumChatFormatting.RED}ERROR"
                         }
 
-                        //if the list does not already contain it, insert this MuseumItem
-                        if (itemsToDonate.none { it.internalNames == parsedItems.skyblockItemIds }) {
-                            val xp = calculateSkyblockXp(parsedItems.skyblockItemIds, false)
-                            itemsToDonate.add(
-                                MuseumItem(
-                                    displayName,
-                                    parsedItems.skyblockItemIds,
-                                    calculateValue(parsedItems.skyblockItemIds),
-                                    time,
-                                    category,
-                                    xp
-                                )
-                            )
-                        }
+                        addItemToDonate(displayName, parsedItems.skyblockItemIds, category, time)
                     }
 
                     else -> itemsToDonate.retainAll { it.internalNames != parsedItems.skyblockItemIds }
@@ -688,4 +676,85 @@ object MuseumCheapestItemOverlay {
      * Determine if all useful pages have been visited
      */
     private fun visitedAllPages(): Boolean = !checkedPages.containsValue(false)
+
+    private var hasAutoFilled = false
+
+    /*
+     * Fills the overlay with data based on the museum json and the data saved locally
+     */
+    private fun fillItemsToDonate() {
+        if (hasAutoFilled) return
+        hasAutoFilled = true
+        val museumJson = Constants.MUSEUM ?: return
+        val weapons = museumJson.get("weapons")?.asJsonArray ?: return
+        val rarities = museumJson.get("rarities")?.asJsonArray ?: return
+        val setsToItems = museumJson.get("sets_to_items")?.asJsonObject ?: return
+        val helmetToSetID = museumJson.get("armor_to_id")?.asJsonObject?.entrySet()
+            ?.associateBy({ it.value.asString }, { it.key }) ?: return
+        val time = System.currentTimeMillis()
+        val manager = NotEnoughUpdates.INSTANCE.manager
+        for (weapon in weapons) {
+            if (isItemDonated(weapon.asString)) {
+                continue
+            }
+            val displayName = manager.getDisplayName(weapon.asString) ?: "§cUnknown item name"
+            addItemToDonate(
+                displayName,
+                listOf(weapon.asString),
+                Category.WEAPONS,
+                time
+            )
+        }
+        for (rarity in rarities) {
+            if (isItemDonated(rarity.asString)) {
+                continue
+            }
+            val displayName = manager.getDisplayName(rarity.asString) ?: "§cUnknown item name"
+            addItemToDonate(
+                displayName,
+                listOf(rarity.asString),
+                Category.RARITIES,
+                time
+            )
+        }
+        for (helmet in helmetToSetID) {
+            if (isItemDonated(helmet.key)) {
+                continue
+            }
+            val internalNames = mutableListOf<String>()
+            setsToItems.get(helmet.value).asJsonArray.forEach {
+                internalNames.add(it.asString)
+            }
+            val displayName = manager.getDisplayName(helmet.key) ?: "§cUnknown item name"
+            addItemToDonate(
+                displayName,
+                internalNames,
+                Category.ARMOUR_SETS,
+                time
+            )
+        }
+        sortByValue()
+    }
+
+    private fun addItemToDonate(displayName: String, skyblockItemIds: List<String>, category: Category, time: Long) {
+        //if the list does not already contain it, insert this MuseumItem
+        if (itemsToDonate.none { it.internalNames == skyblockItemIds }) {
+            val xp = calculateSkyblockXp(skyblockItemIds, false)
+            itemsToDonate.add(
+                MuseumItem(
+                    displayName,
+                    skyblockItemIds,
+                    calculateValue(skyblockItemIds),
+                    time,
+                    category,
+                    xp
+                )
+            )
+        }
+    }
+
+    fun resetItemsToDonate() {
+        hasAutoFilled = false
+        itemsToDonate = emptyList<MuseumItem>().toMutableList()
+    }
 }
