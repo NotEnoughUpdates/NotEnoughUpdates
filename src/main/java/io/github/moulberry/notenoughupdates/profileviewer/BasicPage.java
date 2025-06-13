@@ -215,19 +215,12 @@ public class BasicPage extends GuiProfileViewerPage {
 				playerName = Utils.getElementAsString(profile.getHypixelProfile().get("prefix"), "") + " " +
 					entityPlayer.getName();
 			} else {
-				String rank = Utils.getElementAsString(
-					profile.getHypixelProfile().get("rank"),
-					Utils.getElementAsString(profile.getHypixelProfile().get("newPackageRank"), "NONE")
-				);
+				String rank = Utils.getElementAsString(profile.getHypixelProfile().get("rank"), "NORMAL");
 				if (rank.equals("NORMAL")) {
-					rank = Utils.getElementAsString(profile.getHypixelProfile().get("newPackageRank"), "NONE");
-				}
-				String monthlyPackageRank = Utils.getElementAsString(
-					profile.getHypixelProfile().get("monthlyPackageRank"),
-					"NONE"
-				);
-				if (!rank.equals("YOUTUBER") && !monthlyPackageRank.equals("NONE")) {
-					rank = monthlyPackageRank;
+					rank = Utils.getElementAsString(profile.getHypixelProfile().get("monthlyPackageRank"), "NONE");
+					if (rank.equals("NONE")) {
+						rank = Utils.getElementAsString(profile.getHypixelProfile().get("newPackageRank"), "NONE");
+					}
 				}
 				EnumChatFormatting rankPlusColorECF = EnumChatFormatting.getValueByName(
 					Utils.getElementAsString(profile.getHypixelProfile().get("rankPlusColor"), "RED")
