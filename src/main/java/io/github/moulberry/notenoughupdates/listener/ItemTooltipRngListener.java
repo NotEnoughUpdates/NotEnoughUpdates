@@ -419,13 +419,19 @@ public class ItemTooltipRngListener {
 			if (openChestName.equals("Catacombs RNG Meter")) {
 				List<String> list = ItemUtils.getLore(stack);
 				String line = list.get(4);
-				return line.substring(26, 28);
+				int length = line.length();
+				if (length >= 28) return line.substring(26, 28);
+				else return "";
 			} else {
 				// supporting more pages (f7/m7)
 				if (openChestName.contains("(")) {
-					return openChestName.substring(17, 19);
+					int length = openChestName.length();
+					if (length >= 19) return openChestName.substring(17, 19);
+					else return "";
 				}
-				return openChestName.substring(11, 13);
+				int length = openChestName.length();
+				if (length >= 13) return openChestName.substring(11, 13);
+				else return "";
 			}
 		} else {
 			return openChestName.substring(0, openChestName.length() - 9);
