@@ -211,6 +211,10 @@ public class EquipmentOverlay {
 		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
+		if ("rift".equals(SBInfo.getInstance().getLocation())) {
+			shouldRenderPets = false;
+		}
+
 		// Draw Backgrounds before anything, so hover overlay isn't occluded by the background
 		renderHudBackground(inventory);
 
@@ -423,6 +427,11 @@ public class EquipmentOverlay {
 				return;
 		}
 
+		//this is scuffed but works
+		if ("rift".equals(SBInfo.getInstance().getLocation())) {
+			slot += 100;
+		}
+
 		JsonObject currentEquipment = profileSpecific.savedEquipment.get(slot);
 		if (currentEquipment == null) return;
 
@@ -460,6 +469,10 @@ public class EquipmentOverlay {
 			slot3 = null;
 			slot4 = null;
 		}
+		int newArmourSlot = armourSlot;
+		if ("rift".equals(SBInfo.getInstance().getLocation())) {
+			newArmourSlot += 100;
+		}
 
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific == null) return null;
@@ -469,20 +482,20 @@ public class EquipmentOverlay {
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
 			if (itemStack != null) {
-				profileSpecific.savedEquipment.put(armourSlot, enrichItemStack(itemStack));
+				profileSpecific.savedEquipment.put(newArmourSlot, enrichItemStack(itemStack));
 				cache.put(armourSlot, itemStack);
 				return itemStack;
 			}
 		} else {
-			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
-				if (cache.containsKey(armourSlot)) {
-					return cache.get(armourSlot);
+			if (profileSpecific.savedEquipment.containsKey(newArmourSlot)) {
+				if (cache.containsKey(newArmourSlot)) {
+					return cache.get(newArmourSlot);
 				}
 				//don't use cache since the internalName is identical in most cases
-				JsonObject jsonObject = profileSpecific.savedEquipment.get(armourSlot);
+				JsonObject jsonObject = profileSpecific.savedEquipment.get(newArmourSlot);
 				if (jsonObject != null) {
 					ItemStack result = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject.getAsJsonObject(), false);
-					cache.put(armourSlot, result);
+					cache.put(newArmourSlot, result);
 					return result;
 				}
 			}
