@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay
 import io.github.moulberry.notenoughupdates.util.brigadier.get
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
 import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
@@ -123,5 +124,11 @@ class SimpleDevCommands {
                 reply("Reset NEU slot locking")
             }
         }.withHelp("Resets locked slots")
+        event.command("neuresetmuseumoverlay") {
+            thenExecute {
+                MuseumCheapestItemOverlay.resetItemsToDonate()
+                reply("Reset museum overlay")
+            }
+        }.withHelp("Resets the museum overlay")
     }
 }
