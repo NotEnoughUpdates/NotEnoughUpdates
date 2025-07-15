@@ -65,7 +65,7 @@ class NEUBrigadierHook(
     private fun getText(args: Array<out String>) = "${commandNode.name} ${args.joinToString(" ")}"
 
     override fun processCommand(sender: ICommandSender, args: Array<out String>) {
-        val results = brigadierRoot.parseText.apply(sender to getText(args).trim())
+        val results = brigadierRoot.parseText(sender to getText(args).trim())
         if (beforeCommand?.test(results) == false)
             return
         try {
@@ -92,7 +92,7 @@ class NEUBrigadierHook(
         }
         if (lc == null) {
             lastCompletion?.cancel(true)
-            val results = brigadierRoot.parseText.apply(sender to originalText)
+            val results = brigadierRoot.parseText(sender to originalText)
             lc = brigadierRoot.dispatcher.getCompletionSuggestions(results)
         }
         lastCompletion = lc
