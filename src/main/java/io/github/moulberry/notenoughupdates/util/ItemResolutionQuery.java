@@ -335,6 +335,7 @@ public class ItemResolutionQuery {
 		if (text.equals("Turbo-Cacti")) return "Turbo-Cactus";
 		if (text.equals("Prismatic")) return "Pristine";
 		if (text.equals("Dragon Tracer")) return "Aiming";
+		if (text.equals("Drain")) return "Syphon";
 
 		return text;
 	}
