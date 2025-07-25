@@ -106,7 +106,7 @@ public class ItemResolutionQuery {
 		if (resolvedName == null) {
 			resolvedName = resolveContextualName();
 		} else {
-			switch (resolvedName.intern()) {
+			switch (resolvedName) {
 				case "PET":
 					resolvedName = resolvePetName();
 					break;
