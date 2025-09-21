@@ -63,12 +63,6 @@ public class GuiTextures {
 	public static final ResourceLocation dungeon_chest_worth =
 		new ResourceLocation("notenoughupdates:dungeon_chest_worth.png");
 
-	public static final ResourceLocation auction_view = new ResourceLocation("notenoughupdates:auction_view.png");
-	public static final ResourceLocation auction_accept = new ResourceLocation("notenoughupdates:auction_accept.png");
-	public static final ResourceLocation auction_price = new ResourceLocation("notenoughupdates:auction_price.png");
-	public static final ResourceLocation auction_view_buttons =
-		new ResourceLocation("notenoughupdates:auction_view_buttons.png");
-
 	public static final ResourceLocation sort_all = new ResourceLocation("notenoughupdates:sort_all.png");
 	public static final ResourceLocation sort_mob = new ResourceLocation("notenoughupdates:sort_mob.png");
 	public static final ResourceLocation sort_pet = new ResourceLocation("notenoughupdates:sort_pet.png");
